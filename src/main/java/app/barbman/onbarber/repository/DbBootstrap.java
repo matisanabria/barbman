@@ -39,7 +39,7 @@ public class DbBootstrap {
     }
 
     // Connects to database
-    private static Connection connect() throws SQLException {
+    public static Connection connect() throws SQLException {
         String url = "jdbc:sqlite:" + DB_FOLDER + "/" + DB_NAME;
         return DriverManager.getConnection(url);
     }
