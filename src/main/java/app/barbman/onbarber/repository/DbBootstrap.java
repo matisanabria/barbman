@@ -1,5 +1,7 @@
 package app.barbman.onbarber.repository;
 
+import app.barbman.onbarber.util.LoggerUtil;
+
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -9,7 +11,7 @@ import java.util.logging.Logger;
 
 
 public class DbBootstrap {
-    private static final Logger logger = Logger.getLogger(DbBootstrap.class.getName());
+    private static final Logger logger = LoggerUtil.getLogger(DbBootstrap.class);
 
     public static final String DB_FOLDER = "data";
     public static final String DB_NAME = "barbman.db";

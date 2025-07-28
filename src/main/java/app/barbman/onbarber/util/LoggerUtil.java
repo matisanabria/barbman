@@ -22,7 +22,7 @@ public class LoggerUtil {
                 consoleHandler.setFormatter(new SimpleFormatter());
 
                 // LOG A ARCHIVO
-                FileHandler fileHandler = new FileHandler("data/barbman.log", true);
+                FileHandler fileHandler = new FileHandler("data/logs.log", true);
                 // true = no sobreescribe
                 fileHandler.setLevel(Level.ALL);
                 fileHandler.setFormatter(new SimpleFormatter());
@@ -31,6 +31,10 @@ public class LoggerUtil {
                 logger.addHandler(fileHandler);
 
                 logger.setUseParentHandlers(false); // evita duplicación en consola
+
+                for (Handler handler : logger.getHandlers()) {
+                    logger.removeHandler(handler);
+                }
 
                 logger.setLevel(Level.ALL);
 

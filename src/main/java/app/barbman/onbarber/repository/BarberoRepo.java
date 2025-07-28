@@ -1,6 +1,7 @@
 package app.barbman.onbarber.repository;
 
 import app.barbman.onbarber.models.Barbero;
+import app.barbman.onbarber.util.LoggerUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -16,8 +17,7 @@ import java.util.logging.Logger;
 
 public class BarberoRepo {
     List<Barbero> listaBarberos = new ArrayList<>();
-
-    private static final Logger logger = Logger.getLogger(BarberoRepo.class.getName());
+    private static final Logger logger = LoggerUtil.getLogger(BarberoRepo.class);
 
     /**
      * Carga todos los barberos de la base.
