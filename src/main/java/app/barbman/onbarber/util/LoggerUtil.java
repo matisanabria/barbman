@@ -32,14 +32,10 @@ public class LoggerUtil {
 
                 logger.setUseParentHandlers(false); // evita duplicación en consola
 
-                for (Handler handler : logger.getHandlers()) {
-                    logger.removeHandler(handler);
-                }
-
                 logger.setLevel(Level.ALL);
 
             } catch (IOException e) {
-                System.err.println("No se pudo crear el archivo de log: " + e.getMessage());
+                System.out.println("No se pudo crear el archivo de log: " + e.getMessage());
             }
         }
 
