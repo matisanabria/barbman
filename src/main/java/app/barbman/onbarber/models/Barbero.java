@@ -6,21 +6,23 @@ public class Barbero {
     String nombre;
     String rol;
     String pin;
-    float param1;
-    float param2;
+    double param1;
+    double param2;
 
     public Barbero() {}
 
     // Constructor full
-    public Barbero(int id, int tipoCobro, String nombre, String rol, String pin, float param1, float param2){
+    public Barbero(int id, String nombre, String rol, String pin, int tipoCobro, double param1, double param2){
         this.id = id;
-        this.tipoCobro = tipoCobro;
         this.nombre = nombre;
         this.rol = rol;
         this.pin = pin;
+        this.tipoCobro = tipoCobro;
         this.param1 = param1;
         this.param2 = param2;
     }
+
+
 
     // Constructor corto
     public Barbero(String nombre, String rol, String pin) {
@@ -38,8 +40,8 @@ public class Barbero {
     public String getNombre() {return nombre;}
     public String getRol() {return rol;}
     public String getPin() {return pin;}
-    public float getParam1() {return param1;}
-    public float getParam2() {return param2;}
+    public double getParam1() {return param1;}
+    public double getParam2() {return param2;}
 
     // Setters
     public void setId(int id) {this.id = id;} // Para cargar desde DB
@@ -57,8 +59,8 @@ public class Barbero {
         }
         this.pin = pin;
     }
-    public void setParam1(float param1) {this.param1 = param1;}
-    public void setParam2(float param2) {this.param2 = param2;}
+    public void setParam1(double param1) {this.param1 = param1;}
+    public void setParam2(double param2) {this.param2 = param2;}
 
     // Configuración de tipo de cobro
     /**
