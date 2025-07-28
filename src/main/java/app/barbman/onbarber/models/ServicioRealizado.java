@@ -2,7 +2,7 @@ package app.barbman.onbarber.models;
 
 import java.util.Date;
 
-public class ServiciosRealizados {
+public class ServicioRealizado {
     int id;
     int barbero_id;
     int tipo_servicio;
@@ -11,9 +11,9 @@ public class ServiciosRealizados {
     String forma_pago;
     String observaciones;
 
-    public ServiciosRealizados(){}
-    public ServiciosRealizados(int id, int barbero_id, int tipo_servicio, int precio,
-                               Date fecha, String forma_pago, String observaciones){
+    public ServicioRealizado(){}
+    public ServicioRealizado(int id, int barbero_id, int tipo_servicio, int precio,
+                             Date fecha, String forma_pago, String observaciones){
         this.id=id;
         this.barbero_id=barbero_id;
         this.tipo_servicio=tipo_servicio;
@@ -22,8 +22,8 @@ public class ServiciosRealizados {
         this.forma_pago=forma_pago;
         this.observaciones=observaciones;
     }
-    public ServiciosRealizados(int barbero_id, int tipo_servicio, int precio,
-                               Date fecha, String forma_pago, String observaciones){
+    public ServicioRealizado(int barbero_id, int tipo_servicio, int precio,
+                             Date fecha, String forma_pago, String observaciones){
         this.barbero_id=barbero_id;
         this.tipo_servicio=tipo_servicio;
         this.precio=precio;
