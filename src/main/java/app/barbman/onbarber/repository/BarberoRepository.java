@@ -15,9 +15,9 @@ import java.util.logging.Logger;
  * Se encarga de cargar la lista de barberos y buscar un barbero por su PIN.
  */
 
-public class BarberoRepo {
+public class BarberoRepository {
     List<Barbero> listaBarberos = new ArrayList<>();
-    private static final Logger logger = LoggerUtil.getLogger(BarberoRepo.class);
+    private static final Logger logger = LoggerUtil.getLogger(BarberoRepository.class);
 
     /**
      * Carga todos los barberos de la base.

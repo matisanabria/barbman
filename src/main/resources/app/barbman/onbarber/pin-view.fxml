@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+
+
+<AnchorPane prefHeight="558.0" prefWidth="390.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.barbman.onbarber.controller.PinController">
+   <children>
+      <Label layoutX="51.0" layoutY="236.0" text="PIN Inválido" visible="false" fx:id="loginLabel"/>
+      <HBox alignment="CENTER" layoutY="253.0" prefHeight="52.0" prefWidth="391.0">
+         <children>
+            <PasswordField prefHeight="46.0" prefWidth="210.0" fx:id="pinField"/>
+            <Button mnemonicParsing="false"
+                    prefHeight="38.0"
+                    prefWidth="85.0"
+                    onAction="#loginController"
+                    text="Acceder"/>
+         </children>
+      </HBox>
+   </children>
+</AnchorPane>

@@ -1,6 +1,8 @@
 package app.barbman.onbarber.service.pin;
 
-import app.barbman.onbarber.repository.BarberoRepo;
+import app.barbman.onbarber.controller.PinController;
+import app.barbman.onbarber.models.Barbero;
+import app.barbman.onbarber.repository.BarberoRepository;
 import app.barbman.onbarber.util.LoggerUtil;
 
 import java.util.logging.Logger;
@@ -11,10 +13,14 @@ import java.util.logging.Logger;
  */
 public class PinService {
     private static final Logger logger = LoggerUtil.getLogger(PinService.class);
+    private static final BarberoRepository barberoRepository = new BarberoRepository();
+    private static final PinController pinController = new PinController();
 
-    public static void login(String PIN){
-
+    public static Barbero getSesion(String PIN) {
+        return barberoRepository.getBarberoWithPin(PIN);
     }
+
+
 
 
 }
