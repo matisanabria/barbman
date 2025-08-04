@@ -16,6 +16,7 @@ public class Main extends Application {
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("view/pin-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
+        scene.getStylesheets().add(getClass().getResource("style/main.css").toExternalForm());
         stage.setTitle("Barbman (Snapshot OB 1.0)");
         stage.setScene(scene);
         stage.show();
