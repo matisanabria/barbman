@@ -3,9 +3,12 @@ package app.barbman.onbarber.controller;
 import app.barbman.onbarber.model.Barbero;
 import app.barbman.onbarber.service.pin.PinService;
 import app.barbman.onbarber.session.AppSession;
+import javafx.animation.TranslateTransition;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
+import javafx.scene.Node;
+import javafx.util.Duration;
 
 public class PinController {
     @FXML
@@ -13,10 +16,21 @@ public class PinController {
     @FXML
     private PasswordField pinField;
 
-    public void wrongPin(){
+
+
+    public void wrongPin() {
         loginLabel.setVisible(true);
+        if (!pinField.getStyleClass().contains("error")) {
+            pinField.getStyleClass().add("error");
+        }
+        shake(pinField);
     }
-    public void loginController(){
+
+    public void loginController() {
+        pinField.getStyleClass().remove("error");
+        loginLabel.setVisible(false);
+
+
         String PIN = pinField.getText();
         Barbero sesion = PinService.getSesion(PIN);
 
@@ -26,6 +40,15 @@ public class PinController {
         } else {
             wrongPin();
         }
+    }
+
+    private void shake(Node node) {
+        TranslateTransition tt = new TranslateTransition(Duration.millis(50), node);
+        tt.setFromX(0);
+        tt.setByX(10);
+        tt.setCycleCount(6);
+        tt.setAutoReverse(true);
+        tt.play();
     }
 
 
