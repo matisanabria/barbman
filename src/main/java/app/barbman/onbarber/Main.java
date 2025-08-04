@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 public class Main extends Application {
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("pin-view.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("view/pin-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle("Barbman (Snapshot OB 1.0)");
         stage.setScene(scene);
