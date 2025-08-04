@@ -1,17 +1,16 @@
 package app.barbman.onbarber.repository;
 
-import app.barbman.onbarber.util.LoggerUtil;
-
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 public class DbBootstrap {
-    private static final Logger logger = LoggerUtil.getLogger(DbBootstrap.class);
+    private static final Logger logger = LogManager.getLogger(DbBootstrap.class);
 
     public static final String DB_FOLDER = "data";
     public static final String DB_NAME = "barbman.db";
@@ -23,11 +22,11 @@ public class DbBootstrap {
         // Checks if "/data" folder exists
         File folder = new File(DB_FOLDER);
         if (!folder.exists()) {
-            logger.warning("Carpeta de base de datos no encontrada.");
+            logger.warn("Carpeta de base de datos no encontrada.");
             if (folder.mkdirs()) {
                 logger.info("Carpeta creada exitosamente: " + DB_FOLDER);
             } else {
-                logger.severe("No se pudo crear la carpeta de base de datos.");
+                logger.error("No se pudo crear la carpeta de base de datos.");
             }
         }
 
@@ -35,7 +34,7 @@ public class DbBootstrap {
         File dbFile = new File(DB_FOLDER + "/" + DB_NAME);
         if (dbFile.exists()) logger.info("Base de datos encontrada en: " + dbFile.getPath());
         else {
-            logger.warning("Base de datos no encontrada. Creando base de datos...");
+            logger.warn("Base de datos no encontrada. Creando base de datos...");
             createTables();  // <- Creates database tables
         }
     }
@@ -145,7 +144,7 @@ public class DbBootstrap {
 
             logger.info("Tablas creadas correctamente.");
         } catch (SQLException e) {
-            logger.severe("Error creando las tablas: " + e.getMessage());
+            logger.error("Error creando las tablas: " + e.getMessage());
             throw new RuntimeException(e);
         }
     }

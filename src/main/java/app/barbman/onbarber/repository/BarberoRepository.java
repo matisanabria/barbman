@@ -5,9 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 import app.barbman.onbarber.model.Barbero;
-import app.barbman.onbarber.util.LoggerUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Repositorio de acceso a datos para la tabla "barberos".
@@ -16,7 +16,7 @@ import app.barbman.onbarber.util.LoggerUtil;
 
 public class BarberoRepository {
     List<Barbero> listaBarberos = new ArrayList<>();
-    private static final Logger logger = LoggerUtil.getLogger(BarberoRepository.class);
+    private static final Logger logger = LogManager.getLogger(BarberoRepository.class);
 
     /**
      * Carga todos los barberos de la base.
@@ -44,7 +44,7 @@ public class BarberoRepository {
             }
 
         } catch (Exception e) {
-            logger.warning("Error al obtener los barberos: " + e.getMessage());
+            logger.warn("Error al obtener los barberos: " + e.getMessage());
         }
 
         return listaBarberos;
@@ -77,7 +77,7 @@ public class BarberoRepository {
             }
 
         } catch (Exception e) {
-            logger.warning("Error al obtener el barbero con pin: " + e.getMessage());
+            logger.warn("Error al obtener el barbero con pin: " + e.getMessage());
         }
 
         return null;

@@ -9,8 +9,12 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.Node;
 import javafx.util.Duration;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class PinController {
+     private static final Logger logger = LogManager.getLogger(PinController.class);
+
     @FXML
     private Label loginLabel;
     @FXML
@@ -19,6 +23,7 @@ public class PinController {
 
 
     public void wrongPin() {
+        logger.info("PIN inválido");
         loginLabel.setVisible(true);
         if (!pinField.getStyleClass().contains("error")) {
             pinField.getStyleClass().add("error");
@@ -27,6 +32,7 @@ public class PinController {
     }
 
     public void loginController() {
+        logger.info("PIN válido. Iniciando sesión.");
         pinField.getStyleClass().remove("error");
         loginLabel.setVisible(false);
 
