@@ -1,6 +1,6 @@
-package app.barbman.onbarber.sesion;
+package app.barbman.onbarber.session;
 
-import app.barbman.onbarber.models.Barbero;
+import app.barbman.onbarber.model.Barbero;
 
 public class AppSession {
     private static Barbero barberoActivo;

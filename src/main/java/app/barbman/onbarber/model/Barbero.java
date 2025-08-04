@@ -1,4 +1,4 @@
-package app.barbman.onbarber.models;
+package app.barbman.onbarber.model;
 
 public class Barbero {
     int id;

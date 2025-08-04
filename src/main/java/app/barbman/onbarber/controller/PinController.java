@@ -1,8 +1,8 @@
 package app.barbman.onbarber.controller;
 
-import app.barbman.onbarber.models.Barbero;
+import app.barbman.onbarber.model.Barbero;
 import app.barbman.onbarber.service.pin.PinService;
-import app.barbman.onbarber.sesion.AppSession;
+import app.barbman.onbarber.session.AppSession;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;

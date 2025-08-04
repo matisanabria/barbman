@@ -1,11 +1,10 @@
 package app.barbman.onbarber.service.pin;
 
+import java.util.logging.Logger;
 import app.barbman.onbarber.controller.PinController;
-import app.barbman.onbarber.models.Barbero;
+import app.barbman.onbarber.model.Barbero;
 import app.barbman.onbarber.repository.BarberoRepository;
 import app.barbman.onbarber.util.LoggerUtil;
-
-import java.util.logging.Logger;
 
 /**
  * Servicio encargado de gestionar PIN's y de la autenticación

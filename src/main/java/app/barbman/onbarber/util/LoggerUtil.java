@@ -22,7 +22,7 @@ public class LoggerUtil {
                 consoleHandler.setFormatter(new SimpleFormatter());
 
                 // LOG A ARCHIVO
-                FileHandler fileHandler = new FileHandler("data/logs.log", true);
+                FileHandler fileHandler = new FileHandler("data/logs.log", false);
                 // true = no sobreescribe
                 fileHandler.setLevel(Level.ALL);
                 fileHandler.setFormatter(new SimpleFormatter());

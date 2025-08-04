@@ -1,14 +1,13 @@
 package app.barbman.onbarber.repository;
 
-import app.barbman.onbarber.models.Barbero;
-import app.barbman.onbarber.util.LoggerUtil;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+import app.barbman.onbarber.model.Barbero;
+import app.barbman.onbarber.util.LoggerUtil;
 
 /**
  * Repositorio de acceso a datos para la tabla "barberos".
