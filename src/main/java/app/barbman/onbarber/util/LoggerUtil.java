@@ -21,17 +21,16 @@ public class LoggerUtil {
                 consoleHandler.setLevel(Level.ALL);
                 consoleHandler.setFormatter(new SimpleFormatter());
 
-                // LOG A ARCHIVO
-                FileHandler fileHandler = new FileHandler("data/logs.log", false);
-                // true = no sobreescribe
+                // LOG A ARCHIVO - sin rotación
+                // FIXME: Esto crea muchos archivos y no funciona de manera precisa
+                FileHandler fileHandler = new FileHandler("data/logs.log", 0, 1, true);
                 fileHandler.setLevel(Level.ALL);
                 fileHandler.setFormatter(new SimpleFormatter());
 
                 logger.addHandler(consoleHandler);
                 logger.addHandler(fileHandler);
 
-                logger.setUseParentHandlers(false); // evita duplicación en consola
-
+                logger.setUseParentHandlers(false);
                 logger.setLevel(Level.ALL);
 
             } catch (IOException e) {

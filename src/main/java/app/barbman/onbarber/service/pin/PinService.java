@@ -13,7 +13,6 @@ import app.barbman.onbarber.util.LoggerUtil;
 public class PinService {
     private static final Logger logger = LoggerUtil.getLogger(PinService.class);
     private static final BarberoRepository barberoRepository = new BarberoRepository();
-    private static final PinController pinController = new PinController();
 
     public static Barbero getSesion(String PIN) {
         return barberoRepository.getBarberoWithPin(PIN);
