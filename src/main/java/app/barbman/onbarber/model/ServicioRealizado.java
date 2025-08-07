@@ -12,16 +12,10 @@ public class ServicioRealizado {
     String observaciones;
 
     public ServicioRealizado(){}
-    public ServicioRealizado(int id, int barbero_id, int tipo_servicio, int precio,
-                             Date fecha, String forma_pago, String observaciones){
-        this.id=id;
-        this.barbero_id=barbero_id;
-        this.tipo_servicio=tipo_servicio;
-        this.precio=precio;
-        this.fecha=fecha;
-        this.forma_pago=forma_pago;
-        this.observaciones=observaciones;
+    public ServicioRealizado(int id){
+        this.id = id;
     }
+
     public ServicioRealizado(int barbero_id, int tipo_servicio, int precio,
                              Date fecha, String forma_pago, String observaciones){
         this.barbero_id=barbero_id;
@@ -32,6 +26,11 @@ public class ServicioRealizado {
         this.observaciones=observaciones;
     }
 
+    public ServicioRealizado(int id, int barbero_id, int tipo_servicio, int precio,
+                             Date fecha, String forma_pago, String observaciones){
+        this(barbero_id, tipo_servicio, precio, fecha, forma_pago, observaciones);
+        this.id=id;
+    }
 
     // Getters
     public int getId(){return id;}
