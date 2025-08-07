@@ -19,7 +19,7 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         logger.info("Iniciando FXML");
-        FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("view/pin-view.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("view/main-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         scene.getStylesheets().add(getClass().getResource("style/main.css").toExternalForm());
         stage.setTitle("Barbman (Snapshot OB 1.0)");
