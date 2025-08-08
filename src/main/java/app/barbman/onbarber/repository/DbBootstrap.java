@@ -73,6 +73,7 @@ public class DbBootstrap {
         """);
 
             // Tabla servicios realizados
+            // FIXME: Pasar fecha a tipo DATES
             stmt.execute("""
             CREATE TABLE IF NOT EXISTS servicios_realizados (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,

@@ -28,7 +28,7 @@ public class ServicioRealizadoRepositoryImpl implements ServicioRealizadoReposit
                 if (rs.next()) {
                     return new ServicioRealizado(
                             rs.getInt("id"),
-                            rs.getInt("id_barbero"),
+                            rs.getInt("barbero_id"),
                             rs.getInt("tipo_servicio"),
                             rs.getInt("precio"),
                             rs.getDate("fecha"),
@@ -56,7 +56,7 @@ public class ServicioRealizadoRepositoryImpl implements ServicioRealizadoReposit
             while (rs.next()) {
                 listaServiciosRealizados.add(new ServicioRealizado(
                         rs.getInt("id"),
-                        rs.getInt("id_barbero"),
+                        rs.getInt("barbero_id"),
                         rs.getInt("tipo_servicio"),
                         rs.getInt("precio"),
                         rs.getDate("fecha"),
@@ -119,7 +119,7 @@ public List<ServicioRealizado> searchByDateRange(Date startDate, Date endDate) {
              while (rs.next()) {
                  ServicioRealizado sr = new ServicioRealizado(
                          rs.getInt("id"),
-                         rs.getInt("id_barbero"),
+                         rs.getInt("barbero_id"),
                          rs.getInt("tipo_servicio"),
                          rs.getInt("precio"),
                          rs.getDate("fecha"),
@@ -146,7 +146,7 @@ public List<ServicioRealizado> searchByTipoServicio(int tipoServicio) {
             while (rs.next()) {
                 ServicioRealizado sr = new ServicioRealizado(
                         rs.getInt("id"),
-                        rs.getInt("id_barbero"),
+                        rs.getInt("barbero_id"),
                         rs.getInt("tipo_servicio"),
                         rs.getInt("precio"),
                         rs.getDate("fecha"),
