@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="app.barbman.onbarber.controller.ServiciosViewController"
+            prefHeight="400.0" prefWidth="600.0">
+
+    <children>
+    <TableView fx:id="serviciosTable" layoutX="20.0" layoutY="20.0" prefWidth="560.0" prefHeight="360.0">
+        <columns>
+            <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
+            <TableColumn fx:id="colBarberoId" text="Barbero ID" prefWidth="100"/>
+            <TableColumn fx:id="colTipoServicio" text="Tipo Servicio" prefWidth="120"/>
+            <TableColumn fx:id="colPrecio" text="Precio" prefWidth="80"/>
+            <TableColumn fx:id="colFecha" text="Fecha" prefWidth="110"/>
+        </columns>
+    </TableView>
+    </children>
+</AnchorPane>
