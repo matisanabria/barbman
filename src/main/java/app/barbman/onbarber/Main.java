@@ -1,6 +1,6 @@
 package app.barbman.onbarber;
 
-import app.barbman.onbarber.repository.DbBootstrap;
+import app.barbman.onbarber.repositories.DbBootstrap;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -9,7 +9,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 
-import java.io.File;
 import java.io.IOException;
 
 
@@ -19,9 +18,9 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         logger.info("Iniciando FXML");
-        FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("view/main-view.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("view/login-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
-        scene.getStylesheets().add(getClass().getResource("style/main.css").toExternalForm());
+        // scene.getStylesheets().add(getClass().getResource("style/main.css").toExternalForm());
         stage.setTitle("Barbman (Snapshot OB 1.0)");
         stage.setScene(scene);
         stage.show();
