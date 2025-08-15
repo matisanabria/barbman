@@ -22,7 +22,7 @@ public class ServicioRealizado {
         this.barbero_id=barbero_id;
         this.tipo_servicio=tipo_servicio;
         this.precio=precio;
-        this.fecha=fecha;
+        this.fecha=fecha; // FIXME : Fecha debe ser Date
         this.forma_pago=forma_pago;
         this.observaciones=observaciones;
     }
