@@ -1,13 +1,14 @@
-package app.barbman.onbarber.repository;
+package app.barbman.onbarber.repositories;
+
+import app.barbman.onbarber.model.Barbero;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
-import app.barbman.onbarber.model.Barbero;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  * Repositorio de acceso a datos para la tabla "barberos".
@@ -20,6 +21,7 @@ public class BarberoRepository {
 
     /**
      * Carga todos los barberos de la base.
+     *
      * @return lista con todos los barberos (si hay), vacía si no hay o si falló.
      */
     public List<Barbero> loadBarberos() {
@@ -53,9 +55,10 @@ public class BarberoRepository {
 
     /**
      * Busca un barbero por PIN. Si no existe, devuelve null.
+     *
      * @param pin PIN de 4 dígitos.
      */
-    public Barbero getBarberoWithPin(String pin) {
+    public static Barbero getBarberoWithPin(String pin) {
         var query = "SELECT * FROM barberos WHERE pin = ?";
 
         try (Connection db = DbBootstrap.connect();
