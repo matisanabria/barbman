@@ -1,4 +1,4 @@
-package app.barbman.onbarber.session;
+package app.barbman.onbarber.appsession;
 
 import app.barbman.onbarber.model.Barbero;
 
