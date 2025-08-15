@@ -1,4 +1,4 @@
-package app.barbman.onbarber.repository;
+package app.barbman.onbarber.repositories.servicio;
 
 import app.barbman.onbarber.model.ServicioRealizado;
 
