@@ -1,12 +1,11 @@
 package app.barbman.onbarber.repository;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 
 public class DbBootstrap {
