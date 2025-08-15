@@ -8,7 +8,7 @@
 
 
 <AnchorPane prefHeight="558.0" prefWidth="390.0" xmlns="http://javafx.com/javafx/17"
-            xmlns:fx="http://javafx.com/fxml" fx:controller="app.barbman.onbarber.controller.PinController">
+            xmlns:fx="http://javafx.com/fxml" fx:controller="app.barbman.onbarber.controller.LoginController">
    <children>
       <Label layoutX="51.0" layoutY="236.0" text="PIN Inválido" visible="false" fx:id="loginLabel"/>
       <HBox alignment="CENTER" layoutY="253.0" prefHeight="52.0" prefWidth="391.0">
