@@ -1,8 +1,7 @@
 package app.barbman.onbarber.service.pin;
 
-import app.barbman.onbarber.controller.PinController;
 import app.barbman.onbarber.model.Barbero;
-import app.barbman.onbarber.repository.BarberoRepository;
+import app.barbman.onbarber.repositories.BarberoRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
