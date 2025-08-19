@@ -2,7 +2,8 @@ package app.barbman.onbarber.repositories.servicio;
 
 import app.barbman.onbarber.model.ServicioRealizado;
 
-import java.util.Date;
+
+import java.time.LocalDate;
 import java.util.List;
 
 public interface ServicioRealizadoRepository {
@@ -10,7 +11,7 @@ public interface ServicioRealizadoRepository {
     List<ServicioRealizado> findAll();
     void save(ServicioRealizado servicioRealizado);
     void delete(Long id);
-    List<ServicioRealizado> searchByDateRange(Date startDate, Date endDate);
+    List<ServicioRealizado> searchByDateRange(LocalDate startDate, LocalDate endDate);
     List<ServicioRealizado> searchByBarberoId(int barberoId);
     List<ServicioRealizado> searchByTipoServicio(int tipoServicio);
 }
