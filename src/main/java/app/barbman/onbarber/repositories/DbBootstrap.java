@@ -87,14 +87,14 @@ public class DbBootstrap {
                     """);
 
             // Tabla de servicios realizados
-            // FIXME: Solucionar el error de tipo de fecha
             stmt.execute("""
                         CREATE TABLE IF NOT EXISTS servicios_realizados (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
                             barbero_id INTEGER NOT NULL,
                             tipo_servicio INTEGER NOT NULL,
                             precio REAL NOT NULL,
-                            fecha DATE NOT NULL,
+                            fecha TEXT NOT NULL,
+                            CHECK (fecha = date(fecha)),
                             forma_pago TEXT NOT NULL,
                             observaciones TEXT,
                             FOREIGN KEY (barbero_id) REFERENCES barberos(id),
