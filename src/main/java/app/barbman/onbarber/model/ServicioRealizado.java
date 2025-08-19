@@ -1,34 +1,34 @@
 package app.barbman.onbarber.model;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Objects;
 
 public class ServicioRealizado {
-    int id;
-    int barbero_id;
-    int tipo_servicio;
-    int precio;
-    Date fecha;
-    String forma_pago;
-    String observaciones;
+    private int id;
+    private int barbero_id;
+    private int tipo_servicio;
+    private double precio;
+    private LocalDate fecha;
+    private String forma_pago;
+    private String observaciones;
 
     public ServicioRealizado(){}
     public ServicioRealizado(int id){
         this.id = id;
     }
 
-    public ServicioRealizado(int barbero_id, int tipo_servicio, int precio,
-                             Date fecha, String forma_pago, String observaciones){
+    public ServicioRealizado(int barbero_id, int tipo_servicio, double precio,
+                             LocalDate fecha, String forma_pago, String observaciones){
         this.barbero_id=barbero_id;
         this.tipo_servicio=tipo_servicio;
         this.precio=precio;
-        this.fecha=fecha; // FIXME : Fecha debe ser Date
+        this.fecha=fecha;
         this.forma_pago=forma_pago;
         this.observaciones=observaciones;
     }
 
-    public ServicioRealizado(int id, int barbero_id, int tipo_servicio, int precio,
-                             Date fecha, String forma_pago, String observaciones){
+    public ServicioRealizado(int id, int barbero_id, int tipo_servicio, double precio,
+                             LocalDate fecha, String forma_pago, String observaciones){
         this(barbero_id, tipo_servicio, precio, fecha, forma_pago, observaciones);
         this.id=id;
     }
@@ -37,8 +37,8 @@ public class ServicioRealizado {
     public int getId(){return id;}
     public int getBarberoId(){return barbero_id;}
     public int getTipoServicio(){return tipo_servicio;}
-    public int getPrecio(){return precio;}
-    public Date getFecha(){return fecha;}
+    public double getPrecio(){return precio;}
+    public LocalDate getFecha(){return fecha;}
     public String getFormaPago(){return forma_pago;}
     public String getObservaciones(){return observaciones;}
 
@@ -46,8 +46,8 @@ public class ServicioRealizado {
     public void setId(int id) {this.id = id;}
     public void setBarberoId(int barbero_id) {this.barbero_id = barbero_id;}
     public void setTipoServicio(int tipo_servicio) {this.tipo_servicio = tipo_servicio;}
-    public void setPrecio(int precio) {this.precio = precio;}
-    public void setFecha(Date fecha) {this.fecha = fecha;}
+    public void setPrecio(double precio) {this.precio = precio;}
+    public void setFecha(LocalDate fecha) {this.fecha = fecha;}
     public void setFormaPago(String forma_pago) {this.forma_pago = forma_pago;}
     public void setObservaciones(String observaciones) {this.observaciones = observaciones;}
 
