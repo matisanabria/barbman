@@ -12,7 +12,7 @@ public class ServicioRealizadoService {
         this.servicioRealizadoRepository = repo;
     }
 
-    public ServicioRealizado realizarServicio(int barberoId, int tipoServicio, int precio, String formaPago, String observaciones) {
+    public ServicioRealizado addServicioRealizado(int barberoId, int tipoServicio, int precio, String formaPago, String observaciones) {
         if (precio <= 0) throw new IllegalArgumentException("Precio debe ser > 0");
         if (formaPago == null || formaPago.isBlank()) throw new IllegalArgumentException("Forma de pago requerida");
         if (observaciones != null && observaciones.length() > 500) {
