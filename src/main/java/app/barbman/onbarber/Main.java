@@ -1,6 +1,10 @@
 package app.barbman.onbarber;
 
+import app.barbman.onbarber.model.ServicioRealizado;
 import app.barbman.onbarber.repositories.DbBootstrap;
+import app.barbman.onbarber.repositories.servicio.ServicioRealizadoRepository;
+import app.barbman.onbarber.repositories.servicio.ServicioRealizadoRepositoryImpl;
+import app.barbman.onbarber.service.servicios.ServicioRealizadoService;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -29,6 +33,18 @@ public class Main extends Application {
     public static void main(String[] args) {
         DbBootstrap.init();
         logger.info("Iniciando aplicación.");
+        ServicioRealizadoRepository repo = new ServicioRealizadoRepositoryImpl();
+        ServicioRealizadoService sr = new ServicioRealizadoService(repo);
+        logger.info("Creando nuevo servicio en database");
+        ServicioRealizado nuevoServicio = sr.addServicioRealizado(
+                1,             // barberoId
+                2,             // tipoServicio
+                40000,          // precio
+                "efectivo",    // formaPago
+                "Cliente pidió degradado en los laterales" // observaciones
+        );
+        logger.info("Servicio registrado: ");
+        logger.info(nuevoServicio.toString());
 
         launch();
 
