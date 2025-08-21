@@ -24,7 +24,7 @@ public class Main extends Application {
         logger.info("Iniciando FXML");
         FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("view/login-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
-        // scene.getStylesheets().add(getClass().getResource("style/main.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("style/main.css").toExternalForm());
         stage.setTitle("Barbman (Snapshot OB 1.0)");
         stage.setScene(scene);
         stage.show();
