@@ -12,7 +12,9 @@
             prefHeight="400.0" prefWidth="600.0">
 
     <children>
-    <TableView fx:id="serviciosTable" layoutX="20.0" layoutY="20.0" prefWidth="560.0" prefHeight="360.0">
+    <TableView fx:id="serviciosTable" layoutX="20.0" layoutY="20.0" prefWidth="560.0" prefHeight="360.0"
+               AnchorPane.topAnchor="20.0" AnchorPane.bottomAnchor="20.0"
+               AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0">
         <columns>
             <TableColumn fx:id="colBarbero" text="Barbero" prefWidth="100"/>
             <TableColumn fx:id="colTipoServicio" text="Servicio" prefWidth="120"/>

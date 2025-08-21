@@ -47,7 +47,7 @@
             </ToggleButton>
             <ToggleButton fx:id="btnAjustes" toggleGroup="$menuGroup">
               <graphic>
-                <FontIcon iconLiteral="fas-cog" iconSize="24"/>
+                <FontIcon iconLiteral="fas-cog" iconSize="24" disable="true"/>
               </graphic>
               <text>Ajustes</text>
               <contentDisplay>TOP</contentDisplay>

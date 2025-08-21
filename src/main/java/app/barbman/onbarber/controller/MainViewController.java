@@ -19,6 +19,8 @@ public class MainViewController {
     @FXML
     private ToggleButton btnInicio; // Botón de "Inicio"
     @FXML
+    private ToggleButton btnServicios;
+    @FXML
     private ToggleGroup menuGroup; // Grupo de botones de menú
 
     /**
@@ -32,7 +34,7 @@ public class MainViewController {
 
         // Listener para cambios de selección en el grupo de botones
         menuGroup.selectedToggleProperty().addListener((obs, oldToggle, newToggle) -> {
-            if (newToggle == btnInicio) {
+            if (newToggle == btnServicios) {
                 setView("/app/barbman/onbarber/view/servicios-view.fxml");
             }
             // Si ningún botón está seleccionado (por doble clic) vuelve a seleccionar el último
@@ -45,9 +47,9 @@ public class MainViewController {
         });
 
         // Establece la vista inicial si el botón de inicio está seleccionado
-        if (menuGroup.getSelectedToggle() == btnInicio) {
-            setView("/app/barbman/onbarber/view/servicios-view.fxml");
-        }
+//        if (menuGroup.getSelectedToggle() == btnInicio) {
+//            setView("/app/barbman/onbarber/view/servicios-view.fxml");
+//        }
     }
 
     /**
