@@ -45,9 +45,9 @@
               <text>Balance</text>
               <contentDisplay>TOP</contentDisplay>
             </ToggleButton>
-            <ToggleButton fx:id="btnAjustes" toggleGroup="$menuGroup">
+            <ToggleButton fx:id="btnAjustes" toggleGroup="$menuGroup" disable="true">
               <graphic>
-                <FontIcon iconLiteral="fas-cog" iconSize="24" disable="true"/>
+                <FontIcon iconLiteral="fas-cog" iconSize="24" />
               </graphic>
               <text>Ajustes</text>
               <contentDisplay>TOP</contentDisplay>
