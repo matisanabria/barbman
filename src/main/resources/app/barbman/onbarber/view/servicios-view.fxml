@@ -14,11 +14,11 @@
     <children>
     <TableView fx:id="serviciosTable" layoutX="20.0" layoutY="20.0" prefWidth="560.0" prefHeight="360.0">
         <columns>
-            <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
-            <TableColumn fx:id="colBarberoId" text="Barbero ID" prefWidth="100"/>
-            <TableColumn fx:id="colTipoServicio" text="Tipo Servicio" prefWidth="120"/>
+            <TableColumn fx:id="colBarbero" text="Barbero" prefWidth="100"/>
+            <TableColumn fx:id="colTipoServicio" text="Servicio" prefWidth="120"/>
             <TableColumn fx:id="colPrecio" text="Precio" prefWidth="80"/>
             <TableColumn fx:id="colFecha" text="Fecha" prefWidth="110"/>
+            <TableColumn fx:id="colObservaciones" text="Observaciones"/>
         </columns>
     </TableView>
     </children>

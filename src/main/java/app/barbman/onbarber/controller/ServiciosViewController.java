@@ -1,7 +1,9 @@
 package app.barbman.onbarber.controller;
 
 import app.barbman.onbarber.model.ServicioRealizado;
+import app.barbman.onbarber.repositories.BarberoRepository;
 import app.barbman.onbarber.repositories.servicio.ServicioRealizadoRepositoryImpl;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -10,6 +12,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.net.URL;
+import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -24,9 +27,7 @@ public class ServiciosViewController implements Initializable {
 
     // Columnas de la tabla
     @FXML
-    private TableColumn<ServicioRealizado, Integer> colId;
-    @FXML
-    private TableColumn<ServicioRealizado, Integer> colBarberoId;
+    private TableColumn<ServicioRealizado, String> colBarbero;
     @FXML
     private TableColumn<ServicioRealizado, Integer> colTipoServicio;
     @FXML
@@ -44,9 +45,15 @@ public class ServiciosViewController implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Configuración de las columnas de la tabla con las propiedades del modelo ServicioRealizado
-        colId.setCellValueFactory(new PropertyValueFactory<>("id"));
-        colBarberoId.setCellValueFactory(new PropertyValueFactory<>("barberoId"));
+        // Para que las columnas queden fijas
+        serviciosTable.getColumns().forEach(col -> col.setReorderable(false));
+        serviciosTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        // Configuración de las columnas de la tabla con las propiedades del modelo ServicioRealizad
+        colBarbero.setCellValueFactory(cellData -> {
+            int barberoId = cellData.getValue().getBarberoId();
+            String nombre = BarberoRepository.getNombreById(barberoId); // implementa este método según tu lógica
+            return new SimpleStringProperty(nombre);
+        });
         colTipoServicio.setCellValueFactory(new PropertyValueFactory<>("tipoServicio"));
         colPrecio.setCellValueFactory(new PropertyValueFactory<>("precio"));
         colFecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
@@ -61,9 +68,7 @@ public class ServiciosViewController implements Initializable {
     void mostrarServicios() {
         ServicioRealizadoRepositoryImpl repo = new ServicioRealizadoRepositoryImpl();
         List<ServicioRealizado> servicios = repo.findAll();
-        // Si la lista es válida, la muestra en la tabla
-        if (servicios != null) {
-            serviciosTable.setItems(FXCollections.observableArrayList(servicios));
-        }
+        Collections.reverse(servicios);
+        serviciosTable.setItems(FXCollections.observableArrayList(servicios));
     }
 }

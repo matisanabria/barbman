@@ -11,5 +11,6 @@ module app.barbman.onbarber {
 
     opens app.barbman.onbarber to javafx.fxml;
     opens app.barbman.onbarber.controller to javafx.fxml;
+    opens app.barbman.onbarber.model to javafx.base;
     exports app.barbman.onbarber;
 }
