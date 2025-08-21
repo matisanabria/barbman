@@ -85,5 +85,21 @@ public class BarberoRepository {
 
         return null;
     }
+    public static String getNombreById(int id) {
+        var query = "SELECT nombre FROM barberos WHERE id = ?";
+        try (Connection db = DbBootstrap.connect();
+             PreparedStatement ps = db.prepareStatement(query)
+        ) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("nombre");
+                }
+            }
+        } catch (Exception e) {
+            logger.warn("Error al obtener el nombre del barbero con id: " + id + " - " + e.getMessage());
+        }
+        return "";
+    }
 
 }
