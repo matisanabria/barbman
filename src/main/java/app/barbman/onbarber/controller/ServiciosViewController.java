@@ -2,7 +2,9 @@ package app.barbman.onbarber.controller;
 
 import app.barbman.onbarber.model.ServicioRealizado;
 import app.barbman.onbarber.repositories.BarberoRepository;
+import app.barbman.onbarber.repositories.servicio.ServicioRealizadoRepository;
 import app.barbman.onbarber.repositories.servicio.ServicioRealizadoRepositoryImpl;
+import app.barbman.onbarber.service.servicios.ServicioRealizadoService;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -34,6 +36,21 @@ public class ServiciosViewController implements Initializable {
     private TableColumn<ServicioRealizado, Integer> colPrecio;
     @FXML
     private TableColumn<ServicioRealizado, java.util.Date> colFecha;
+    @FXML
+    private TableColumn<ServicioRealizado, String> colObservaciones;
+
+    // Fields para agregar servicios
+    @FXML
+    private javafx.scene.control.TextField tipoServicioField;
+    @FXML
+    private javafx.scene.control.TextField precioField;
+    @FXML
+    private javafx.scene.control.TextField observacionesField;
+    @FXML
+    private javafx.scene.control.Button guardarButton;
+
+    ServicioRealizadoRepository repo = new ServicioRealizadoRepositoryImpl();
+    ServicioRealizadoService sr = new ServicioRealizadoService(repo);
 
     /**
      * Método de inicialización del controlador.
@@ -57,8 +74,11 @@ public class ServiciosViewController implements Initializable {
         colTipoServicio.setCellValueFactory(new PropertyValueFactory<>("tipoServicio"));
         colPrecio.setCellValueFactory(new PropertyValueFactory<>("precio"));
         colFecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
+        colObservaciones.setCellValueFactory(new PropertyValueFactory<>("observaciones"));
 
         mostrarServicios(); // Carga y muestra los servicios realizados en la tabla
+
+        guardarButton.setOnAction(e -> guardarServicio());
     }
 
     /**
@@ -70,5 +90,63 @@ public class ServiciosViewController implements Initializable {
         List<ServicioRealizado> servicios = repo.findAll();
         Collections.reverse(servicios);
         serviciosTable.setItems(FXCollections.observableArrayList(servicios));
+    }
+
+
+    private void guardarServicio() {
+        String tipoServicio = tipoServicioField.getText();
+        String precioStr = precioField.getText();
+        String observaciones = observacionesField.getText();
+
+        // Validación de campos vacíos
+        if (tipoServicio == null || tipoServicio.trim().isEmpty()) {
+            mostrarAlerta("El campo 'Tipo de servicio' es obligatorio.");
+            return;
+        }
+        if (precioStr == null || precioStr.trim().isEmpty()) {
+            mostrarAlerta("El campo 'Precio' es obligatorio.");
+            return;
+        }
+
+        // Validación de tipoServicio como número
+        int tipoServicioInt;
+        try {
+            tipoServicioInt = Integer.parseInt(tipoServicio.trim());
+        } catch (NumberFormatException e) {
+            mostrarAlerta("El campo 'Tipo de servicio' debe ser un número.");
+            return;
+        }
+
+        // Validación de precio como número y no negativo
+        double precio;
+        try {
+            precio = Double.parseDouble(precioStr.trim());
+        } catch (NumberFormatException e) {
+            mostrarAlerta("El campo 'Precio' debe ser un número.");
+            return;
+        }
+        if (precio < 0) {
+            mostrarAlerta("El precio no puede ser negativo.");
+            return;
+        }
+
+        sr.addServicioRealizado(
+                1,             // barberoId
+                tipoServicioInt,             // tipoServicio
+                precio,          // precio
+                "efectivo",    // formaPago
+                observaciones // observaciones
+        );
+
+        // Recarga la tabla para mostrar los nuevos datos
+        mostrarServicios();
+    }
+
+    private void mostrarAlerta(String mensaje) {
+        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.ERROR);
+        alert.setTitle("Validación");
+        alert.setHeaderText(null);
+        alert.setContentText(mensaje);
+        alert.showAndWait();
     }
 }
