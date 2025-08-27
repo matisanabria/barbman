@@ -92,7 +92,11 @@ public class ServiciosViewController implements Initializable {
         serviciosTable.setItems(FXCollections.observableArrayList(servicios));
     }
 
-
+    /**
+     * Guarda un nuevo servicio realizado utilizando los datos ingresados en los campos de texto.
+     * Realiza validaciones para asegurar que los datos sean correctos antes de guardar.
+     * Muestra alertas en caso de errores de validación.
+     */
     private void guardarServicio() {
         String tipoServicio = tipoServicioField.getText();
         String precioStr = precioField.getText();
@@ -142,6 +146,11 @@ public class ServiciosViewController implements Initializable {
         mostrarServicios();
     }
 
+    /**
+     * Muestra una alerta con el mensaje proporcionado.
+     *
+     * @param mensaje El mensaje a mostrar en la alerta.
+     */
     private void mostrarAlerta(String mensaje) {
         javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.ERROR);
         alert.setTitle("Validación");

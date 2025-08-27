@@ -9,8 +9,9 @@ import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 
 
 public class Main extends Application {
@@ -33,7 +34,7 @@ public class Main extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("view/login-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         scene.getStylesheets().add(getClass().getResource("style/main.css").toExternalForm());
-        stage.setTitle("Barbman (Snapshot OB 1.0)");
+        stage.setTitle("Barbman (" + version + ")");
         stage.setScene(scene);
         stage.show();
     }
@@ -43,5 +44,20 @@ public class Main extends Application {
         logger.info("Iniciando aplicación.");
         launch();
 
+    }
+
+    /**
+     * Obtiene la versión de la aplicación desde el archivo version.properties.
+     *
+     * @return La versión de la aplicación como una cadena.
+     */
+    public static String getAppVersion() {
+        try (InputStream input = Main.class.getResourceAsStream("/version.properties")) {
+            Properties props = new Properties();
+            props.load(input);
+            return props.getProperty("version", "UNKNOWN");
+        } catch (Exception e) {
+            return "UNKNOWN";
+        }
     }
 }
