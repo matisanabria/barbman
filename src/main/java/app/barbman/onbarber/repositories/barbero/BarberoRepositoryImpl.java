@@ -1,6 +1,7 @@
-package app.barbman.onbarber.repositories;
+package app.barbman.onbarber.repositories.barbero;
 
 import app.barbman.onbarber.model.Barbero;
+import app.barbman.onbarber.repositories.DbBootstrap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -15,9 +16,9 @@ import java.util.List;
  * Se encarga de cargar la lista de barberos y buscar un barbero por su PIN.
  */
 
-public class BarberoRepository {
+public class BarberoRepositoryImpl implements BarberoRepository {
     List<Barbero> listaBarberos = new ArrayList<>();
-    private static final Logger logger = LogManager.getLogger(BarberoRepository.class);
+    private static final Logger logger = LogManager.getLogger(BarberoRepositoryImpl.class);
 
     /**
      * Carga todos los barberos de la base.
@@ -58,7 +59,7 @@ public class BarberoRepository {
      *
      * @param pin PIN de 4 dígitos.
      */
-    public static Barbero getBarberoWithPin(String pin) {
+    public Barbero getBarberoWithPin(String pin) {
         var query = "SELECT * FROM barberos WHERE pin = ?";
 
         try (Connection db = DbBootstrap.connect();
@@ -85,7 +86,7 @@ public class BarberoRepository {
 
         return null;
     }
-    public static String getNombreById(int id) {
+    public String getNombreById(int id) {
         var query = "SELECT nombre FROM barberos WHERE id = ?";
         try (Connection db = DbBootstrap.connect();
              PreparedStatement ps = db.prepareStatement(query)
