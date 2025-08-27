@@ -75,6 +75,7 @@ public class ServiciosViewController implements Initializable {
         // Para que las columnas queden fijas
         serviciosTable.getColumns().forEach(col -> col.setReorderable(false));
         serviciosTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
         // Configuración de las columnas de la tabla con las propiedades del modelo ServicioRealizad
         colBarbero.setCellValueFactory(cellData -> {
             int barberoId = cellData.getValue().getBarberoId();
@@ -86,9 +87,17 @@ public class ServiciosViewController implements Initializable {
         colFecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
         colObservaciones.setCellValueFactory(new PropertyValueFactory<>("observaciones"));
 
-        mostrarServicios(); // Carga y muestra los servicios realizados en la tabla
+        // Carga y muestra los servicios realizados en la tabla
+        mostrarServicios();
+
         // Llenar los choicebox con datos de la base
         cargarBarberos();
+
+        // Opciones de forma de pago
+        formaPagoBox.setItems(FXCollections.observableArrayList(
+                "efectivo", "transferencia", "pos"
+        ));
+        formaPagoBox.setValue("efectivo"); // opción por defecto
 
         guardarButton.setOnAction(e -> guardarServicio());
     }
@@ -114,6 +123,7 @@ public class ServiciosViewController implements Initializable {
         String tipoServicio = tipoServicioField.getText();
         String precioStr = precioField.getText();
         String observaciones = observacionesField.getText();
+        String formaPago = formaPagoBox.getValue();
 
         // Validación de campos vacíos
         if (barbero == null) {
@@ -155,7 +165,7 @@ public class ServiciosViewController implements Initializable {
                 barbero.getId(),            // barberoId
                 tipoServicioInt,             // tipoServicio
                 precio,          // precio
-                "efectivo",    // formaPago
+                formaPago,    // formaPago
                 observaciones // observaciones
         );
 
