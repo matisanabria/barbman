@@ -53,7 +53,7 @@ public class ServiciosViewController implements Initializable {
     ServicioRealizadoService sr = new ServicioRealizadoService(repo);
 
     /**
-     * Método de inicialización del controlador.
+     * Metodo de inicialización del controlador.
      * Se llama automáticamente al cargar el FXML.
      * Configura las columnas de la tabla y carga los servicios realizados.
      *
