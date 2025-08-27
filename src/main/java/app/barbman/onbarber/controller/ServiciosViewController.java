@@ -41,11 +41,15 @@ public class ServiciosViewController implements Initializable {
 
     // Fields para agregar servicios
     @FXML
+    private ChoiceBox<Barbero> barberoField;
+    @FXML
     private javafx.scene.control.TextField tipoServicioField;
     @FXML
     private javafx.scene.control.TextField precioField;
     @FXML
     private javafx.scene.control.TextField observacionesField;
+    @FXML
+    private ChoiceBox<String> formaPagoBox;
     @FXML
     private javafx.scene.control.Button guardarButton;
 
@@ -77,6 +81,8 @@ public class ServiciosViewController implements Initializable {
         colObservaciones.setCellValueFactory(new PropertyValueFactory<>("observaciones"));
 
         mostrarServicios(); // Carga y muestra los servicios realizados en la tabla
+        // Llenar los choicebox con datos de la base
+        cargarBarberos();
 
         guardarButton.setOnAction(e -> guardarServicio());
     }
@@ -98,11 +104,16 @@ public class ServiciosViewController implements Initializable {
      * Muestra alertas en caso de errores de validación.
      */
     private void guardarServicio() {
+        Barbero barbero = barberoField.getValue();
         String tipoServicio = tipoServicioField.getText();
         String precioStr = precioField.getText();
         String observaciones = observacionesField.getText();
 
         // Validación de campos vacíos
+        if (barbero == null) {
+            mostrarAlerta("Debe seleccionar un barbero.");
+            return;
+        }
         if (tipoServicio == null || tipoServicio.trim().isEmpty()) {
             mostrarAlerta("El campo 'Tipo de servicio' es obligatorio.");
             return;
@@ -135,7 +146,7 @@ public class ServiciosViewController implements Initializable {
         }
 
         sr.addServicioRealizado(
-                1,             // barberoId
+                barbero.getId(),            // barberoId
                 tipoServicioInt,             // tipoServicio
                 precio,          // precio
                 "efectivo",    // formaPago
@@ -157,5 +168,24 @@ public class ServiciosViewController implements Initializable {
         alert.setHeaderText(null);
         alert.setContentText(mensaje);
         alert.showAndWait();
+    }
+
+    private void cargarBarberos() {
+        List<Barbero> barberos = barberoRepo.loadBarberos();
+        barberoField.setItems(FXCollections.observableArrayList(barberos));
+        barberoField.setConverter(new StringConverter<Barbero>() {
+            @Override
+            public String toString(Barbero b) {
+                return (b == null) ? "" : b.getNombre();
+            }
+            @Override
+            public Barbero fromString(String s) { return null; }
+        });
+
+        // Selecciona automáticamente el barbero activo si está en la lista
+        Barbero activo = AppSession.getBarberoActivo();
+        if (activo != null && barberos.contains(activo)) {
+            barberoField.setValue(activo);
+        }
     }
 }

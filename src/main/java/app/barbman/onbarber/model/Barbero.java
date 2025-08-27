@@ -1,5 +1,7 @@
 package app.barbman.onbarber.model;
 
+import java.util.Objects;
+
 public class Barbero {
     int id;
     int tipoCobro;
@@ -82,5 +84,18 @@ public class Barbero {
         this.tipoCobro = 2;
         this.param1 = sueldoBase;
         this.param2 = porcentajeExtra;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Barbero barbero = (Barbero) o;
+        return id == barbero.id && tipoCobro == barbero.tipoCobro && Double.compare(param1, barbero.param1) == 0 && Double.compare(param2, barbero.param2) == 0 && Objects.equals(nombre, barbero.nombre) && Objects.equals(rol, barbero.rol) && Objects.equals(pin, barbero.pin);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, tipoCobro, nombre, rol, pin, param1, param2);
     }
 }
