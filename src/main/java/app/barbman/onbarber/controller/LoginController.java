@@ -2,7 +2,8 @@ package app.barbman.onbarber.controller;
 
 import app.barbman.onbarber.appsession.AppSession;
 import app.barbman.onbarber.model.Barbero;
-import app.barbman.onbarber.repositories.BarberoRepository;
+import app.barbman.onbarber.repositories.barbero.BarberoRepository;
+import app.barbman.onbarber.repositories.barbero.BarberoRepositoryImpl;
 import javafx.animation.TranslateTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -25,6 +26,7 @@ import java.io.IOException;
 
 public class LoginController {
     private static final Logger logger = LogManager.getLogger(LoginController.class);
+    private final BarberoRepository barberoRepo = new BarberoRepositoryImpl();
 
     @FXML
     private Label loginLabel; // Label para mostrar mensajes de error
@@ -64,7 +66,7 @@ public class LoginController {
 
         // Buscar barbero con el PIN ingresado
         String PIN = pinField.getText();
-        Barbero sesion = BarberoRepository.getBarberoWithPin(PIN);
+        Barbero sesion = barberoRepo.getBarberoWithPin(PIN);
 
         // Si el barbero existe y el PIN coincide, iniciar sesión y abrir la vista principal
         if (sesion != null && sesion.getPin().equals(PIN)) {

@@ -1,7 +1,7 @@
 package app.barbman.onbarber.service.pin;
 
 import app.barbman.onbarber.model.Barbero;
-import app.barbman.onbarber.repositories.BarberoRepository;
+import app.barbman.onbarber.repositories.barbero.BarberoRepositoryImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -10,11 +10,11 @@ import org.apache.logging.log4j.Logger;
  */
 public class PinService {
     private static final Logger logger = LogManager.getLogger(PinService.class);
-    private static final BarberoRepository barberoRepository = new BarberoRepository();
+    private static final BarberoRepositoryImpl BARBERO_REPOSITORY_IMPLEMENTS = new BarberoRepositoryImpl();
 
     public static Barbero getSesion(String PIN) {
         logger.info("Login : Recibiendo PIN");
-        return barberoRepository.getBarberoWithPin(PIN);
+        return BARBERO_REPOSITORY_IMPLEMENTS.getBarberoWithPin(PIN);
     }
 
 

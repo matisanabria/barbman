@@ -1,7 +1,7 @@
 package app.barbman.onbarber.service.servicios;
 
 import app.barbman.onbarber.model.ServicioRealizado;
-import app.barbman.onbarber.repositories.servicio.ServicioRealizadoRepository;
+import app.barbman.onbarber.repositories.serviciorealizado.ServicioRealizadoRepository;
 
 import java.time.LocalDate;
 

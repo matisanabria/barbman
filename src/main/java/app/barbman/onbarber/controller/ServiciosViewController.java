@@ -1,17 +1,22 @@
 package app.barbman.onbarber.controller;
 
+import app.barbman.onbarber.appsession.AppSession;
+import app.barbman.onbarber.model.Barbero;
 import app.barbman.onbarber.model.ServicioRealizado;
-import app.barbman.onbarber.repositories.BarberoRepository;
-import app.barbman.onbarber.repositories.servicio.ServicioRealizadoRepository;
-import app.barbman.onbarber.repositories.servicio.ServicioRealizadoRepositoryImpl;
+import app.barbman.onbarber.repositories.barbero.BarberoRepository;
+import app.barbman.onbarber.repositories.barbero.BarberoRepositoryImpl;
+import app.barbman.onbarber.repositories.serviciorealizado.ServicioRealizadoRepository;
+import app.barbman.onbarber.repositories.serviciorealizado.ServicioRealizadoRepositoryImpl;
 import app.barbman.onbarber.service.servicios.ServicioRealizadoService;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.util.StringConverter;
 
 import java.net.URL;
 import java.util.Collections;
@@ -55,6 +60,7 @@ public class ServiciosViewController implements Initializable {
 
     ServicioRealizadoRepository repo = new ServicioRealizadoRepositoryImpl();
     ServicioRealizadoService sr = new ServicioRealizadoService(repo);
+    private final BarberoRepository barberoRepo = new BarberoRepositoryImpl();
 
     /**
      * Metodo de inicialización del controlador.
@@ -72,7 +78,7 @@ public class ServiciosViewController implements Initializable {
         // Configuración de las columnas de la tabla con las propiedades del modelo ServicioRealizad
         colBarbero.setCellValueFactory(cellData -> {
             int barberoId = cellData.getValue().getBarberoId();
-            String nombre = BarberoRepository.getNombreById(barberoId); // implementa este método según tu lógica
+            String nombre = barberoRepo.getNombreById(barberoId); // implementa este metodo según tu lógica
             return new SimpleStringProperty(nombre);
         });
         colTipoServicio.setCellValueFactory(new PropertyValueFactory<>("tipoServicio"));
