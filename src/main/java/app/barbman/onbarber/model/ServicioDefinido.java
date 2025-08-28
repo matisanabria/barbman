@@ -1,5 +1,7 @@
 package app.barbman.onbarber.model;
 
+import java.util.Objects;
+
 public class ServicioDefinido {
     int id;
     String nombre;
@@ -21,5 +23,41 @@ public class ServicioDefinido {
         // de agregar nuevos servicios a la lista,
         this(id, nombre);
         this.precioBase=precioBase;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public double getPrecioBase() {
+        return precioBase;
+    }
+
+    public void setPrecioBase(double precioBase) {
+        this.precioBase = precioBase;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        ServicioDefinido that = (ServicioDefinido) o;
+        return id == that.id && Double.compare(precioBase, that.precioBase) == 0 && Objects.equals(nombre, that.nombre);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, nombre, precioBase);
     }
 }

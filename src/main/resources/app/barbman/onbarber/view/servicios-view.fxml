@@ -16,7 +16,8 @@
         <HBox alignment="CENTER" spacing="16" fillHeight="true">
             <children>
                 <ChoiceBox fx:id="barberoField"/>
-                <TextField fx:id="tipoServicioField" promptText="Tipo de servicio" prefWidth="120.0"/>
+                <!--TextField fx:id="tipoServicioField" promptText="Tipo de servicio" prefWidth="120.0"/-->
+                <ChoiceBox fx:id="tipoServicioBox" prefWidth="120.0"/>
                 <TextField fx:id="precioField" promptText="Precio" prefWidth="80.0"/>
             </children>
         </HBox>

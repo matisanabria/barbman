@@ -2,9 +2,12 @@ package app.barbman.onbarber.controller;
 
 import app.barbman.onbarber.appsession.AppSession;
 import app.barbman.onbarber.model.Barbero;
+import app.barbman.onbarber.model.ServicioDefinido;
 import app.barbman.onbarber.model.ServicioRealizado;
 import app.barbman.onbarber.repositories.barbero.BarberoRepository;
 import app.barbman.onbarber.repositories.barbero.BarberoRepositoryImpl;
+import app.barbman.onbarber.repositories.serviciodefinido.ServicioDefinidoRepository;
+import app.barbman.onbarber.repositories.serviciodefinido.ServicioDefinidoRepositoryImpl;
 import app.barbman.onbarber.repositories.serviciorealizado.ServicioRealizadoRepository;
 import app.barbman.onbarber.repositories.serviciorealizado.ServicioRealizadoRepositoryImpl;
 import app.barbman.onbarber.service.servicios.ServicioRealizadoService;
@@ -18,6 +21,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.StringConverter;
 
+import java.awt.*;
 import java.net.URL;
 import java.util.Collections;
 import java.util.List;
@@ -36,7 +40,7 @@ public class ServiciosViewController implements Initializable {
     @FXML
     private TableColumn<ServicioRealizado, String> colBarbero;
     @FXML
-    private TableColumn<ServicioRealizado, Integer> colTipoServicio;
+    private TableColumn<ServicioRealizado, String> colTipoServicio;
     @FXML
     private TableColumn<ServicioRealizado, Integer> colPrecio;
     @FXML
@@ -48,7 +52,7 @@ public class ServiciosViewController implements Initializable {
     @FXML
     private ChoiceBox<Barbero> barberoField;
     @FXML
-    private javafx.scene.control.TextField tipoServicioField;
+    private ChoiceBox<ServicioDefinido> tipoServicioBox;
     @FXML
     private javafx.scene.control.TextField precioField;
     @FXML
@@ -61,6 +65,7 @@ public class ServiciosViewController implements Initializable {
     ServicioRealizadoRepository repo = new ServicioRealizadoRepositoryImpl();
     ServicioRealizadoService sr = new ServicioRealizadoService(repo);
     private final BarberoRepository barberoRepo = new BarberoRepositoryImpl();
+    private final ServicioDefinidoRepository servicioDefinidoRepo = new ServicioDefinidoRepositoryImpl();
 
     /**
      * Metodo de inicialización del controlador.
@@ -79,19 +84,27 @@ public class ServiciosViewController implements Initializable {
         // Configuración de las columnas de la tabla con las propiedades del modelo ServicioRealizad
         colBarbero.setCellValueFactory(cellData -> {
             int barberoId = cellData.getValue().getBarberoId();
-            String nombre = barberoRepo.getNombreById(barberoId); // implementa este metodo según tu lógica
+            String nombre = barberoRepo.getNombreById(barberoId); // Carga barbero según ID
             return new SimpleStringProperty(nombre);
         });
-        colTipoServicio.setCellValueFactory(new PropertyValueFactory<>("tipoServicio"));
+        colTipoServicio.setCellValueFactory(cellData -> {
+            int servicioId = cellData.getValue().getTipoServicio();
+            ServicioDefinido servicio = servicioDefinidoRepo.findById(servicioId); // Carga servicio definido según ID
+            String nombre = (servicio != null) ? servicio.getNombre() : "Desconocido";
+            return new SimpleStringProperty(nombre);
+        });
         colPrecio.setCellValueFactory(new PropertyValueFactory<>("precio"));
         colFecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
         colObservaciones.setCellValueFactory(new PropertyValueFactory<>("observaciones"));
 
-        // Carga y muestra los servicios realizados en la tabla
-        mostrarServicios();
-
-        // Llenar los choicebox con datos de la base
+        mostrarServicios();// Carga y muestra los servicios realizados en la tabla
         cargarBarberos();
+        cargarServiciosDefinidos();
+        tipoServicioBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) {
+                precioField.setText(String.valueOf(newVal.getPrecioBase()));
+            }
+        });
 
         // Opciones de forma de pago
         formaPagoBox.setItems(FXCollections.observableArrayList(
@@ -120,7 +133,7 @@ public class ServiciosViewController implements Initializable {
      */
     private void guardarServicio() {
         Barbero barbero = barberoField.getValue();
-        String tipoServicio = tipoServicioField.getText();
+        ServicioDefinido servicioDefinido = tipoServicioBox.getValue();
         String precioStr = precioField.getText();
         String observaciones = observacionesField.getText();
         String formaPago = formaPagoBox.getValue();
@@ -130,24 +143,14 @@ public class ServiciosViewController implements Initializable {
             mostrarAlerta("Debe seleccionar un barbero.");
             return;
         }
-        if (tipoServicio == null || tipoServicio.trim().isEmpty()) {
-            mostrarAlerta("El campo 'Tipo de servicio' es obligatorio.");
+        if (servicioDefinido == null) {
+            mostrarAlerta("Debe seleccionar un tipo de servicio.");
             return;
         }
         if (precioStr == null || precioStr.trim().isEmpty()) {
             mostrarAlerta("El campo 'Precio' es obligatorio.");
             return;
         }
-
-        // Validación de tipoServicio como número
-        int tipoServicioInt;
-        try {
-            tipoServicioInt = Integer.parseInt(tipoServicio.trim());
-        } catch (NumberFormatException e) {
-            mostrarAlerta("El campo 'Tipo de servicio' debe ser un número.");
-            return;
-        }
-
         // Validación de precio como número y no negativo
         double precio;
         try {
@@ -163,7 +166,7 @@ public class ServiciosViewController implements Initializable {
 
         sr.addServicioRealizado(
                 barbero.getId(),            // barberoId
-                tipoServicioInt,             // tipoServicio
+                servicioDefinido.getId(),             // tipoServicio
                 precio,          // precio
                 formaPago,    // formaPago
                 observaciones // observaciones
@@ -186,6 +189,9 @@ public class ServiciosViewController implements Initializable {
         alert.showAndWait();
     }
 
+    /** Carga los barberos desde el repositorio y los asigna al ChoiceBox.
+     * Si hay un barbero activo en la sesión, lo selecciona automáticamente.
+     */
     private void cargarBarberos() {
         List<Barbero> barberos = barberoRepo.loadBarberos();
         barberoField.setItems(FXCollections.observableArrayList(barberos));
@@ -194,8 +200,11 @@ public class ServiciosViewController implements Initializable {
             public String toString(Barbero b) {
                 return (b == null) ? "" : b.getNombre();
             }
+
             @Override
-            public Barbero fromString(String s) { return null; }
+            public Barbero fromString(String s) {
+                return null;
+            }
         });
 
         // Selecciona automáticamente el barbero activo si está en la lista
@@ -203,5 +212,21 @@ public class ServiciosViewController implements Initializable {
         if (activo != null && barberos.contains(activo)) {
             barberoField.setValue(activo);
         }
+    }
+
+    /** Carga los servicios definidos desde el repositorio y los asigna al ChoiceBox.
+     * Configura un conversor para mostrar el nombre del servicio en lugar del objeto completo.
+     */
+    private void cargarServiciosDefinidos() {
+        List<ServicioDefinido> servicios = servicioDefinidoRepo.findAll();
+        tipoServicioBox.setItems(FXCollections.observableArrayList(servicios));
+        tipoServicioBox.setConverter(new StringConverter<ServicioDefinido>() {
+            @Override
+            public String toString(ServicioDefinido servicio) {
+                return (servicio == null) ? "" : servicio.getNombre();
+            }
+            @Override
+            public ServicioDefinido fromString(String nombre) { return null; }
+        });
     }
 }

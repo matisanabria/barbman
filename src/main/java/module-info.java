@@ -8,6 +8,7 @@ module app.barbman.onbarber {
     requires java.sql;
     requires org.apache.logging.log4j;
     requires java.desktop;
+    requires log4j;
 
     opens app.barbman.onbarber to javafx.fxml;
     opens app.barbman.onbarber.controller to javafx.fxml;
