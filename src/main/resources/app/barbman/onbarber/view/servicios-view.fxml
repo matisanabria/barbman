@@ -13,34 +13,32 @@
         prefWidth="600.0"
         style="-fx-padding: 24;">
     <children>
-        <HBox alignment="CENTER" spacing="16" fillHeight="true">
+        <Label text="Registrar nuevo servicio" styleClass="services-title"/>
+        <HBox alignment="CENTER" spacing="18" styleClass="services-row">
             <children>
-                <ChoiceBox fx:id="barberoField"/>
-                <!--TextField fx:id="tipoServicioField" promptText="Tipo de servicio" prefWidth="120.0"/-->
-                <ChoiceBox fx:id="tipoServicioBox" prefWidth="120.0"/>
-                <TextField fx:id="precioField" promptText="Precio" prefWidth="80.0"/>
+                <ChoiceBox fx:id="barberoField" prefWidth="130.0" styleClass="services-choicebox"/>
+                <ChoiceBox fx:id="tipoServicioBox" prefWidth="250.0" styleClass="services-choicebox"/>
+                <TextField fx:id="precioField" promptText="Precio" prefWidth="100.0" styleClass="services-textfield"/>
             </children>
         </HBox>
-        <HBox alignment="CENTER" spacing="16" fillHeight="true">
+        <HBox alignment="CENTER" spacing="18" styleClass="services-row">
             <children>
-                <ChoiceBox prefWidth="150.0" fx:id="formaPagoBox"/>
-                <TextField fx:id="observacionesField" promptText="Observaciones" prefWidth="210.0"/>
-                <Button mnemonicParsing="false" text="Guardar" prefWidth="90.0" fx:id="guardarButton"/>
+                <ChoiceBox prefWidth="130.0" fx:id="formaPagoBox" styleClass="services-choicebox"/>
+                <TextField fx:id="observacionesField" promptText="Observaciones" prefWidth="220.0" styleClass="services-textfield"/>
+                <Button mnemonicParsing="false" text="Guardar" prefWidth="150.0" fx:id="guardarButton" styleClass="services-button"/>
             </children>
         </HBox>
+        <TableView fx:id="serviciosTable"
+                   prefHeight="300.0"
+                   prefWidth="580.0"
+                   styleClass="main-table services-table">
+            <columns>
+                <TableColumn fx:id="colBarbero" prefWidth="100" text="Barbero"/>
+                <TableColumn fx:id="colTipoServicio" prefWidth="120" text="Servicio"/>
+                <TableColumn fx:id="colPrecio" prefWidth="80" text="Precio"/>
+                <TableColumn fx:id="colFecha" prefWidth="110" text="Fecha"/>
+                <TableColumn fx:id="colObservaciones" text="Observaciones"/>
+            </columns>
+        </TableView>
     </children>
-
-    <TableView fx:id="serviciosTable"
-               prefHeight="288.0"
-               prefWidth="560.0"
-               style="-fx-font-size: 16px;">
-        <columns>
-            <TableColumn fx:id="colBarbero" prefWidth="100" text="Barbero"/>
-            <TableColumn fx:id="colTipoServicio" prefWidth="120" text="Servicio"/>
-            <TableColumn fx:id="colPrecio" prefWidth="80" text="Precio"/>
-            <TableColumn fx:id="colFecha" prefWidth="110" text="Fecha"/>
-            <TableColumn fx:id="colObservaciones" text="Observaciones"/>
-        </columns>
-    </TableView>
-
 </VBox>

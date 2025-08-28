@@ -1,42 +1,228 @@
+/* ====== GENERAL BACKGROUND ====== */
+.root, .login-background, .main-background, .services-background {
+    -fx-background-color: #232323;
+    -fx-font-family: 'Inter', Arial, sans-serif;
+}
 
-.label {
-    -fx-font-family: "Inter";
-    -fx-text-fill: red;
+/* ====== CARDS & PANELS ====== */
+.login-card, .main-borderpane, .services-background {
+    -fx-background-color: #2F2F2F;
+    -fx-background-radius: 18;
+    -fx-effect: dropshadow(gaussian, #17171760, 16, 0.17, 0, 2);
+    -fx-padding: 32 24 32 24;
+}
+
+/* ====== TITLES ====== */
+.login-title, .services-title {
+    -fx-text-fill: #fff;
+    -fx-font-size: 24px;
+    -fx-font-family: 'Inter', Arial, sans-serif;
     -fx-font-weight: bold;
-    -fx-font-size: 14px;
+    -fx-padding: 0 0 8 0;
 }
 
-.password-field {
-    -fx-font-family: "Inter";
-    -fx-background-color: #2b2b2b;
-    -fx-text-fill: white;
-    -fx-font-size: 14px;
-    -fx-background-radius: 8px;
-    -fx-border-color: transparent;
-    -fx-padding: 8 12;
-    -fx-border-width: 2px;
-    -fx-border-style: solid;
+.services-title {
+    -fx-font-size: 22px;
 }
 
-.password-field.error {
-    -fx-border-color: red;
-    -fx-border-radius: 8px;
+/* ====== INPUT FIELDS ====== */
+.login-pin-field, .services-textfield, .password-field, .text-field {
+    -fx-background-color: #232323;
+    -fx-background-radius: 12;
+    -fx-text-fill: #fff;
+    -fx-font-size: 17px;
+    -fx-font-family: 'Inter', Arial, sans-serif;
+    -fx-border-width: 0;
+    -fx-prompt-text-fill: #B0B0B0;
+    -fx-padding: 8 14 8 14;
 }
 
-.button {
-    -fx-font-family: "Inter";
-    -fx-background-color: #0044cc;
-    -fx-text-fill: white;
+.services-choicebox, .choice-box {
+    -fx-background-color: #232323;
+    -fx-background-radius: 12;
+    -fx-text-fill: #fff;
+    -fx-font-size: 16px;
+    -fx-font-family: 'Inter', Arial, sans-serif;
+    -fx-padding: 6 10 6 10;
+    -fx-border-width: 0;
+}
+
+.choice-box .label {
+    -fx-font-size: 15px;
+    -fx-text-fill: #fff;
+}
+
+/* ====== BUTTONS ====== */
+.button, .login-button, .services-button {
+    -fx-background-color: #FFDC60;
+    -fx-background-radius: 14;
+    -fx-text-fill: #232323;
+    -fx-font-size: 17px;
+    -fx-font-family: 'Inter', Arial, sans-serif;
     -fx-font-weight: bold;
-    -fx-background-radius: 8px;
+    -fx-effect: dropshadow(gaussian, #00000088, 8, 0.15, 0, 2);
+    -fx-border-width: 0;
     -fx-cursor: hand;
-    -fx-font-size: 14px;
+    -fx-padding: 10 18 10 18;
+    -fx-transition: background-color 0.2s;
 }
 
-.button:hover {
-    -fx-background-color: #3366ff;
+.button:hover, .login-button:hover, .services-button:hover {
+    -fx-background-color: #FFE46B;
 }
 
-.button:pressed {
-    -fx-background-color: #003399;
+.button:disabled, .login-button:disabled, .services-button:disabled {
+    -fx-opacity: 0.5;
+}
+
+/* ====== TOGGLE BUTTONS (MAIN MENU) ====== */
+.main-menu-btn, .toggle-button {
+    -fx-background-color: #232323;
+    -fx-background-radius: 14;
+    -fx-text-fill: #fff;
+    -fx-font-size: 16px;
+    -fx-font-family: 'Inter', Arial, sans-serif;
+    -fx-font-weight: bold;
+    -fx-padding: 10 16 6 16;
+    -fx-content-display: top;
+    -fx-border-width: 0;
+    -fx-effect: dropshadow(gaussian, #00000088, 8, 0.1, 0, 1);
+    -fx-cursor: hand;
+    -fx-transition: background-color 0.2s;
+}
+
+.main-menu-btn:selected, .toggle-button:selected {
+    -fx-background-color: #2F2F2F;
+    -fx-text-fill: #FFDC60;
+}
+
+.main-menu-btn:disabled, .toggle-button:disabled {
+    -fx-opacity: 0.5;
+}
+
+.main-menu-bar {
+    -fx-background-color: transparent;
+    -fx-padding: 16 0 10 0;
+}
+
+/* FontIcon color (for org.kordamp.ikonli) */
+.main-menu-btn .ikonli-font-icon, .toggle-button .ikonli-font-icon {
+    -fx-icon-color: #fff;
+}
+.main-menu-btn:selected .ikonli-font-icon, .toggle-button:selected .ikonli-font-icon {
+    -fx-icon-color: #FFDC60;
+}
+
+/* ====== TABLEVIEW ====== */
+.main-table, .services-table, .table-view {
+    -fx-background-color: #232323;
+    -fx-background-radius: 14;
+    -fx-control-inner-background: #232323;
+    -fx-table-cell-border-color: #232323;
+    -fx-table-header-border-color: #232323;
+    -fx-font-size: 16px;
+    -fx-font-family: 'Inter', Arial, sans-serif;
+}
+
+.table-view .column-header-background, .main-table .column-header-background, .services-table .column-header-background {
+    -fx-background-color: #2F2F2F;
+    -fx-background-radius: 12 12 0 0;
+}
+.table-view .column-header, .main-table .column-header, .services-table .column-header {
+    -fx-background-color: transparent;
+}
+.table-view .label, .main-table .label, .services-table .label {
+    -fx-text-fill: #fff;
+    -fx-font-size: 15px;
+    -fx-font-family: 'Inter', Arial, sans-serif;
+    -fx-font-weight: bold;
+}
+.table-row-cell, .main-table .table-row-cell, .services-table .table-row-cell {
+    -fx-background-color: #232323;
+    -fx-border-color: #232323;
+    -fx-font-size: 15px;
+    -fx-text-fill: #fff;
+    -fx-font-family: 'Inter', Arial, sans-serif;
+}
+.table-row-cell:filled:selected, .main-table .table-row-cell:filled:selected, .services-table .table-row-cell:filled:selected {
+    -fx-background-color: #393939;
+    -fx-text-fill: #FFDC60;
+}
+.table-row-cell:filled:hover, .main-table .table-row-cell:filled:hover, .services-table .table-row-cell:filled:hover {
+    -fx-background-color: #292929;
+    -fx-text-fill: #fff;
+}
+.table-cell, .main-table .table-cell, .services-table .table-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #fff;
+    -fx-border-width: 0 0 1 0;
+    -fx-border-color: #292929;
+    -fx-padding: 0 8 0 8;
+}
+
+/* ====== BOTTOM BAR & LOCK BUTTON ====== */
+.main-bottom-bar {
+    -fx-background-color: transparent;
+    -fx-padding: 16 24 16 24;
+}
+.main-lock-btn {
+    -fx-background-radius: 8;
+    -fx-background-color: #ececec;
+    -fx-effect: dropshadow(gaussian, #000000, 6, 0.12, 0, 1);
+    -fx-padding: 5;
+    -fx-cursor: hand;
+}
+
+/* ====== ERROR LABEL ====== */
+.login-error-label {
+    -fx-text-fill: #FFDC60;
+    -fx-font-size: 15px;
+    -fx-font-family: 'Inter', Arial, sans-serif;
+    -fx-font-weight: bold;
+    -fx-padding: 0 0 0 0;
+}
+
+/* ====== ROWS ====== */
+.services-row {
+    -fx-background-color: transparent;
+}
+
+/* ====== HARMONY FOR EMBEDDED VIEWS ====== */
+.main-borderpane > * {
+    -fx-background-radius: 18;
+    -fx-effect: dropshadow(gaussian, #17171760, 12, 0.13, 0, 1);
+}
+
+/* ====== UTILS ====== */
+.separator {
+    -fx-background-color: #242424;
+}
+
+/* ====== ERROR IN PIN FIELD ====== */
+.login-pin-field.error, .password-field.error {
+    -fx-background-color: #FFDC60;
+    -fx-text-fill: #232323;
+}
+
+/* ====== SCROLLBAR ====== */
+.table-view .scroll-bar:vertical, .main-table .scroll-bar:vertical, .services-table .scroll-bar:vertical {
+    -fx-background-color: #232323;
+}
+.table-view .thumb, .main-table .thumb, .services-table .thumb {
+    -fx-background-color: #393939;
+    -fx-background-radius: 8;
+}
+
+/* ====== CHOICEBOX ARROW ====== */
+.choice-box .context-menu {
+    -fx-background-color: #232323; /* Fondo oscuro para armonía */
+}
+
+.choice-box .menu-item > .label {
+    -fx-text-fill: #fff; /* Texto blanco para las opciones */
+    -fx-font-family: 'Inter', Arial, sans-serif;
+    -fx-font-size: 16px;
+}
+.choice-box .menu-item:focused, .choice-box .menu-item:hover {
+    -fx-background-color: #393939; /* Highlight al hacer hover o seleccionar */
 }
