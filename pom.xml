@@ -5,7 +5,7 @@
 
     <groupId>app.barbman</groupId>
     <artifactId>onbarber</artifactId>
-    <version>OB 1.1-SNAPSHOT</version>
+    <version>OB 1.1.1-SNAPSHOT</version>
     <name>onbarber</name>
 
     <properties>
