@@ -1,24 +1,19 @@
 package app.barbman.onbarber.controller;
 
-import app.barbman.onbarber.appsession.AppSession;
+import app.barbman.onbarber.util.AppSession;
 import app.barbman.onbarber.model.Barbero;
 import app.barbman.onbarber.repositories.barbero.BarberoRepository;
 import app.barbman.onbarber.repositories.barbero.BarberoRepositoryImpl;
 import app.barbman.onbarber.util.WindowManager;
 import javafx.animation.TranslateTransition;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.io.IOException;
 
 /**
  * Controlador para la vista de login.

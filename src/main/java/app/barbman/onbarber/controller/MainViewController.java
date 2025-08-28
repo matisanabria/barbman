@@ -1,6 +1,7 @@
 package app.barbman.onbarber.controller;
 
 import app.barbman.onbarber.Main;
+import app.barbman.onbarber.util.AppSession;
 import app.barbman.onbarber.util.WindowManager;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -32,7 +33,7 @@ public class MainViewController {
     @FXML
     private void onCerrarSesion() {
         logger.info("Cerrando sesión y volviendo a la pantalla de login.");
-        app.barbman.onbarber.appsession.AppSession.cerrarSesion();
+        AppSession.cerrarSesion();
         WindowManager.switchWindow(
                 (Stage) borderPane.getScene().getWindow(),
                 "/app/barbman/onbarber/view/login-view.fxml"

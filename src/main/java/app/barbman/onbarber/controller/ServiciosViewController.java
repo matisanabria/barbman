@@ -1,6 +1,6 @@
 package app.barbman.onbarber.controller;
 
-import app.barbman.onbarber.appsession.AppSession;
+import app.barbman.onbarber.util.AppSession;
 import app.barbman.onbarber.model.Barbero;
 import app.barbman.onbarber.model.ServicioDefinido;
 import app.barbman.onbarber.model.ServicioRealizado;
@@ -21,7 +21,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.StringConverter;
 
-import java.awt.*;
 import java.net.URL;
 import java.util.Collections;
 import java.util.List;
