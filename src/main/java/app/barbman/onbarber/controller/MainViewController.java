@@ -1,11 +1,16 @@
 package app.barbman.onbarber.controller;
 
+import app.barbman.onbarber.Main;
+import app.barbman.onbarber.util.WindowManager;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.Stage;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
@@ -14,6 +19,7 @@ import java.io.IOException;
  * Gestiona la navegación entre vistas mediante botones de menú.
  */
 public class MainViewController {
+    private static final Logger logger = LogManager.getLogger(Main.class);
     @FXML
     private BorderPane borderPane; // Contenedor principal de la vista
     @FXML
@@ -23,6 +29,15 @@ public class MainViewController {
     @FXML
     private ToggleGroup menuGroup; // Grupo de botones de menú
 
+    @FXML
+    private void onCerrarSesion() {
+        logger.info("Cerrando sesión y volviendo a la pantalla de login.");
+        app.barbman.onbarber.appsession.AppSession.cerrarSesion();
+        WindowManager.switchWindow(
+                (Stage) borderPane.getScene().getWindow(),
+                "/app/barbman/onbarber/view/login-view.fxml"
+        );
+    }
     /**
      * Inicializa el controlador.
      * Selecciona el botón de inicio al arrancar y configura la navegación entre vistas.

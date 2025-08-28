@@ -4,6 +4,7 @@ import app.barbman.onbarber.appsession.AppSession;
 import app.barbman.onbarber.model.Barbero;
 import app.barbman.onbarber.repositories.barbero.BarberoRepository;
 import app.barbman.onbarber.repositories.barbero.BarberoRepositoryImpl;
+import app.barbman.onbarber.util.WindowManager;
 import javafx.animation.TranslateTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -33,6 +34,17 @@ public class LoginController {
     @FXML
     private PasswordField pinField;
 
+    @FXML
+    public void initialize() {
+        // Limita a solo 4 dígitos
+        pinField.setTextFormatter(new javafx.scene.control.TextFormatter<String>(change -> {
+            String newText = change.getControlNewText();
+            if (newText.matches("\\d{0,4}")) {
+                return change;
+            }
+            return null;
+        }));
+    }
 
     /**
      * Muestra mensaje de error y anima el campo de PIN
@@ -71,21 +83,8 @@ public class LoginController {
         // Si el barbero existe y el PIN coincide, iniciar sesión y abrir la vista principal
         if (sesion != null && sesion.getPin().equals(PIN)) {
             AppSession.iniciarSesion(sesion);
-            try {
-                // Cargar la vista principal main-view.fxml
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/app/barbman/onbarber/view/main-view.fxml"));
-                Parent root = loader.load();
-                // Crear y mostrar el nuevo Stage
-                Stage mainStage = new Stage();
-                mainStage.setScene(new Scene(root));
-                mainStage.show();
-
-                // Cerrar la ventana actual de login
-                Stage actualStage = (Stage) pinField.getScene().getWindow();
-                actualStage.close();
-            } catch (IOException e) {
-                logger.error("Error al abrir la vista principal: {}", e.getMessage());
-            }
+            Stage stage = (Stage) pinField.getScene().getWindow();
+            WindowManager.switchWindow(stage,"/app/barbman/onbarber/view/main-view.fxml");
         } else {
             wrongPin();
         }
