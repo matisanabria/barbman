@@ -51,7 +51,7 @@ public class MainViewController {
         // Listener para cambios de selección en el grupo de botones
         menuGroup.selectedToggleProperty().addListener((obs, oldToggle, newToggle) -> {
             if (newToggle == btnServicios) {
-                setView("/app/barbman/onbarber/view/servicios-view.fxml");
+                setView("/app/barbman/onbarber/view/embed-view/servicios-view.fxml");
             }
             // Si ningún botón está seleccionado (por doble clic) vuelve a seleccionar el último
             else if (newToggle == null) {
