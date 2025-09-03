@@ -59,6 +59,10 @@ public class DbBootstrap {
     /**
      * Crea todas las tablas necesarias en la base de datos si no existen.
      * Las tablas incluyen: barberos, servicios_definidos, servicios_realizados, egresos, clientes, caja y sueldos.
+     *  Campo fecha en las tablas:
+     *  - Formato esperado: 'YYYY-MM-DD' (ISO 8601)
+     *  - Ejemplo: '2024-06-10'
+     *  - Usar java.sql.Date o LocalDate para manipulación
      */
     private static void createTables() {
         try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
@@ -94,7 +98,7 @@ public class DbBootstrap {
                             tipo_servicio INTEGER NOT NULL,
                             precio REAL NOT NULL,
                             fecha TEXT NOT NULL CHECK (fecha = date(fecha)),
-                            forma_pago TEXT NOT NULL,
+                            forma_pago TEXT NOT NULL CHECK (forma_pago IN ('efectivo','transferencia','pos')),
                             observaciones TEXT,
                             FOREIGN KEY (barbero_id) REFERENCES barberos(id),
                             FOREIGN KEY (tipo_servicio) REFERENCES servicios_definidos(id)
@@ -105,28 +109,16 @@ public class DbBootstrap {
             stmt.execute("""
                         CREATE TABLE IF NOT EXISTS egresos (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            barbero_id INTEGER NOT NULL,
                             descripcion TEXT NOT NULL,
-                            monto REAL NOT NULL,
-                            fecha TEXT NOT NULL,
-                            tipo_egreso TEXT NOT NULL,
-                            FOREIGN KEY (barbero_id) REFERENCES barberos(id)
+                            monto REAL NOT NULL CHECK (monto > 0),
+                            fecha TEXT NOT NULL CHECK (fecha = date(fecha)),
+                            tipo TEXT NOT NULL CHECK (tipo IN ('egreso', 'sueldo', 'bono'))
                         );
                     """);
 
-            // Tabla de clientes
+            // Tabla de caja diaria
             stmt.execute("""
-                        CREATE TABLE IF NOT EXISTS clientes (
-                            id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            nombre TEXT NOT NULL,
-                            telefono TEXT,
-                            observaciones TEXT
-                        );
-                    """);
-
-            // Tabla de caja
-            stmt.execute("""
-                        CREATE TABLE IF NOT EXISTS caja (
+                        CREATE TABLE IF NOT EXISTS caja_diaria (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
                             fecha TEXT NOT NULL UNIQUE,
                             ingresos_total REAL NOT NULL,
@@ -134,10 +126,7 @@ public class DbBootstrap {
                             efectivo REAL NOT NULL,
                             transferencia REAL NOT NULL,
                             pos REAL NOT NULL,
-                            saldo REAL NOT NULL,
-                            observaciones TEXT,
-                            registrado_por INTEGER NOT NULL,
-                            FOREIGN KEY (registrado_por) REFERENCES barberos(id)
+                            saldo_final REAL NOT NULL
                         );
                     """);
 
@@ -149,7 +138,7 @@ public class DbBootstrap {
                             fecha_inicio_semana TEXT NOT NULL,
                             fecha_fin_semana TEXT NOT NULL,
                             produccion_total REAL NOT NULL,
-                            monto_pagado REAL NOT NULL,
+                            monto_liquidado REAL NOT NULL,
                             tipo_cobro_snapshot TEXT NOT NULL,
                             fecha_pago TEXT,
                             FOREIGN KEY (barbero_id) REFERENCES barberos(id)
@@ -158,7 +147,7 @@ public class DbBootstrap {
 
             logger.info("Tablas creadas correctamente.");
         } catch (SQLException e) {
-            logger.error("Error creando las tablas: " + e.getMessage());
+            logger.error("Error creando las tablas: {}", e.getMessage());
             throw new RuntimeException(e);
         }
     }
