@@ -112,8 +112,16 @@ public class DbBootstrap {
                             descripcion TEXT NOT NULL,
                             monto REAL NOT NULL CHECK (monto > 0),
                             fecha TEXT NOT NULL CHECK (fecha = date(fecha)),
-                            tipo TEXT NOT NULL CHECK (tipo IN ('egreso', 'sueldo', 'bono'))
-                        );
+                            tipo TEXT NOT NULL CHECK (
+                                    tipo IN (
+                                        'insumo',     -- gel, navajas, productos
+                                        'servicio',   -- limpieza, alquiler, luz
+                                        'compra',     -- mobiliario, herramientas, decoración
+                                        'otros',      -- delivery, cosas fuera de lo normal
+                                        'sueldo',     -- liquidación de sueldo semanal
+                                        'adelanto'    -- plata adelantada antes del cierre semanal
+                                    )
+                                )
                     """);
 
             // Tabla de caja diaria
