@@ -29,16 +29,19 @@ public class LoginController {
     @FXML
     private PasswordField pinField;
 
+
     @FXML
     public void initialize() {
         // Limita a solo 4 dígitos
         pinField.setTextFormatter(new javafx.scene.control.TextFormatter<String>(change -> {
             String newText = change.getControlNewText();
+            // Permitir solo si son dígitos y máximo 4 caracteres
             if (newText.matches("\\d{0,4}")) {
                 return change;
             }
             return null;
         }));
+        pinField.setOnAction(event -> loginController());
     }
 
     /**
