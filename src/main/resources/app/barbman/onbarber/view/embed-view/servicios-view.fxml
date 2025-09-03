@@ -16,7 +16,7 @@
         <Label text="Registrar nuevo servicio" styleClass="services-title"/>
         <HBox alignment="CENTER" spacing="18" styleClass="services-row">
             <children>
-                <ChoiceBox fx:id="barberoField" prefWidth="130.0" styleClass="services-choicebox"/>
+                <ChoiceBox fx:id="barberoChoiceBox" prefWidth="130.0" styleClass="services-choicebox"/>
                 <ChoiceBox fx:id="tipoServicioBox" prefWidth="250.0" styleClass="services-choicebox"/>
                 <TextField fx:id="precioField" promptText="Precio" prefWidth="100.0" styleClass="services-textfield"/>
             </children>

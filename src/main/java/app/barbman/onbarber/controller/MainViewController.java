@@ -28,6 +28,8 @@ public class MainViewController {
     @FXML
     private ToggleButton btnServicios;
     @FXML
+    private ToggleButton btnEgresos;
+    @FXML
     private ToggleGroup menuGroup; // Grupo de botones de menú
 
     @FXML
@@ -52,6 +54,8 @@ public class MainViewController {
         menuGroup.selectedToggleProperty().addListener((obs, oldToggle, newToggle) -> {
             if (newToggle == btnServicios) {
                 setView("/app/barbman/onbarber/view/embed-view/servicios-view.fxml");
+            } else if (newToggle==btnEgresos) {
+                setView("/app/barbman/onbarber/view/embed-view/egresos-view.fxml");
             }
             // Si ningún botón está seleccionado (por doble clic) vuelve a seleccionar el último
             else if (newToggle == null) {

@@ -49,7 +49,7 @@ public class ServiciosViewController implements Initializable {
 
     // Fields para agregar servicios
     @FXML
-    private ChoiceBox<Barbero> barberoField;
+    private ChoiceBox<Barbero> barberoChoiceBox;
     @FXML
     private ChoiceBox<ServicioDefinido> tipoServicioBox;
     @FXML
@@ -131,7 +131,7 @@ public class ServiciosViewController implements Initializable {
      * Muestra alertas en caso de errores de validación.
      */
     private void guardarServicio() {
-        Barbero barbero = barberoField.getValue();
+        Barbero barbero = barberoChoiceBox.getValue();
         ServicioDefinido servicioDefinido = tipoServicioBox.getValue();
         String precioStr = precioField.getText();
         String observaciones = observacionesField.getText();
@@ -193,8 +193,8 @@ public class ServiciosViewController implements Initializable {
      */
     private void cargarBarberos() {
         List<Barbero> barberos = barberoRepo.findAll();
-        barberoField.setItems(FXCollections.observableArrayList(barberos));
-        barberoField.setConverter(new StringConverter<Barbero>() {
+        barberoChoiceBox.setItems(FXCollections.observableArrayList(barberos));
+        barberoChoiceBox.setConverter(new StringConverter<Barbero>() {
             @Override
             public String toString(Barbero b) {
                 return (b == null) ? "" : b.getNombre();
@@ -209,7 +209,7 @@ public class ServiciosViewController implements Initializable {
         // Selecciona automáticamente el barbero activo si está en la lista
         Barbero activo = AppSession.getBarberoActivo();
         if (activo != null && barberos.contains(activo)) {
-            barberoField.setValue(activo);
+            barberoChoiceBox.setValue(activo);
         }
     }
 
