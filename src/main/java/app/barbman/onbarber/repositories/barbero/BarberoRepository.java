@@ -7,8 +7,10 @@ import java.util.List;
 
 public interface BarberoRepository {
     List<Barbero> listaBarberos = new ArrayList<>();
-    public List<Barbero> loadBarberos();
-    public Barbero getBarberoWithPin(String pin);
-    public String getNombreById(int id);
+    Barbero findById(int id);
+    List<Barbero> findAll();
+    Barbero findByPin(String pin);
+    void save(Barbero barbero);
+    void delete(int id);
 
 }

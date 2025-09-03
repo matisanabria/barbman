@@ -14,7 +14,7 @@ public class PinService {
 
     public static Barbero getSesion(String PIN) {
         logger.info("Login : Recibiendo PIN");
-        return BARBERO_REPOSITORY_IMPLEMENTS.getBarberoWithPin(PIN);
+        return BARBERO_REPOSITORY_IMPLEMENTS.findByPin(PIN);
     }
 
 

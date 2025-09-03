@@ -76,7 +76,7 @@ public class LoginController {
 
         // Buscar barbero con el PIN ingresado
         String PIN = pinField.getText();
-        Barbero sesion = barberoRepo.getBarberoWithPin(PIN);
+        Barbero sesion = barberoRepo.findByPin(PIN);
 
         // Si el barbero existe y el PIN coincide, iniciar sesión y abrir la vista principal
         if (sesion != null && sesion.getPin().equals(PIN)) {

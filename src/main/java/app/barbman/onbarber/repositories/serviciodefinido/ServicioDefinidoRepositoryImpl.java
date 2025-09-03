@@ -18,6 +18,11 @@ public class ServicioDefinidoRepositoryImpl implements ServicioDefinidoRepositor
         FROM servicios_definidos
         """;
 
+    /**
+     * Busca un servicio definido por su ID.
+     * @param id Identificador del servicio definido
+     * @return ServicioDefinido si se encuentra, null si no existe
+     */
     @Override
     public ServicioDefinido findById(int id) {
         String sql = SELECT_BASE + " WHERE id = ?";
@@ -36,6 +41,11 @@ public class ServicioDefinidoRepositoryImpl implements ServicioDefinidoRepositor
         }
         return null;
     }
+
+    /**
+     * Obtiene la lista de todos los servicios definidos.
+     * @return Lista de ServicioDefinido, lista vacía si ocurre un error
+     */
     @Override
     public List<ServicioDefinido> findAll() {
         List<ServicioDefinido> list = new ArrayList<>();
@@ -52,6 +62,11 @@ public class ServicioDefinidoRepositoryImpl implements ServicioDefinidoRepositor
         }
         return List.of(); // lista vacía, evita null-check
     }
+
+    /**
+     * Guarda un nuevo servicio definido en la base de datos.
+     * @param servicio Objeto ServicioDefinido a guardar
+     */
     @Override
     public void save(ServicioDefinido servicio) {
         String sql = """
@@ -76,6 +91,10 @@ public class ServicioDefinidoRepositoryImpl implements ServicioDefinidoRepositor
         }
     }
 
+    /**
+     * Elimina un servicio definido por su ID.
+     * @param id Identificador del servicio definido a eliminar
+     */
     @Override
     public void delete(int id) {
         String sql = "DELETE FROM servicios_definidos WHERE id = ?";

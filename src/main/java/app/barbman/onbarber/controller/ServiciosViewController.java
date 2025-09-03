@@ -83,7 +83,7 @@ public class ServiciosViewController implements Initializable {
         // Configuración de las columnas de la tabla con las propiedades del modelo ServicioRealizad
         colBarbero.setCellValueFactory(cellData -> {
             int barberoId = cellData.getValue().getBarberoId();
-            String nombre = barberoRepo.getNombreById(barberoId); // Carga barbero según ID
+            String nombre = barberoRepo.findById(barberoId).getNombre(); // Carga barbero según ID
             return new SimpleStringProperty(nombre);
         });
         colTipoServicio.setCellValueFactory(cellData -> {
@@ -192,7 +192,7 @@ public class ServiciosViewController implements Initializable {
      * Si hay un barbero activo en la sesión, lo selecciona automáticamente.
      */
     private void cargarBarberos() {
-        List<Barbero> barberos = barberoRepo.loadBarberos();
+        List<Barbero> barberos = barberoRepo.findAll();
         barberoField.setItems(FXCollections.observableArrayList(barberos));
         barberoField.setConverter(new StringConverter<Barbero>() {
             @Override
