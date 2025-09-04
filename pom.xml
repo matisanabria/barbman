@@ -4,9 +4,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>app.barbman</groupId>
-    <artifactId>onbarber</artifactId>
+    <artifactId>core</artifactId>
     <version>OB 1.1.1-SNAPSHOT</version>
-    <name>onbarber</name>
+    <name>barbman</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -115,7 +115,7 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.8</version>
                 <configuration>
-                    <mainClass>app.barbman.onbarber/app.barbman.onbarber.Main</mainClass>
+                    <mainClass>app.barbman.core/app.barbman.core.Main</mainClass>
                     <launcher>app</launcher>
                     <jlinkZipName>app</jlinkZipName>
                     <jlinkImageName>app</jlinkImageName>

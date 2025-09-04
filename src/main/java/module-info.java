@@ -1,4 +1,4 @@
-module app.barbman.onbarber {
+module app.barbman.core {
     requires javafx.controls;
     requires javafx.fxml;
 
@@ -11,8 +11,8 @@ module app.barbman.onbarber {
     requires log4j;
     requires javafx.base;
 
-    opens app.barbman.onbarber to javafx.fxml;
-    opens app.barbman.onbarber.controller to javafx.fxml;
-    opens app.barbman.onbarber.model to javafx.base;
-    exports app.barbman.onbarber;
+    opens app.barbman.core to javafx.fxml;
+    opens app.barbman.core.controller to javafx.fxml;
+    opens app.barbman.core.model to javafx.base;
+    exports app.barbman.core;
 }
