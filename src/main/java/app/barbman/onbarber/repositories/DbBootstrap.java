@@ -122,7 +122,8 @@ public class DbBootstrap {
                                         'adelanto'    -- plata adelantada antes del cierre semanal
                                     )
                                 )
-                    """);
+                            );
+                   """);
 
             // Tabla de caja diaria
             stmt.execute("""
