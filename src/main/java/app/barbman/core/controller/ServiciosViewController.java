@@ -83,7 +83,8 @@ public class ServiciosViewController implements Initializable {
         // Configuración de las columnas de la tabla con las propiedades del modelo ServicioRealizad
         colBarbero.setCellValueFactory(cellData -> {
             int barberoId = cellData.getValue().getBarberoId();
-            String nombre = barberoRepo.findById(barberoId).getNombre(); // Carga barbero según ID
+            Barbero b = barberoRepo.findById(barberoId);
+            String nombre = (b != null) ? b.getNombre() : "Desconocido";
             return new SimpleStringProperty(nombre);
         });
         colTipoServicio.setCellValueFactory(cellData -> {
@@ -99,6 +100,7 @@ public class ServiciosViewController implements Initializable {
         mostrarServicios();// Carga y muestra los servicios realizados en la tabla
         cargarBarberos();
         cargarServiciosDefinidos();
+        // Autocompleta el precio al seleccionar un tipo de servicio
         tipoServicioBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
                 precioField.setText(String.valueOf(newVal.getPrecioBase()));
@@ -119,7 +121,6 @@ public class ServiciosViewController implements Initializable {
      * Si la lista está vacía, la tabla queda vacía.
      */
     void mostrarServicios() {
-        ServicioRealizadoRepositoryImpl repo = new ServicioRealizadoRepositoryImpl();
         List<ServicioRealizado> servicios = repo.findAll();
         Collections.reverse(servicios);
         serviciosTable.setItems(FXCollections.observableArrayList(servicios));
@@ -133,46 +134,47 @@ public class ServiciosViewController implements Initializable {
     private void guardarServicio() {
         Barbero barbero = barberoChoiceBox.getValue();
         ServicioDefinido servicioDefinido = tipoServicioBox.getValue();
-        String precioStr = precioField.getText();
+        String precioTexto = precioField.getText().trim();
         String observaciones = observacionesField.getText();
         String formaPago = formaPagoBox.getValue();
 
-        // Validación de campos vacíos
         if (barbero == null) {
             mostrarAlerta("Debe seleccionar un barbero.");
             return;
         }
+
         if (servicioDefinido == null) {
             mostrarAlerta("Debe seleccionar un tipo de servicio.");
             return;
         }
-        if (precioStr == null || precioStr.trim().isEmpty()) {
-            mostrarAlerta("El campo 'Precio' es obligatorio.");
+
+        if (precioTexto.isEmpty()) {
+            mostrarAlerta("Debe ingresar un precio.");
             return;
         }
-        // Validación de precio como número y no negativo
-        double precio;
+
+        if (formaPago == null || formaPago.isBlank()) {
+            mostrarAlerta("Debe seleccionar una forma de pago.");
+            return;
+        }
+
         try {
-            precio = Double.parseDouble(precioStr.trim());
+            double precio = Double.parseDouble(precioTexto);
+
+            sr.addServicioRealizado(
+                    (barbero != null) ? barbero.getId() : null,
+                    (servicioDefinido != null) ? servicioDefinido.getId() : null,
+                    precio,
+                    formaPago,
+                    observaciones
+            );
+
+            mostrarServicios();
         } catch (NumberFormatException e) {
-            mostrarAlerta("El campo 'Precio' debe ser un número.");
-            return;
+            mostrarAlerta("El campo 'Precio' debe ser un número válido.");
+        } catch (IllegalArgumentException e) {
+            mostrarAlerta(e.getMessage());
         }
-        if (precio < 0) {
-            mostrarAlerta("El precio no puede ser negativo.");
-            return;
-        }
-
-        sr.addServicioRealizado(
-                barbero.getId(),            // barberoId
-                servicioDefinido.getId(),             // tipoServicio
-                precio,          // precio
-                formaPago,    // formaPago
-                observaciones // observaciones
-        );
-
-        // Recarga la tabla para mostrar los nuevos datos
-        mostrarServicios();
     }
 
     /**

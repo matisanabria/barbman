@@ -118,7 +118,7 @@ public class ServicioRealizadoRepositoryImpl implements ServicioRealizadoReposit
      * @param id Identificador del servicio realizado a eliminar
      */
     @Override
-    public void delete(Long id) {
+    public void delete(int id) {
         String sql = "DELETE FROM servicios_realizados WHERE id = ?";
         try (Connection db = DbBootstrap.connect();
              PreparedStatement ps = db.prepareStatement(sql)) {
