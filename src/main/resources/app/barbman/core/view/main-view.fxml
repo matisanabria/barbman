@@ -51,9 +51,9 @@
                         </ToggleButton>
                         <ToggleButton fx:id="btnBalance" toggleGroup="$menuGroup" styleClass="main-menu-btn">
                             <graphic>
-                                <FontIcon iconLiteral="fas-chart-line" iconSize="24"/>
+                                <FontIcon iconLiteral="far-money-bill-alt" iconSize="24"/>
                             </graphic>
-                            <text>Balance</text>
+                            <text>Sueldos</text>
                             <contentDisplay>TOP</contentDisplay>
                         </ToggleButton>
                         <ToggleButton fx:id="btnAjustes" toggleGroup="$menuGroup" disable="true" styleClass="main-menu-btn">

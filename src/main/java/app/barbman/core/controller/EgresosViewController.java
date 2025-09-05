@@ -58,7 +58,7 @@ public class EgresosViewController implements Initializable {
 
         // Opciones de forma de pago
         tipoEgresoBox.setItems(FXCollections.observableArrayList(
-                "otros"
+                "insumo", "servicio", "otros"
         ));
         tipoEgresoBox.getSelectionModel().selectFirst();
         guardarButton.setOnAction(e -> guardarEgreso());
