@@ -38,6 +38,8 @@ public class EgresosViewController implements Initializable {
     private TextField descripcionField;
     @FXML
     private Button guardarButton;
+    @FXML
+    private ChoiceBox<String> formaPagoBox;
 
     EgresosRepository repo = new EgresosRepositoryImpl();
     EgresosService sr = new EgresosService(repo);
@@ -60,6 +62,11 @@ public class EgresosViewController implements Initializable {
         tipoEgresoBox.setItems(FXCollections.observableArrayList(
                 "insumo", "servicio", "otros"
         ));
+        tipoEgresoBox.setValue("insumo");
+        formaPagoBox.setItems(FXCollections.observableArrayList(
+                "efectivo", "transferencia"
+        ));
+        formaPagoBox.setValue("efectivo");
         tipoEgresoBox.getSelectionModel().selectFirst();
         guardarButton.setOnAction(e -> guardarEgreso());
     }
@@ -78,6 +85,7 @@ public class EgresosViewController implements Initializable {
         String tipo = tipoEgresoBox.getValue();
         String descripcion = descripcionField.getText();
         String montoStr = montoField.getText();
+        String formaPago = formaPagoBox.getValue();
 
         // Validación de campos vacíos
         if (tipo == null) {
@@ -95,7 +103,8 @@ public class EgresosViewController implements Initializable {
         sr.addEgreso(
                 tipo,           // tipo
                 Double.parseDouble(montoStr), // monto
-                descripcion    // descripcion
+                descripcion,    // descripcion
+                formaPago
         );
         mostrarEgresos();
     }

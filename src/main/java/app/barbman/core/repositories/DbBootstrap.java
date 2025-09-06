@@ -121,7 +121,8 @@ public class DbBootstrap {
                                         'sueldo',     -- liquidación de sueldo semanal
                                         'adelanto'    -- plata adelantada antes del cierre semanal
                                     )
-                                )
+                                ),
+                            forma_pago TEXT  -- efectivo, transferencia
                             );
                    """);
 
@@ -150,6 +151,7 @@ public class DbBootstrap {
                             monto_liquidado REAL NOT NULL,
                             tipo_cobro_snapshot TEXT NOT NULL,
                             fecha_pago TEXT,
+                            forma_pago TEXT,
                             FOREIGN KEY (barbero_id) REFERENCES barberos(id)
                         );
                     """);

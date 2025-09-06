@@ -142,7 +142,8 @@ public class EgresosRepositoryImpl implements EgresosRepository{
                 rs.getString("descripcion"),
                 rs.getDouble("monto"),
                 LocalDate.parse(rs.getString("fecha")),
-                rs.getString("tipo")
+                rs.getString("tipo"),
+                rs.getString("forma_pago")
         );
     }
 }
