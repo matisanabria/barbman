@@ -190,6 +190,39 @@ public class ServicioRealizadoRepositoryImpl implements ServicioRealizadoReposit
         return list;
     }
 
+    /**
+     * Calcula la producción semanal directamente desde la base de datos (SQL),
+     * NO se calcula desde Java.
+     * @param barberoId ID del barbero
+     * @param desde Fecha de inicio
+     * @param hasta Fecha de fin
+     * @return Total de producción en el rango de fechas, 0.0 si no
+     */
+    @Override
+    public double getProduccionSemanalPorBarbero(int barberoId, LocalDate desde, LocalDate hasta) {
+        double total = 0.0;
+        String sql = "SELECT SUM(precio) FROM servicios_realizados " +
+                "WHERE barbero_id = ? AND fecha BETWEEN ? AND ?";
+
+        try (Connection db= DbBootstrap.connect();
+             PreparedStatement ps = db.prepareStatement(sql)) {
+
+            ps.setInt(1, barberoId);
+            ps.setString(2, desde.toString()); // yyyy-MM-dd
+            ps.setString(3, hasta.toString());
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                total = rs.getDouble(1);
+            }
+
+        } catch (SQLException e) {
+            logger.error("Error al obtener producción semanal", e);
+        }
+
+        return total;
+    }
+
     private ServicioRealizado mapRow(ResultSet rs) throws SQLException {
         String rawFecha = rs.getString("fecha"); // viene como TEXT
         LocalDate fecha = LocalDate.parse(rawFecha); // lanza excepción si formato inválido

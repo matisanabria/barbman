@@ -14,4 +14,5 @@ public interface ServicioRealizadoRepository {
     List<ServicioRealizado> searchByDateRange(LocalDate startDate, LocalDate endDate);
     List<ServicioRealizado> searchByBarberoId(int barberoId);
     List<ServicioRealizado> searchByTipoServicio(int tipoServicio);
+    double getProduccionSemanalPorBarbero(int barberoId, LocalDate desde, LocalDate hasta);
 }
