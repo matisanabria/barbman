@@ -139,6 +139,47 @@ public class EgresosRepositoryImpl implements EgresosRepository{
         }
     }
 
+    /**
+     * Obtiene el total de adelantos registrados para un barbero en una semana.
+     *
+     * @param barberoId ID del barbero
+     * @param desde Fecha de inicio de la semana
+     * @param hasta Fecha de fin de la semana
+     * @return Total de adelantos en Gs, o 0.0 si no hay o en caso de error
+     */
+    @Override
+    public double getTotalAdelantos(int barberoId, LocalDate desde, LocalDate hasta) {
+        double total = 0.0;
+        String sql = """
+        SELECT SUM(monto)
+        FROM egresos
+        WHERE tipo = 'adelanto'
+        AND descripcion LIKE ?
+        AND fecha BETWEEN ? AND ?
+    """;
+
+        try (Connection db = DbBootstrap.connect();
+             PreparedStatement ps = db.prepareStatement(sql)) {
+
+            ps.setString(1, "%barbero ID " + barberoId + "%"); // Filtrar por descripción que contenga "barbero ID {barberoId}"
+            ps.setString(2, desde.toString());
+            ps.setString(3, hasta.toString());
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                total = rs.getDouble(1);
+            }
+
+        } catch (Exception e) {
+            logger.warn("Error al obtener total de adelantos para barbero_id {} entre {} y {}: {}",
+                    barberoId, desde, hasta, e.getMessage());
+        }
+
+        return total;
+    }
+
+
+
     private Egreso mapRow(ResultSet rs) throws SQLException {
         return new Egreso(
                 rs.getInt("id"),

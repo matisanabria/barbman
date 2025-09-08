@@ -24,81 +24,130 @@ public class SueldosService {
     private static final Logger logger = LogManager.getLogger(SueldosService.class);
     private final ServicioRealizadoRepository servicioRealizadoRepository;
 
-    public SueldosService(SueldosRepository repo,  ServicioRealizadoRepository servicioRealizadoRepo) {
+    public SueldosService(SueldosRepository repo, ServicioRealizadoRepository servicioRealizadoRepo) {
         this.sueldosRepository = repo;
         this.servicioRealizadoRepository = servicioRealizadoRepo;
     }
 
-    public void pagarSueldo(Barbero barbero, String formaPago) {
-        logger.info("[SUELDOS] Iniciando proceso de pago de sueldo para barbero ID: {}, nombre: {}", barbero.getId(), barbero.getNombre());
+    /**
+     * Paga un sueldo a un barbero y registra el egreso correspondiente.
+     *
+     * @param sueldo    Sueldo a pagar (debe tener barberoId, fechas y monto ya calculados)
+     * @param formaPago Forma de pago ("efectivo" o "transferencia")
+     * @throws IllegalArgumentException si los datos son inválidos
+     * @throws IllegalStateException    si el sueldo ya fue pagado
+     */
+    public void pagarSueldo(Sueldo sueldo, String formaPago) {
+        if (sueldo == null) throw new IllegalArgumentException("Sueldo vacío");
+        if (formaPago == null || formaPago.isBlank()) throw new IllegalArgumentException("Forma de pago inválida");
 
-        if (barbero.getId() <= 0) throw new IllegalArgumentException("Debe seleccionar un barbero.");
-        if (formaPago == null || formaPago.isBlank()) throw new IllegalArgumentException("Debe seleccionar una forma de pago.");
-        if (!FORMAS_VALIDAS.contains(formaPago.toLowerCase())) throw new IllegalArgumentException("Forma de pago inválida.");
-        if (barbero == null) throw new IllegalArgumentException("Barbero no encontrado.");
+        sueldo.setFechaPago(LocalDate.now());
+        sueldo.setFormaPago(formaPago);
+        sueldosRepository.save(sueldo);
 
+        String descripcion = "Pago de sueldo a barbero ID " + sueldo.getBarberoId() +
+                " (semana del " + sueldo.getFechaInicioSemana() + " al " + sueldo.getFechaFinSemana() + ")";
 
-        // Obtener datos del barbero
+        // Verificar si ya se pagó este sueldo
+        if (isPagado(sueldo.getBarberoId(), sueldo.getFechaInicioSemana())) {
+            throw new IllegalStateException("Este barbero ya tiene un sueldo registrado esta semana.");
+        }
+
+        Egreso egreso = new Egreso(
+                descripcion,
+                sueldo.getMontoLiquidado(),
+                LocalDate.now(),
+                "sueldo",
+                formaPago
+        );
+        egresosRepository.save(egreso);
+
+        logger.info("[SUELDOS] Sueldo pagado y egreso registrado para barbero ID {}", sueldo.getBarberoId());
+    }
+
+    /**
+     * Calcula el sueldo de un barbero para la semana actual.
+     *
+     * @param barbero Barbero al que se le calcula el sueldo
+     * @param bono    Bono adicional a sumar al sueldo (puede ser 0)
+     * @return Sueldo calculado (sin fecha de pago ni forma de pago)
+     * @throws IllegalArgumentException si el barbero es inválido
+     */
+    public Sueldo calcularSueldo(Barbero barbero, double bono) {
+        if (barbero == null || barbero.getId() <= 0) {
+            throw new IllegalArgumentException("Barbero inválido.");
+        }
+
         int tipo = barbero.getTipoCobro();
-        double param1 = barbero.getParam1(); double param2 = barbero.getParam2();
-        int tipoCobroSnapshot = barbero.getTipoCobro();
-        logger.info("[SUELDOS] Tipo de cobro: {}, param1: {}, param2: {}", tipo, param1, param2);
+        double param1 = barbero.getParam1();
+        double param2 = barbero.getParam2();
 
-        // Obtener rango de semana actual
+        // Rango semanal
         LocalDate[] semana = obtenerRangoSemanaActual();
         LocalDate inicioSemana = semana[0];
         LocalDate finSemana = semana[1];
-        // Obtener producción semanal (para ciertos cálculos)
-        double produccion = servicioRealizadoRepository.getProduccionSemanalPorBarbero(
+
+        // Producción y adelantos
+        double produccion = servicioRealizadoRepository.getProduccionSemanalPorBarbero(barbero.getId(), inicioSemana, finSemana);
+        double adelantos = egresosRepository.getTotalAdelantos(barbero.getId(), inicioSemana, finSemana);
+
+        logger.info("[SUELDOS] Calculando sueldo para barbero ID {} (tipoCobro={}, param1={}, param2={}, bono={})",
+                barbero.getId(), tipo, param1, param2, bono);
+        // Calcular sueldo base
+        double montoCalculado = switch (tipo) {
+            case 1 -> calcularPorProduccionSemanal(produccion, param1);
+            case 2 -> calcularSueldoBaseMasPorcentaje(produccion, param1, param2);
+            case 3 -> param1;
+            case 4 -> calcularSueldoEspecial(produccion, param1, param2);
+            default -> throw new IllegalStateException("Tipo de cobro no definido");
+        };
+
+        // Monto final con bono y adelantos
+        double montoFinal = montoCalculado + bono - adelantos;
+
+        // Evitar sueldo negativo
+        if (montoFinal < 0) {
+            // Calculamos la diferencia que queda pendiente
+            double deudaPendiente = Math.abs(montoFinal);
+            logger.warn("[SUELDOS] El sueldo calculado para barbero ID {} es negativo ({}), se ajusta a 0.",
+                    barbero.getId(), montoFinal);
+
+            // Ajustamos el sueldo a 0 para que no se registre sueldo negativo
+            montoFinal = 0;
+
+            // Calculamos la fecha del próximo lunes (finSemana es sábado)
+            LocalDate lunesProximo = finSemana.plusDays(2); // finSemana es sábado
+
+            // Creamos un egreso tipo "adelanto" para registrar la deuda pendiente como adelanto automático
+            String descripcion = "Saldo pendiente arrastrado (barbero ID " + barbero.getId() + ")";
+            Egreso egresoPendiente = new Egreso(
+                    descripcion,
+                    deudaPendiente,
+                    lunesProximo,
+                    "adelanto",
+                    "n/a"    // Marcamos como generado por el sistema
+            );
+
+            // Registramos el egreso en la base de datos
+            egresosRepository.save(egresoPendiente);
+            logger.info("[SUELDOS] Egreso adelantado automático generado: Gs. {}, fecha: {}", deudaPendiente, lunesProximo);
+        }
+
+        return new Sueldo(
                 barbero.getId(),
                 inicioSemana,
-                finSemana
+                finSemana,
+                produccion,
+                montoFinal,
+                tipo,
+                null, // Fecha de pago se asignará en el paso final
+                null  // Forma de pago también se asigna al pagar
         );
-        logger.info("[SUELDOS] Producción semanal del barbero {} entre {} y {}: Gs. {}", barbero.getNombre(), inicioSemana, finSemana, produccion);
-
-        // Calcular monto según tipo de cobro
-        double montoCalculado = 0;
-        switch (tipo) {
-            case 1 -> montoCalculado = calcularPorProduccionSemanal(produccion, param1); // Por producción
-            case 2 -> montoCalculado = calcularSueldoBaseMasPorcentaje(produccion, param1, param2); // Sueldo base + %
-            case 3 -> montoCalculado = param1; // Sueldo fijo semanal
-            case 4 -> montoCalculado = calcularSueldoEspecial(produccion, param1, param2); // Sueldo especial
-            case 0 -> throw new IllegalStateException("Tipo de cobro no definido...");
-            default -> throw new IllegalStateException("Tipo de cobro no definido...");
-        }
-        logger.info("[SUELDOS] Monto de sueldo calculado para {}: Gs. {}", barbero.getNombre(), montoCalculado);
-
-        Sueldo sueldo = new Sueldo(
-                barbero.getId(),        // id del barbero
-                inicioSemana,           // inicio de la semana
-                finSemana,              // fin de la semana
-                produccion,                // producción total de la semana
-                montoCalculado,              // monto liquidado
-                tipoCobroSnapshot,          // snapshot del tipo de cobro actual
-                LocalDate.now(),                // fecha de pago
-                formaPago                   // forma de pago
-        );
-        sueldosRepository.save(sueldo);
-        logger.info("[SUELDOS] Registro de sueldo guardado en la base de datos para {}", barbero.getNombre());
-
-        // Crear egreso
-        String descripcion = "Pago de sueldo a " + barbero.getNombre() + " (semana del " +
-                inicioSemana + " al " + finSemana + ")";
-        Egreso egreso = new Egreso(
-                descripcion,    // descripción
-                montoCalculado, // monto
-                LocalDate.now(),// fecha del egreso
-                "sueldo",       // tipo
-                formaPago       // forma de pago
-        );
-        egresosRepository.save(egreso);
-        logger.info("[SUELDOS] Egreso registrado: {}", descripcion);
-
-        logger.info("[SUELDOS] Proceso de pago finalizado correctamente para {}", barbero.getNombre());
     }
 
     /**
      * Obtiene el rango de fechas de la semana actual (lunes a sábado).
+     *
      * @return array con dos LocalDate: [0] = lunes, [1] = sábado
      */
     private LocalDate[] obtenerRangoSemanaActual() {
@@ -143,5 +192,14 @@ public class SueldosService {
         }
     }
 
-
+    /**
+     * Verifica si un barbero ya tiene un sueldo pagado en la semana indicada.
+     *
+     * @param barberoId    ID del barbero
+     * @param semanaInicio Fecha de inicio de la semana (lunes)
+     * @return true si ya tiene un sueldo registrado, false si no
+     */
+    public boolean isPagado(int barberoId, LocalDate semanaInicio) {
+        return sueldosRepository.findByBarberoAndFecha(barberoId, semanaInicio) != null;
+    }
 }

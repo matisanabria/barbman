@@ -144,6 +144,36 @@ public class SueldosRepositoryImpl implements SueldosRepository{
         }
     }
 
+    @Override
+    public Sueldo findByBarberoAndFecha(int barberoId, LocalDate fecha) {
+        String sql = """
+        SELECT * FROM sueldos
+        WHERE barbero_id = ?
+        AND fecha_inicio_semana <= ?
+        AND fecha_fin_semana >= ?
+        LIMIT 1
+    """;
+
+        try (Connection db = DbBootstrap.connect();
+             PreparedStatement ps = db.prepareStatement(sql)) {
+
+            ps.setInt(1, barberoId);
+            ps.setString(2, fecha.toString());
+            ps.setString(3, fecha.toString());
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return mapRow(rs);
+            }
+
+        } catch (Exception e) {
+            logger.warn("Error al buscar sueldo para barbero {} en fecha {}: {}", barberoId, fecha, e.getMessage());
+        }
+
+        return null;
+    }
+
+
     private Sueldo mapRow(ResultSet rs) throws SQLException {
         Sueldo sueldo = new Sueldo();
         sueldo.setId(rs.getInt("id"));

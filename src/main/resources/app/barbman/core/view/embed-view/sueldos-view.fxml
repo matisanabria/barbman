@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+
+<VBox
+        xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+        fx:controller="app.barbman.core.controller.ServiciosViewController"
+        spacing="16"
+        alignment="CENTER"
+        fillWidth="true"
+        prefWidth="600.0"
+        style="-fx-padding: 24;">
+
+</VBox>
