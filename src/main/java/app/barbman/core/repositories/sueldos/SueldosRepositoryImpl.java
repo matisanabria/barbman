@@ -86,7 +86,7 @@ public class SueldosRepositoryImpl implements SueldosRepository{
             ps.setString(3, sueldo.getFechaFinSemana().toString());
             ps.setDouble(4, sueldo.getProduccionTotal());
             ps.setDouble(5, sueldo.getMontoLiquidado());
-            ps.setString(6, sueldo.getTipoCobroSnapshot());
+            ps.setInt(6, sueldo.getTipoCobroSnapshot());
             ps.setString(7, sueldo.getFechaPago().toString());
             ps.setString(8, sueldo.getFormaPago());
 
@@ -120,7 +120,7 @@ public class SueldosRepositoryImpl implements SueldosRepository{
             ps.setString(3, sueldo.getFechaFinSemana().toString());
             ps.setDouble(4, sueldo.getProduccionTotal());
             ps.setDouble(5, sueldo.getMontoLiquidado());
-            ps.setString(6, sueldo.getTipoCobroSnapshot());
+            ps.setInt(6, sueldo.getTipoCobroSnapshot());
             ps.setString(7, sueldo.getFechaPago().toString());
             ps.setString(8, sueldo.getFormaPago());
             ps.setInt(9, sueldo.getId());
@@ -152,7 +152,7 @@ public class SueldosRepositoryImpl implements SueldosRepository{
         sueldo.setFechaFinSemana(LocalDate.parse(rs.getString("fecha_fin_semana")));
         sueldo.setProduccionTotal(rs.getDouble("produccion_total"));
         sueldo.setMontoLiquidado(rs.getDouble("monto_liquidado"));
-        sueldo.setTipoCobroSnapshot(rs.getString("tipo_cobro_snapshot"));
+        sueldo.setTipoCobroSnapshot(rs.getInt("tipo_cobro_snapshot"));
         sueldo.setFechaPago(LocalDate.parse(rs.getString("fecha_pago")));
         sueldo.setFormaPago(rs.getString("forma_pago"));
         return sueldo;

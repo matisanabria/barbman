@@ -10,7 +10,7 @@ public class Sueldo {
     private LocalDate fechaFinSemana;
     private double produccionTotal;
     private double montoLiquidado;
-    private String tipoCobroSnapshot;
+    private int tipoCobroSnapshot;
     private LocalDate fechaPago;
     private String formaPago;
 
@@ -23,7 +23,7 @@ public class Sueldo {
                   LocalDate fechaFinSemana,
                   double produccionTotal,
                   double montoLiquidado,
-                  String tipoCobroSnapshot,
+                  int tipoCobroSnapshot,
                   LocalDate fechaPago,
                   String formaPago) {
         this.barberoId = barberoId;
@@ -44,7 +44,7 @@ public class Sueldo {
     public LocalDate getFechaFinSemana() { return fechaFinSemana; }
     public double getProduccionTotal() { return produccionTotal; }
     public double getMontoLiquidado() { return montoLiquidado; }
-    public String getTipoCobroSnapshot() { return tipoCobroSnapshot; }
+    public int getTipoCobroSnapshot() { return tipoCobroSnapshot; }
     public LocalDate getFechaPago() { return fechaPago; }
     public String getFormaPago() { return formaPago; }
 
@@ -55,7 +55,7 @@ public class Sueldo {
     public void setFechaFinSemana(LocalDate fechaFinSemana) { this.fechaFinSemana = fechaFinSemana; }
     public void setProduccionTotal(double produccionTotal) { this.produccionTotal = produccionTotal; }
     public void setMontoLiquidado(double montoLiquidado) { this.montoLiquidado = montoLiquidado; }
-    public void setTipoCobroSnapshot(String tipoCobroSnapshot) { this.tipoCobroSnapshot = tipoCobroSnapshot; }
+    public void setTipoCobroSnapshot(int tipoCobroSnapshot) { this.tipoCobroSnapshot = tipoCobroSnapshot; }
     public void setFechaPago(LocalDate fechaPago) { this.fechaPago = fechaPago; }
     public void setFormaPago(String formaPago) { this.formaPago = formaPago; }
 
@@ -63,7 +63,7 @@ public class Sueldo {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Sueldo sueldo = (Sueldo) o;
-        return id == sueldo.id && barberoId == sueldo.barberoId && Double.compare(produccionTotal, sueldo.produccionTotal) == 0 && Double.compare(montoLiquidado, sueldo.montoLiquidado) == 0 && Objects.equals(fechaInicioSemana, sueldo.fechaInicioSemana) && Objects.equals(fechaFinSemana, sueldo.fechaFinSemana) && Objects.equals(tipoCobroSnapshot, sueldo.tipoCobroSnapshot) && Objects.equals(fechaPago, sueldo.fechaPago) && Objects.equals(formaPago, sueldo.formaPago);
+        return id == sueldo.id && barberoId == sueldo.barberoId && Double.compare(produccionTotal, sueldo.produccionTotal) == 0 && Double.compare(montoLiquidado, sueldo.montoLiquidado) == 0 && tipoCobroSnapshot == sueldo.tipoCobroSnapshot && Objects.equals(fechaInicioSemana, sueldo.fechaInicioSemana) && Objects.equals(fechaFinSemana, sueldo.fechaFinSemana) && Objects.equals(fechaPago, sueldo.fechaPago) && Objects.equals(formaPago, sueldo.formaPago);
     }
 
     @Override
@@ -80,7 +80,7 @@ public class Sueldo {
                 ", fechaFinSemana=" + fechaFinSemana +
                 ", produccionTotal=" + produccionTotal +
                 ", montoLiquidado=" + montoLiquidado +
-                ", tipoCobroSnapshot='" + tipoCobroSnapshot + '\'' +
+                ", tipoCobroSnapshot=" + tipoCobroSnapshot +
                 ", fechaPago=" + fechaPago +
                 ", formaPago='" + formaPago + '\'' +
                 '}';

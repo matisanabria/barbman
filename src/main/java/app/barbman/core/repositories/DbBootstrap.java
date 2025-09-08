@@ -149,7 +149,7 @@ public class DbBootstrap {
                             fecha_fin_semana TEXT NOT NULL,
                             produccion_total REAL NOT NULL,
                             monto_liquidado REAL NOT NULL,
-                            tipo_cobro_snapshot TEXT NOT NULL,
+                            tipo_cobro_snapshot INTEGER NOT NULL,
                             fecha_pago TEXT,
                             forma_pago TEXT,
                             FOREIGN KEY (barbero_id) REFERENCES barberos(id)

@@ -42,8 +42,8 @@ public class SueldosService {
         LocalDate hoy = LocalDate.now();
         LocalDate inicioSemana = hoy.with(java.time.DayOfWeek.MONDAY);
         LocalDate finSemana = hoy.with(java.time.DayOfWeek.SATURDAY);
+        int tipoCobroSnapshot = barbero.getTipoCobro();
 
-        String tipoCobroSnapshot = String.valueOf(barbero.getTipoCobro());
         Sueldo sueldo = new Sueldo(
                 barberoId,
                 inicioSemana,

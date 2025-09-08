@@ -14,9 +14,10 @@ public class EgresosRepositoryImpl implements EgresosRepository{
     private static final Logger logger = LogManager.getLogger(EgresosRepositoryImpl.class);
 
     private static final String SELECT_BASE = """
-        SELECT id, descripcion, monto, fecha, tipo
+        SELECT id, descripcion, monto, fecha, tipo, forma_pago
         FROM egresos
-        """;
+    """;
+
 
     /**
      * Obtiene la lista de todos los egresos.
@@ -70,9 +71,9 @@ public class EgresosRepositoryImpl implements EgresosRepository{
     @Override
     public void save(Egreso egreso) {
         String sql = """
-            INSERT INTO egresos (descripcion, monto, fecha, tipo)
-            VALUES (?, ?, ?, ?)
-            """;
+                INSERT INTO egresos (descripcion, monto, fecha, tipo, forma_pago)
+                VALUES (?, ?, ?, ?, ?)
+                """;
         try (Connection db = DbBootstrap.connect();
              PreparedStatement ps = db.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
@@ -80,6 +81,7 @@ public class EgresosRepositoryImpl implements EgresosRepository{
             ps.setDouble(2, egreso.getMonto());
             ps.setString(3, egreso.getFecha().toString());
             ps.setString(4, egreso.getTipo());
+            ps.setString(5, egreso.getFormaPago());
 
             ps.executeUpdate();
 
@@ -101,7 +103,7 @@ public class EgresosRepositoryImpl implements EgresosRepository{
     public void update(Egreso egreso) {
         String sql = """
             UPDATE egresos
-            SET descripcion = ?, monto = ?, fecha = ?, tipo = ?
+            SET descripcion = ?, monto = ?, fecha = ?, tipo = ?, forma_pago = ?
             WHERE id = ?
             """;
         try (Connection db = DbBootstrap.connect();
@@ -111,7 +113,8 @@ public class EgresosRepositoryImpl implements EgresosRepository{
             ps.setDouble(2, egreso.getMonto());
             ps.setString(3, egreso.getFecha().toString());
             ps.setString(4, egreso.getTipo());
-            ps.setInt(5, egreso.getId());
+            ps.setString(5, egreso.getFormaPago());
+            ps.setInt(6, egreso.getId());
 
             ps.executeUpdate();
         } catch (Exception e) {
