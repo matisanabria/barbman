@@ -49,7 +49,7 @@
                             <text>Egresos</text>
                             <contentDisplay>TOP</contentDisplay>
                         </ToggleButton>
-                        <ToggleButton fx:id="btnBalance" toggleGroup="$menuGroup" styleClass="main-menu-btn">
+                        <ToggleButton fx:id="btnSueldos" toggleGroup="$menuGroup" styleClass="main-menu-btn">
                             <graphic>
                                 <FontIcon iconLiteral="far-money-bill-alt" iconSize="24"/>
                             </graphic>
