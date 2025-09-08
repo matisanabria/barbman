@@ -22,8 +22,8 @@ El nombre *Barbman* deriva de *Barber Manager*
 
 ## 📜 Licencia
 
-Este proyecto se distribuye con fines educativos y de uso libre no comercial.  
-Si deseas usarlo en un entorno productivo, considera dar créditos y contactar al autor.
+Este proyecto está licenciado bajo los términos de la [Apache License 2.0](./LICENSE).
+Puede usarlo, modificarlo y distribuirlo libremente, pero considere dar créditos al creador.
 
 ---
 
