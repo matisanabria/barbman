@@ -34,8 +34,31 @@ public class Main extends Application {
     }
 
     public static void main(String[] args) {
+        // Inicializa la base de datos
         DbBootstrap.init();
-        logger.info("Iniciando aplicación.");
+
+        // Mensaje de inicio en el log
+        String separador = "=".repeat(60);
+        String horaInicio = java.time.LocalDateTime.now().toString();
+
+        logger.info("""
+            \n{}
+            [BARBMAN] Iniciando aplicación
+            Hora de inicio: {}
+            Sistema: {} {}
+            Usuario: {}
+            Java: {}
+            {}
+            """,
+                separador,
+                horaInicio,
+                System.getProperty("os.name"),
+                System.getProperty("os.version"),
+                System.getProperty("user.name"),
+                System.getProperty("java.version"),
+                separador
+        );
+
         launch();
 
     }

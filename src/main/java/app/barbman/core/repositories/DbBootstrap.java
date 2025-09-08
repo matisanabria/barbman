@@ -24,24 +24,24 @@ public class DbBootstrap {
      * - Si no existen, los crea junto con las tablas necesarias.
      */
     public static void init() {
-        logger.info("Chequeando database...");
+        logger.info("[DB] Chequeando database...");
 
         // Verifica si la carpeta "data" existe, si no, la crea
         File folder = new File(DB_FOLDER);
         if (!folder.exists()) {
-            logger.warn("Carpeta de base de datos no encontrada.");
+            logger.warn("[DB] Carpeta de base de datos no encontrada.");
             if (folder.mkdirs()) {
-                logger.info("Carpeta creada exitosamente: " + DB_FOLDER);
+                logger.info("[DB] Carpeta creada exitosamente: " + DB_FOLDER);
             } else {
-                logger.error("No se pudo crear la carpeta de base de datos.");
+                logger.error("[DB] No se pudo crear la carpeta de base de datos.");
             }
         }
 
         // Verifica si el archivo de la base de datos existe; si no, lo crea junto con las tablas
         File dbFile = new File(DB_FOLDER + "/" + DB_NAME);
-        if (dbFile.exists()) logger.info("Base de datos encontrada en: " + dbFile.getPath());
+        if (dbFile.exists()) logger.info("[DB] Base de datos encontrada en: " + dbFile.getAbsolutePath());
         else {
-            logger.warn("Base de datos no encontrada. Creando base de datos...");
+            logger.warn("[DB] Base de datos no encontrada. Creando base de datos...");
             createTables();  // Crea las tablas de la base de datos
         }
     }
@@ -53,7 +53,10 @@ public class DbBootstrap {
      */
     public static Connection connect() throws SQLException {
         String url = "jdbc:sqlite:" + DB_FOLDER + "/" + DB_NAME;
-        return DriverManager.getConnection(url);
+        logger.debug("[DB] Conectando a base de datos con URL: {}", url);
+        Connection conn =  DriverManager.getConnection(url);
+        logger.debug("[DB] Conexión abierta a la base de datos.");
+        return conn;
     }
 
     /**
@@ -66,9 +69,10 @@ public class DbBootstrap {
      */
     private static void createTables() {
         try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
-            logger.info("Creando tablas...");
+            logger.info("[DB] Creando tablas en la base de datos...");
 
             // Tabla de barberos
+            logger.info("[DB] Creando tabla 'barberos'...");
             stmt.execute("""
                         CREATE TABLE IF NOT EXISTS barberos (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -82,6 +86,7 @@ public class DbBootstrap {
                     """);
 
             // Tabla de servicios predefinidos
+            logger.info("[DB] Creando tabla 'servicios_definidos'...");
             stmt.execute("""
                         CREATE TABLE IF NOT EXISTS servicios_definidos (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -91,6 +96,7 @@ public class DbBootstrap {
                     """);
 
             // Tabla de servicios realizados
+            logger.info("[DB] Creando tabla 'servicios_realizados'...");
             stmt.execute("""
                         CREATE TABLE IF NOT EXISTS servicios_realizados (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -106,6 +112,7 @@ public class DbBootstrap {
                     """);
 
             // Tabla de egresos
+            logger.info("[DB] Creando tabla 'egresos'...");
             stmt.execute("""
                         CREATE TABLE IF NOT EXISTS egresos (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -127,6 +134,7 @@ public class DbBootstrap {
                    """);
 
             // Tabla de caja diaria
+            logger.info("[DB] Creando tabla 'caja_diaria'...");
             stmt.execute("""
                         CREATE TABLE IF NOT EXISTS caja_diaria (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -141,6 +149,7 @@ public class DbBootstrap {
                     """);
 
             // Tabla de sueldos
+            logger.info("[DB] Creando tabla 'sueldos'...");
             stmt.execute("""
                         CREATE TABLE IF NOT EXISTS sueldos (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -156,9 +165,9 @@ public class DbBootstrap {
                         );
                     """);
 
-            logger.info("Tablas creadas correctamente.");
+            logger.info("[DB] ¡Tablas creadas correctamente!");
         } catch (SQLException e) {
-            logger.error("Error creando las tablas: {}", e.getMessage());
+            logger.error("[DB] Error creando las tablas: {}", e.getMessage());
             throw new RuntimeException(e);
         }
     }
