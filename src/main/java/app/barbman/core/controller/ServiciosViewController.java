@@ -61,8 +61,8 @@ public class ServiciosViewController implements Initializable {
     @FXML
     private javafx.scene.control.Button guardarButton;
 
-    ServicioRealizadoRepository repo = new ServicioRealizadoRepositoryImpl();
-    ServicioRealizadoService sr = new ServicioRealizadoService(repo);
+    private final ServicioRealizadoRepository repo = new ServicioRealizadoRepositoryImpl();
+    private final ServicioRealizadoService sr = new ServicioRealizadoService(repo);
     private final BarberoRepository barberoRepo = new BarberoRepositoryImpl();
     private final ServicioDefinidoRepository servicioDefinidoRepo = new ServicioDefinidoRepositoryImpl();
 
