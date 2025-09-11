@@ -3,24 +3,26 @@ package app.barbman.core.controller;
 import app.barbman.core.model.Egreso;
 import app.barbman.core.repositories.egresos.EgresosRepository;
 import app.barbman.core.repositories.egresos.EgresosRepositoryImpl;
-import app.barbman.core.repositories.serviciorealizado.ServicioRealizadoRepository;
-import app.barbman.core.repositories.serviciorealizado.ServicioRealizadoRepositoryImpl;
 import app.barbman.core.service.egresos.EgresosService;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.beans.property.SimpleStringProperty;
 
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
 
 public class EgresosViewController implements Initializable {
+
+    // Formateador para mostrar precios sin decimales
+    DecimalFormat sinDecimales = new DecimalFormat("#");
     @FXML
     private TableView<Egreso> egresosTable;
-
     @FXML
     private TableColumn<Egreso, String> colFecha;
     @FXML
@@ -53,7 +55,10 @@ public class EgresosViewController implements Initializable {
         // Configuración de las columnas de la tabla
         colFecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
         colTipo.setCellValueFactory(new PropertyValueFactory<>("tipo"));
-        colMonto.setCellValueFactory(new PropertyValueFactory<>("monto"));
+        colMonto.setCellValueFactory(cellData -> {
+            double precio = cellData.getValue().getMonto();
+            return new SimpleStringProperty(sinDecimales.format(precio));
+        });
         colDescripcion.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
 
         mostrarEgresos();

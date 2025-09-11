@@ -22,6 +22,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.StringConverter;
 
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -31,6 +32,9 @@ import java.util.ResourceBundle;
  * Gestiona la tabla que muestra los servicios realizados por los barberos.
  */
 public class ServiciosViewController implements Initializable {
+
+    // Formateador para mostrar precios sin decimales
+    DecimalFormat sinDecimales = new DecimalFormat("#");
     // Tabla de servicios realizados
     @FXML
     private TableView<ServicioRealizado> serviciosTable;
@@ -41,7 +45,7 @@ public class ServiciosViewController implements Initializable {
     @FXML
     private TableColumn<ServicioRealizado, String> colTipoServicio;
     @FXML
-    private TableColumn<ServicioRealizado, Integer> colPrecio;
+    private TableColumn<ServicioRealizado, String> colPrecio;
     @FXML
     private TableColumn<ServicioRealizado, java.util.Date> colFecha;
     @FXML
@@ -93,7 +97,10 @@ public class ServiciosViewController implements Initializable {
             String nombre = (servicio != null) ? servicio.getNombre() : "Desconocido";
             return new SimpleStringProperty(nombre);
         });
-        colPrecio.setCellValueFactory(new PropertyValueFactory<>("precio"));
+        colPrecio.setCellValueFactory(cellData -> {
+            double precio = cellData.getValue().getPrecio();
+            return new SimpleStringProperty(sinDecimales.format(precio));
+        });
         colFecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
         colObservaciones.setCellValueFactory(new PropertyValueFactory<>("observaciones"));
 

@@ -1,8 +1,12 @@
 package app.barbman.core.service.sueldos;
 
+import app.barbman.core.dto.SueldoDTO;
 import app.barbman.core.model.Barbero;
 import app.barbman.core.model.Egreso;
 import app.barbman.core.model.Sueldo;
+import app.barbman.core.repositories.barbero.BarberoRepository;
+import app.barbman.core.repositories.barbero.BarberoRepositoryImpl;
+import app.barbman.core.repositories.egresos.EgresosRepository;
 import app.barbman.core.repositories.serviciorealizado.ServicioRealizadoRepository;
 import app.barbman.core.repositories.sueldos.SueldosRepository;
 import org.apache.logging.log4j.LogManager;
@@ -10,9 +14,8 @@ import org.apache.logging.log4j.Logger;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
-
-import static app.barbman.core.service.egresos.EgresosService.egresosRepository;
 
 /**
  * Servicio para gestionar el pago de sueldos a barberos.
@@ -23,10 +26,13 @@ public class SueldosService {
     private static final List<String> FORMAS_VALIDAS = List.of("efectivo", "transferencia");
     private static final Logger logger = LogManager.getLogger(SueldosService.class);
     private final ServicioRealizadoRepository servicioRealizadoRepository;
+    private final BarberoRepository barberoRepository = new BarberoRepositoryImpl();
+    private final EgresosRepository egresosRepository;
 
-    public SueldosService(SueldosRepository repo, ServicioRealizadoRepository servicioRealizadoRepo) {
+    public SueldosService(SueldosRepository repo, ServicioRealizadoRepository servicioRealizadoRepo, EgresosRepository egresosRepository) {
         this.sueldosRepository = repo;
         this.servicioRealizadoRepository = servicioRealizadoRepo;
+        this.egresosRepository = egresosRepository;
     }
 
     /**
@@ -95,6 +101,7 @@ public class SueldosService {
                 barbero.getId(), tipo, param1, param2, bono);
         // Calcular sueldo base
         double montoCalculado = switch (tipo) {
+            case 0 -> 0.0; // No cobra
             case 1 -> calcularPorProduccionSemanal(produccion, param1);
             case 2 -> calcularSueldoBaseMasPorcentaje(produccion, param1, param2);
             case 3 -> param1;
@@ -201,5 +208,46 @@ public class SueldosService {
      */
     public boolean isPagado(int barberoId, LocalDate semanaInicio) {
         return sueldosRepository.findByBarberoAndFecha(barberoId, semanaInicio) != null;
+    }
+
+    /**
+     * Genera una lista de SueldoDTO para todos los barberos en el rango semanal dado.
+     * Incluye producción, monto a liquidar y estado de pago.
+     * Se utiliza para mostrar en la vista de sueldos.
+     *
+     * @param inicio Fecha de inicio de la semana (lunes)
+     * @param fin    Fecha de fin de la semana (sábado)
+     * @return Lista de SueldoDTO con información para la vista
+     */
+    public List<SueldoDTO> genSueldoDTOSemanal(LocalDate inicio, LocalDate fin){
+        List<SueldoDTO> lista = new ArrayList<>();
+        List<Barbero> barberos = barberoRepository.findAll();
+
+        for (Barbero barbero : barberos) {
+            int barberoId = barbero.getId();
+            String nombre = barbero.getNombre();
+
+            // Obtener producción semanal
+            double produccion = servicioRealizadoRepository.getProduccionSemanalPorBarbero(barberoId, inicio, fin);
+
+            // Calcular monto a liquidar (reutilizamos lógica existente)
+            Sueldo sueldoTemp = calcularSueldo(barbero, 0); // Sin bono
+
+            // Verificar si ya está pagado
+            boolean yaPagado = isPagado(barberoId, inicio);
+            int sueldoId = yaPagado ? sueldosRepository.findByBarberoAndFecha(barberoId, inicio).getId() : 0;
+
+            SueldoDTO dto = new SueldoDTO();
+            dto.setBarberoId(barberoId);
+            dto.setNombreBarbero(nombre);
+            dto.setProduccionTotal(produccion);
+            dto.setMontoLiquidado(sueldoTemp.getMontoLiquidado());
+            dto.setPagado(yaPagado);
+            dto.setSueldoId(sueldoId);
+
+            lista.add(dto);
+        }
+
+        return lista;
     }
 }
