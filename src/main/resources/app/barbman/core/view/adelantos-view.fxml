@@ -20,13 +20,13 @@
             <!-- Barbero -->
             <VBox spacing="2.0">
                 <Label text="Barbero" styleClass="form-label"/>
-                <ChoiceBox fx:id="barberoChoice" prefWidth="220.0" styleClass="services-choicebox"/>
+                <ChoiceBox fx:id="barberoChoiceBox" prefWidth="220.0" styleClass="services-choicebox"/>
             </VBox>
 
             <!-- Forma de pago -->
             <VBox spacing="2.0">
                 <Label text="Forma de pago" styleClass="form-label"/>
-                <ChoiceBox fx:id="formaPagoChoice" prefWidth="220.0" styleClass="services-choicebox"/>
+                <ChoiceBox fx:id="formaPagoChoiceBox" prefWidth="220.0" styleClass="services-choicebox"/>
             </VBox>
 
             <!-- Monto -->
@@ -39,7 +39,7 @@
             <!-- Botones -->
             <HBox spacing="10.0" alignment="CENTER">
                 <Button text="Guardar" fx:id="btnGuardar" styleClass="login-button"/>
-                <Button text="Cancelar" fx:id="btnCancelar" styleClass="login-button"/>
+                <Button text="Cancelar" fx:id="btnCancelar" styleClass="login-button" onAction="#onCancelar"/>
             </HBox>
 
         </VBox>

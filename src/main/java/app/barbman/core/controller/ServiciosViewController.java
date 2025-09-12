@@ -65,10 +65,10 @@ public class ServiciosViewController implements Initializable {
     @FXML
     private javafx.scene.control.Button guardarButton;
 
-    private final ServicioRealizadoRepository repo = new ServicioRealizadoRepositoryImpl();
-    private final ServicioRealizadoService sr = new ServicioRealizadoService(repo);
-    private final BarberoRepository barberoRepo = new BarberoRepositoryImpl();
-    private final ServicioDefinidoRepository servicioDefinidoRepo = new ServicioDefinidoRepositoryImpl();
+    private final ServicioRealizadoRepository srRepository = new ServicioRealizadoRepositoryImpl();
+    private final ServicioRealizadoService srService = new ServicioRealizadoService(srRepository);
+    private final BarberoRepository barberoRepository = new BarberoRepositoryImpl();
+    private final ServicioDefinidoRepository sdRepository = new ServicioDefinidoRepositoryImpl();
 
     /**
      * Metodo de inicialización del controlador.
@@ -87,13 +87,13 @@ public class ServiciosViewController implements Initializable {
         // Configuración de las columnas de la tabla con las propiedades del modelo ServicioRealizad
         colBarbero.setCellValueFactory(cellData -> {
             int barberoId = cellData.getValue().getBarberoId();
-            Barbero b = barberoRepo.findById(barberoId);
+            Barbero b = barberoRepository.findById(barberoId);
             String nombre = (b != null) ? b.getNombre() : "Desconocido";
             return new SimpleStringProperty(nombre);
         });
         colTipoServicio.setCellValueFactory(cellData -> {
             int servicioId = cellData.getValue().getTipoServicio();
-            ServicioDefinido servicio = servicioDefinidoRepo.findById(servicioId); // Carga servicio definido según ID
+            ServicioDefinido servicio = sdRepository.findById(servicioId); // Carga servicio definido según ID
             String nombre = (servicio != null) ? servicio.getNombre() : "Desconocido";
             return new SimpleStringProperty(nombre);
         });
@@ -128,7 +128,7 @@ public class ServiciosViewController implements Initializable {
      * Si la lista está vacía, la tabla queda vacía.
      */
     void mostrarServicios() {
-        List<ServicioRealizado> servicios = repo.findAll();
+        List<ServicioRealizado> servicios = srRepository.findAll();
         Collections.reverse(servicios);
         serviciosTable.setItems(FXCollections.observableArrayList(servicios));
     }
@@ -168,7 +168,7 @@ public class ServiciosViewController implements Initializable {
         try {
             double precio = Double.parseDouble(precioTexto);
 
-            sr.addServicioRealizado(
+            srService.addServicioRealizado(
                     (barbero != null) ? barbero.getId() : null,
                     (servicioDefinido != null) ? servicioDefinido.getId() : null,
                     precio,
@@ -201,7 +201,7 @@ public class ServiciosViewController implements Initializable {
      * Si hay un barbero activo en la sesión, lo selecciona automáticamente.
      */
     private void cargarBarberos() {
-        List<Barbero> barberos = barberoRepo.findAll();
+        List<Barbero> barberos = barberoRepository.findAll();
         barberoChoiceBox.setItems(FXCollections.observableArrayList(barberos));
         barberoChoiceBox.setConverter(new StringConverter<Barbero>() {
             @Override
@@ -226,7 +226,7 @@ public class ServiciosViewController implements Initializable {
      * Configura un conversor para mostrar el nombre del servicio en lugar del objeto completo.
      */
     private void cargarServiciosDefinidos() {
-        List<ServicioDefinido> servicios = servicioDefinidoRepo.findAll();
+        List<ServicioDefinido> servicios = sdRepository.findAll();
         tipoServicioBox.setItems(FXCollections.observableArrayList(servicios));
         tipoServicioBox.setConverter(new StringConverter<ServicioDefinido>() {
             @Override

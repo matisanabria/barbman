@@ -227,11 +227,17 @@ public class SueldosService {
             int barberoId = barbero.getId();
             String nombre = barbero.getNombre();
 
-            // Obtener producción semanal
+            // Producción semanal
             double produccion = servicioRealizadoRepository.getProduccionSemanalPorBarbero(barberoId, inicio, fin);
 
-            // Calcular monto a liquidar (reutilizamos lógica existente)
-            Sueldo sueldoTemp = calcularSueldo(barbero, 0); // Sin bono
+            // Calcular sueldo base (sin bonos)
+            Sueldo sueldoTemp = calcularSueldo(barbero, 0);
+
+            // Consultar adelantos
+            double adelantos = egresosRepository.getTotalAdelantos(barberoId, inicio, fin);
+
+            // Aplicar descuento de adelantos
+            double montoFinal = sueldoTemp.getMontoLiquidado() - adelantos;
 
             // Verificar si ya está pagado
             boolean yaPagado = isPagado(barberoId, inicio);
@@ -241,7 +247,7 @@ public class SueldosService {
             dto.setBarberoId(barberoId);
             dto.setNombreBarbero(nombre);
             dto.setProduccionTotal(produccion);
-            dto.setMontoLiquidado(sueldoTemp.getMontoLiquidado());
+            dto.setMontoLiquidado(montoFinal);
             dto.setPagado(yaPagado);
             dto.setSueldoId(sueldoId);
 
