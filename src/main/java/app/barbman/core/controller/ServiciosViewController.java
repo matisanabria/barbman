@@ -34,7 +34,7 @@ import java.util.ResourceBundle;
 public class ServiciosViewController implements Initializable {
 
     // Formateador para mostrar precios sin decimales
-    DecimalFormat sinDecimales = new DecimalFormat("#");
+    private final DecimalFormat formateadorNumeros = new DecimalFormat("#,###");
     // Tabla de servicios realizados
     @FXML
     private TableView<ServicioRealizado> serviciosTable;
@@ -99,7 +99,7 @@ public class ServiciosViewController implements Initializable {
         });
         colPrecio.setCellValueFactory(cellData -> {
             double precio = cellData.getValue().getPrecio();
-            return new SimpleStringProperty(sinDecimales.format(precio));
+            return new SimpleStringProperty(formateadorNumeros.format(precio) +  " Gs");
         });
         colFecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
         colObservaciones.setCellValueFactory(new PropertyValueFactory<>("observaciones"));

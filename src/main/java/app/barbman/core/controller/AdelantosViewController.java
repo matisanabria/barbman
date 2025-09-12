@@ -19,6 +19,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -35,6 +36,7 @@ public class AdelantosViewController implements Initializable {
     private Button btnCancelar;
 
     private static final Logger logger = LogManager.getLogger(AdelantosViewController.class);
+    private final DecimalFormat formateadorNumeros = new DecimalFormat("#,###");
 
     private final BarberoRepository barberoRepository = new BarberoRepositoryImpl();
     private final EgresosRepository egresosRepository = new EgresosRepositoryImpl();
@@ -49,6 +51,7 @@ public class AdelantosViewController implements Initializable {
         formaPagoChoiceBox.setItems(FXCollections.observableArrayList(
                 "efectivo", "transferencia"
         ));
+        formaPagoChoiceBox.setValue("efectivo");
         logger.info("Vista de adelantos inicializada.");
         btnGuardar.setOnAction(e -> guardarAdelanto());
     }
@@ -125,5 +128,8 @@ public class AdelantosViewController implements Initializable {
         } catch (Exception e) {
             logger.error("Error inesperado al registrar adelanto: {}", e.getMessage(), e);
         }
+        Stage stage = (Stage) btnCancelar.getScene().getWindow();
+        stage.close();
+        logger.info("Ventana de adelantos cerrada al guardar.");
     }
 }

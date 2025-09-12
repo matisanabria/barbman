@@ -20,7 +20,7 @@ import java.util.ResourceBundle;
 public class EgresosViewController implements Initializable {
 
     // Formateador para mostrar precios sin decimales
-    DecimalFormat sinDecimales = new DecimalFormat("#");
+    private final DecimalFormat formateadorNumeros = new DecimalFormat("#,###");
     @FXML
     private TableView<Egreso> egresosTable;
     @FXML
@@ -57,7 +57,7 @@ public class EgresosViewController implements Initializable {
         colTipo.setCellValueFactory(new PropertyValueFactory<>("tipo"));
         colMonto.setCellValueFactory(cellData -> {
             double precio = cellData.getValue().getMonto();
-            return new SimpleStringProperty(sinDecimales.format(precio));
+            return new SimpleStringProperty(formateadorNumeros.format(precio) +  " Gs");
         });
         colDescripcion.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
 
