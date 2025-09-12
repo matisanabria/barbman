@@ -11,6 +11,12 @@
     -fx-effect: dropshadow(gaussian, #17171760, 16, 0.17, 0, 2);
     -fx-padding: 32 24 32 24;
 }
+.adelanto-card {
+    -fx-background-color: #2F2F2F;
+    -fx-background-radius: 12;
+    -fx-effect: dropshadow(gaussian, #17171760, 10, 0.15, 0, 1);
+    -fx-padding: 16 16 16 16; /* mucho más compacto */
+}
 
 /* ====== TITLES ====== */
 .login-title, .services-title {
@@ -274,4 +280,12 @@
     -fx-border-width: 0 0 1 0;
     -fx-border-color: #292929;
     -fx-alignment: center;
+}
+/* ====== LABELS DE FORMULARIOS ====== */
+.form-label {
+    -fx-text-fill: #fff;
+    -fx-font-size: 14px;
+    -fx-font-family: 'Inter', Arial, sans-serif;
+    -fx-font-weight: 600;
+    -fx-padding: 0 0 2 0;
 }

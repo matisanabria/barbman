@@ -21,6 +21,36 @@ public class WindowManager {
      *
      * @param fxmlPath Ruta del archivo FXML
      */
+    // Sobrecarga para permitir establecer una ventana padre (owner)
+    public static void openWindow(String fxmlPath, String title, Stage owner){
+        try {
+            loadFontsOnce();
+
+            FXMLLoader loader = new FXMLLoader(WindowManager.class.getResource(fxmlPath));
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
+
+            scene.getStylesheets().add(WindowManager.class.getResource("/app/barbman/core/style/main.css").toExternalForm());
+
+            Stage stage = new Stage();
+            stage.setResizable(false);
+            if (title == null || title.isBlank()) {
+                stage.setTitle("Barbman (" + getAppVersion() + ")");
+            } else {
+                stage.setTitle(title);
+            }
+
+            if (owner != null) {
+                stage.initOwner(owner); // hace que sea hijo
+            }
+
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            logger.error("Error abriendo ventana: " + fxmlPath, e);
+        }
+    }
+    // Sobrecarga para establecer título
     public static void openWindow(String fxmlPath, String title) {
         try {
             loadFontsOnce();
@@ -44,9 +74,11 @@ public class WindowManager {
             logger.error("Error abriendo ventana: " + fxmlPath, e);
         }
     }
+    // Sobrecarga para no establecer titulo (usa default)
     public static void openWindow(String fxmlPath) {
         openWindow(fxmlPath, null);
     }
+
 
     /**
      * Cambia de ventana: abre una nueva y cierra la actual.

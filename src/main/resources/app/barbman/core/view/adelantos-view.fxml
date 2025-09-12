@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<AnchorPane prefHeight="360.0" prefWidth="320.0"
+            xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="app.barbman.core.controller.AdelantosViewController">
+    <children>
+        <VBox alignment="CENTER" spacing="12.0"
+              layoutX="10.0" layoutY="10.0"
+              prefWidth="300.0"
+              styleClass="adelanto-card">
+
+            <!-- Título -->
+            <Label text="Registrar Adelanto" styleClass="login-title"/>
+
+            <!-- Barbero -->
+            <VBox spacing="2.0">
+                <Label text="Barbero" styleClass="form-label"/>
+                <ChoiceBox fx:id="barberoChoice" prefWidth="220.0" styleClass="services-choicebox"/>
+            </VBox>
+
+            <!-- Forma de pago -->
+            <VBox spacing="2.0">
+                <Label text="Forma de pago" styleClass="form-label"/>
+                <ChoiceBox fx:id="formaPagoChoice" prefWidth="220.0" styleClass="services-choicebox"/>
+            </VBox>
+
+            <!-- Monto -->
+            <VBox spacing="2.0">
+                <Label text="Monto" styleClass="form-label"/>
+                <TextField fx:id="montoField" promptText="Ingrese monto" styleClass="services-textfield"/>
+            </VBox>
+
+
+            <!-- Botones -->
+            <HBox spacing="10.0" alignment="CENTER">
+                <Button text="Guardar" fx:id="btnGuardar" styleClass="login-button"/>
+                <Button text="Cancelar" fx:id="btnCancelar" styleClass="login-button"/>
+            </HBox>
+
+        </VBox>
+    </children>
+</AnchorPane>
