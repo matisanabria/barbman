@@ -15,11 +15,11 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.StringConverter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.net.URL;
 import java.text.DecimalFormat;
@@ -33,6 +33,7 @@ import java.util.ResourceBundle;
  */
 public class ServiciosViewController implements Initializable {
 
+    private static final Logger logger = LogManager.getLogger(ServiciosViewController.class);
     // Formateador para mostrar precios sin decimales
     private final DecimalFormat formateadorNumeros = new DecimalFormat("#,###");
     // Tabla de servicios realizados
@@ -80,6 +81,8 @@ public class ServiciosViewController implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        logger.info("[SERV-VIEW] Inicializando vista de servicios...");
+
         // Para que las columnas queden fijas
         serviciosTable.getColumns().forEach(col -> col.setReorderable(false));
         serviciosTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
@@ -121,6 +124,39 @@ public class ServiciosViewController implements Initializable {
         formaPagoBox.setValue("efectivo"); // opción por defecto
 
         guardarButton.setOnAction(e -> guardarServicio());
+
+        // Doble clic para borrar un servicio realizado
+        serviciosTable.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2 && !serviciosTable.getSelectionModel().isEmpty()) {
+                ServicioRealizado seleccionado = serviciosTable.getSelectionModel().getSelectedItem();
+                if (seleccionado != null) {
+                    confirmarYBorrar(seleccionado);
+                }
+            }
+        });
+
+        // Formato automático de números en el campo precio
+        precioField.textProperty().addListener((obs, oldValue, newValue) -> {
+            if (newValue == null || newValue.isBlank()) {
+                return;
+            }
+            // Quitar todo lo que no sea dígito
+            String digits = newValue.replaceAll("[^\\d]", "");
+            if (digits.isEmpty()) {
+                precioField.setText("");
+                return;
+            }
+            try {
+                long valor = Long.parseLong(digits);
+                String formateado = formateadorNumeros.format(valor);
+                // Para que el caret (cursor) no se mueva al inicio
+                precioField.setText(formateado);
+                precioField.positionCaret(formateado.length());
+            } catch (NumberFormatException e) {
+                logger.warn("[SERV-VIEW] Valor no numérico en precioField: {}", newValue);
+            }
+        });
+        logger.info("[SERV-VIEW] Vista de servicios inicializada correctamente.");
     }
 
     /**
@@ -128,9 +164,11 @@ public class ServiciosViewController implements Initializable {
      * Si la lista está vacía, la tabla queda vacía.
      */
     void mostrarServicios() {
+        logger.info("[SERV-VIEW] Cargando lista de servicios realizados...");
         List<ServicioRealizado> servicios = srRepository.findAll();
         Collections.reverse(servicios);
         serviciosTable.setItems(FXCollections.observableArrayList(servicios));
+        logger.info("[SERV-VIEW] {} servicios cargados en la tabla.", servicios.size());
     }
 
     /**
@@ -147,21 +185,25 @@ public class ServiciosViewController implements Initializable {
 
         if (barbero == null) {
             mostrarAlerta("Debe seleccionar un barbero.");
+            logger.warn("[SERV-VIEW] Validación fallida: barbero no seleccionado.");
             return;
         }
 
         if (servicioDefinido == null) {
             mostrarAlerta("Debe seleccionar un tipo de servicio.");
+            logger.warn("[SERV-VIEW] Validación fallida: servicio no seleccionado.");
             return;
         }
 
         if (precioTexto.isEmpty()) {
             mostrarAlerta("Debe ingresar un precio.");
+            logger.warn("[SERV-VIEW] Validación fallida: precio vacío.");
             return;
         }
 
         if (formaPago == null || formaPago.isBlank()) {
             mostrarAlerta("Debe seleccionar una forma de pago.");
+            logger.warn("[SERV-VIEW] Validación fallida: forma de pago vacía.");
             return;
         }
 
@@ -175,12 +217,19 @@ public class ServiciosViewController implements Initializable {
                     formaPago,
                     observaciones
             );
-
+            logger.info("[SERV-VIEW] Servicio registrado -> Barbero: {}, Servicio: {}, Precio: {}, FormaPago: {}",
+                    barbero.getNombre(),
+                    (servicioDefinido != null ? servicioDefinido.getNombre() : "N/A"),
+                    precio,
+                    formaPago
+            );
             mostrarServicios();
         } catch (NumberFormatException e) {
             mostrarAlerta("El campo 'Precio' debe ser un número válido.");
+            logger.error("[SERV-VIEW] Error al parsear precio: {}", e.getMessage());
         } catch (IllegalArgumentException e) {
             mostrarAlerta(e.getMessage());
+            logger.warn("[SERV-VIEW] Validación fallida al guardar servicio: {}", e.getMessage());
         }
     }
 
@@ -219,6 +268,7 @@ public class ServiciosViewController implements Initializable {
         Barbero activo = AppSession.getBarberoActivo();
         if (activo != null && barberos.contains(activo)) {
             barberoChoiceBox.setValue(activo);
+            logger.info("[SERV-VIEW] Barbero activo preseleccionado: {}", activo.getNombre());
         }
     }
 
@@ -236,5 +286,37 @@ public class ServiciosViewController implements Initializable {
             @Override
             public ServicioDefinido fromString(String nombre) { return null; }
         });
+        logger.info("[SERV-VIEW] {} servicios definidos cargados en ChoiceBox.", servicios.size());
     }
+
+    /**
+     * Muestra una alerta de confirmación antes de borrar un servicio realizado.
+     * Si el usuario confirma, borra el servicio del repositorio y actualiza la tabla.
+     *
+     * @param servicio El servicio realizado a borrar.
+     */
+    private void confirmarYBorrar(ServicioRealizado servicio) {
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Confirmar eliminación");
+        confirm.setHeaderText("¿Seguro que quieres eliminar este servicio?");
+        confirm.setContentText(
+                "Servicio ID: " + servicio.getId() +
+                        "\nPrecio: " + formateadorNumeros.format(servicio.getPrecio()) + " Gs" +
+                        "\nFecha: " + servicio.getFecha()
+        );
+
+        // Mostrar el alert y esperar respuesta
+        confirm.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                srRepository.delete(servicio.getId());
+                mostrarServicios();
+                logger.info("[SERV-VIEW] Servicio eliminado -> ID: {}, Precio: {}, Fecha: {}",
+                        servicio.getId(), servicio.getPrecio(), servicio.getFecha());
+            }
+            else{
+                logger.info("[SERV-VIEW] Cancelada eliminación de servicio -> ID: {}", servicio.getId());
+            }
+        });
+    }
+
 }
