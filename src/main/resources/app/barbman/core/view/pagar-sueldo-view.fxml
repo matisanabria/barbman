@@ -27,6 +27,12 @@
                 </VBox>
             </TitledPane>
 
+            <!-- Monto manual (solo si tipoCobro=0) -->
+            <VBox spacing="2.0" fx:id="manualMontoBox" visible="false" managed="false">
+                <Label text="Monto manual" styleClass="form-label"/>
+                <TextField fx:id="montoManualField" promptText="Ingrese monto manual" styleClass="services-textfield"/>
+            </VBox>
+
             <!-- Bono -->
             <VBox spacing="2.0">
                 <Label text="Bono adicional" styleClass="form-label"/>
@@ -39,11 +45,6 @@
                 <ChoiceBox fx:id="formaPagoChoiceBox" prefWidth="240.0" styleClass="services-choicebox"/>
             </VBox>
 
-            <!-- Monto manual (solo si tipoCobro=0) -->
-            <VBox spacing="2.0" fx:id="manualMontoBox" visible="false" managed="false">
-                <Label text="Monto manual" styleClass="form-label"/>
-                <TextField fx:id="montoManualField" promptText="Ingrese monto manual" styleClass="services-textfield"/>
-            </VBox>
 
             <!-- Botones -->
             <HBox spacing="10.0" alignment="CENTER">
