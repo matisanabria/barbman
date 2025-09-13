@@ -130,6 +130,7 @@ public class SueldosViewController implements Initializable {
 
                     // pasar el DTO al controller
                     controller.setSueldoDTO(dto);
+                    controller.setParentController(SueldosViewController.this);
                 });
             }
 
@@ -154,5 +155,18 @@ public class SueldosViewController implements Initializable {
         logger.info("[SUELDO-VIEW] Datos cargados correctamente en la tabla de sueldos.");
     }
 
+    /**
+     * Vuelve a cargar los datos de la tabla de sueldos.
+     */
+    public void recargarTabla() {
+        LocalDate hoy = LocalDate.now();
+        LocalDate lunes = hoy.with(java.time.DayOfWeek.MONDAY);
+        LocalDate sabado = lunes.plusDays(5);
+
+        List<SueldoDTO> lista = sueldosService.genSueldoDTOSemanal(lunes, sabado);
+        sueldosTable.getItems().setAll(lista);
+
+        logger.info("[SUELDO-VIEW] Tabla de sueldos recargada ({}) registros.", lista.size());
+    }
 
 }

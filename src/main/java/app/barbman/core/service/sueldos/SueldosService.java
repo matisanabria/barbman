@@ -43,21 +43,21 @@ public class SueldosService {
      * @throws IllegalArgumentException si los datos son inválidos
      * @throws IllegalStateException    si el sueldo ya fue pagado
      */
-    public void pagarSueldo(Sueldo sueldo, String formaPago) {
+    public void pagarSueldo(Sueldo sueldo, String formaPago, double bono) {
         if (sueldo == null) throw new IllegalArgumentException("Sueldo vacío");
         if (formaPago == null || formaPago.isBlank()) throw new IllegalArgumentException("Forma de pago inválida");
+        // Verificar si ya se pagó este sueldo
+        if (isPagado(sueldo.getBarberoId(), sueldo.getFechaInicioSemana())) {
+            throw new IllegalStateException("Este barbero ya tiene un sueldo registrado esta semana.");
+        }
 
+        sueldo.setMontoLiquidado(sueldo.getMontoLiquidado() + bono);
         sueldo.setFechaPago(LocalDate.now());
         sueldo.setFormaPago(formaPago);
         sueldosRepository.save(sueldo);
 
         String descripcion = "Pago de sueldo a barbero ID " + sueldo.getBarberoId() +
                 " (semana del " + sueldo.getFechaInicioSemana() + " al " + sueldo.getFechaFinSemana() + ")";
-
-        // Verificar si ya se pagó este sueldo
-        if (isPagado(sueldo.getBarberoId(), sueldo.getFechaInicioSemana())) {
-            throw new IllegalStateException("Este barbero ya tiene un sueldo registrado esta semana.");
-        }
 
         Egreso egreso = new Egreso(
                 descripcion,

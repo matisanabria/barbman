@@ -12,6 +12,7 @@
         <VBox alignment="CENTER" spacing="12.0"
               layoutX="10.0" layoutY="10.0"
               prefWidth="300.0"
+              prefHeight="500.0"
               styleClass="adelanto-card">
 
             <!-- Título -->

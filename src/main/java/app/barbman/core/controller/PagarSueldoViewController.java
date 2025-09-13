@@ -59,6 +59,7 @@ public class PagarSueldoViewController implements Initializable {
     private final EgresosRepository egresosRepository = new EgresosRepositoryImpl();
     private final BarberoRepository barberoRepository = new BarberoRepositoryImpl();
     private final SueldosService sueldosService = new SueldosService(sueldosRepository, servicioRealizadoRepository, egresosRepository);
+    private SueldosViewController parentController;
 
     // Barbero y sueldo seleccionado desde la tabla principal
     private SueldoDTO sueldoDTO;
@@ -69,8 +70,9 @@ public class PagarSueldoViewController implements Initializable {
         formaPagoChoiceBox.setItems(FXCollections.observableArrayList("efectivo", "transferencia"));
         formaPagoChoiceBox.setValue("efectivo");
 
-        // monto manual oculto por defecto
-        montoManualField.setVisible(false);
+        // ocultamos el VBox completo al inicio
+        manualMontoBox.setVisible(false);
+        manualMontoBox.setManaged(false);
 
         btnGuardar.setOnAction(e -> pagarSueldo());
         logger.info("[SUELDOS-PAGO] Vista inicializada.");
@@ -121,13 +123,14 @@ public class PagarSueldoViewController implements Initializable {
                 montoManual = Double.parseDouble(montoManualField.getText().replace(".", ""));
             }
 
-            Sueldo sueldo = sueldosService.calcularSueldo(barbero, bono);
+            Sueldo sueldo = sueldosService.calcularSueldo(barbero, 0);
             if (montoManual >= 0) {
                 sueldo.setMontoLiquidado(montoManual);
             }
 
             String formaPago = formaPagoChoiceBox.getValue();
-            sueldosService.pagarSueldo(sueldo, formaPago);
+            // Guardar pago con bono
+            sueldosService.pagarSueldo(sueldo, formaPago, bono);
 
             logger.info("[SUELDOS-PAGO] Sueldo registrado correctamente -> Barbero: {}, Monto: {}, FormaPago: {}",
                     barbero.getNombre(), sueldo.getMontoLiquidado(), formaPago);
@@ -137,8 +140,16 @@ public class PagarSueldoViewController implements Initializable {
             mostrarAlerta("Error al pagar sueldo: " + e.getMessage());
         }
 
+        if (parentController != null) {
+            parentController.recargarTabla();
+        }
+
         Stage stage = (Stage) btnCancelar.getScene().getWindow();
         stage.close();
+    }
+
+    public void setParentController(SueldosViewController parent) {
+        this.parentController = parent;
     }
 
     private void mostrarAlerta(String msg) {
