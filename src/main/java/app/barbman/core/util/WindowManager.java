@@ -96,6 +96,47 @@ public class WindowManager {
     }
 
     /**
+     * Abre una nueva ventana y devuelve el controller asociado.
+     *
+     * @param fxmlPath Ruta al archivo FXML
+     * @param title    Título de la ventana
+     * @param owner    Stage padre (puede ser null)
+     * @param <T>      Tipo del controller
+     * @return El controller del FXML cargado
+     */
+    public static <T> T openWindowWithController(String fxmlPath, String title, Stage owner) {
+        try {
+            loadFontsOnce();
+
+            FXMLLoader loader = new FXMLLoader(WindowManager.class.getResource(fxmlPath));
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
+
+            scene.getStylesheets().add(WindowManager.class.getResource("/app/barbman/core/style/main.css").toExternalForm());
+
+            Stage stage = new Stage();
+            stage.setResizable(false);
+            if (title == null || title.isBlank()) {
+                stage.setTitle("Barbman (" + getAppVersion() + ")");
+            } else {
+                stage.setTitle(title);
+            }
+
+            if (owner != null) {
+                stage.initOwner(owner); // hace que sea hijo
+            }
+
+            stage.setScene(scene);
+            stage.show();
+
+            return loader.getController();
+        } catch (IOException e) {
+            logger.error("Error abriendo ventana con controller: " + fxmlPath, e);
+            throw new RuntimeException("No se pudo abrir ventana: " + fxmlPath, e);
+        }
+    }
+
+    /**
      * Carga las fuentes personalizadas solo una vez en toda la aplicación.
      */
     private static void loadFontsOnce() {

@@ -93,7 +93,7 @@ public class EgresosViewController implements Initializable {
             if (newValue == null || newValue.isBlank()) {
                 return;
             }
-            // Quitar todo lo que no sea dígito
+            // Quitar lo que no sea dígito
             String digits = newValue.replaceAll("[^\\d]", "");
             if (digits.isEmpty()) {
                 montoField.setText("");
@@ -128,7 +128,7 @@ public class EgresosViewController implements Initializable {
     private void guardarEgreso() {
         String tipo = tipoEgresoBox.getValue();
         String descripcion = descripcionField.getText();
-        String montoStr = montoField.getText();
+        String montoStr = montoField.getText().replace(".", "").trim();
         String formaPago = formaPagoBox.getValue();
 
         // Validación de campos vacíos
@@ -147,14 +147,15 @@ public class EgresosViewController implements Initializable {
             logger.warn("[EGRESOS-VIEW] Validación fallida: monto vacío.");
             return;
         }
+        double monto = Double.parseDouble(montoStr);
         egresosService.addEgreso(
                 tipo,           // tipo
-                Double.parseDouble(montoStr), // monto
+                monto, // monto
                 descripcion,    // descripcion
                 formaPago
         );
         logger.info("[EGRESOS-VIEW] Egreso agregado -> Tipo: {}, Monto: {}, FormaPago: {}, Descripción: {}",
-                tipo, Double.parseDouble(montoStr), formaPago, descripcion);
+                tipo, monto, formaPago, descripcion);
         mostrarEgresos();
     }
 

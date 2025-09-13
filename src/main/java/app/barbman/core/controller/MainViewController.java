@@ -36,7 +36,7 @@ public class MainViewController {
 
     @FXML
     private void onCerrarSesion() {
-        logger.info("Cerrando sesión y volviendo a la pantalla de login.");
+        logger.info("[MAIN-VIEW] Cerrando sesión y volviendo a la pantalla de login.");
         AppSession.cerrarSesion();
         WindowManager.switchWindow(
                 (Stage) borderPane.getScene().getWindow(),
@@ -50,7 +50,8 @@ public class MainViewController {
     @FXML
     public void initialize() {
         // Selecciona el botón de inicio por defecto
-        menuGroup.selectToggle(btnInicio);
+        menuGroup.selectToggle(btnServicios);
+        setView("/app/barbman/core/view/embed-view/servicios-view.fxml");
 
         // Listener para cambios de selección en el grupo de botones
         menuGroup.selectedToggleProperty().addListener((obs, oldToggle, newToggle) -> {

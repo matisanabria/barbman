@@ -113,7 +113,10 @@ public class ServiciosViewController implements Initializable {
         // Autocompleta el precio al seleccionar un tipo de servicio
         tipoServicioBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
-                precioField.setText(String.valueOf(newVal.getPrecioBase()));
+                long precioBase = (long) newVal.getPrecioBase(); // convierte 40000.0 a 40000
+                String formateado = formateadorNumeros.format(precioBase);
+                precioField.setText(formateado); // se pone formateado
+                precioField.positionCaret(formateado.length());
             }
         });
 
@@ -179,7 +182,7 @@ public class ServiciosViewController implements Initializable {
     private void guardarServicio() {
         Barbero barbero = barberoChoiceBox.getValue();
         ServicioDefinido servicioDefinido = tipoServicioBox.getValue();
-        String precioTexto = precioField.getText().trim();
+        String precioStr = precioField.getText().replace(".", "").trim();
         String observaciones = observacionesField.getText();
         String formaPago = formaPagoBox.getValue();
 
@@ -195,7 +198,7 @@ public class ServiciosViewController implements Initializable {
             return;
         }
 
-        if (precioTexto.isEmpty()) {
+        if (precioStr.isEmpty()) {
             mostrarAlerta("Debe ingresar un precio.");
             logger.warn("[SERV-VIEW] Validación fallida: precio vacío.");
             return;
@@ -208,7 +211,7 @@ public class ServiciosViewController implements Initializable {
         }
 
         try {
-            double precio = Double.parseDouble(precioTexto);
+            double precio = Double.parseDouble(precioStr);
 
             srService.addServicioRealizado(
                     (barbero != null) ? barbero.getId() : null,

@@ -36,7 +36,7 @@ public class AdelantosViewController implements Initializable {
     private Button btnCancelar;
 
     private static final Logger logger = LogManager.getLogger(AdelantosViewController.class);
-    private final DecimalFormat formateadorNumeros = new DecimalFormat("#,###");
+    private final DecimalFormat formateadorNumeros = new DecimalFormat("#.###");
 
     private final BarberoRepository barberoRepository = new BarberoRepositoryImpl();
     private final EgresosRepository egresosRepository = new EgresosRepositoryImpl();

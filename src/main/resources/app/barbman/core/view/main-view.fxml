@@ -25,7 +25,7 @@
                       styleClass="main-menu-bar">
                     <children>
                         <!-- Agrupación de botones con ToggleGroup -->
-                        <ToggleButton fx:id="btnInicio" selected="true" styleClass="main-menu-btn">
+                        <ToggleButton fx:id="btnInicio" selected="true" styleClass="main-menu-btn" disable="true">
                             <graphic>
                                 <FontIcon iconLiteral="fas-home" iconSize="24"/>
                             </graphic>

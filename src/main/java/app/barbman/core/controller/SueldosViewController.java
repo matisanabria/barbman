@@ -12,9 +12,7 @@ import app.barbman.core.util.WindowManager;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -113,7 +111,43 @@ public class SueldosViewController implements Initializable {
             return new SimpleStringProperty(estado);
         });
 
-        // TODO: poner botones en la columna acción para pagar sueldo
+        // Columna con botón para pagar sueldo
+        colAccion.setCellFactory(col -> new TableCell<>() {
+            private final Button btnPagar = new Button("Pagar");
+
+            {
+                btnPagar.setOnAction(event -> {
+                    SueldoDTO dto = getTableView().getItems().get(getIndex());
+                    Stage currentStage = (Stage) sueldosTable.getScene().getWindow();
+
+                    // abrir ventana y obtener controller
+                    PagarSueldoViewController controller =
+                            WindowManager.openWindowWithController(
+                                    "/app/barbman/core/view/pagar-sueldo-view.fxml",
+                                    "Pagar Sueldo",
+                                    currentStage
+                            );
+
+                    // pasar el DTO al controller
+                    controller.setSueldoDTO(dto);
+                });
+            }
+
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    SueldoDTO dto = getTableView().getItems().get(getIndex());
+                    if (dto.isPagado()) {
+                        setGraphic(new Label("✔ Pagado"));
+                    } else {
+                        setGraphic(btnPagar);
+                    }
+                }
+            }
+        });
 
         // Cargar en la tabla
         sueldosTable.getItems().setAll(lista);
