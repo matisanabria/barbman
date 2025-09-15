@@ -29,7 +29,7 @@ import java.util.ResourceBundle;
  * Controlador para la ventana de pago de sueldos.
  * Recibe un SueldoDTO desde la tabla de sueldos y permite registrar el pago.
  */
-public class PagarSueldoViewController implements Initializable {
+public class PagarSueldoController implements Initializable {
 
     @FXML
     private ChoiceBox<String> formaPagoChoiceBox;
@@ -51,7 +51,7 @@ public class PagarSueldoViewController implements Initializable {
     private VBox manualMontoBox; // monto manual
 
 
-    private static final Logger logger = LogManager.getLogger(PagarSueldoViewController.class);
+    private static final Logger logger = LogManager.getLogger(PagarSueldoController.class);
     private final DecimalFormat formateador = new DecimalFormat("#,###");
 
     private final SueldosRepository sueldosRepository = new SueldosRepositoryImpl();
@@ -59,7 +59,7 @@ public class PagarSueldoViewController implements Initializable {
     private final EgresosRepository egresosRepository = new EgresosRepositoryImpl();
     private final BarberoRepository barberoRepository = new BarberoRepositoryImpl();
     private final SueldosService sueldosService = new SueldosService(sueldosRepository, servicioRealizadoRepository, egresosRepository);
-    private SueldosViewController parentController;
+    private SueldosController parentController;
 
     // Barbero y sueldo seleccionado desde la tabla principal
     private SueldoDTO sueldoDTO;
@@ -197,7 +197,7 @@ public class PagarSueldoViewController implements Initializable {
         stage.close();
     }
 
-    public void setParentController(SueldosViewController parent) {
+    public void setParentController(SueldosController parent) {
         this.parentController = parent;
     }
 

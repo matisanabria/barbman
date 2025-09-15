@@ -28,7 +28,7 @@ import java.util.ResourceBundle;
  * Muestra una tabla con los sueldos de los barberos para la semana actual.
  * Permite ver detalles como producción total, monto liquidado y estado de pago.
  */
-public class SueldosViewController implements Initializable {
+public class SueldosController implements Initializable {
     @FXML
     private TableView<SueldoDTO> sueldosTable; // Tabla que muestra barberos
     @FXML
@@ -44,7 +44,7 @@ public class SueldosViewController implements Initializable {
     @FXML
     private Button btnRegistrarAdelanto;     // Botón para abrir ventana de registrar adelanto
 
-    private static final Logger logger = LogManager.getLogger(SueldosViewController.class);
+    private static final Logger logger = LogManager.getLogger(SueldosController.class);
     // Formateador para mostrar números sin decimales
     private final DecimalFormat formateadorNumeros = new DecimalFormat("#,###");
 
@@ -121,7 +121,7 @@ public class SueldosViewController implements Initializable {
                     Stage currentStage = (Stage) sueldosTable.getScene().getWindow();
 
                     // abrir ventana y obtener controller
-                    PagarSueldoViewController controller =
+                    PagarSueldoController controller =
                             WindowManager.openWindowWithController(
                                     "/app/barbman/core/view/pagar-sueldo-view.fxml",
                                     "Pagar Sueldo",
@@ -130,7 +130,7 @@ public class SueldosViewController implements Initializable {
 
                     // pasar el DTO al controller
                     controller.setSueldoDTO(dto);
-                    controller.setParentController(SueldosViewController.this);
+                    controller.setParentController(SueldosController.this);
                 });
             }
 

@@ -8,7 +8,7 @@
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
 <?import javafx.scene.control.Button?>
-<AnchorPane prefHeight="640.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.barbman.core.controller.MainViewController">
+<AnchorPane prefHeight="640.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.barbman.core.controller.MainController">
     <children>
         <BorderPane fx:id="borderPane"
                     prefHeight="632.0"

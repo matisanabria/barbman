@@ -7,7 +7,7 @@
 <AnchorPane prefHeight="360.0" prefWidth="320.0"
             xmlns="http://javafx.com/javafx/17"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="app.barbman.core.controller.AdelantosViewController">
+            fx:controller="app.barbman.core.controller.AdelantosVController">
     <children>
         <VBox alignment="CENTER" spacing="12.0"
               layoutX="10.0" layoutY="10.0"

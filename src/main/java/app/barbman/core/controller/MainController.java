@@ -19,7 +19,7 @@ import java.io.IOException;
  * Controlador principal de la aplicación.
  * Gestiona la navegación entre vistas mediante botones de menú.
  */
-public class MainViewController {
+public class MainController {
     private static final Logger logger = LogManager.getLogger(Main.class);
     @FXML
     private BorderPane borderPane; // Contenedor principal de la vista

@@ -31,9 +31,9 @@ import java.util.ResourceBundle;
  * Controlador para la vista de servicios realizados.
  * Gestiona la tabla que muestra los servicios realizados por los barberos.
  */
-public class ServiciosViewController implements Initializable {
+public class ServiciosController implements Initializable {
 
-    private static final Logger logger = LogManager.getLogger(ServiciosViewController.class);
+    private static final Logger logger = LogManager.getLogger(ServiciosController.class);
     // Formateador para mostrar precios sin decimales
     private final DecimalFormat formateadorNumeros = new DecimalFormat("#,###");
     // Tabla de servicios realizados

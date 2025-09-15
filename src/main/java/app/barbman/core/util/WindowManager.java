@@ -37,7 +37,7 @@ public class WindowManager {
             // Icono de la aplicación
             stage.getIcons().add(
                     new javafx.scene.image.Image(
-                            WindowManager.class.getResourceAsStream("/icons/icon-for-javafx.png")
+                            WindowManager.class.getResourceAsStream("/app/barbman/core/icons/icon-for-javafx.png")
                     )
             );
             if (title == null || title.isBlank()) {
@@ -72,7 +72,7 @@ public class WindowManager {
             // Icono de la aplicación
             stage.getIcons().add(
                     new javafx.scene.image.Image(
-                            WindowManager.class.getResourceAsStream("/icons/icon-for-javafx.png")
+                            WindowManager.class.getResourceAsStream("/app/barbman/core/icons/icon-for-javafx.png")
                     )
             );
             if (title == null || title.isBlank()) {

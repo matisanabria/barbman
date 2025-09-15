@@ -19,9 +19,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class EgresosViewController implements Initializable {
+public class EgresosController implements Initializable {
 
-    private static final Logger logger = LogManager.getLogger(EgresosViewController.class);
+    private static final Logger logger = LogManager.getLogger(EgresosController.class);
     // Formateador para mostrar precios sin decimales
     private final DecimalFormat formateadorNumeros = new DecimalFormat("#,###");
     @FXML
