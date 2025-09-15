@@ -9,8 +9,8 @@
 
         <!-- Log de archivo con rotación diaria y backups -->
         <RollingFile name="RollingFileLogger"
-                     fileName="data/barbman.log"
-                     filePattern="data/barbman-%d{yyyy-MM-dd}.log.gz">
+                     fileName="logs/barbman.log"
+                     filePattern="logs/barbman-%d{yyyy-MM-dd}.log.gz">
 
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} [%t] %-5level %c - %msg%n"/>
 

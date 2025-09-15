@@ -49,3 +49,4 @@ barbman.log
 *.db
 *.sqlite
 /data/
+/logs/
