@@ -4,10 +4,19 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.Comparator;
 
 /**
  * Clase encargada de inicializar la base de datos SQLite y crear las tablas si no existen.
@@ -169,6 +178,51 @@ public class DbBootstrap {
         } catch (SQLException e) {
             logger.error("[DB] Error creando las tablas: {}", e.getMessage());
             throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Crea un backup de la base de datos en la carpeta "backups".
+     * El archivo de backup se nombra con la fecha y hora actuales.
+     * Mantiene solo los últimos 7 backups, eliminando los más antiguos.
+     */
+    public static void backupDatabase() {
+        try {
+            // Crear carpeta de backups si no existe
+            String backupDir = "backups";
+            File folder = new File(backupDir);
+            if (!folder.exists()) {
+                folder.mkdirs();
+            }
+
+            // Nombre con fecha y hora "yyyy-MM-dd_HH-mm-ss"
+            String timestamp = LocalDateTime.now()
+                    .format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"));
+            String backupName = "barbman_backup_" + timestamp + ".db";
+
+            Path source = Paths.get(DB_FOLDER, DB_NAME);
+            Path target = Paths.get(backupDir, backupName);
+
+            Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
+            logger.info("[DB] Backup creado: {}", target.toAbsolutePath());
+
+            // Mantener solo los últimos 7 backups
+            File[] backups = folder.listFiles((dir, name) -> name.endsWith(".db"));
+            if (backups != null && backups.length > 7) {
+                Arrays.stream(backups)
+                        .sorted(Comparator.comparingLong(File::lastModified).reversed())
+                        .skip(7) // dejar los 7 más nuevos
+                        .forEach(file -> {
+                            if (file.delete()) {
+                                logger.info("[DB] Backup viejo eliminado: {}", file.getName());
+                            } else {
+                                logger.warn("[DB] No se pudo eliminar backup: {}", file.getName());
+                            }
+                        });
+            }
+
+        } catch (IOException e) {
+            logger.error("[DB] Error al crear backup: {}", e.getMessage(), e);
         }
     }
 

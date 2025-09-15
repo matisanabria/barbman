@@ -32,7 +32,12 @@ public class Main extends Application {
         });
         WindowManager.openWindow("/app/barbman/core/view/login-view.fxml");
     }
-
+    @Override
+    public void stop() {
+        // Esto lo hago para evitar errores, no es estrictamente necesario
+        logger.info("[BARBMAN] Aplicación cerrada.");
+        LogManager.shutdown();
+    }
     public static void main(String[] args) {
         // Inicializa la base de datos
         DbBootstrap.init();
