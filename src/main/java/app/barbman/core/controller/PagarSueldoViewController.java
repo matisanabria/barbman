@@ -85,9 +85,9 @@ public class PagarSueldoViewController implements Initializable {
         this.sueldoDTO = dto;
         this.barbero = barberoRepository.findById(dto.getBarberoId());
 
-        lblProduccion.setText(formateador.format(dto.getProduccionTotal()) + " Gs");
-        lblAdelantos.setText(formateador.format(dto.getProduccionTotal() - dto.getMontoLiquidado()) + " Gs");
-        lblSueldoFinal.setText(formateador.format(dto.getMontoLiquidado()) + " Gs");
+        lblProduccion.setText("Producción: " + formateador.format(dto.getProduccionTotal()) + " Gs");
+        lblAdelantos.setText("Adelantos: " + formateador.format(dto.getProduccionTotal() - dto.getMontoLiquidado()) + " Gs");
+        lblSueldoFinal.setText("Sueldo final: " + formateador.format(dto.getMontoLiquidado()) + " Gs");
 
         if (barbero != null && barbero.getTipoCobro() == 0) {
             manualMontoBox.setVisible(true);
