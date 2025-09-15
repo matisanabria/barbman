@@ -23,7 +23,7 @@ import java.text.DecimalFormat;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class AdelantosVController implements Initializable {
+public class AdelantosController implements Initializable {
     @FXML
     private ChoiceBox<Barbero> barberoChoiceBox;
     @FXML
@@ -35,7 +35,7 @@ public class AdelantosVController implements Initializable {
     @FXML
     private Button btnCancelar;
 
-    private static final Logger logger = LogManager.getLogger(AdelantosVController.class);
+    private static final Logger logger = LogManager.getLogger(AdelantosController.class);
     private final DecimalFormat formateadorNumeros = new DecimalFormat("#.###");
 
     private final BarberoRepository barberoRepository = new BarberoRepositoryImpl();

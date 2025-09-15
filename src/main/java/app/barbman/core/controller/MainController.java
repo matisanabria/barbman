@@ -32,6 +32,8 @@ public class MainController {
     @FXML
     private ToggleButton btnSueldos;
     @FXML
+    private ToggleButton btnCaja;
+    @FXML
     private ToggleGroup menuGroup; // Grupo de botones de menú
 
     @FXML
@@ -61,6 +63,8 @@ public class MainController {
                 setView("/app/barbman/core/view/embed-view/egresos-view.fxml");
             } else if (newToggle==btnSueldos) {
                 setView("/app/barbman/core/view/embed-view/sueldos-view.fxml");
+            } else if (newToggle==btnCaja) {
+                setView("/app/barbman/core/view/embed-view/caja-view.fxml");
             }
             // Si ningún botón está seleccionado (por doble clic) vuelve a seleccionar el último
             else if (newToggle == null) {

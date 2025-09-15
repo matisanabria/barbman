@@ -56,6 +56,13 @@
                             <text>Sueldos</text>
                             <contentDisplay>TOP</contentDisplay>
                         </ToggleButton>
+                        <ToggleButton fx:id="btnCaja" toggleGroup="$menuGroup" styleClass="main-menu-btn">
+                            <graphic>
+                                <FontIcon iconLiteral="fas-cash-register" iconSize="24" />
+                            </graphic>
+                            <text>Caja</text>
+                            <contentDisplay>TOP</contentDisplay>
+                        </ToggleButton>
                         <ToggleButton fx:id="btnAjustes" toggleGroup="$menuGroup" disable="true" styleClass="main-menu-btn">
                             <graphic>
                                 <FontIcon iconLiteral="fas-cog" iconSize="24" />
