@@ -4,10 +4,13 @@ import app.barbman.core.repositories.DbBootstrap;
 import app.barbman.core.util.WindowManager;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.controlsfx.control.Notifications;
 
 import java.io.IOException;
 
@@ -31,6 +34,15 @@ public class Main extends Application {
             });
         });
         WindowManager.openWindow("/app/barbman/core/view/login-view.fxml");
+        // Mostrar notificación beta
+        Notifications.create()
+                .title("Barbman BETA")
+                .text("¡Gracias por probar Barbman!\n" +
+                        "Estás usando una versión Beta \uD83D\uDE80\n" +
+                        "Avisanos si encontrás errores \uD83D\uDE4C")
+                .position(Pos.BOTTOM_RIGHT)   // esquina inferior derecha
+                .hideAfter(Duration.seconds(10)) // se oculta en 10s
+                .showInformation(); // icono azul (info)
     }
     @Override
     public void stop() {

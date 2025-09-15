@@ -34,6 +34,12 @@ public class WindowManager {
 
             Stage stage = new Stage();
             stage.setResizable(false);
+            // Icono de la aplicación
+            stage.getIcons().add(
+                    new javafx.scene.image.Image(
+                            WindowManager.class.getResourceAsStream("/icons/icon-for-javafx.png")
+                    )
+            );
             if (title == null || title.isBlank()) {
                 stage.setTitle("Barbman (" + getAppVersion() + ")");
             } else {
@@ -63,6 +69,12 @@ public class WindowManager {
 
             Stage stage = new Stage();
             stage.setResizable(false);
+            // Icono de la aplicación
+            stage.getIcons().add(
+                    new javafx.scene.image.Image(
+                            WindowManager.class.getResourceAsStream("/icons/icon-for-javafx.png")
+                    )
+            );
             if (title == null || title.isBlank()) {
                 stage.setTitle("Barbman (" + getAppVersion() + ")");
             } else {
