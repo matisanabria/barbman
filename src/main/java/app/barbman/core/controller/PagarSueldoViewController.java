@@ -74,6 +74,48 @@ public class PagarSueldoViewController implements Initializable {
         manualMontoBox.setVisible(false);
         manualMontoBox.setManaged(false);
 
+        // Formateador para monto manual
+        montoManualField.textProperty().addListener((obs, oldValue, newValue) -> {
+            if (newValue == null || newValue.isBlank()) return;
+
+            String digits = newValue.replaceAll("[^\\d]", "");
+            if (digits.isEmpty()) {
+                montoManualField.setText("");
+                return;
+            }
+            try {
+                long valor = Long.parseLong(digits);
+                String formateado = formateador.format(valor);
+                if (!montoManualField.getText().equals(formateado)) {
+                    montoManualField.setText(formateado);
+                    montoManualField.positionCaret(formateado.length());
+                }
+            } catch (NumberFormatException e) {
+                logger.warn("[SUELDOS-PAGO] Valor no numérico en montoManualField: {}", newValue);
+            }
+        });
+
+        // Formateador para bono
+        bonoField.textProperty().addListener((obs, oldValue, newValue) -> {
+            if (newValue == null || newValue.isBlank()) return;
+
+            String digits = newValue.replaceAll("[^\\d]", "");
+            if (digits.isEmpty()) {
+                bonoField.setText("");
+                return;
+            }
+            try {
+                long valor = Long.parseLong(digits);
+                String formateado = formateador.format(valor);
+                if (!bonoField.getText().equals(formateado)) {
+                    bonoField.setText(formateado);
+                    bonoField.positionCaret(formateado.length());
+                }
+            } catch (NumberFormatException e) {
+                logger.warn("[SUELDOS-PAGO] Valor no numérico en bonoField: {}", newValue);
+            }
+        });
+
         btnGuardar.setOnAction(e -> pagarSueldo());
         logger.info("[SUELDOS-PAGO] Vista inicializada.");
     }
@@ -85,8 +127,15 @@ public class PagarSueldoViewController implements Initializable {
         this.sueldoDTO = dto;
         this.barbero = barberoRepository.findById(dto.getBarberoId());
 
+        // rango semanal
+        java.time.LocalDate hoy = java.time.LocalDate.now();
+        java.time.LocalDate lunes = hoy.with(java.time.DayOfWeek.MONDAY);
+        java.time.LocalDate sabado = lunes.plusDays(5);
+
+        double adelantos = egresosRepository.getTotalAdelantos(dto.getBarberoId(), lunes, sabado);
+
         lblProduccion.setText("Producción: " + formateador.format(dto.getProduccionTotal()) + " Gs");
-        lblAdelantos.setText("Adelantos: " + formateador.format(dto.getProduccionTotal() - dto.getMontoLiquidado()) + " Gs");
+        lblAdelantos.setText("Adelantos: " + formateador.format(adelantos) + " Gs");
         lblSueldoFinal.setText("Sueldo final: " + formateador.format(dto.getMontoLiquidado()) + " Gs");
 
         if (barbero != null && barbero.getTipoCobro() == 0) {
