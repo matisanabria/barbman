@@ -11,5 +11,6 @@ public interface EgresosRepository {
     void save(Egreso egreso);
     void update(Egreso egreso);
     void delete(int id);
-    public double getTotalAdelantos(int barberoId, LocalDate desde, LocalDate hasta);
+    double getTotalAdelantos(int barberoId, LocalDate desde, LocalDate hasta);
+    List<Egreso> searchByDateRange(LocalDate startDate, LocalDate endDate);
 }

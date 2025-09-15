@@ -178,7 +178,25 @@ public class EgresosRepositoryImpl implements EgresosRepository{
         return total;
     }
 
+    public List<Egreso> searchByDateRange(LocalDate startDate, LocalDate endDate) {
+        String sql = SELECT_BASE + " WHERE fecha BETWEEN ? AND ? ORDER BY fecha, id";
+        List<Egreso> list = new ArrayList<>();
+        try (Connection db = DbBootstrap.connect();
+             PreparedStatement ps = db.prepareStatement(sql)) {
 
+            ps.setString(1, startDate.toString()); // YYYY-MM-DD
+            ps.setString(2, endDate.toString());
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(mapRow(rs));
+                }
+            }
+        } catch (Exception e) {
+            logger.warn("Error al buscar egresos entre {} y {}: {}", startDate, endDate, e.getMessage());
+        }
+        return list;
+    }
 
     private Egreso mapRow(ResultSet rs) throws SQLException {
         return new Egreso(

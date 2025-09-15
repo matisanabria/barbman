@@ -131,16 +131,32 @@ public class ServicioRealizadoRepositoryImpl implements ServicioRealizadoReposit
     }
 
     /**
-     * (Próximamente) Busca servicios realizados en un rango de fechas.
+     * Busca servicios realizados en un rango de fechas.
      * @param startDate Fecha de inicio
      * @param endDate Fecha de fin
      * @return Lista de ServicioRealizado en el rango de fechas
-     * @throws UnsupportedOperationException funcionalidad pendiente de implementación
      */
     @Override
     public List<ServicioRealizado> searchByDateRange(LocalDate startDate, LocalDate endDate) {
-        throw new UnsupportedOperationException("Funcionalidad próximamente disponible");
+        String sql = SELECT_BASE + " WHERE fecha BETWEEN ? AND ? ORDER BY fecha, id";
+        List<ServicioRealizado> list = new ArrayList<>();
+        try (Connection db = DbBootstrap.connect();
+             PreparedStatement ps = db.prepareStatement(sql)) {
+
+            ps.setString(1, startDate.toString()); // YYYY-MM-DD
+            ps.setString(2, endDate.toString());
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(mapRow(rs));
+                }
+            }
+        } catch (Exception e) {
+            logger.warn("Error al buscar servicios entre {} y {}: {}", startDate, endDate, e.getMessage());
+        }
+        return list;
     }
+
 
     /**
      * Busca servicios realizados por el ID del barbero.
