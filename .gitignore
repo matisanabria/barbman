@@ -50,3 +50,4 @@ barbman.log
 *.sqlite
 /data/
 /logs/
+/backups/

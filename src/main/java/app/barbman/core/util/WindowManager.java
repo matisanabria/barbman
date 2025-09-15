@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+import java.util.function.Consumer;
 
 public class WindowManager {
     private static final Logger logger = LogManager.getLogger(WindowManager.class);
@@ -175,6 +176,52 @@ public class WindowManager {
         } catch (Exception e) {
             logger.warn("No se pudo obtener la versión.", e);
             return "UNKNOWN";
+        }
+    }
+
+    /**
+     * Abre una ventana modal bloqueante con el FXML indicado.
+     * Permite inicializar el controller mediante un callback.
+     *
+     * @param fxmlPath             Ruta del archivo FXML
+     * @param controllerInitializer Callback para inicializar el controller (puede ser null)
+     * @param <T>                  Tipo del controller
+     * Nota: Luego corrijo errores y adapto lo necesario
+     */
+    public static <T> void openModal(String fxmlPath, Consumer<T> controllerInitializer) {
+        try {
+            loadFontsOnce();
+
+            FXMLLoader loader = new FXMLLoader(WindowManager.class.getResource(fxmlPath));
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
+
+            scene.getStylesheets().add(WindowManager.class
+                    .getResource("/app/barbman/core/style/main.css").toExternalForm());
+
+            Stage stage = new Stage();
+            stage.setResizable(false);
+            stage.setTitle("Barbman (" + getAppVersion() + ")");
+            stage.getIcons().add(
+                    new javafx.scene.image.Image(
+                            WindowManager.class.getResourceAsStream("/app/barbman/core/icons/icon-for-javafx.png")
+                    )
+            );
+
+            // Modal bloqueante
+            stage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+
+            stage.setScene(scene);
+
+            // Pasamos el controller al callback para configurarlo
+            T controller = loader.getController();
+            if (controllerInitializer != null) {
+                controllerInitializer.accept(controller);
+            }
+
+            stage.showAndWait(); // Bloquea hasta cerrar
+        } catch (IOException e) {
+            logger.error("Error abriendo ventana modal: " + fxmlPath, e);
         }
     }
 

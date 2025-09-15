@@ -3,6 +3,7 @@ package app.barbman.core.service.caja;
 import app.barbman.core.model.CajaDiaria;
 import app.barbman.core.model.Egreso;
 import app.barbman.core.model.ServicioRealizado;
+import app.barbman.core.repositories.DbBootstrap;
 import app.barbman.core.repositories.caja.CajaRepository;
 import app.barbman.core.repositories.egresos.EgresosRepository;
 import app.barbman.core.repositories.serviciorealizado.ServicioRealizadoRepository;
@@ -97,6 +98,7 @@ public class CajaService {
         }
 
         cajaRepo.save(cierre);
+        DbBootstrap.backupDatabase();
         logger.info("Cierre de caja guardado para {}", cierre.getFecha());
     }
 }
