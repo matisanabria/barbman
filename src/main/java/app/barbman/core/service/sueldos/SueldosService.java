@@ -185,14 +185,15 @@ public class SueldosService {
     }
 
     /**
-     * Cálculo de sueldo especial con umbral mínimo.
+     * Si la producción por porcentaje es menor al umbral mínimo, se paga el umbral.
+     * Si es mayor, se paga la producción por porcentaje.
      * Param1 = umbral mínimo
      * Param2 = porcentaje (0.0 a 1.0)
      */
     private double calcularSueldoEspecial(double produccion, double umbralMinimo, double porcentaje) {
         logger.info("[SUELDOS] Calculando sueldo especial: produccion = {}, umbralMinimo = {}, porcentaje = {}",
                 produccion, umbralMinimo, porcentaje);
-        if (produccion < umbralMinimo) {
+        if ((produccion * porcentaje) < umbralMinimo) {
             return umbralMinimo;
         } else {
             return produccion * porcentaje;
