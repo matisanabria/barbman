@@ -24,7 +24,7 @@
                       BorderPane.alignment="CENTER"
                       styleClass="main-menu-bar">
                     <children>
-                        <!-- Agrupación de botones con ToggleGroup -->
+                        <!-- Agrupación de botones con ToggleGroup-->
                         <ToggleButton fx:id="btnInicio" selected="true" styleClass="main-menu-btn" disable="true">
                             <graphic>
                                 <FontIcon iconLiteral="fas-home" iconSize="24"/>
@@ -63,20 +63,21 @@
                             <text>Caja</text>
                             <contentDisplay>TOP</contentDisplay>
                         </ToggleButton>
-                        <ToggleButton fx:id="btnResumen" toggleGroup="$menuGroup" styleClass="main-menu-btn">
+                        <!--
+                        <ToggleButton visible="false" fx:id="btnResumen" toggleGroup="$menuGroup" styleClass="main-menu-btn">
                             <graphic>
                                 <FontIcon iconLiteral="far-newspaper" iconSize="24" />
                             </graphic>
                             <text>Resumen</text>
                             <contentDisplay>TOP</contentDisplay>
                         </ToggleButton>
-                        <ToggleButton fx:id="btnAjustes" toggleGroup="$menuGroup" disable="true" styleClass="main-menu-btn">
+                        <ToggleButton visible="false" fx:id="btnAjustes" toggleGroup="$menuGroup" disable="true" styleClass="main-menu-btn">
                             <graphic>
                                 <FontIcon iconLiteral="fas-cog" iconSize="24" />
                             </graphic>
                             <text>Ajustes</text>
                             <contentDisplay>TOP</contentDisplay>
-                        </ToggleButton>
+                        </ToggleButton>-->
                     </children>
                 </HBox>
             </top>

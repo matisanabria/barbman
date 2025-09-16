@@ -6,7 +6,7 @@
 <VBox xmlns="http://javafx.com/javafx/17"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="app.barbman.core.controller.CajaController"
-      spacing="16"
+      spacing="20"
       alignment="TOP_LEFT"
       fillWidth="true"
       prefWidth="600.0"
@@ -15,37 +15,37 @@
     <children>
 
         <!-- Encabezado -->
-        <HBox alignment="CENTER_LEFT" spacing="16" styleClass="services-row">
+        <HBox alignment="CENTER_LEFT" spacing="16">
             <children>
-                <Label text="Caja diaria" styleClass="services-title"/>
+                <Label text="Caja diaria" styleClass="caja-titulo"/>
                 <Region HBox.hgrow="ALWAYS"/>
                 <ChoiceBox fx:id="choiceFechas" prefWidth="150.0"/>
-                <Button fx:id="btnCierreCaja" text="Cierre de caja" styleClass="services-button"/>
+                <Button fx:id="btnCierreCaja" text="Cierre de caja"/>
             </children>
         </HBox>
 
         <!-- Panel de ticket -->
-        <VBox spacing="6"
+        <VBox spacing="10"
               alignment="TOP_LEFT"
-              style="-fx-background-color: #f9f9f9; -fx-padding: 16; -fx-border-color: #ddd; -fx-border-radius: 6; -fx-background-radius: 6;"
-              prefWidth="550.0">
+              styleClass="caja-ticket">
 
             <!-- Encabezado -->
-            <Label fx:id="lblFecha" text="Fecha: --/--/----" style="-fx-font-weight: bold;"/>
+            <Label fx:id="lblFecha" text="Fecha: --/--/----" styleClass="caja-label-titulo"/>
 
             <!-- Totales -->
-            <Label fx:id="lblIngresos" text="Ingresos totales: 0 Gs"/>
-            <Label fx:id="lblEgresos" text="Egresos totales: 0 Gs"/>
-            <Label fx:id="lblSaldoFinal" text="Saldo final: 0 Gs" style="-fx-font-weight: bold;"/>
+            <Label fx:id="lblIngresos" text="Ingresos totales: 0 Gs" styleClass="caja-label"/>
+            <Label fx:id="lblEgresos" text="Egresos totales: 0 Gs" styleClass="caja-label"/>
+            <Label fx:id="lblSaldoFinal" text="Saldo final: 0 Gs" styleClass="caja-label-strong"/>
 
             <!-- Desglose -->
             <Separator/>
-            <Label text="Desglose:" style="-fx-font-weight: bold;"/>
-            <Label fx:id="lblEfectivo" text="- Efectivo: 0 Gs"/>
-            <Label fx:id="lblTransferencia" text="- Transferencia: 0 Gs"/>
-            <Label fx:id="lblPOS" text="- POS: 0 Gs"/>
+            <Label text="Desglose:" styleClass="caja-label-strong"/>
+            <Label fx:id="lblEfectivo" text="- Efectivo: 0 Gs" styleClass="caja-label"/>
+            <Label fx:id="lblTransferencia" text="- Transferencia: 0 Gs" styleClass="caja-label"/>
+            <Label fx:id="lblPOS" text="- POS: 0 Gs" styleClass="caja-label"/>
 
         </VBox>
 
     </children>
 </VBox>
+
