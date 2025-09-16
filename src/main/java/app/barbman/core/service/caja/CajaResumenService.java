@@ -16,11 +16,6 @@ public class CajaResumenService {
         this.cajaRepository = cajaRepository;
     }
 
-    // Resumen diario
-    public CajaDiaria getResumenDiario(LocalDate fecha) {
-        return cajaRepository.findByFecha(fecha);
-    }
-
     // Resumen semanal (lunes a domingo)
     public List<CajaDiaria> getResumenSemanal(LocalDate fechaReferencia) {
         LocalDate inicioSemana = fechaReferencia.with(java.time.DayOfWeek.MONDAY);
