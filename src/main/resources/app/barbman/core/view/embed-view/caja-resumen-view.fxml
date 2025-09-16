@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fitToWidth="true"
+            style="-fx-background-color: transparent;">
+
+    <content>
+        <VBox spacing="24"
+              alignment="TOP_LEFT"
+              fillWidth="true"
+              prefWidth="700.0"
+              style="-fx-padding: 24;">
+
+            <children>
+
+                <!-- Bloque: Caja Semanal -->
+                <VBox spacing="12"
+                      style="-fx-background-color: #2b2b2b; -fx-padding: 16; -fx-background-radius: 8;">
+                    <HBox alignment="CENTER_LEFT" spacing="16">
+                        <Label text="Caja semanal" style="-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <ChoiceBox fx:id="choiceSemanas" prefWidth="200.0"/>
+                    </HBox>
+
+                    <VBox spacing="6"
+                          style="-fx-background-color: white; -fx-padding: 16; -fx-border-color: #ddd; -fx-border-radius: 6; -fx-background-radius: 6;">
+                        <Label fx:id="lblSemanaTitulo" text="Semana: -- (ej. 15-21 Sep)" style="-fx-font-weight: bold;"/>
+                        <Label fx:id="lblIngresosSem" text="Ingresos totales: --"/>
+                        <Label fx:id="lblEgresosSem" text="Egresos totales: --"/>
+                        <Label fx:id="lblSaldoSem" text="Saldo final: --" style="-fx-font-weight: bold;"/>
+
+                        <Separator/>
+                        <Label text="Desglose:" style="-fx-font-weight: bold;"/>
+                        <Label fx:id="lblEfectivoSem" text="- Efectivo: --"/>
+                        <Label fx:id="lblTransferenciaSem" text="- Transferencia: --"/>
+                        <Label fx:id="lblPOSSem" text="- POS: --"/>
+                    </VBox>
+                </VBox>
+
+
+                <!-- Bloque: Caja Mensual -->
+                <VBox spacing="12"
+                      style="-fx-background-color: #2b2b2b; -fx-padding: 16; -fx-background-radius: 8;">
+                    <HBox alignment="CENTER_LEFT" spacing="16">
+                        <Label text="Caja mensual" style="-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <ChoiceBox fx:id="choiceMeses" prefWidth="200.0"/>
+                    </HBox>
+
+                    <VBox spacing="6"
+                          style="-fx-background-color: white; -fx-padding: 16; -fx-border-color: #ddd; -fx-border-radius: 6; -fx-background-radius: 6;">
+                        <Label fx:id="lblMesTitulo" text="Mes: -- (ej. Septiembre 2025)" style="-fx-font-weight: bold;"/>
+                        <Label fx:id="lblIngresosMes" text="Ingresos totales: --"/>
+                        <Label fx:id="lblEgresosMes" text="Egresos totales: --"/>
+                        <Label fx:id="lblSaldoMes" text="Saldo final: --" style="-fx-font-weight: bold;"/>
+
+                        <Separator/>
+                        <Label text="Desglose:" style="-fx-font-weight: bold;"/>
+                        <Label fx:id="lblEfectivoMes" text="- Efectivo: --"/>
+                        <Label fx:id="lblTransferenciaMes" text="- Transferencia: --"/>
+                        <Label fx:id="lblPOSMes" text="- POS: --"/>
+                    </VBox>
+                </VBox>
+
+            </children>
+        </VBox>
+    </content>
+</ScrollPane>

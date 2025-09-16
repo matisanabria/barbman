@@ -89,13 +89,13 @@
     -fx-font-size: 16px;
     -fx-font-family: 'Inter', Arial, sans-serif;
     -fx-font-weight: bold;
-    -fx-padding: 10 16 6 16;
+    -fx-padding: 6 14 4 14;
     -fx-content-display: top;
     -fx-border-width: 0;
     -fx-effect: dropshadow(gaussian, #00000088, 8, 0.1, 0, 1);
     -fx-cursor: hand;
     -fx-transition: background-color 0.2s;
-    -fx-pref-width: 100px; /* Ancho fijo para uniformidad */
+    -fx-min-width: 90px;
     -fx-alignment: center;
 }
 
@@ -110,7 +110,7 @@
 
 .main-menu-bar {
     -fx-background-color: transparent;
-    -fx-padding: 16 0 10 0;
+    -fx-padding: 4 0 4 0; /* antes 16 0 10 0 */
 }
 
 /* FontIcon color (for org.kordamp.ikonli) */
