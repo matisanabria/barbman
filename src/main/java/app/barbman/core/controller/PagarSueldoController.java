@@ -12,6 +12,7 @@ import app.barbman.core.repositories.serviciorealizado.ServicioRealizadoReposito
 import app.barbman.core.repositories.sueldos.SueldosRepository;
 import app.barbman.core.repositories.sueldos.SueldosRepositoryImpl;
 import app.barbman.core.service.sueldos.SueldosService;
+import app.barbman.core.util.NumberFormatUtil;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -52,7 +53,6 @@ public class PagarSueldoController implements Initializable {
 
 
     private static final Logger logger = LogManager.getLogger(PagarSueldoController.class);
-    private final DecimalFormat formateador = new DecimalFormat("#,###");
 
     private final SueldosRepository sueldosRepository = new SueldosRepositoryImpl();
     private final ServicioRealizadoRepository servicioRealizadoRepository = new ServicioRealizadoRepositoryImpl();
@@ -74,26 +74,7 @@ public class PagarSueldoController implements Initializable {
         manualMontoBox.setVisible(false);
         manualMontoBox.setManaged(false);
 
-        // Formateador para monto manual
-        montoManualField.textProperty().addListener((obs, oldValue, newValue) -> {
-            if (newValue == null || newValue.isBlank()) return;
-
-            String digits = newValue.replaceAll("[^\\d]", "");
-            if (digits.isEmpty()) {
-                montoManualField.setText("");
-                return;
-            }
-            try {
-                long valor = Long.parseLong(digits);
-                String formateado = formateador.format(valor);
-                if (!montoManualField.getText().equals(formateado)) {
-                    montoManualField.setText(formateado);
-                    montoManualField.positionCaret(formateado.length());
-                }
-            } catch (NumberFormatException e) {
-                logger.warn("[SUELDOS-PAGO] Valor no numérico en montoManualField: {}", newValue);
-            }
-        });
+        NumberFormatUtil.applyToTextField(montoManualField);
 
         // Formateador para bono
         bonoField.textProperty().addListener((obs, oldValue, newValue) -> {
@@ -106,7 +87,7 @@ public class PagarSueldoController implements Initializable {
             }
             try {
                 long valor = Long.parseLong(digits);
-                String formateado = formateador.format(valor);
+                String formateado = NumberFormatUtil.format(valor);
                 if (!bonoField.getText().equals(formateado)) {
                     bonoField.setText(formateado);
                     bonoField.positionCaret(formateado.length());
@@ -134,9 +115,9 @@ public class PagarSueldoController implements Initializable {
 
         double adelantos = egresosRepository.getTotalAdelantos(dto.getBarberoId(), lunes, sabado);
 
-        lblProduccion.setText("Producción: " + formateador.format(dto.getProduccionTotal()) + " Gs");
-        lblAdelantos.setText("Adelantos: " + formateador.format(adelantos) + " Gs");
-        lblSueldoFinal.setText("Sueldo final: " + formateador.format(dto.getMontoLiquidado()) + " Gs");
+        lblProduccion.setText("Producción: " + NumberFormatUtil.format(dto.getProduccionTotal()) + " Gs");
+        lblAdelantos.setText("Adelantos: " + NumberFormatUtil.format(adelantos) + " Gs");
+        lblSueldoFinal.setText("Sueldo final: " + NumberFormatUtil.format(dto.getMontoLiquidado()) + " Gs");
 
         if (barbero != null && barbero.getTipoCobro() == 0) {
             manualMontoBox.setVisible(true);

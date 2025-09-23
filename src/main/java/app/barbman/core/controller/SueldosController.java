@@ -8,6 +8,7 @@ import app.barbman.core.repositories.serviciorealizado.ServicioRealizadoReposito
 import app.barbman.core.repositories.sueldos.SueldosRepository;
 import app.barbman.core.repositories.sueldos.SueldosRepositoryImpl;
 import app.barbman.core.service.sueldos.SueldosService;
+import app.barbman.core.util.NumberFormatUtil;
 import app.barbman.core.util.WindowManager;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
@@ -45,8 +46,6 @@ public class SueldosController implements Initializable {
     private Button btnRegistrarAdelanto;     // Botón para abrir ventana de registrar adelanto
 
     private static final Logger logger = LogManager.getLogger(SueldosController.class);
-    // Formateador para mostrar números sin decimales
-    private final DecimalFormat formateadorNumeros = new DecimalFormat("#,###");
 
     // Repositorios
     private final SueldosRepository sueldoRepo = new SueldosRepositoryImpl();
@@ -99,12 +98,12 @@ public class SueldosController implements Initializable {
         colBarbero.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getNombreBarbero()));
         colProduccion.setCellValueFactory(cellData -> {
             double prod = cellData.getValue().getProduccionTotal();
-            return new SimpleStringProperty(formateadorNumeros.format(prod) +  " Gs");
+            return new SimpleStringProperty(NumberFormatUtil.format(prod) +  " Gs");
         });
 
         colMonto.setCellValueFactory(cellData -> {
             double monto = cellData.getValue().getMontoLiquidado();
-            return new SimpleStringProperty(formateadorNumeros.format(monto) +  " Gs");
+            return new SimpleStringProperty(NumberFormatUtil.format(monto) +  " Gs");
         });
         colEstado.setCellValueFactory(cellData -> {
             String estado = cellData.getValue().isPagado() ? "Pagado" : "Pendiente";

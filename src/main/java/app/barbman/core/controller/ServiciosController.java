@@ -11,6 +11,7 @@ import app.barbman.core.repositories.serviciodefinido.ServicioDefinidoRepository
 import app.barbman.core.repositories.serviciorealizado.ServicioRealizadoRepository;
 import app.barbman.core.repositories.serviciorealizado.ServicioRealizadoRepositoryImpl;
 import app.barbman.core.service.servicios.ServicioRealizadoService;
+import app.barbman.core.util.NumberFormatUtil;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -34,8 +35,6 @@ import java.util.ResourceBundle;
 public class ServiciosController implements Initializable {
 
     private static final Logger logger = LogManager.getLogger(ServiciosController.class);
-    // Formateador para mostrar precios sin decimales
-    private final DecimalFormat formateadorNumeros = new DecimalFormat("#,###");
     // Tabla de servicios realizados
     @FXML
     private TableView<ServicioRealizado> serviciosTable;
@@ -102,7 +101,7 @@ public class ServiciosController implements Initializable {
         });
         colPrecio.setCellValueFactory(cellData -> {
             double precio = cellData.getValue().getPrecio();
-            return new SimpleStringProperty(formateadorNumeros.format(precio) +  " Gs");
+            return new SimpleStringProperty(NumberFormatUtil.format(precio) + " Gs");
         });
         colFecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
         colObservaciones.setCellValueFactory(new PropertyValueFactory<>("observaciones"));
@@ -114,7 +113,7 @@ public class ServiciosController implements Initializable {
         tipoServicioBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
                 long precioBase = (long) newVal.getPrecioBase(); // convierte 40000.0 a 40000
-                String formateado = formateadorNumeros.format(precioBase);
+                String formateado = NumberFormatUtil.format(precioBase);
                 precioField.setText(formateado); // se pone formateado
                 precioField.positionCaret(formateado.length());
             }
@@ -138,27 +137,8 @@ public class ServiciosController implements Initializable {
             }
         });
 
-        // Formato automático de números en el campo precio
-        precioField.textProperty().addListener((obs, oldValue, newValue) -> {
-            if (newValue == null || newValue.isBlank()) {
-                return;
-            }
-            // Quitar todo lo que no sea dígito
-            String digits = newValue.replaceAll("[^\\d]", "");
-            if (digits.isEmpty()) {
-                precioField.setText("");
-                return;
-            }
-            try {
-                long valor = Long.parseLong(digits);
-                String formateado = formateadorNumeros.format(valor);
-                // Para que el caret (cursor) no se mueva al inicio
-                precioField.setText(formateado);
-                precioField.positionCaret(formateado.length());
-            } catch (NumberFormatException e) {
-                logger.warn("[SERV-VIEW] Valor no numérico en precioField: {}", newValue);
-            }
-        });
+        NumberFormatUtil.applyToTextField(precioField);
+
         logger.info("[SERV-VIEW] Vista de servicios inicializada correctamente.");
     }
 
@@ -304,7 +284,7 @@ public class ServiciosController implements Initializable {
         confirm.setHeaderText("¿Seguro que quieres eliminar este servicio?");
         confirm.setContentText(
                 "Servicio ID: " + servicio.getId() +
-                        "\nPrecio: " + formateadorNumeros.format(servicio.getPrecio()) + " Gs" +
+                        "\nPrecio: " + NumberFormatUtil.format(servicio.getPrecio()) + " Gs" +
                         "\nFecha: " + servicio.getFecha()
         );
 

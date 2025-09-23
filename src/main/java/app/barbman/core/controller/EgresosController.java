@@ -4,6 +4,7 @@ import app.barbman.core.model.Egreso;
 import app.barbman.core.repositories.egresos.EgresosRepository;
 import app.barbman.core.repositories.egresos.EgresosRepositoryImpl;
 import app.barbman.core.service.egresos.EgresosService;
+import app.barbman.core.util.NumberFormatUtil;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -22,8 +23,7 @@ import java.util.ResourceBundle;
 public class EgresosController implements Initializable {
 
     private static final Logger logger = LogManager.getLogger(EgresosController.class);
-    // Formateador para mostrar precios sin decimales
-    private final DecimalFormat formateadorNumeros = new DecimalFormat("#,###");
+
     @FXML
     private TableView<Egreso> egresosTable;
     @FXML
@@ -61,7 +61,7 @@ public class EgresosController implements Initializable {
         colTipo.setCellValueFactory(new PropertyValueFactory<>("tipo"));
         colMonto.setCellValueFactory(cellData -> {
             double precio = cellData.getValue().getMonto();
-            return new SimpleStringProperty(formateadorNumeros.format(precio) +  " Gs");
+            return new SimpleStringProperty(NumberFormatUtil.format(precio) +  " Gs");
         });
         colDescripcion.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
 
@@ -88,27 +88,8 @@ public class EgresosController implements Initializable {
                 }
             }
         });
-        // Formato automático de números en el campo monto
-        montoField.textProperty().addListener((obs, oldValue, newValue) -> {
-            if (newValue == null || newValue.isBlank()) {
-                return;
-            }
-            // Quitar lo que no sea dígito
-            String digits = newValue.replaceAll("[^\\d]", "");
-            if (digits.isEmpty()) {
-                montoField.setText("");
-                return;
-            }
-            try {
-                long valor = Long.parseLong(digits);
-                String formateado = formateadorNumeros.format(valor);
-                // Actualizar campo sin mover el cursor al inicio
-                montoField.setText(formateado);
-                montoField.positionCaret(formateado.length());
-            } catch (NumberFormatException e) {
-                logger.warn("[EGRESOS-VIEW] Valor no numérico en montoField: {}", newValue);
-            }
-        });
+
+        NumberFormatUtil.applyToTextField(montoField);
 
         logger.info("[EGRESOS-VIEW] Vista inicializada correctamente.");
     }
@@ -174,7 +155,7 @@ public class EgresosController implements Initializable {
         confirm.setContentText(
                 "Egreso ID: " + egreso.getId() +
                         "\nTipo: " + egreso.getTipo() +
-                        "\nMonto: " + formateadorNumeros.format(egreso.getMonto()) + " Gs" +
+                        "\nMonto: " + NumberFormatUtil.format(egreso.getMonto()) + " Gs" +
                         "\nFecha: " + egreso.getFecha()
         );
 
