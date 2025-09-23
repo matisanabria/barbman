@@ -8,6 +8,7 @@ import app.barbman.core.repositories.egresos.EgresosRepositoryImpl;
 import app.barbman.core.repositories.serviciorealizado.ServicioRealizadoRepository;
 import app.barbman.core.repositories.serviciorealizado.ServicioRealizadoRepositoryImpl;
 import app.barbman.core.service.caja.CajaService;
+import app.barbman.core.util.NumberFormatUtil;
 import app.barbman.core.util.WindowManager;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -114,13 +115,13 @@ public class CajaController implements Initializable {
         }
 
         lblFecha.setText("Fecha: " + caja.getFecha());
-        lblIngresos.setText("Ingresos totales: " + (int) caja.getIngresosTotal() + " Gs");
-        lblEgresos.setText("Egresos totales: " + (int) caja.getEgresosTotal() + " Gs");
-        lblSaldoFinal.setText("Saldo final: " + (int) caja.getSaldoFinal() + " Gs");
+        lblIngresos.setText("Ingresos totales: " + NumberFormatUtil.format(caja.getIngresosTotal()) + " Gs");
+        lblEgresos.setText("Egresos totales: " + NumberFormatUtil.format(caja.getEgresosTotal()) + " Gs");
+        lblSaldoFinal.setText("Saldo final: " + NumberFormatUtil.format(caja.getSaldoFinal()) + " Gs");
 
-        lblEfectivo.setText("- Efectivo: " + (int) caja.getEfectivo() + " Gs");
-        lblTransferencia.setText("- Transferencia: " + (int) caja.getTransferencia() + " Gs");
-        lblPOS.setText("- POS: " + (int) caja.getPos() + " Gs");
+        lblEfectivo.setText("- Efectivo: " + NumberFormatUtil.format(caja.getEfectivo()) + " Gs");
+        lblTransferencia.setText("- Transferencia: " + NumberFormatUtil.format(caja.getTransferencia()) + " Gs");
+        lblPOS.setText("- POS: " + NumberFormatUtil.format(caja.getPos()) + " Gs");
 
         logger.info("Mostrando resumen de caja para fecha {}", fecha);
     }

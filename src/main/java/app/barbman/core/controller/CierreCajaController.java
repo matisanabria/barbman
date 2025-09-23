@@ -2,6 +2,7 @@ package app.barbman.core.controller;
 
 import app.barbman.core.model.CajaDiaria;
 import app.barbman.core.service.caja.CajaService;
+import app.barbman.core.util.NumberFormatUtil;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -47,13 +48,13 @@ public class CierreCajaController implements Initializable {
         this.onGuardarCallback = onGuardarCallback;
 
         lblFecha.setText("Fecha: " + cierre.getFecha());
-        lblIngresos.setText("Ingresos totales: " + (int) cierre.getIngresosTotal() + " Gs");
-        lblEgresos.setText("Egresos totales: " + (int) cierre.getEgresosTotal() + " Gs");
-        lblSaldoFinal.setText("Saldo final: " + (int) cierre.getSaldoFinal() + " Gs");
+        lblIngresos.setText("Ingresos totales: " + NumberFormatUtil.format(cierre.getIngresosTotal()) + " Gs");
+        lblEgresos.setText("Egresos totales: " + NumberFormatUtil.format(cierre.getEgresosTotal()) + " Gs");
+        lblSaldoFinal.setText("Saldo final: " + NumberFormatUtil.format(cierre.getSaldoFinal()) + " Gs");
 
-        lblEfectivo.setText("- Efectivo: " + (int) cierre.getEfectivo() + " Gs");
-        lblTransferencia.setText("- Transferencia: " + (int) cierre.getTransferencia() + " Gs");
-        lblPOS.setText("- POS: " + (int) cierre.getPos() + " Gs");
+        lblEfectivo.setText("- Efectivo: " + NumberFormatUtil.format(cierre.getEfectivo()) + " Gs");
+        lblTransferencia.setText("- Transferencia: " + NumberFormatUtil.format(cierre.getTransferencia()) + " Gs");
+        lblPOS.setText("- POS: " + NumberFormatUtil.format(cierre.getPos()) + " Gs");
 
         logger.info("Preview de cierre cargado para {}", cierre.getFecha());
     }
