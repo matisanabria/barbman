@@ -47,7 +47,7 @@
         <!-- Botonera -->
         <HBox spacing="12" alignment="CENTER_RIGHT">
             <children>
-                <Button fx:id="btnCancelar" text="Cancelar"/>
+                <Button fx:id="btnCancelar" text="Cancelar" styleClass="cancel-button"/>
                 <Button fx:id="btnGuardar" text="Guardar" styleClass="services-button"/>
             </children>
         </HBox>
