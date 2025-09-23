@@ -7,6 +7,7 @@ import app.barbman.core.repositories.egresos.EgresosRepository;
 import app.barbman.core.repositories.egresos.EgresosRepositoryImpl;
 import app.barbman.core.service.egresos.EgresosService;
 import app.barbman.core.util.AppSession;
+import app.barbman.core.util.NumberFormatUtil;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -51,6 +52,9 @@ public class AdelantosController implements Initializable {
                 "efectivo", "transferencia"
         ));
         formaPagoChoiceBox.setValue("efectivo");
+
+        NumberFormatUtil.applyToTextField(montoField);
+
         logger.info("Vista de adelantos inicializada.");
         btnGuardar.setOnAction(e -> guardarAdelanto());
     }
@@ -108,7 +112,7 @@ public class AdelantosController implements Initializable {
             }
             int barberoId = barbero.getId();
 
-            double monto = Double.parseDouble(montoField.getText());
+            double monto = NumberFormatUtil.parseDouble(montoField.getText());
             String formaPago = formaPagoChoiceBox.getValue();
 
             egresosService.addAdelanto(barberoId, monto, formaPago);
@@ -120,7 +124,7 @@ public class AdelantosController implements Initializable {
             montoField.clear();
             formaPagoChoiceBox.getSelectionModel().clearSelection();
 
-        } catch (NumberFormatException e) {
+        } catch (java.text.ParseException e) {
             logger.error("Error al parsear el monto ingresado: {}", e.getMessage());
         } catch (IllegalArgumentException e) {
             logger.warn("Validación fallida al registrar adelanto: {}", e.getMessage());
