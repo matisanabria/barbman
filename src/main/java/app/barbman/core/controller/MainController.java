@@ -67,8 +67,6 @@ public class MainController {
                 setView("/app/barbman/core/view/embed-view/sueldos-view.fxml");
             } else if (newToggle==btnCaja) {
                 setView("/app/barbman/core/view/embed-view/caja-view.fxml");
-            } else if (newToggle==btnResumen){
-                setView("/app/barbman/core/view/embed-view/caja-resumen-view.fxml");
             }
             else if (newToggle == null) {
                 menuGroup.selectToggle(oldToggle != null ? oldToggle : btnServicios);

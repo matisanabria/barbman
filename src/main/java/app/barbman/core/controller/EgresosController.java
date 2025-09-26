@@ -33,6 +33,8 @@ public class EgresosController implements Initializable {
     @FXML
     private TableColumn<Egreso, String> colMonto;
     @FXML
+    private TableColumn<Egreso, String> colFormaPago;
+    @FXML
     private TableColumn<Egreso, String> colDescripcion;
 
     @FXML
@@ -62,6 +64,10 @@ public class EgresosController implements Initializable {
         colMonto.setCellValueFactory(cellData -> {
             double precio = cellData.getValue().getMonto();
             return new SimpleStringProperty(NumberFormatUtil.format(precio) +  " Gs");
+        });
+        colFormaPago.setCellValueFactory(cellData -> {
+            String formaPago = cellData.getValue().getFormaPago();
+            return new SimpleStringProperty(formaPago != null ? formaPago : "");
         });
         colDescripcion.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
 

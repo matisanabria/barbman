@@ -15,7 +15,7 @@
 
         <!-- Encabezado -->
         <Label text="Confirmar cierre de caja"
-               style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+               style="-fx-font-size: 18px; -fx-font-weight: bold;  -fx-text-fill: #FFFFFF;"/>
 
         <!-- Panel tipo ticket -->
         <VBox spacing="6"

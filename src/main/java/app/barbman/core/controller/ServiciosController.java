@@ -59,6 +59,8 @@ public class ServiciosController implements Initializable {
     @FXML
     private javafx.scene.control.TextField precioField;
     @FXML
+    private TableColumn<ServicioRealizado, String> colFormaPago;
+    @FXML
     private javafx.scene.control.TextField observacionesField;
     @FXML
     private ChoiceBox<String> formaPagoBox;
@@ -102,6 +104,10 @@ public class ServiciosController implements Initializable {
         colPrecio.setCellValueFactory(cellData -> {
             double precio = cellData.getValue().getPrecio();
             return new SimpleStringProperty(NumberFormatUtil.format(precio) + " Gs");
+        });
+        colFormaPago.setCellValueFactory(cellData -> {
+            String formaPago = cellData.getValue().getFormaPago();
+            return new SimpleStringProperty(formaPago != null ? formaPago : "");
         });
         colFecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
         colObservaciones.setCellValueFactory(new PropertyValueFactory<>("observaciones"));

@@ -35,6 +35,7 @@
                 <TableColumn fx:id="colFecha" prefWidth="110" text="Fecha"/>
                 <TableColumn fx:id="colTipo" prefWidth="80" text="Tipo"/>
                 <TableColumn fx:id="colMonto" prefWidth="120" text="Monto"/>
+                <TableColumn fx:id="colFormaPago" prefWidth="100" text="Pago"/>
                 <TableColumn fx:id="colDescripcion" text="Descripción"/>
             </columns>
         </TableView>
