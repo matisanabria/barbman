@@ -70,12 +70,21 @@ public class MainController {
             } else if (newToggle==btnResumen){
                 setView("/app/barbman/core/view/embed-view/caja-resumen-view.fxml");
             }
-            // Si ningún botón está seleccionado (por doble clic) vuelve a seleccionar el último
             else if (newToggle == null) {
-                menuGroup.selectToggle(oldToggle);
+                menuGroup.selectToggle(oldToggle != null ? oldToggle : btnServicios);
             } else {
-                // Deja el centro del BorderPane vacío
                 borderPane.setCenter(null);
+            }
+            // Previene la deselección por clic en el botón ya seleccionado
+            ToggleButton[] botones = new ToggleButton[]{btnServicios, btnEgresos, btnSueldos, btnCaja /*, btnResumen*/};
+            for (ToggleButton btn : botones) {
+                if (btn != null) { // Evita el error si el botón es null
+                    btn.addEventFilter(javafx.scene.input.MouseEvent.MOUSE_PRESSED, event -> {
+                        if (btn.isSelected()) {
+                            event.consume();
+                        }
+                    });
+                }
             }
         });
 
