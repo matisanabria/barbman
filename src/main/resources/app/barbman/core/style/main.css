@@ -353,3 +353,22 @@
     -fx-font-weight: bold;
     -fx-font-family: 'Inter', Arial, sans-serif;
 }
+/* ====== SCROLLPANE GENERAL ====== */
+.main-scrollpane {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.main-scrollpane .viewport {
+    -fx-background-color: transparent;
+}
+
+/* Scrollbar vertical */
+.main-scrollpane .scroll-bar:vertical {
+    -fx-background-color: #232323;
+}
+
+.main-scrollpane .thumb {
+    -fx-background-color: #393939;
+    -fx-background-radius: 8;
+}
