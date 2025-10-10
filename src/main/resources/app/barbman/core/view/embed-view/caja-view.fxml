@@ -12,40 +12,31 @@
     <content>
         <VBox spacing="40" alignment="TOP_LEFT" fillWidth="true" prefWidth="600.0">
 
-            <!-- ================= CAJA DIARIA ================= -->
+            <!-- =============== CAJA DIARIA =============== -->
             <VBox spacing="20" alignment="TOP_LEFT" fillWidth="true">
 
-                <!-- Encabezado -->
                 <HBox alignment="CENTER_LEFT" spacing="16">
                     <children>
                         <Label text="Caja diaria" styleClass="caja-titulo"/>
                         <Region HBox.hgrow="ALWAYS"/>
                         <ChoiceBox fx:id="choiceFechas" prefWidth="150.0" styleClass="choice-box"/>
-                        <Button fx:id="btnCierreCaja" text="Cierre de caja" styleClass="button"/>
                     </children>
                 </HBox>
 
-                <!-- Panel de ticket -->
                 <VBox spacing="10" alignment="TOP_LEFT" styleClass="caja-ticket">
-
-                    <Label fx:id="lblFecha" text="Fecha: --/--/----" styleClass="caja-label-titulo"/>
-
-                    <Label fx:id="lblIngresos" text="Ingresos totales: 0 Gs" styleClass="caja-label"/>
-                    <Label fx:id="lblEgresos" text="Egresos totales: 0 Gs" styleClass="caja-label"/>
-                    <Label fx:id="lblSaldoFinal" text="Saldo final: 0 Gs" styleClass="caja-label-strong"/>
+                    <Label fx:id="lblFechaDiaria" text="Fecha: --/--/----" styleClass="caja-label-titulo"/>
+                    <Label fx:id="lblIngresosDiaria" text="Ingresos totales: 0 Gs" styleClass="caja-label"/>
+                    <Label fx:id="lblEgresosDiaria" text="Egresos totales: 0 Gs" styleClass="caja-label"/>
 
                     <Separator/>
-                    <Label text="Desglose:" styleClass="caja-label-strong"/>
-                    <Label fx:id="lblEfectivo" text="- Efectivo: 0 Gs" styleClass="caja-label"/>
-                    <Label fx:id="lblTransferencia" text="- Transferencia: 0 Gs" styleClass="caja-label"/>
-                    <Label fx:id="lblPOS" text="- POS: 0 Gs" styleClass="caja-label"/>
+                    <Label text="Producción por barbero:" styleClass="caja-label-strong"/>
+                    <VBox fx:id="boxProduccionBarberosDiaria" spacing="5" alignment="TOP_LEFT"/>
                 </VBox>
             </VBox>
 
-            <!-- ================= CAJA SEMANAL ================= -->
+            <!-- =============== CAJA SEMANAL =============== -->
             <VBox spacing="20" alignment="TOP_LEFT" fillWidth="true">
 
-                <!-- Encabezado -->
                 <HBox alignment="CENTER_LEFT" spacing="16">
                     <children>
                         <Label text="Caja semanal" styleClass="caja-titulo"/>
@@ -54,11 +45,8 @@
                     </children>
                 </HBox>
 
-                <!-- Panel de ticket -->
                 <VBox spacing="10" alignment="TOP_LEFT" styleClass="caja-ticket">
-
                     <Label fx:id="lblSemana" text="Semana: --/-- al --/--" styleClass="caja-label-titulo"/>
-
                     <Label fx:id="lblIngresosSemana" text="Ingresos totales: 0 Gs" styleClass="caja-label"/>
                     <Label fx:id="lblEgresosSemana" text="Egresos totales: 0 Gs" styleClass="caja-label"/>
 

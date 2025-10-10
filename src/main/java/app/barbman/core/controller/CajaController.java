@@ -2,22 +2,19 @@ package app.barbman.core.controller;
 
 import app.barbman.core.dto.ResumenDTO;
 import app.barbman.core.model.Barbero;
-import app.barbman.core.model.CajaDiaria;
+import app.barbman.core.model.Egreso;
+import app.barbman.core.model.ServicioRealizado;
 import app.barbman.core.repositories.barbero.BarberoRepository;
 import app.barbman.core.repositories.barbero.BarberoRepositoryImpl;
-import app.barbman.core.repositories.caja.CajaRepository;
-import app.barbman.core.repositories.caja.CajaRepositoryImpl;
 import app.barbman.core.repositories.egresos.EgresosRepository;
 import app.barbman.core.repositories.egresos.EgresosRepositoryImpl;
 import app.barbman.core.repositories.serviciorealizado.ServicioRealizadoRepository;
 import app.barbman.core.repositories.serviciorealizado.ServicioRealizadoRepositoryImpl;
 import app.barbman.core.service.caja.CajaService;
 import app.barbman.core.util.NumberFormatUtil;
-import app.barbman.core.util.WindowManager;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
@@ -27,25 +24,18 @@ import org.apache.logging.log4j.Logger;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class CajaController implements Initializable {
+    // ======= Caja diaria =======
     @FXML private ChoiceBox<String> choiceFechas;
-    @FXML private Button btnCierreCaja;
+    @FXML private Label lblFechaDiaria;
+    @FXML private Label lblIngresosDiaria;
+    @FXML private Label lblEgresosDiaria;
+    @FXML private VBox boxProduccionBarberosDiaria;
 
-    // Labels del ticket
-    @FXML private Label lblFecha;
-    @FXML private Label lblIngresos;
-    @FXML private Label lblEgresos;
-    @FXML private Label lblSaldoFinal;
-    @FXML private Label lblEfectivo;
-    @FXML private Label lblTransferencia;
-    @FXML private Label lblPOS;
-
-    // Cierre semanal
+    // ======= Caja semanal =======
     @FXML private ChoiceBox<String> choiceSemanas;
     @FXML private Label lblSemana;
     @FXML private Label lblIngresosSemana;
@@ -54,55 +44,37 @@ public class CajaController implements Initializable {
 
     private static final Logger logger = LogManager.getLogger(CajaController.class);
 
-    private final CajaRepository cajaRepo = new CajaRepositoryImpl();
     private final ServicioRealizadoRepository serviciosRepo = new ServicioRealizadoRepositoryImpl();
     private final EgresosRepository egresosRepo = new EgresosRepositoryImpl();
-    private final CajaService cajaService = new CajaService(cajaRepo, serviciosRepo, egresosRepo);
     private final BarberoRepository barberoRepo = new BarberoRepositoryImpl();
+    private final CajaService cajaService = new CajaService(serviciosRepo, egresosRepo);
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-    private CajaDiaria cierre;
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // ================== CIERRE DIARIO ==================
-        cargarFechas();
-
+        cargarFechasDiario();
         choiceFechas.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
-                mostrarResumen(LocalDate.parse(newVal));
+                mostrarResumenDiario(LocalDate.parse(newVal, DATE_FORMATTER));
             }
         });
 
         if (!choiceFechas.getItems().isEmpty()) {
-            String ultimaFecha = choiceFechas.getItems().stream().sorted()
-                    .reduce((first, second) -> second).orElse(null);
-
-            if (ultimaFecha != null) {
-                choiceFechas.setValue(ultimaFecha);
-                mostrarResumen(LocalDate.parse(ultimaFecha));
-                logger.info("Seleccionada automáticamente la última fecha de cierre: {}", ultimaFecha);
-            }
+            String ultimaFecha = choiceFechas.getItems().get(0);
+            choiceFechas.setValue(ultimaFecha);
+            mostrarResumenDiario(LocalDate.parse(ultimaFecha, DATE_FORMATTER));
         } else {
-            mostrarNoHayRegistros();
+            mostrarNoHayRegistrosDiario();
         }
 
-        LocalDate hoy = LocalDate.now();
-        btnCierreCaja.setDisable(cajaRepo.findByFecha(hoy) != null);
-
-        btnCierreCaja.setOnAction(e -> onCierreCaja());
-
-        // ================== CIERRE SEMANAL ==================
-        cargarSemanas();
-
+        cargarSemanasSemanal();
         choiceSemanas.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
                 try {
                     String[] partes = newVal.split(" -> ");
                     LocalDate desde = LocalDate.parse(partes[0].trim(), DATE_FORMATTER);
                     LocalDate hasta = LocalDate.parse(partes[1].trim(), DATE_FORMATTER);
-
                     mostrarResumenSemanal(desde, hasta);
                 } catch (Exception e) {
                     logger.error("Error al parsear rango de semana '{}': {}", newVal, e.getMessage(), e);
@@ -111,178 +83,138 @@ public class CajaController implements Initializable {
         });
 
         if (!choiceSemanas.getItems().isEmpty()) {
-            String ultimaSemana = choiceSemanas.getItems().stream().sorted()
-                    .reduce((first, second) -> second).orElse(null);
+            String ultimaSemana = choiceSemanas.getItems().get(0);
+            choiceSemanas.setValue(ultimaSemana);
 
-            if (ultimaSemana != null) {
-                choiceSemanas.setValue(ultimaSemana);
+            String[] partes = ultimaSemana.split(" -> ");
+            LocalDate desde = LocalDate.parse(partes[0].trim(), DATE_FORMATTER);
+            LocalDate hasta = LocalDate.parse(partes[1].trim(), DATE_FORMATTER);
 
-                String[] partes = ultimaSemana.split(" -> ");
-                LocalDate desde = LocalDate.parse(partes[0].trim(), DATE_FORMATTER);
-                LocalDate hasta = LocalDate.parse(partes[1].trim(), DATE_FORMATTER);
-
-                mostrarResumenSemanal(desde, hasta);
-                logger.info("Seleccionada automáticamente la última semana de cierre: {}", ultimaSemana);
-            }
+            mostrarResumenSemanal(desde, hasta);
         }
 
-        logger.info("Vista de Caja inicializada con cierres diarios y semanales.");
+        logger.info("Vista de Caja inicializada con cierres diarios y semanales (formato simple).");
     }
 
-    private void cargarFechas() {
-        List<CajaDiaria> cierres = cajaRepo.findAll();
-        List<String> fechas = cierres.stream()
-                .map(c -> c.getFecha().toString())
+    // ======= Métodos DIARIOS =======
+    private void cargarFechasDiario() {
+        List<ServicioRealizado> servicios = serviciosRepo.findAll();
+        List<Egreso> egresos = egresosRepo.findAll();
+
+        Set<LocalDate> fechasUnicas = new HashSet<>();
+        servicios.forEach(s -> fechasUnicas.add(s.getFecha()));
+        egresos.forEach(e -> fechasUnicas.add(e.getFecha()));
+
+        List<String> fechasFormateadas = fechasUnicas.stream()
+                .sorted(Comparator.reverseOrder())
+                .map(f -> f.format(DATE_FORMATTER))
                 .collect(Collectors.toList());
-        choiceFechas.setItems(FXCollections.observableArrayList(fechas));
+
+        choiceFechas.setItems(FXCollections.observableArrayList(fechasFormateadas));
     }
 
-    private void mostrarResumen(LocalDate fecha) {
-        CajaDiaria caja = cajaRepo.findByFecha(fecha);
+    private void mostrarResumenDiario(LocalDate fecha) {
+        logger.info("Mostrando resumen diario para la fecha: {}", fecha);
 
-        if (caja == null) {
-            mostrarNoHayRegistros();
-            return;
+        ResumenDTO resumen = cajaService.calcularResumenDiario(fecha);
+
+        lblFechaDiaria.setText("Fecha: " + fecha.format(DATE_FORMATTER));
+        lblIngresosDiaria.setText("Ingresos totales: " + NumberFormatUtil.format(resumen.getIngresosTotal()) + " Gs");
+        lblEgresosDiaria.setText("Egresos totales: " + NumberFormatUtil.format(resumen.getEgresosTotal()) + " Gs");
+
+        boxProduccionBarberosDiaria.getChildren().clear();
+        List<Barbero> barberos = barberoRepo.findAll();
+        for (Barbero b : barberos) {
+            double produccion = serviciosRepo.getProduccionSemanalPorBarbero(b.getId(), fecha, fecha);
+            Label lbl = new Label("- " + b.getNombre() + ": " + NumberFormatUtil.format(produccion) + " Gs");
+            lbl.getStyleClass().add("caja-label");
+            boxProduccionBarberosDiaria.getChildren().add(lbl);
+            logger.debug("Producción para barbero {} el {}: {}", b.getNombre(), fecha, produccion);
         }
-
-        lblFecha.setText("Fecha: " + caja.getFecha().format(DATE_FORMATTER));
-        lblIngresos.setText("Ingresos totales: " + NumberFormatUtil.format(caja.getIngresosTotal()) + " Gs");
-        lblEgresos.setText("Egresos totales: " + NumberFormatUtil.format(caja.getEgresosTotal()) + " Gs");
-        lblSaldoFinal.setText("Saldo final: " + NumberFormatUtil.format(caja.getSaldoFinal()) + " Gs");
-
-        lblEfectivo.setText("- Efectivo: " + NumberFormatUtil.format(caja.getEfectivo()) + " Gs");
-        lblTransferencia.setText("- Transferencia: " + NumberFormatUtil.format(caja.getTransferencia()) + " Gs");
-        lblPOS.setText("- POS: " + NumberFormatUtil.format(caja.getPos()) + " Gs");
-
-        logger.info("Mostrando resumen de caja para fecha {}", fecha);
-    }
-
-    private void mostrarNoHayRegistros() {
-        lblFecha.setText("⚠ No hay registros");
-        lblIngresos.setText("Ingresos totales: --");
-        lblEgresos.setText("Egresos totales: --");
-        lblSaldoFinal.setText("Saldo final: --");
-        lblEfectivo.setText("- Efectivo: --");
-        lblTransferencia.setText("- Transferencia: --");
-        lblPOS.setText("- POS: --");
-        logger.warn("No hay registros de caja para la fecha seleccionada.");
-    }
-
-    @FXML
-    private void onCierreCaja() {
-        LocalDate hoy = LocalDate.now();
-        try {
-            CajaDiaria cierre = cajaService.calcularCierre(hoy);
-
-            WindowManager.openModal("/app/barbman/core/view/cierre-caja-preview.fxml", controller -> {
-                if (controller instanceof CierreCajaController cierreCtrl) {
-                    cierreCtrl.setData(cierre, cajaService, this::refrescarVista);
-                }
-            });
-
-        } catch (Exception e) {
-            mostrarNoHayRegistros();
-            logger.error("Error al calcular cierre de caja: {}", e.getMessage(), e);
+        if (barberos.isEmpty()) {
+            Label lbl = new Label("No hay barberos registrados.");
+            lbl.getStyleClass().add("caja-label");
+            boxProduccionBarberosDiaria.getChildren().add(lbl);
+            logger.warn("No hay barberos registrados en la fecha: {}", fecha);
         }
     }
 
-    private void refrescarVista() {
-        cargarFechas();
-        if (!choiceFechas.getItems().isEmpty()) {
-            String ultimaFecha = choiceFechas.getItems().stream().sorted()
-                    .reduce((first, second) -> second).orElse(null);
-
-            if (ultimaFecha != null) {
-                choiceFechas.setValue(ultimaFecha);
-                mostrarResumen(LocalDate.parse(ultimaFecha));
-            }
-        } else {
-            mostrarNoHayRegistros();
-        }
-
-        cargarSemanas();
-        if (!choiceSemanas.getItems().isEmpty()) {
-            String ultimaSemana = choiceSemanas.getItems().stream().sorted()
-                    .reduce((first, second) -> second).orElse(null);
-
-            if (ultimaSemana != null) {
-                choiceSemanas.setValue(ultimaSemana);
-
-                String[] partes = ultimaSemana.split(" -> ");
-                LocalDate desde = LocalDate.parse(partes[0].trim(), DATE_FORMATTER);
-                LocalDate hasta = LocalDate.parse(partes[1].trim(), DATE_FORMATTER);
-
-                mostrarResumenSemanal(desde, hasta);
-            }
-        }
-
-        logger.info("Vista de Caja refrescada (cierres diarios y semanales).");
+    private void mostrarNoHayRegistrosDiario() {
+        lblFechaDiaria.setText("⚠ No hay registros");
+        lblIngresosDiaria.setText("Ingresos totales: --");
+        lblEgresosDiaria.setText("Egresos totales: --");
+        boxProduccionBarberosDiaria.getChildren().clear();
+        Label lbl = new Label("No hay barberos registrados.");
+        lbl.getStyleClass().add("caja-label");
+        boxProduccionBarberosDiaria.getChildren().add(lbl);
+        logger.warn("No hay registros de caja diaria para la fecha seleccionada.");
     }
 
-    private void mostrarResumenSemanal(LocalDate desde, LocalDate hasta) {
-        try {
-            ResumenDTO resumen = cajaService.calcularResumenSemanal(desde, hasta);
+    // ======= Métodos SEMANALES =======
+    private void cargarSemanasSemanal() {
+        List<ServicioRealizado> servicios = serviciosRepo.findAll();
+        List<Egreso> egresos = egresosRepo.findAll();
 
-            lblSemana.setText("Semana: " + desde.format(DATE_FORMATTER) + " -> " + hasta.format(DATE_FORMATTER));
-            lblIngresosSemana.setText("Ingresos totales: " + NumberFormatUtil.format(resumen.getIngresosTotal()) + " Gs");
-            lblEgresosSemana.setText("Egresos totales: " + NumberFormatUtil.format(resumen.getEgresosTotal()) + " Gs");
+        Set<LocalDate> fechasUnicas = new HashSet<>();
+        servicios.forEach(s -> fechasUnicas.add(s.getFecha()));
+        egresos.forEach(e -> fechasUnicas.add(e.getFecha()));
 
-            boxProduccionBarberos.getChildren().clear();
-            List<Barbero> barberos = barberoRepo.findAll();
-
-            for (Barbero b : barberos) {
-                double produccion = serviciosRepo.getProduccionSemanalPorBarbero(b.getId(), desde, hasta);
-                Label lbl = new Label("- " + b.getNombre() + ": " + NumberFormatUtil.format(produccion) + " Gs");
-                lbl.getStyleClass().add("caja-label");
-                boxProduccionBarberos.getChildren().add(lbl);
-            }
-
-            if (barberos.isEmpty()) {
-                Label lbl = new Label("No hay barberos registrados.");
-                lbl.getStyleClass().add("caja-label");
-                boxProduccionBarberos.getChildren().add(lbl);
-            }
-
-            logger.info("Resumen semanal mostrado para {} - {}", desde, hasta);
-
-        } catch (Exception e) {
-            lblSemana.setText(" No hay registros");
-            lblIngresosSemana.setText("Ingresos totales: --");
-            lblEgresosSemana.setText("Egresos totales: --");
-            boxProduccionBarberos.getChildren().clear();
-
-            logger.error("Error al mostrar resumen semanal: {}", e.getMessage(), e);
-        }
-    }
-
-    private void cargarSemanas() {
-        List<CajaDiaria> cierres = cajaRepo.findAll();
-
-        if (cierres.isEmpty()) {
+        if (fechasUnicas.isEmpty()) {
             choiceSemanas.setItems(FXCollections.observableArrayList());
-            logger.warn("No hay cierres diarios registrados, no se pueden calcular semanas.");
+            logger.warn("No hay registros para calcular semanas.");
             return;
         }
 
-        LocalDate minFecha = cierres.stream().map(CajaDiaria::getFecha).min(LocalDate::compareTo).orElse(LocalDate.now());
-        LocalDate maxFecha = cierres.stream().map(CajaDiaria::getFecha).max(LocalDate::compareTo).orElse(LocalDate.now());
+        LocalDate minFecha = fechasUnicas.stream().min(LocalDate::compareTo).orElse(LocalDate.now());
+        LocalDate maxFecha = fechasUnicas.stream().max(LocalDate::compareTo).orElse(LocalDate.now());
 
         LocalDate inicio = minFecha.with(java.time.DayOfWeek.MONDAY);
         List<String> semanas = new ArrayList<>();
 
         while (!inicio.isAfter(maxFecha)) {
             LocalDate fin = inicio.plusDays(6);
-
-            // Quitamos el número de semana → solo mostramos el rango
             String label = String.format("%s -> %s",
                     inicio.format(DATE_FORMATTER),
                     fin.format(DATE_FORMATTER));
-
             semanas.add(label);
             inicio = inicio.plusWeeks(1);
         }
 
+        Collections.reverse(semanas);
         choiceSemanas.setItems(FXCollections.observableArrayList(semanas));
-        logger.info("Semanas cargadas (sin número): {}", semanas);
+        logger.info("Semanas cargadas: {}", semanas);
+    }
+
+    private void mostrarResumenSemanal(LocalDate desde, LocalDate hasta) {
+        List<ServicioRealizado> serviciosRango = serviciosRepo.findAll().stream()
+                .filter(s -> !s.getFecha().isBefore(desde) && !s.getFecha().isAfter(hasta))
+                .collect(Collectors.toList());
+        List<Egreso> egresosRango = egresosRepo.findAll().stream()
+                .filter(e -> !e.getFecha().isBefore(desde) && !e.getFecha().isAfter(hasta))
+                .collect(Collectors.toList());
+
+        double totalIngresos = serviciosRango.stream().mapToDouble(ServicioRealizado::getPrecio).sum();
+        double totalEgresos = egresosRango.stream().mapToDouble(Egreso::getMonto).sum();
+
+        lblSemana.setText("Semana: " + desde.format(DATE_FORMATTER) + " al " + hasta.format(DATE_FORMATTER));
+        lblIngresosSemana.setText("Ingresos totales: " + NumberFormatUtil.format(totalIngresos) + " Gs");
+        lblEgresosSemana.setText("Egresos totales: " + NumberFormatUtil.format(totalEgresos) + " Gs");
+
+        boxProduccionBarberos.getChildren().clear();
+        List<Barbero> barberos = barberoRepo.findAll();
+        for (Barbero b : barberos) {
+            double produccion = serviciosRepo.getProduccionSemanalPorBarbero(b.getId(), desde, hasta);
+            Label lbl = new Label("- " + b.getNombre() + ": " + NumberFormatUtil.format(produccion) + " Gs");
+            lbl.getStyleClass().add("caja-label");
+            boxProduccionBarberos.getChildren().add(lbl);
+        }
+
+        if (barberos.isEmpty()) {
+            Label lbl = new Label("No hay barberos registrados.");
+            lbl.getStyleClass().add("caja-label");
+            boxProduccionBarberos.getChildren().add(lbl);
+        }
+
+        logger.info("Resumen semanal mostrado para {} - {}", desde, hasta);
     }
 }
