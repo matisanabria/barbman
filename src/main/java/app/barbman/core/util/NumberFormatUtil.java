@@ -44,16 +44,6 @@ public class NumberFormatUtil {
     }
 
     /**
-     * Parsea una cadena formateada a double.
-     * Ej: "30.000" -> 30000.0
-     */
-    public static double parseDouble(String text) throws ParseException {
-        if (text == null || text.isBlank()) return 0.0;
-        Number number = formatter.parse(text.trim());
-        return number.doubleValue();
-    }
-
-    /**
      * Aplica formato automático a un TextField para que
      * siempre muestre separadores de miles al escribir.
      */

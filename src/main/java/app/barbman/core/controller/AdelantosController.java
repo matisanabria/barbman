@@ -112,7 +112,7 @@ public class AdelantosController implements Initializable {
             }
             int barberoId = barbero.getId();
 
-            double monto = NumberFormatUtil.parseDouble(montoField.getText());
+            double monto = Double.parseDouble(montoField.getText().replace(".", "").trim());
             String formaPago = formaPagoChoiceBox.getValue();
 
             egresosService.addAdelanto(barberoId, monto, formaPago);
@@ -124,8 +124,6 @@ public class AdelantosController implements Initializable {
             montoField.clear();
             formaPagoChoiceBox.getSelectionModel().clearSelection();
 
-        } catch (java.text.ParseException e) {
-            logger.error("Error al parsear el monto ingresado: {}", e.getMessage());
         } catch (IllegalArgumentException e) {
             logger.warn("Validación fallida al registrar adelanto: {}", e.getMessage());
         } catch (Exception e) {
