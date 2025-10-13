@@ -78,11 +78,24 @@ public class LoginController {
         String PIN = pinField.getText();
         Barbero sesion = barberoRepo.findByPin(PIN);
 
-        // Si el barbero existe y el PIN coincide, iniciar sesión y abrir la vista principal
+        // Si existe y coincide el PIN
         if (sesion != null && sesion.getPin().equals(PIN)) {
             AppSession.iniciarSesion(sesion);
             Stage stage = (Stage) pinField.getScene().getWindow();
-            WindowManager.switchWindow(stage, "/app/barbman/core/view/main-view.fxml");
+
+            // Determinar la vista según el rol
+            String viewPath;
+            if (sesion.getRol().equalsIgnoreCase("admin")) {
+                viewPath = "/app/barbman/core/view/main-view-admin.fxml"; // versión completa
+                logger.info("Rol administrador detectado. Cargando vista principal completa.");
+            } else {
+                viewPath = "/app/barbman/core/view/main-view-barber.fxml"; // versión reducida
+                logger.info("Rol barbero detectado. Cargando vista reducida.");
+            }
+
+            // Cambiar la ventana 🔥
+            WindowManager.switchWindow(stage, viewPath);
+
         } else {
             wrongPin();
         }

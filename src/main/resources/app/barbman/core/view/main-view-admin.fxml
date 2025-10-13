@@ -25,21 +25,14 @@
                       styleClass="main-menu-bar">
                     <children>
                         <!-- Agrupación de botones con ToggleGroup-->
-                        <ToggleButton fx:id="btnInicio" selected="true" styleClass="main-menu-btn" disable="true">
-                            <graphic>
-                                <FontIcon iconLiteral="fas-home" iconSize="24"/>
-                            </graphic>
-                            <text>Inicio</text>
-                            <toggleGroup>
-                                <ToggleGroup fx:id="menuGroup"/>
-                            </toggleGroup>
-                            <contentDisplay>TOP</contentDisplay>
-                        </ToggleButton>
                         <ToggleButton fx:id="btnServicios" toggleGroup="$menuGroup" styleClass="main-menu-btn">
                             <graphic>
                                 <FontIcon iconLiteral="fas-cut" iconSize="24"/>
                             </graphic>
                             <text>Servicios</text>
+                            <toggleGroup>
+                                <ToggleGroup fx:id="menuGroup"/>
+                            </toggleGroup>
                             <contentDisplay>TOP</contentDisplay>
                         </ToggleButton>
                         <ToggleButton fx:id="btnEgresos" toggleGroup="$menuGroup" styleClass="main-menu-btn">

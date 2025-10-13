@@ -193,6 +193,22 @@ public class SueldosService {
     private double calcularSueldoEspecial(double produccion, double umbralMinimo, double porcentaje) {
         logger.info("[SUELDOS] Calculando sueldo especial: produccion = {}, umbralMinimo = {}, porcentaje = {}",
                 produccion, umbralMinimo, porcentaje);
+        logger.info("[SUELDOS] Calculando sueldo especial...");
+        logger.info("   • Producción total: {}", produccion);
+        logger.info("   • Porcentaje aplicado: {}%", porcentaje * 100);
+        logger.info("   • Umbral mínimo garantizado: {}", umbralMinimo);
+
+        double calculado = produccion * porcentaje;
+        double sueldoEspecial = Math.max(umbralMinimo, calculado);
+
+        if (calculado > umbralMinimo) {
+            logger.info("El 50% de la producción ({}) supera el umbral ({}). Se paga: {}", calculado, umbralMinimo, sueldoEspecial);
+        } else {
+            logger.info("El 50% de la producción ({}) NO supera el umbral ({}). Se garantiza el mínimo: {}", calculado, umbralMinimo, sueldoEspecial);
+        }
+
+        logger.info("=> Resultado final para el barbero: {}", sueldoEspecial);
+
         if ((produccion * porcentaje) < umbralMinimo) {
             return umbralMinimo;
         } else {
