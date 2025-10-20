@@ -19,158 +19,168 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 /**
- * Clase encargada de inicializar la base de datos SQLite y crear las tablas si no existen.
+ * Initializes and manages the SQLite database.
+ * Ensures the database file and required tables exist, and provides
+ * methods for connecting to the database.
+ * Also includes functionality for creating database backups.
  */
 public class DbBootstrap {
     private static final Logger logger = LogManager.getLogger(DbBootstrap.class);
 
-    public static final String DB_FOLDER = "data";  // Carpeta donde se guarda la base de datos
-    public static final String DB_NAME = "barbman.db";  // Nombre del archivo de la base de datos
+    public static final String DB_FOLDER = "data";  // Folder name
+    public static final String DB_NAME = "barbman.db";  // Database file name
 
-    /**
-     * Inicializa la base de datos:
-     * - Verifica si la carpeta y el archivo de la base de datos existen.
-     * - Si no existen, los crea junto con las tablas necesarias.
-     */
     public static void init() {
-        logger.info("[DB] Chequeando database...");
+        logger.info("[DB] Ensuring database exists...");
 
-        // Verifica si la carpeta "data" existe, si no, la crea
+        // Ensure the database folder exists
         File folder = new File(DB_FOLDER);
         if (!folder.exists()) {
-            logger.warn("[DB] Carpeta de base de datos no encontrada.");
+            logger.warn("[DB] Database folder not found. Creating folder: " + DB_FOLDER);
             if (folder.mkdirs()) {
-                logger.info("[DB] Carpeta creada exitosamente: " + DB_FOLDER);
+                logger.info("[DB] Database folder created successfully.");
             } else {
-                logger.error("[DB] No se pudo crear la carpeta de base de datos.");
+                logger.error("[DB] Failed to create database folder: " + DB_FOLDER);
             }
         }
 
-        // Verifica si el archivo de la base de datos existe; si no, lo crea junto con las tablas
+        // Ensure the database file exists
         File dbFile = new File(DB_FOLDER + "/" + DB_NAME);
-        if (dbFile.exists()) logger.info("[DB] Base de datos encontrada en: " + dbFile.getAbsolutePath());
+        if (dbFile.exists()) logger.info("[DB] Database found: " + dbFile.getAbsolutePath());
         else {
-            logger.warn("[DB] Base de datos no encontrada. Creando base de datos...");
-            createTables();  // Crea las tablas de la base de datos
+            logger.warn("[DB] Database file not found. Creating new database: " + DB_NAME);
+            createTables();
         }
     }
 
     /**
-     * Conecta a la base de datos SQLite.
-     * @return Conexión a la base de datos
-     * @throws SQLException si hay error al conectar
+     * Connect to the SQLite database.
+     *
+     * @return Database connection
+     * @throws SQLException if a database access error occurs
      */
     public static Connection connect() throws SQLException {
         String url = "jdbc:sqlite:" + DB_FOLDER + "/" + DB_NAME;
-        logger.debug("[DB] Conectando a base de datos con URL: {}", url);
-        Connection conn =  DriverManager.getConnection(url);
-        logger.debug("[DB] Conexión abierta a la base de datos.");
+        logger.debug("[DB] Connecting to database. URL: {}", url);
+        Connection conn = DriverManager.getConnection(url);
+        logger.debug("[DB] Database connected and ready to use.");
         return conn;
     }
 
     /**
-     * Crea todas las tablas necesarias en la base de datos si no existen.
-     * Las tablas incluyen: users, servicios_definidos, servicios_realizados, egresos, clientes, caja y sueldos.
-     *  Campo fecha en las tablas:
-     *  - Formato esperado: 'YYYY-MM-DD' (ISO 8601)
-     *  - Ejemplo: '2024-06-10'
-     *  - Usar java.sql.Date o LocalDate para manipulación
+     * Creates the necessary tables in the database
      */
     private static void createTables() {
         try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
-            logger.info("[DB] Creando tablas en la base de datos...");
+            logger.info("[DB] Creating database tables...");
 
-            // Tabla de users
-            logger.info("[DB] Creando tabla 'users'...");
+            // USERS
             stmt.execute("""
                         CREATE TABLE IF NOT EXISTS users (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
                             name TEXT NOT NULL,
                             role TEXT NOT NULL,
                             pin TEXT NOT NULL UNIQUE CHECK(length(pin) = 4 AND pin GLOB '[0-9][0-9][0-9][0-9]'),
-                            tipo_cobro INTEGER NOT NULL DEFAULT 0,
+                            payment_type INTEGER NOT NULL DEFAULT 0,
                             param_1 REAL,
                             param_2 REAL
                         );
                     """);
 
-            // Tabla de servicios predefinidos
-            logger.info("[DB] Creando tabla 'servicios_definidos'...");
+            // SERVICE DEFINITIONS
             stmt.execute("""
-                        CREATE TABLE IF NOT EXISTS servicios_definidos (
+                        CREATE TABLE IF NOT EXISTS service_definitions (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
                             name TEXT NOT NULL UNIQUE,
-                            precio_base REAL NOT NULL
+                            base_price REAL NOT NULL
                         );
                     """);
 
-            // Tabla de servicios realizados
-            logger.info("[DB] Creando tabla 'servicios_realizados'...");
+            // PERFORMED SERVICES
             stmt.execute("""
-                        CREATE TABLE IF NOT EXISTS servicios_realizados (
+                        CREATE TABLE IF NOT EXISTS performed_services (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            barbero_id INTEGER NOT NULL,
-                            tipo_servicio INTEGER NOT NULL,
-                            precio REAL NOT NULL,
-                            fecha TEXT NOT NULL CHECK (fecha = date(fecha)),
-                            forma_pago TEXT NOT NULL CHECK (forma_pago IN ('efectivo','transferencia','pos')),
-                            observaciones TEXT,
-                            FOREIGN KEY (barbero_id) REFERENCES users(id),
-                            FOREIGN KEY (tipo_servicio) REFERENCES servicios_definidos(id)
+                            user_id INTEGER NOT NULL,
+                            service_type_id INTEGER NOT NULL,
+                            price REAL NOT NULL,
+                            date TEXT NOT NULL CHECK (date = date(date)),
+                            payment_method TEXT NOT NULL CHECK (payment_method IN ('cash','transfer','qr','card')),
+                            notes TEXT,
+                            FOREIGN KEY (user_id) REFERENCES users(id),
+                            FOREIGN KEY (service_type_id) REFERENCES service_definitions(id)
                         );
                     """);
 
-            // Tabla de egresos
-            logger.info("[DB] Creando tabla 'egresos'...");
+            // PRODUCTS
             stmt.execute("""
-                        CREATE TABLE IF NOT EXISTS egresos (
+                        CREATE TABLE IF NOT EXISTS products (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            descripcion TEXT NOT NULL,
-                            monto REAL NOT NULL CHECK (monto > 0),
-                            fecha TEXT NOT NULL CHECK (fecha = date(fecha)),
-                            tipo TEXT NOT NULL CHECK (
-                                    tipo IN (
-                                        'insumo',     -- gel, navajas, productos
-                                        'servicio',   -- limpieza, alquiler, luz
-                                        'compra',     -- mobiliario, herramientas, decoración
-                                        'otros',      -- delivery, cosas fuera de lo normal
-                                        'sueldo',     -- liquidación de sueldo semanal
-                                        'adelanto'    -- plata adelantada antes del cierre semanal
-                                    )
-                                ),
-                            forma_pago TEXT  -- efectivo, transferencia
-                            );
-                   """);
-
-            // Tabla de caja diaria
-            logger.info("[DB] Creando tabla 'caja_diaria'...");
-            stmt.execute("""
-                        CREATE TABLE IF NOT EXISTS caja_diaria (
-                            id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            fecha TEXT NOT NULL UNIQUE,
-                            ingresos_total REAL NOT NULL,
-                            egresos_total REAL NOT NULL,
-                            efectivo REAL NOT NULL,
-                            transferencia REAL NOT NULL,
-                            pos REAL NOT NULL,
-                            saldo_final REAL NOT NULL
+                            name TEXT NOT NULL UNIQUE,
+                            unit_price REAL NOT NULL,
+                            stock INTEGER NOT NULL DEFAULT 0,
+                            notes TEXT
                         );
                     """);
 
-            // Tabla de sueldos
-            logger.info("[DB] Creando tabla 'sueldos'...");
+            // SALES
             stmt.execute("""
-                        CREATE TABLE IF NOT EXISTS sueldos (
+                        CREATE TABLE IF NOT EXISTS sales (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            barbero_id INTEGER NOT NULL,
-                            fecha_inicio_semana TEXT NOT NULL,
-                            fecha_fin_semana TEXT NOT NULL,
-                            produccion_total REAL NOT NULL,
-                            monto_liquidado REAL NOT NULL,
-                            tipo_cobro_snapshot INTEGER NOT NULL,
-                            fecha_pago TEXT,
-                            forma_pago TEXT,
-                            FOREIGN KEY (barbero_id) REFERENCES users(id)
+                            date TEXT NOT NULL CHECK (date = date(date)),
+                            total REAL NOT NULL,
+                            payment_method TEXT NOT NULL CHECK (payment_method IN ('cash','transfer','qr','card'))
+                        );
+                    """);
+
+            // SALE ITEMS
+            stmt.execute("""
+                        CREATE TABLE IF NOT EXISTS sale_items (
+                            id INTEGER PRIMARY KEY AUTOINCREMENT,
+                            sale_id INTEGER NOT NULL,
+                            product_id INTEGER NOT NULL,
+                            quantity INTEGER NOT NULL CHECK (quantity > 0),
+                            unit_price REAL NOT NULL,
+                            FOREIGN KEY (sale_id) REFERENCES sales(id),
+                            FOREIGN KEY (product_id) REFERENCES products(id)
+                        );
+                    """);
+
+            // EXPENSES
+            stmt.execute("""
+                        CREATE TABLE IF NOT EXISTS expenses (
+                            id INTEGER PRIMARY KEY AUTOINCREMENT,
+                            description TEXT NOT NULL,
+                            amount REAL NOT NULL CHECK (amount > 0),
+                            date TEXT NOT NULL CHECK (date = date(date)),
+                            type TEXT NOT NULL CHECK (
+                                type IN (
+                                    'supply', 'service', 'purchase', 'other', 'salary', 'advance'
+
+                                    -- 'supply'    -> supplies and products (e.g., restocking inventory)
+                                    -- 'service'   -> cleaning, rent, electricity, etc.
+                                    -- 'purchase'  -> furniture, tools, decoration
+                                    -- 'other'     -> irregular expenses, delivery, miscellaneous
+                                    -- 'salary'    -> empleyoes' wages
+                                    -- 'advance'   -> advances before the weekly close
+                                )
+                            ),
+                            payment_method TEXT
+                        );
+                    """);
+
+            // SALARIES
+            stmt.execute("""
+                        CREATE TABLE IF NOT EXISTS salaries (
+                            id INTEGER PRIMARY KEY AUTOINCREMENT,
+                            user_id INTEGER NOT NULL,
+                            week_start TEXT NOT NULL,
+                            week_end TEXT NOT NULL,
+                            total_production REAL NOT NULL,
+                            amount_paid REAL NOT NULL,
+                            pay_type_snapshot INTEGER NOT NULL,
+                            pay_date TEXT,
+                            payment_method TEXT,
+                            FOREIGN KEY (user_id) REFERENCES users(id)
                         );
                     """);
 
