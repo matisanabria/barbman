@@ -1,7 +1,7 @@
 package app.barbman.core.service.sueldos;
 
 import app.barbman.core.dto.SueldoDTO;
-import app.barbman.core.model.Barbero;
+import app.barbman.core.model.User;
 import app.barbman.core.model.Egreso;
 import app.barbman.core.model.Sueldo;
 import app.barbman.core.repositories.barbero.BarberoRepository;
@@ -72,21 +72,21 @@ public class SueldosService {
     }
 
     /**
-     * Calcula el sueldo de un barbero para la semana actual.
+     * Calcula el sueldo de un user para la semana actual.
      *
-     * @param barbero Barbero al que se le calcula el sueldo
+     * @param user User al que se le calcula el sueldo
      * @param bono    Bono adicional a sumar al sueldo (puede ser 0)
      * @return Sueldo calculado (sin fecha de pago ni forma de pago)
-     * @throws IllegalArgumentException si el barbero es inválido
+     * @throws IllegalArgumentException si el user es inválido
      */
-    public Sueldo calcularSueldo(Barbero barbero, double bono) {
-        if (barbero == null || barbero.getId() <= 0) {
-            throw new IllegalArgumentException("Barbero inválido.");
+    public Sueldo calcularSueldo(User user, double bono) {
+        if (user == null || user.getId() <= 0) {
+            throw new IllegalArgumentException("User inválido.");
         }
 
-        int tipo = barbero.getTipoCobro();
-        double param1 = barbero.getParam1();
-        double param2 = barbero.getParam2();
+        int tipo = user.getPaymentType();
+        double param1 = user.getParam1();
+        double param2 = user.getParam2();
 
         // Rango semanal
         LocalDate[] semana = obtenerRangoSemanaActual();
@@ -94,11 +94,11 @@ public class SueldosService {
         LocalDate finSemana = semana[1];
 
         // Producción y adelantos
-        double produccion = servicioRealizadoRepository.getProduccionSemanalPorBarbero(barbero.getId(), inicioSemana, finSemana);
-        double adelantos = egresosRepository.getTotalAdelantos(barbero.getId(), inicioSemana, finSemana);
+        double produccion = servicioRealizadoRepository.getProduccionSemanalPorBarbero(user.getId(), inicioSemana, finSemana);
+        double adelantos = egresosRepository.getTotalAdelantos(user.getId(), inicioSemana, finSemana);
 
-        logger.info("[SUELDOS] Calculando sueldo para barbero ID {} (tipoCobro={}, param1={}, param2={}, bono={})",
-                barbero.getId(), tipo, param1, param2, bono);
+        logger.info("[SUELDOS] Calculando sueldo para user ID {} (tipoCobro={}, param1={}, param2={}, bono={})",
+                user.getId(), tipo, param1, param2, bono);
         // Calcular sueldo base
         double montoCalculado = switch (tipo) {
             case 0 -> 0.0; // No cobra
@@ -116,8 +116,8 @@ public class SueldosService {
         if (montoFinal < 0) {
             // Calculamos la diferencia que queda pendiente
             double deudaPendiente = Math.abs(montoFinal);
-            logger.warn("[SUELDOS] El sueldo calculado para barbero ID {} es negativo ({}), se ajusta a 0.",
-                    barbero.getId(), montoFinal);
+            logger.warn("[SUELDOS] El sueldo calculado para user ID {} es negativo ({}), se ajusta a 0.",
+                    user.getId(), montoFinal);
 
             // Ajustamos el sueldo a 0 para que no se registre sueldo negativo
             montoFinal = 0;
@@ -126,7 +126,7 @@ public class SueldosService {
             LocalDate lunesProximo = finSemana.plusDays(2); // finSemana es sábado
 
             // Creamos un egreso tipo "adelanto" para registrar la deuda pendiente como adelanto automático
-            String descripcion = "Saldo pendiente arrastrado (barbero ID " + barbero.getId() + ")";
+            String descripcion = "Saldo pendiente arrastrado (user ID " + user.getId() + ")";
             Egreso egresoPendiente = new Egreso(
                     descripcion,
                     deudaPendiente,
@@ -141,7 +141,7 @@ public class SueldosService {
         }
 
         return new Sueldo(
-                barbero.getId(),
+                user.getId(),
                 inicioSemana,
                 finSemana,
                 produccion,
@@ -238,17 +238,17 @@ public class SueldosService {
      */
     public List<SueldoDTO> genSueldoDTOSemanal(LocalDate inicio, LocalDate fin){
         List<SueldoDTO> lista = new ArrayList<>();
-        List<Barbero> barberos = barberoRepository.findAll();
+        List<User> users = barberoRepository.findAll();
 
-        for (Barbero barbero : barberos) {
-            int barberoId = barbero.getId();
-            String nombre = barbero.getNombre();
+        for (User user : users) {
+            int barberoId = user.getId();
+            String nombre = user.getName();
 
             // Producción semanal
             double produccion = servicioRealizadoRepository.getProduccionSemanalPorBarbero(barberoId, inicio, fin);
 
             // Calcular sueldo base (sin bonos)
-            Sueldo sueldoTemp = calcularSueldo(barbero, 0);
+            Sueldo sueldoTemp = calcularSueldo(user, 0);
 
             // Consultar adelantos
             double adelantos = egresosRepository.getTotalAdelantos(barberoId, inicio, fin);

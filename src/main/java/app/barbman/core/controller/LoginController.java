@@ -1,7 +1,7 @@
 package app.barbman.core.controller;
 
-import app.barbman.core.util.AppSession;
-import app.barbman.core.model.Barbero;
+import app.barbman.core.model.User;
+import app.barbman.core.util.SessionManager;
 import app.barbman.core.repositories.barbero.BarberoRepository;
 import app.barbman.core.repositories.barbero.BarberoRepositoryImpl;
 import app.barbman.core.util.WindowManager;
@@ -76,25 +76,24 @@ public class LoginController {
 
         // Buscar barbero con el PIN ingresado
         String PIN = pinField.getText();
-        Barbero sesion = barberoRepo.findByPin(PIN);
+        User sesion = barberoRepo.findByPin(PIN);
 
         // Si existe y coincide el PIN
         if (sesion != null && sesion.getPin().equals(PIN)) {
-            AppSession.iniciarSesion(sesion);
+            SessionManager.startSession(sesion);
             Stage stage = (Stage) pinField.getScene().getWindow();
 
-            // Determinar la vista según el rol
-            String viewPath;
-            if (sesion.getRol().equalsIgnoreCase("admin")) {
-                viewPath = "/app/barbman/core/view/main-view-admin.fxml"; // versión completa
-                logger.info("Rol administrador detectado. Cargando vista principal completa.");
-            } else {
-                viewPath = "/app/barbman/core/view/main-view-barber.fxml"; // versión reducida
-                logger.info("Rol barbero detectado. Cargando vista reducida.");
-            }
+//            String viewPath;
+//            if (sesion.getRole().equalsIgnoreCase("admin")) {
+//                viewPath = "/app/barbman/core/view/main-view.fxml"; // versión completa
+//                logger.info("Rol administrador detectado. Cargando vista principal completa.");
+//            } else {
+//                viewPath = "/app/barbman/core/view/main-view-barber.fxml"; // versión reducida
+//                logger.info("Rol barbero detectado. Cargando vista reducida.");
+//            }
 
-            // Cambiar la ventana 🔥
-            WindowManager.switchWindow(stage, viewPath);
+            // Cambiar la ventana a la vista principal
+            WindowManager.switchWindow(stage, "/app/barbman/core/view/main-view.fxml");
 
         } else {
             wrongPin();

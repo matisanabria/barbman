@@ -70,7 +70,7 @@ public class DbBootstrap {
 
     /**
      * Crea todas las tablas necesarias en la base de datos si no existen.
-     * Las tablas incluyen: barberos, servicios_definidos, servicios_realizados, egresos, clientes, caja y sueldos.
+     * Las tablas incluyen: users, servicios_definidos, servicios_realizados, egresos, clientes, caja y sueldos.
      *  Campo fecha en las tablas:
      *  - Formato esperado: 'YYYY-MM-DD' (ISO 8601)
      *  - Ejemplo: '2024-06-10'
@@ -80,13 +80,13 @@ public class DbBootstrap {
         try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
             logger.info("[DB] Creando tablas en la base de datos...");
 
-            // Tabla de barberos
-            logger.info("[DB] Creando tabla 'barberos'...");
+            // Tabla de users
+            logger.info("[DB] Creando tabla 'users'...");
             stmt.execute("""
-                        CREATE TABLE IF NOT EXISTS barberos (
+                        CREATE TABLE IF NOT EXISTS users (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            nombre TEXT NOT NULL,
-                            rol TEXT NOT NULL,
+                            name TEXT NOT NULL,
+                            role TEXT NOT NULL,
                             pin TEXT NOT NULL UNIQUE CHECK(length(pin) = 4 AND pin GLOB '[0-9][0-9][0-9][0-9]'),
                             tipo_cobro INTEGER NOT NULL DEFAULT 0,
                             param_1 REAL,
@@ -99,7 +99,7 @@ public class DbBootstrap {
             stmt.execute("""
                         CREATE TABLE IF NOT EXISTS servicios_definidos (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            nombre TEXT NOT NULL UNIQUE,
+                            name TEXT NOT NULL UNIQUE,
                             precio_base REAL NOT NULL
                         );
                     """);
@@ -115,7 +115,7 @@ public class DbBootstrap {
                             fecha TEXT NOT NULL CHECK (fecha = date(fecha)),
                             forma_pago TEXT NOT NULL CHECK (forma_pago IN ('efectivo','transferencia','pos')),
                             observaciones TEXT,
-                            FOREIGN KEY (barbero_id) REFERENCES barberos(id),
+                            FOREIGN KEY (barbero_id) REFERENCES users(id),
                             FOREIGN KEY (tipo_servicio) REFERENCES servicios_definidos(id)
                         );
                     """);
@@ -170,7 +170,7 @@ public class DbBootstrap {
                             tipo_cobro_snapshot INTEGER NOT NULL,
                             fecha_pago TEXT,
                             forma_pago TEXT,
-                            FOREIGN KEY (barbero_id) REFERENCES barberos(id)
+                            FOREIGN KEY (barbero_id) REFERENCES users(id)
                         );
                     """);
 

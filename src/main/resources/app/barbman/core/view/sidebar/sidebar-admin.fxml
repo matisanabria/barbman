@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      spacing="8.0"
+      styleClass="sidebar"
+      prefWidth="250">
+
+    <VBox spacing="10" styleClass="sidebar-main">
+
+        <!-- Usuario -->
+        <HBox alignment="CENTER_LEFT" spacing="10" styleClass="sidebar-header">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <ImageView fx:id="userAvatar" fitWidth="40" fitHeight="40" pickOnBounds="true" preserveRatio="true">
+                <image>
+                    <Image url="@/path/to/default-avatar.png"/>
+                </image>
+            </ImageView>
+            <Label fx:id="userName" text="Nombre Usuario" styleClass="sidebar-username"/>
+        </HBox>
+
+        <!-- Separador -->
+        <Separator />
+
+        <!-- Menú -->
+        <VBox spacing="5">
+            <ToggleButton fx:id="btnIncome" text="Ingresos" styleClass="sidebar-btn">
+                <graphic>
+                    <FontIcon iconLiteral="fas-arrow-up" iconSize="18"/>
+                </graphic>
+            </ToggleButton>
+
+            <ToggleButton fx:id="btnExpenses" text="Egresos" styleClass="sidebar-btn">
+                <graphic>
+                    <FontIcon iconLiteral="fas-arrow-down" iconSize="18"/>
+                </graphic>
+            </ToggleButton>
+
+            <ToggleButton fx:id="btnSalaries" text="Sueldos" styleClass="sidebar-btn">
+                <graphic>
+                    <FontIcon iconLiteral="far-money-bill-alt" iconSize="18"/>
+                </graphic>
+            </ToggleButton>
+
+            <ToggleButton fx:id="btnCash" text="Caja" styleClass="sidebar-btn">
+                <graphic>
+                    <FontIcon iconLiteral="fas-cash-register" iconSize="18"/>
+                </graphic>
+            </ToggleButton>
+
+            <ToggleButton fx:id="btnSettings" text="Configuración" styleClass="sidebar-btn">
+                <graphic>
+                    <FontIcon iconLiteral="fas-cog" iconSize="18"/>
+                </graphic>
+            </ToggleButton>
+        </VBox>
+
+    </VBox>
+
+</VBox>

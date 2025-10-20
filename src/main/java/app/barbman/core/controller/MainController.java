@@ -1,11 +1,10 @@
 package app.barbman.core.controller;
 
 import app.barbman.core.Main;
-import app.barbman.core.util.AppSession;
+import app.barbman.core.model.User;
+import app.barbman.core.util.SessionManager;
 import app.barbman.core.util.WindowManager;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.BorderPane;
@@ -13,36 +12,26 @@ import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
-import java.util.Objects;
-
-/**
- * Controlador principal de la aplicación.
- * Gestiona la navegación entre vistas mediante botones de menú.
- */
 public class MainController {
     private static final Logger logger = LogManager.getLogger(Main.class);
     @FXML
     private BorderPane borderPane; // Contenedor principal de la vista
     @FXML
-    private ToggleButton btnInicio; // Botón de "Inicio"
+    private ToggleButton btnIncome;
     @FXML
-    private ToggleButton btnServicios;
+    private ToggleButton btnExpenses;
     @FXML
-    private ToggleButton btnEgresos;
+    private ToggleButton btnSalaries;
     @FXML
-    private ToggleButton btnSueldos;
-    @FXML
-    private ToggleButton btnCaja;
-    @FXML
-    private ToggleButton btnResumen;
+    private ToggleButton btnCash;
     @FXML
     private ToggleGroup menuGroup; // Grupo de botones de menú
 
+    // FIXME: Arreglar todo
     @FXML
-    private void onCerrarSesion() {
-        logger.info("[MAIN-VIEW] Cerrando sesión y volviendo a la pantalla de login.");
-        AppSession.cerrarSesion();
+    private void onLogout() {
+        logger.info("[MAIN-VIEW] Logging out.");
+        SessionManager.endSession();
         WindowManager.switchWindow(
                 (Stage) borderPane.getScene().getWindow(),
                 "/app/barbman/core/view/login-view.fxml"
@@ -54,28 +43,32 @@ public class MainController {
      */
     @FXML
     public void initialize() {
-        // Selecciona el botón de inicio por defecto
-        menuGroup.selectToggle(btnServicios);
-        setView("/app/barbman/core/view/embed-view/servicios-view.fxml");
+        User activeUser = SessionManager.getActiveUser();
+        if (SessionManager.getActiveUser() != null && "admin".equals(SessionManager.getActiveUser().getRole())) {
+            WindowManager.setEmbeddedView(borderPane,"left", "/app/barbman/core/view/sidebar/sidebar-admin.fxml");
+        }
 
-        // Listener para cambios de selección en el grupo de botones
+        // Selecciona el botón de inicio por defecto
+        menuGroup.selectToggle(btnIncome);
+        WindowManager.setEmbeddedView(borderPane, "center", "/app/barbman/core/view/embed-view/servicios-view.fxml");
+
+        // Listener for menu buttons
         menuGroup.selectedToggleProperty().addListener((obs, oldToggle, newToggle) -> {
-            if (newToggle == btnServicios) {
-                setView("/app/barbman/core/view/embed-view/servicios-view.fxml");
-            } else if (newToggle==btnEgresos) {
-                setView("/app/barbman/core/view/embed-view/egresos-view.fxml");
-            } else if (newToggle==btnSueldos) {
-                setView("/app/barbman/core/view/embed-view/sueldos-view.fxml");
-            } else if (newToggle==btnCaja) {
-                setView("/app/barbman/core/view/embed-view/caja-view.fxml");
-            }
-            else if (newToggle == null) {
-                menuGroup.selectToggle(oldToggle != null ? oldToggle : btnServicios);
+            if (newToggle == btnIncome) {
+                WindowManager.setEmbeddedView(borderPane, "center", "/app/barbman/core/view/embed-view/servicios-view.fxml");
+            } else if (newToggle == btnExpenses) {
+                WindowManager.setEmbeddedView(borderPane, "center", "/app/barbman/core/view/embed-view/egresos-view.fxml");
+            } else if (newToggle == btnSalaries) {
+                WindowManager.setEmbeddedView(borderPane, "center", "/app/barbman/core/view/embed-view/sueldos-view.fxml");
+            } else if (newToggle == btnCash) {
+                WindowManager.setEmbeddedView(borderPane, "center", "/app/barbman/core/view/embed-view/caja-view.fxml");
+            } else if (newToggle == null) {
+                menuGroup.selectToggle(oldToggle != null ? oldToggle : btnIncome);
             } else {
                 borderPane.setCenter(null);
             }
             // Previene la deselección por clic en el botón ya seleccionado
-            ToggleButton[] botones = new ToggleButton[]{btnServicios, btnEgresos, btnSueldos, btnCaja /*, btnResumen*/};
+            ToggleButton[] botones = new ToggleButton[]{btnIncome, btnExpenses, btnSalaries, btnCash /*, btnResumen*/};
             for (ToggleButton btn : botones) {
                 if (btn != null) { // Evita el error si el botón es null
                     btn.addEventFilter(javafx.scene.input.MouseEvent.MOUSE_PRESSED, event -> {
@@ -86,25 +79,5 @@ public class MainController {
                 }
             }
         });
-
-        // Establece la vista inicial si el botón de inicio está seleccionado
-//        if (menuGroup.getSelectedToggle() == btnInicio) {
-//            setView("/app/barbman/onbarber/view/servicios-view.fxml");
-//        }
-    }
-
-    /**
-     * Carga un archivo FXML y lo establece en el centro del BorderPane.
-     *
-     * @param fxmlPath ruta del archivo FXML a cargar
-     */
-    private void setView(String fxmlPath) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-            Parent view = loader.load();
-            borderPane.setCenter(view);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }

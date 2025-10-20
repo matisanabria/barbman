@@ -64,7 +64,7 @@ public class EgresosService {
 
         egresosRepository.save(egreso);
 
-        logger.info("Adelanto registrado -> Barbero {}, Monto {}, Método {}, Fecha {}",
+        logger.info("Adelanto registrado -> User {}, Monto {}, Método {}, Fecha {}",
                 barberoId, monto, formaPago, hoy);
     }
 }

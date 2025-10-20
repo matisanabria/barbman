@@ -1,7 +1,7 @@
 package app.barbman.core.controller;
 
 import app.barbman.core.dto.SueldoDTO;
-import app.barbman.core.model.Barbero;
+import app.barbman.core.model.User;
 import app.barbman.core.model.Sueldo;
 import app.barbman.core.repositories.barbero.BarberoRepository;
 import app.barbman.core.repositories.barbero.BarberoRepositoryImpl;
@@ -23,7 +23,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.net.URL;
-import java.text.DecimalFormat;
 import java.util.ResourceBundle;
 
 /**
@@ -61,9 +60,9 @@ public class PagarSueldoController implements Initializable {
     private final SueldosService sueldosService = new SueldosService(sueldosRepository, servicioRealizadoRepository, egresosRepository);
     private SueldosController parentController;
 
-    // Barbero y sueldo seleccionado desde la tabla principal
+    // User y sueldo seleccionado desde la tabla principal
     private SueldoDTO sueldoDTO;
-    private Barbero barbero;
+    private User user;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -106,7 +105,7 @@ public class PagarSueldoController implements Initializable {
      */
     public void setSueldoDTO(SueldoDTO dto) {
         this.sueldoDTO = dto;
-        this.barbero = barberoRepository.findById(dto.getBarberoId());
+        this.user = barberoRepository.findById(dto.getBarberoId());
 
         // rango semanal
         java.time.LocalDate hoy = java.time.LocalDate.now();
@@ -119,7 +118,7 @@ public class PagarSueldoController implements Initializable {
         lblAdelantos.setText("Adelantos: " + NumberFormatUtil.format(adelantos) + " Gs");
         lblSueldoFinal.setText("Sueldo final: " + NumberFormatUtil.format(dto.getMontoLiquidado()) + " Gs");
 
-        if (barbero != null && barbero.getTipoCobro() == 0) {
+        if (user != null && user.getPaymentType() == 0) {
             manualMontoBox.setVisible(true);
             manualMontoBox.setManaged(true);
             logger.info("[SUELDOS-PAGO] Tipo de cobro = 0, habilitado campo de monto manual.");
@@ -136,8 +135,8 @@ public class PagarSueldoController implements Initializable {
 
     private void pagarSueldo() {
         try {
-            if (barbero == null) {
-                throw new IllegalArgumentException("No se encontró el barbero.");
+            if (user == null) {
+                throw new IllegalArgumentException("No se encontró el user.");
             }
 
             double bono = 0;
@@ -146,14 +145,14 @@ public class PagarSueldoController implements Initializable {
             }
 
             double montoManual = -1;
-            if (barbero.getTipoCobro() == 0) {
+            if (user.getPaymentType() == 0) {
                 if (montoManualField.getText().isBlank()) {
-                    throw new IllegalArgumentException("Debe ingresar un monto manual para este barbero.");
+                    throw new IllegalArgumentException("Debe ingresar un monto manual para este user.");
                 }
                 montoManual = Double.parseDouble(montoManualField.getText().replace(".", ""));
             }
 
-            Sueldo sueldo = sueldosService.calcularSueldo(barbero, 0);
+            Sueldo sueldo = sueldosService.calcularSueldo(user, 0);
             if (montoManual >= 0) {
                 sueldo.setMontoLiquidado(montoManual);
             }
@@ -162,8 +161,8 @@ public class PagarSueldoController implements Initializable {
             // Guardar pago con bono
             sueldosService.pagarSueldo(sueldo, formaPago, bono);
 
-            logger.info("[SUELDOS-PAGO] Sueldo registrado correctamente -> Barbero: {}, Monto: {}, FormaPago: {}",
-                    barbero.getNombre(), sueldo.getMontoLiquidado(), formaPago);
+            logger.info("[SUELDOS-PAGO] Sueldo registrado correctamente -> User: {}, Monto: {}, FormaPago: {}",
+                    user.getName(), sueldo.getMontoLiquidado(), formaPago);
 
         } catch (Exception e) {
             logger.error("[SUELDOS-PAGO] Error al pagar sueldo: {}", e.getMessage(), e);

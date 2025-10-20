@@ -1,12 +1,12 @@
 package app.barbman.core.controller;
 
-import app.barbman.core.model.Barbero;
+import app.barbman.core.model.User;
 import app.barbman.core.repositories.barbero.BarberoRepository;
 import app.barbman.core.repositories.barbero.BarberoRepositoryImpl;
 import app.barbman.core.repositories.egresos.EgresosRepository;
 import app.barbman.core.repositories.egresos.EgresosRepositoryImpl;
 import app.barbman.core.service.egresos.EgresosService;
-import app.barbman.core.util.AppSession;
+import app.barbman.core.util.SessionManager;
 import app.barbman.core.util.NumberFormatUtil;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -20,13 +20,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.net.URL;
-import java.text.DecimalFormat;
 import java.util.List;
 import java.util.ResourceBundle;
 
 public class AdelantosController implements Initializable {
     @FXML
-    private ChoiceBox<Barbero> barberoChoiceBox;
+    private ChoiceBox<User> barberoChoiceBox;
     @FXML
     private ChoiceBox<String> formaPagoChoiceBox;
     @FXML
@@ -64,25 +63,25 @@ public class AdelantosController implements Initializable {
      * Además, selecciona automáticamente al barbero activo si está disponible en la sesión.
      */
     private void cargarBarberos() {
-        List<Barbero> barberos = barberoRepository.findAll();
-        barberoChoiceBox.setItems(FXCollections.observableArrayList(barberos));
-        barberoChoiceBox.setConverter(new StringConverter<Barbero>() {
+        List<User> users = barberoRepository.findAll();
+        barberoChoiceBox.setItems(FXCollections.observableArrayList(users));
+        barberoChoiceBox.setConverter(new StringConverter<User>() {
             @Override
-            public String toString(Barbero b) {
-                return (b == null) ? "" : b.getNombre();
+            public String toString(User b) {
+                return (b == null) ? "" : b.getName();
             }
 
             @Override
-            public Barbero fromString(String s) {
+            public User fromString(String s) {
                 return null;
             }
         });
 
         // Selecciona automáticamente el barbero activo si está en la lista
-        Barbero activo = AppSession.getBarberoActivo();
-        if (activo != null && barberos.contains(activo)) {
+        User activo = SessionManager.getActiveUser();
+        if (activo != null && users.contains(activo)) {
             barberoChoiceBox.setValue(activo);
-            logger.info("Barbero activo preseleccionado: {}", activo.getNombre());
+            logger.info("User activo preseleccionado: {}", activo.getName());
         }
         else {
             logger.warn("No se encontró barbero activo para preseleccionar.");
@@ -106,19 +105,19 @@ public class AdelantosController implements Initializable {
      */
     private void guardarAdelanto() {
         try {
-            Barbero barbero = barberoChoiceBox.getValue();
-            if (barbero == null) {
-                throw new IllegalArgumentException("Debe seleccionar un barbero.");
+            User user = barberoChoiceBox.getValue();
+            if (user == null) {
+                throw new IllegalArgumentException("Debe seleccionar un user.");
             }
-            int barberoId = barbero.getId();
+            int barberoId = user.getId();
 
             double monto = Double.parseDouble(montoField.getText().replace(".", "").trim());
             String formaPago = formaPagoChoiceBox.getValue();
 
             egresosService.addAdelanto(barberoId, monto, formaPago);
 
-            logger.info("Adelanto registrado correctamente -> Barbero: {}, Monto: {}, Forma de pago: {}",
-                    barbero.getNombre(), monto, formaPago);
+            logger.info("Adelanto registrado correctamente -> User: {}, Monto: {}, Forma de pago: {}",
+                    user.getName(), monto, formaPago);
 
             // limpiar inputs
             montoField.clear();

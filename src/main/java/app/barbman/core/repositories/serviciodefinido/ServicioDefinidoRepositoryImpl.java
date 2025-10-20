@@ -14,7 +14,7 @@ public class ServicioDefinidoRepositoryImpl implements ServicioDefinidoRepositor
     private static final Logger logger = LogManager.getLogger(ServicioDefinidoRepositoryImpl.class);
 
     private static final String SELECT_BASE = """
-        SELECT id, nombre, precio_base
+        SELECT id, name, precio_base
         FROM servicios_definidos
         """;
 
@@ -70,7 +70,7 @@ public class ServicioDefinidoRepositoryImpl implements ServicioDefinidoRepositor
     @Override
     public void save(ServicioDefinido servicio) {
         String sql = """
-            INSERT INTO servicios_definidos (nombre, precio_base)
+            INSERT INTO servicios_definidos (name, precio_base)
             VALUES (?, ?)
             """;
         try (Connection db = DbBootstrap.connect();
@@ -111,7 +111,7 @@ public class ServicioDefinidoRepositoryImpl implements ServicioDefinidoRepositor
     private ServicioDefinido mapRow(ResultSet rs) throws SQLException {
         return new ServicioDefinido(
                 rs.getInt("id"),
-                rs.getString("nombre"),
+                rs.getString("name"),
                 rs.getDouble("precio_base")
         );
     }

@@ -17,7 +17,7 @@
             <!-- Título -->
             <Label text="Registrar Adelanto" styleClass="login-title"/>
 
-            <!-- Barbero -->
+            <!-- User -->
             <VBox spacing="2.0">
                 <Label text="Barbero" styleClass="form-label"/>
                 <ChoiceBox fx:id="barberoChoiceBox" prefWidth="220.0" styleClass="services-choicebox"/>

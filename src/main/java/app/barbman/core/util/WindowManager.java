@@ -3,6 +3,7 @@ package app.barbman.core.util;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
@@ -222,6 +223,31 @@ public class WindowManager {
             stage.showAndWait(); // Bloquea hasta cerrar
         } catch (IOException e) {
             logger.error("Error abriendo ventana modal: " + fxmlPath, e);
+        }
+    }
+
+    /**
+     * Sets an embedded view into a BorderPane at the specified position.
+     *
+     * @param borderPane BorderPane where the view will be set
+     * @param position   Position ("center", "left", "right", "top", "bottom")
+     * @param fxmlPath   Path to the FXML file of the view
+     */
+    public static void setEmbeddedView(BorderPane borderPane, String position, String fxmlPath) {
+        try {
+            FXMLLoader loader = new FXMLLoader(WindowManager.class.getResource(fxmlPath));
+            Parent view = loader.load();
+
+            switch (position.toLowerCase()) {
+                case "center" -> borderPane.setCenter(view);
+                case "left" -> borderPane.setLeft(view);
+                case "right" -> borderPane.setRight(view);
+                case "top" -> borderPane.setTop(view);
+                case "bottom" -> borderPane.setBottom(view);
+                default -> borderPane.setCenter(view);
+            }
+        } catch (IOException e) {
+            logger.error("Error loading view: " + fxmlPath, e);
         }
     }
 

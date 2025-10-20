@@ -1,7 +1,7 @@
 package app.barbman.core.controller;
 
-import app.barbman.core.util.AppSession;
-import app.barbman.core.model.Barbero;
+import app.barbman.core.model.User;
+import app.barbman.core.util.SessionManager;
 import app.barbman.core.model.ServicioDefinido;
 import app.barbman.core.model.ServicioRealizado;
 import app.barbman.core.repositories.barbero.BarberoRepository;
@@ -23,7 +23,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.net.URL;
-import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -53,7 +52,7 @@ public class ServiciosController implements Initializable {
 
     // Fields para agregar servicios
     @FXML
-    private ChoiceBox<Barbero> barberoChoiceBox;
+    private ChoiceBox<User> barberoChoiceBox;
     @FXML
     private ChoiceBox<ServicioDefinido> tipoServicioBox;
     @FXML
@@ -91,8 +90,8 @@ public class ServiciosController implements Initializable {
         // Configuración de las columnas de la tabla con las propiedades del modelo ServicioRealizad
         colBarbero.setCellValueFactory(cellData -> {
             int barberoId = cellData.getValue().getBarberoId();
-            Barbero b = barberoRepository.findById(barberoId);
-            String nombre = (b != null) ? b.getNombre() : "Desconocido";
+            User b = barberoRepository.findById(barberoId);
+            String nombre = (b != null) ? b.getName() : "Desconocido";
             return new SimpleStringProperty(nombre);
         });
         colTipoServicio.setCellValueFactory(cellData -> {
@@ -166,15 +165,15 @@ public class ServiciosController implements Initializable {
      * Muestra alertas en caso de errores de validación.
      */
     private void guardarServicio() {
-        Barbero barbero = barberoChoiceBox.getValue();
+        User user = barberoChoiceBox.getValue();
         ServicioDefinido servicioDefinido = tipoServicioBox.getValue();
         String precioStr = precioField.getText().replace(".", "").trim();
         String observaciones = observacionesField.getText();
         String formaPago = formaPagoBox.getValue();
 
-        if (barbero == null) {
-            mostrarAlerta("Debe seleccionar un barbero.");
-            logger.warn("[SERV-VIEW] Validación fallida: barbero no seleccionado.");
+        if (user == null) {
+            mostrarAlerta("Debe seleccionar un user.");
+            logger.warn("[SERV-VIEW] Validación fallida: user no seleccionado.");
             return;
         }
 
@@ -200,14 +199,14 @@ public class ServiciosController implements Initializable {
             double precio = Double.parseDouble(precioStr);
 
             srService.addServicioRealizado(
-                    (barbero != null) ? barbero.getId() : null,
+                    (user != null) ? user.getId() : null,
                     (servicioDefinido != null) ? servicioDefinido.getId() : null,
                     precio,
                     formaPago,
                     observaciones
             );
-            logger.info("[SERV-VIEW] Servicio registrado -> Barbero: {}, Servicio: {}, Precio: {}, FormaPago: {}",
-                    barbero.getNombre(),
+            logger.info("[SERV-VIEW] Servicio registrado -> User: {}, Servicio: {}, Precio: {}, FormaPago: {}",
+                    user.getName(),
                     (servicioDefinido != null ? servicioDefinido.getNombre() : "N/A"),
                     precio,
                     formaPago
@@ -239,25 +238,25 @@ public class ServiciosController implements Initializable {
      * Si hay un barbero activo en la sesión, lo selecciona automáticamente.
      */
     private void cargarBarberos() {
-        List<Barbero> barberos = barberoRepository.findAll();
-        barberoChoiceBox.setItems(FXCollections.observableArrayList(barberos));
-        barberoChoiceBox.setConverter(new StringConverter<Barbero>() {
+        List<User> users = barberoRepository.findAll();
+        barberoChoiceBox.setItems(FXCollections.observableArrayList(users));
+        barberoChoiceBox.setConverter(new StringConverter<User>() {
             @Override
-            public String toString(Barbero b) {
-                return (b == null) ? "" : b.getNombre();
+            public String toString(User b) {
+                return (b == null) ? "" : b.getName();
             }
 
             @Override
-            public Barbero fromString(String s) {
+            public User fromString(String s) {
                 return null;
             }
         });
 
         // Selecciona automáticamente el barbero activo si está en la lista
-        Barbero activo = AppSession.getBarberoActivo();
-        if (activo != null && barberos.contains(activo)) {
+        User activo = SessionManager.getActiveUser();
+        if (activo != null && users.contains(activo)) {
             barberoChoiceBox.setValue(activo);
-            logger.info("[SERV-VIEW] Barbero activo preseleccionado: {}", activo.getNombre());
+            logger.info("[SERV-VIEW] User activo preseleccionado: {}", activo.getName());
         }
     }
 

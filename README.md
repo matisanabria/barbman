@@ -3,7 +3,7 @@
 *Barbman* es una aplicación de escritorio pensada para la **gestión integral de barberías**.  
 Fue diseñada en **Java** con **JavaFX** y utiliza una base de datos embebida (`SQLite`), lo que permite usarla **sin conexión** en cualquier computadora.  
 
-El nombre *Barbman* proviene de *Barber Manager*
+El name *Barbman* proviene de *Barber Manager*
 
 ---
 
@@ -20,7 +20,7 @@ Puedes descargar la última versión desde la sección de [Releases](../../relea
 
 ## Características principales
 
-- **Gestión de barberos**: autenticación rápida y cálculo automático de salarios.  
+- **Gestión de users**: autenticación rápida y cálculo automático de salarios.  
 - **Registro de servicios realizados**: con producción diaria, semanal y mensual.  
 - **Gestión de egresos**: control de gastos de la barbería.  
 - **Reportes y estadísticas**: generación de informes de caja y pagos.  

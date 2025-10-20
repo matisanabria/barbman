@@ -29,7 +29,7 @@
                     <Label fx:id="lblEgresosDiaria" text="Egresos totales: 0 Gs" styleClass="caja-label"/>
 
                     <Separator/>
-                    <Label text="Producción por barbero:" styleClass="caja-label-strong"/>
+                    <Label text="Producción por user:" styleClass="caja-label-strong"/>
                     <VBox fx:id="boxProduccionBarberosDiaria" spacing="5" alignment="TOP_LEFT"/>
                 </VBox>
             </VBox>
@@ -51,7 +51,7 @@
                     <Label fx:id="lblEgresosSemana" text="Egresos totales: 0 Gs" styleClass="caja-label"/>
 
                     <Separator/>
-                    <Label text="Producción por barbero:" styleClass="caja-label-strong"/>
+                    <Label text="Producción por user:" styleClass="caja-label-strong"/>
                     <VBox fx:id="boxProduccionBarberos" spacing="5" alignment="TOP_LEFT"/>
                 </VBox>
             </VBox>

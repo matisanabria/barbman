@@ -1,6 +1,6 @@
 package app.barbman.core.repositories.barbero;
 
-import app.barbman.core.model.Barbero;
+import app.barbman.core.model.User;
 import app.barbman.core.repositories.DbBootstrap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -10,15 +10,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Implementación de BarberoRepository para gestionar operaciones CRUD en la tabla 'barberos'.
+ * Implementación de BarberoRepository para gestionar operaciones CRUD en la tabla 'users'.
  */
 public class BarberoRepositoryImpl implements BarberoRepository {
-    List<Barbero> listaBarberos = new ArrayList<>();
+    List<User> listaUsers = new ArrayList<>();
     private static final Logger logger = LogManager.getLogger(BarberoRepositoryImpl.class);
 
     private static final String SELECT_BASE = """
-        SELECT id, nombre, rol, pin, tipo_cobro, param_1, param_2
-        FROM barberos
+        SELECT id, name, role, pin, tipo_cobro, param_1, param_2
+        FROM users
         """;
 
     /**
@@ -28,7 +28,7 @@ public class BarberoRepositoryImpl implements BarberoRepository {
      * @return El barbero encontrado o null si no existe.
      */
     @Override
-    public Barbero findById(int id) {
+    public User findById(int id) {
         String sql = SELECT_BASE + " WHERE id = ?";
         try (Connection db = DbBootstrap.connect();
              PreparedStatement ps = db.prepareStatement(sql)) {
@@ -47,13 +47,13 @@ public class BarberoRepositoryImpl implements BarberoRepository {
     }
 
     /**
-     * Devuelve una lista de todos los barberos en la base de datos.
+     * Devuelve una lista de todos los users en la base de datos.
      *
-     * @return Lista de barberos.
+     * @return Lista de users.
      */
     @Override
-    public List<Barbero> findAll() {
-        List<Barbero> lista = new ArrayList<>();
+    public List<User> findAll() {
+        List<User> lista = new ArrayList<>();
         try (Connection db = DbBootstrap.connect();
              PreparedStatement ps = db.prepareStatement(SELECT_BASE);
              ResultSet rs = ps.executeQuery()) {
@@ -63,7 +63,7 @@ public class BarberoRepositoryImpl implements BarberoRepository {
             }
             return lista;
         } catch (Exception e) {
-            logger.warn("Error al listar barberos: {}", e.getMessage());
+            logger.warn("Error al listar users: {}", e.getMessage());
         }
         return List.of();
     }
@@ -75,7 +75,7 @@ public class BarberoRepositoryImpl implements BarberoRepository {
      * @return El barbero encontrado o null si no existe.
      */
     @Override
-    public Barbero findByPin(String pin) {
+    public User findByPin(String pin) {
         String sql = SELECT_BASE + " WHERE pin = ?";
         try (Connection db = DbBootstrap.connect();
              PreparedStatement ps = db.prepareStatement(sql)) {
@@ -94,35 +94,35 @@ public class BarberoRepositoryImpl implements BarberoRepository {
     }
 
     /**
-     * Guarda un nuevo barbero en la base de datos.
+     * Guarda un nuevo user en la base de datos.
      *
-     * @param barbero El barbero a guardar.
+     * @param user El user a guardar.
      */
     @Override
-    public void save(Barbero barbero) {
+    public void save(User user) {
         String sql = """
-            INSERT INTO barberos (nombre, rol, pin, tipo_cobro, param_1, param_2)
+            INSERT INTO users (name, role, pin, tipo_cobro, param_1, param_2)
             VALUES (?, ?, ?, ?, ?, ?)
             """;
         try (Connection db = DbBootstrap.connect();
              PreparedStatement ps = db.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            ps.setString(1, barbero.getNombre());
-            ps.setString(2, barbero.getRol());
-            ps.setString(3, barbero.getPin());
-            ps.setInt(4, barbero.getTipoCobro());
-            ps.setDouble(5, barbero.getParam1());
-            ps.setDouble(6, barbero.getParam2());
+            ps.setString(1, user.getName());
+            ps.setString(2, user.getRole());
+            ps.setString(3, user.getPin());
+            ps.setInt(4, user.getPaymentType());
+            ps.setDouble(5, user.getParam1());
+            ps.setDouble(6, user.getParam2());
 
             ps.executeUpdate();
 
             try (ResultSet keys = ps.getGeneratedKeys()) {
                 if (keys.next()) {
-                    barbero.setId(keys.getInt(1));
+                    user.setId(keys.getInt(1));
                 }
             }
         } catch (Exception e) {
-            logger.warn("Error al guardar barbero: {}", e.getMessage());
+            logger.warn("Error al guardar user: {}", e.getMessage());
         }
     }
 
@@ -133,7 +133,7 @@ public class BarberoRepositoryImpl implements BarberoRepository {
      */
     @Override
     public void delete(int id) {
-        String sql = "DELETE FROM barberos WHERE id = ?";
+        String sql = "DELETE FROM users WHERE id = ?";
         try (Connection db = DbBootstrap.connect();
              PreparedStatement ps = db.prepareStatement(sql)) {
 
@@ -144,11 +144,11 @@ public class BarberoRepositoryImpl implements BarberoRepository {
         }
     }
 
-    private Barbero mapRow(ResultSet rs) throws SQLException {
-        return new Barbero(
+    private User mapRow(ResultSet rs) throws SQLException {
+        return new User(
                 rs.getInt("id"),
-                rs.getString("nombre"),
-                rs.getString("rol"),
+                rs.getString("name"),
+                rs.getString("role"),
                 rs.getString("pin"),
                 rs.getInt("tipo_cobro"),
                 rs.getDouble("param_1"),

@@ -1,7 +1,7 @@
 package app.barbman.core.controller;
 
 import app.barbman.core.dto.ResumenDTO;
-import app.barbman.core.model.Barbero;
+import app.barbman.core.model.User;
 import app.barbman.core.model.Egreso;
 import app.barbman.core.model.ServicioRealizado;
 import app.barbman.core.repositories.barbero.BarberoRepository;
@@ -123,19 +123,19 @@ public class CajaController implements Initializable {
         lblEgresosDiaria.setText("Egresos totales: " + NumberFormatUtil.format(resumen.getEgresosTotal()) + " Gs");
 
         boxProduccionBarberosDiaria.getChildren().clear();
-        List<Barbero> barberos = barberoRepo.findAll();
-        for (Barbero b : barberos) {
+        List<User> users = barberoRepo.findAll();
+        for (User b : users) {
             double produccion = serviciosRepo.getProduccionSemanalPorBarbero(b.getId(), fecha, fecha);
-            Label lbl = new Label("- " + b.getNombre() + ": " + NumberFormatUtil.format(produccion) + " Gs");
+            Label lbl = new Label("- " + b.getName() + ": " + NumberFormatUtil.format(produccion) + " Gs");
             lbl.getStyleClass().add("caja-label");
             boxProduccionBarberosDiaria.getChildren().add(lbl);
-            logger.debug("Producción para barbero {} el {}: {}", b.getNombre(), fecha, produccion);
+            logger.debug("Producción para barbero {} el {}: {}", b.getName(), fecha, produccion);
         }
-        if (barberos.isEmpty()) {
-            Label lbl = new Label("No hay barberos registrados.");
+        if (users.isEmpty()) {
+            Label lbl = new Label("No hay users registrados.");
             lbl.getStyleClass().add("caja-label");
             boxProduccionBarberosDiaria.getChildren().add(lbl);
-            logger.warn("No hay barberos registrados en la fecha: {}", fecha);
+            logger.warn("No hay users registrados en la fecha: {}", fecha);
         }
     }
 
@@ -201,16 +201,16 @@ public class CajaController implements Initializable {
         lblEgresosSemana.setText("Egresos totales: " + NumberFormatUtil.format(totalEgresos) + " Gs");
 
         boxProduccionBarberos.getChildren().clear();
-        List<Barbero> barberos = barberoRepo.findAll();
-        for (Barbero b : barberos) {
+        List<User> users = barberoRepo.findAll();
+        for (User b : users) {
             double produccion = serviciosRepo.getProduccionSemanalPorBarbero(b.getId(), desde, hasta);
-            Label lbl = new Label("- " + b.getNombre() + ": " + NumberFormatUtil.format(produccion) + " Gs");
+            Label lbl = new Label("- " + b.getName() + ": " + NumberFormatUtil.format(produccion) + " Gs");
             lbl.getStyleClass().add("caja-label");
             boxProduccionBarberos.getChildren().add(lbl);
         }
 
-        if (barberos.isEmpty()) {
-            Label lbl = new Label("No hay barberos registrados.");
+        if (users.isEmpty()) {
+            Label lbl = new Label("No hay users registrados.");
             lbl.getStyleClass().add("caja-label");
             boxProduccionBarberos.getChildren().add(lbl);
         }
