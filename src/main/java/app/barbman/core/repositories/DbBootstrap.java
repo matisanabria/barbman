@@ -116,7 +116,8 @@ public class DbBootstrap {
                         CREATE TABLE IF NOT EXISTS products (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
                             name TEXT NOT NULL UNIQUE,
-                            unit_price REAL NOT NULL,
+                            cost_price REAL NOT NULL,      -- cost from supplier
+                            unit_price REAL NOT NULL,      -- selling price
                             stock INTEGER NOT NULL DEFAULT 0,
                             notes TEXT
                         );
@@ -160,7 +161,7 @@ public class DbBootstrap {
                                     -- 'service'   -> cleaning, rent, electricity, etc.
                                     -- 'purchase'  -> furniture, tools, decoration
                                     -- 'other'     -> irregular expenses, delivery, miscellaneous
-                                    -- 'salary'    -> empleyoes' wages
+                                    -- 'salary'    -> employees' wages
                                     -- 'advance'   -> advances before the weekly close
                                 )
                             ),
@@ -201,8 +202,9 @@ public class DbBootstrap {
             // Crear carpeta de backups si no existe
             String backupDir = "backups";
             File folder = new File(backupDir);
-            if (!folder.exists()) {
-                folder.mkdirs();
+            if (!folder.exists() && !folder.mkdirs()) {
+                logger.warn("[DB] No se pudo crear la carpeta de backups en '{}'", backupDir);
+                return;
             }
 
             // Nombre con fecha y hora "yyyy-MM-dd_HH-mm-ss"
