@@ -46,7 +46,7 @@ public class DbBootstrap {
 
         // Ensure the database file exists
         File dbFile = new File(DB_FOLDER + "/" + DB_NAME);
-        if (dbFile.exists()) logger.info("[DB] Database found: " + dbFile.getAbsolutePath());
+        if (dbFile.exists()) logger.info("[DB] Database found: {}", dbFile.getAbsolutePath());
         else {
             logger.warn("[DB] Database file not found. Creating new database: " + DB_NAME);
             createTables();
@@ -81,9 +81,10 @@ public class DbBootstrap {
                             name TEXT NOT NULL,
                             role TEXT NOT NULL,
                             pin TEXT NOT NULL UNIQUE CHECK(length(pin) = 4 AND pin GLOB '[0-9][0-9][0-9][0-9]'),
-                            payment_type INTEGER NOT NULL DEFAULT 0,
+                            payment_method_id INTEGER NOT NULL,
                             param_1 REAL,
-                            param_2 REAL
+                            param_2 REAL,
+                            FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id)
                         );
                     """);
 
@@ -104,8 +105,9 @@ public class DbBootstrap {
                             service_type_id INTEGER NOT NULL,
                             price REAL NOT NULL,
                             date TEXT NOT NULL CHECK (date = date(date)),
-                            payment_method TEXT NOT NULL CHECK (payment_method IN ('cash','transfer','qr','card')),
+                            payment_method_id INTEGER NOT NULL,
                             notes TEXT,
+                            FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id)
                             FOREIGN KEY (user_id) REFERENCES users(id),
                             FOREIGN KEY (service_type_id) REFERENCES service_definitions(id)
                         );
@@ -119,7 +121,9 @@ public class DbBootstrap {
                             cost_price REAL NOT NULL,      -- cost from supplier
                             unit_price REAL NOT NULL,      -- selling price
                             stock INTEGER NOT NULL DEFAULT 0,
-                            notes TEXT
+                            category TEXT,                 -- optional, can be NULL
+                            brand TEXT,                    -- optional, can be NULL
+                            notes TEXT NOT                 -- optional
                         );
                     """);
 
@@ -129,7 +133,8 @@ public class DbBootstrap {
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
                             date TEXT NOT NULL CHECK (date = date(date)),
                             total REAL NOT NULL,
-                            payment_method TEXT NOT NULL CHECK (payment_method IN ('cash','transfer','qr','card'))
+                            payment_method_id INTEGER NOT NULL,
+                            FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id)
                         );
                     """);
 
@@ -165,7 +170,8 @@ public class DbBootstrap {
                                     -- 'advance'   -> advances before the weekly close
                                 )
                             ),
-                            payment_method TEXT
+                            payment_method_id INTEGER NOT NULL,
+                            FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id)
                         );
                     """);
 
@@ -180,61 +186,69 @@ public class DbBootstrap {
                             amount_paid REAL NOT NULL,
                             pay_type_snapshot INTEGER NOT NULL,
                             pay_date TEXT,
-                            payment_method TEXT,
+                            payment_method_id INTEGER NOT NULL,
+                            FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id)
                             FOREIGN KEY (user_id) REFERENCES users(id)
                         );
                     """);
+            // PAYMENT METHODS
+            stmt.execute("""
+                         CREATE TABLE IF NOT EXISTS payment_methods (
+                            id INTEGER PRIMARY KEY AUTOINCREMENT,
+                            name TEXT NOT NULL UNIQUE   -- ej: cash, transfer, qr, card
+                         );
+                     """);
 
-            logger.info("[DB] ¡Tablas creadas correctamente!");
+            logger.info("[DB] Database tables created successfully.");
         } catch (SQLException e) {
-            logger.error("[DB] Error creando las tablas: {}", e.getMessage());
+            logger.error("[DB] Error creating database tables: {}", e.getMessage());
             throw new RuntimeException(e);
         }
     }
 
     /**
-     * Crea un backup de la base de datos en la carpeta "backups".
-     * El archivo de backup se nombra con la fecha y hora actuales.
-     * Mantiene solo los últimos 7 backups, eliminando los más antiguos.
+     * Creates a backup of the database file.
+     * The backup files are stored in the "backups" directory
+     * with a timestamped filename. Only the 7 most recent backups are kept.
      */
     public static void backupDatabase() {
         try {
-            // Crear carpeta de backups si no existe
+            // Create backups directory if it doesn't exist
             String backupDir = "backups";
             File folder = new File(backupDir);
             if (!folder.exists() && !folder.mkdirs()) {
-                logger.warn("[DB] No se pudo crear la carpeta de backups en '{}'", backupDir);
+                logger.warn("[DB] Can't create backup directory: {}", backupDir);
                 return;
             }
 
-            // Nombre con fecha y hora "yyyy-MM-dd_HH-mm-ss"
+            // Name format: database_backup_YYYY-MM-DD_HH-MM-SS.db
             String timestamp = LocalDateTime.now()
                     .format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"));
-            String backupName = "barbman_backup_" + timestamp + ".db";
+            String backupName = "database_backup_" + timestamp + ".db";
 
             Path source = Paths.get(DB_FOLDER, DB_NAME);
             Path target = Paths.get(backupDir, backupName);
 
             Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
-            logger.info("[DB] Backup creado: {}", target.toAbsolutePath());
+            logger.info("[DB] Backup created: {}", target.toString());
 
-            // Mantener solo los últimos 7 backups
+            // Only keep the 7 most recent backups
             File[] backups = folder.listFiles((dir, name) -> name.endsWith(".db"));
             if (backups != null && backups.length > 7) {
                 Arrays.stream(backups)
                         .sorted(Comparator.comparingLong(File::lastModified).reversed())
-                        .skip(7) // dejar los 7 más nuevos
+                        .skip(7) // keep the 7 most recent
                         .forEach(file -> {
                             if (file.delete()) {
-                                logger.info("[DB] Backup viejo eliminado: {}", file.getName());
+                                logger.info("[DB] Removed old backup: {}", file.getName());
                             } else {
-                                logger.warn("[DB] No se pudo eliminar backup: {}", file.getName());
+                                logger.warn("[DB] Can't remove old backup: {}", file.getName());
                             }
                         });
             }
 
         } catch (IOException e) {
-            logger.error("[DB] Error al crear backup: {}", e.getMessage(), e);
+            logger.error("[DB] Error creating database backup: {}", e.getMessage());
         }
     }
 
