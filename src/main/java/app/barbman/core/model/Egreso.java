@@ -15,7 +15,7 @@ public class Egreso {
     * Tipos de egreso:
      * "insumo": Compra de insumos o materiales.
      * "servicio": Pago de servicios externos (agua, luz, internet, etc.).
-     * "sueldo": Pago de sueldos o salarios.
+     * "sueldo": Pago de salaries o salarios.
      * "adelanto": Anticipos o pagos adelantados.
      * "otros": Cualquier otro tipo de egreso no categorizado.
      */

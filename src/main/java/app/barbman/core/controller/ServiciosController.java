@@ -1,11 +1,11 @@
 package app.barbman.core.controller;
 
 import app.barbman.core.model.User;
+import app.barbman.core.repositories.users.UsersRepositoryImpl;
 import app.barbman.core.util.SessionManager;
 import app.barbman.core.model.ServicioDefinido;
 import app.barbman.core.model.ServicioRealizado;
-import app.barbman.core.repositories.barbero.BarberoRepository;
-import app.barbman.core.repositories.barbero.BarberoRepositoryImpl;
+import app.barbman.core.repositories.users.UsersRepository;
 import app.barbman.core.repositories.serviciodefinido.ServicioDefinidoRepository;
 import app.barbman.core.repositories.serviciodefinido.ServicioDefinidoRepositoryImpl;
 import app.barbman.core.repositories.serviciorealizado.ServicioRealizadoRepository;
@@ -68,7 +68,7 @@ public class ServiciosController implements Initializable {
 
     private final ServicioRealizadoRepository srRepository = new ServicioRealizadoRepositoryImpl();
     private final ServicioRealizadoService srService = new ServicioRealizadoService(srRepository);
-    private final BarberoRepository barberoRepository = new BarberoRepositoryImpl();
+    private final UsersRepository usersRepository = new UsersRepositoryImpl();
     private final ServicioDefinidoRepository sdRepository = new ServicioDefinidoRepositoryImpl();
 
     /**
@@ -90,7 +90,7 @@ public class ServiciosController implements Initializable {
         // Configuración de las columnas de la tabla con las propiedades del modelo ServicioRealizad
         colBarbero.setCellValueFactory(cellData -> {
             int barberoId = cellData.getValue().getBarberoId();
-            User b = barberoRepository.findById(barberoId);
+            User b = usersRepository.findById(barberoId);
             String nombre = (b != null) ? b.getName() : "Desconocido";
             return new SimpleStringProperty(nombre);
         });
@@ -238,7 +238,7 @@ public class ServiciosController implements Initializable {
      * Si hay un barbero activo en la sesión, lo selecciona automáticamente.
      */
     private void cargarBarberos() {
-        List<User> users = barberoRepository.findAll();
+        List<User> users = usersRepository.findAll();
         barberoChoiceBox.setItems(FXCollections.observableArrayList(users));
         barberoChoiceBox.setConverter(new StringConverter<User>() {
             @Override

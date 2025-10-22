@@ -1,16 +1,16 @@
 package app.barbman.core.controller;
 
 import app.barbman.core.dto.SueldoDTO;
+import app.barbman.core.model.Salary;
 import app.barbman.core.model.User;
-import app.barbman.core.model.Sueldo;
-import app.barbman.core.repositories.barbero.BarberoRepository;
-import app.barbman.core.repositories.barbero.BarberoRepositoryImpl;
+import app.barbman.core.repositories.users.UsersRepository;
+import app.barbman.core.repositories.users.UsersRepositoryImpl;
 import app.barbman.core.repositories.egresos.EgresosRepository;
 import app.barbman.core.repositories.egresos.EgresosRepositoryImpl;
 import app.barbman.core.repositories.serviciorealizado.ServicioRealizadoRepository;
 import app.barbman.core.repositories.serviciorealizado.ServicioRealizadoRepositoryImpl;
-import app.barbman.core.repositories.sueldos.SueldosRepository;
-import app.barbman.core.repositories.sueldos.SueldosRepositoryImpl;
+import app.barbman.core.repositories.salaries.SalariesRepository;
+import app.barbman.core.repositories.salaries.SalariesRepositoryImpl;
 import app.barbman.core.service.sueldos.SueldosService;
 import app.barbman.core.util.NumberFormatUtil;
 import javafx.collections.FXCollections;
@@ -26,8 +26,8 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 /**
- * Controlador para la ventana de pago de sueldos.
- * Recibe un SueldoDTO desde la tabla de sueldos y permite registrar el pago.
+ * Controlador para la ventana de pago de salaries.
+ * Recibe un SueldoDTO desde la tabla de salaries y permite registrar el pago.
  */
 public class PagarSueldoController implements Initializable {
 
@@ -53,11 +53,11 @@ public class PagarSueldoController implements Initializable {
 
     private static final Logger logger = LogManager.getLogger(PagarSueldoController.class);
 
-    private final SueldosRepository sueldosRepository = new SueldosRepositoryImpl();
+    private final SalariesRepository salariesRepository = new SalariesRepositoryImpl();
     private final ServicioRealizadoRepository servicioRealizadoRepository = new ServicioRealizadoRepositoryImpl();
     private final EgresosRepository egresosRepository = new EgresosRepositoryImpl();
-    private final BarberoRepository barberoRepository = new BarberoRepositoryImpl();
-    private final SueldosService sueldosService = new SueldosService(sueldosRepository, servicioRealizadoRepository, egresosRepository);
+    private final UsersRepository usersRepository = new UsersRepositoryImpl();
+    private final SueldosService sueldosService = new SueldosService(salariesRepository, servicioRealizadoRepository, egresosRepository);
     private SueldosController parentController;
 
     // User y sueldo seleccionado desde la tabla principal
@@ -105,7 +105,7 @@ public class PagarSueldoController implements Initializable {
      */
     public void setSueldoDTO(SueldoDTO dto) {
         this.sueldoDTO = dto;
-        this.user = barberoRepository.findById(dto.getBarberoId());
+        this.user = usersRepository.findById(dto.getBarberoId());
 
         // rango semanal
         java.time.LocalDate hoy = java.time.LocalDate.now();
@@ -116,7 +116,7 @@ public class PagarSueldoController implements Initializable {
 
         lblProduccion.setText("Producción: " + NumberFormatUtil.format(dto.getProduccionTotal()) + " Gs");
         lblAdelantos.setText("Adelantos: " + NumberFormatUtil.format(adelantos) + " Gs");
-        lblSueldoFinal.setText("Sueldo final: " + NumberFormatUtil.format(dto.getMontoLiquidado()) + " Gs");
+        lblSueldoFinal.setText("Salary final: " + NumberFormatUtil.format(dto.getMontoLiquidado()) + " Gs");
 
         if (user != null && user.getPaymentType() == 0) {
             manualMontoBox.setVisible(true);
@@ -152,17 +152,17 @@ public class PagarSueldoController implements Initializable {
                 montoManual = Double.parseDouble(montoManualField.getText().replace(".", ""));
             }
 
-            Sueldo sueldo = sueldosService.calcularSueldo(user, 0);
+            Salary salary = sueldosService.calcularSueldo(user, 0);
             if (montoManual >= 0) {
-                sueldo.setMontoLiquidado(montoManual);
+                salary.setAmountPaid(montoManual);
             }
 
             String formaPago = formaPagoChoiceBox.getValue();
             // Guardar pago con bono
-            sueldosService.pagarSueldo(sueldo, formaPago, bono);
+            sueldosService.pagarSueldo(salary, formaPago, bono);
 
-            logger.info("[SUELDOS-PAGO] Sueldo registrado correctamente -> User: {}, Monto: {}, FormaPago: {}",
-                    user.getName(), sueldo.getMontoLiquidado(), formaPago);
+            logger.info("[SUELDOS-PAGO] Salary registrado correctamente -> User: {}, Monto: {}, FormaPago: {}",
+                    user.getName(), salary.getAmountPaid(), formaPago);
 
         } catch (Exception e) {
             logger.error("[SUELDOS-PAGO] Error al pagar sueldo: {}", e.getMessage(), e);

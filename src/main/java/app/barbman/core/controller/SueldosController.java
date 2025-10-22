@@ -5,8 +5,8 @@ import app.barbman.core.repositories.egresos.EgresosRepository;
 import app.barbman.core.repositories.egresos.EgresosRepositoryImpl;
 import app.barbman.core.repositories.serviciorealizado.ServicioRealizadoRepository;
 import app.barbman.core.repositories.serviciorealizado.ServicioRealizadoRepositoryImpl;
-import app.barbman.core.repositories.sueldos.SueldosRepository;
-import app.barbman.core.repositories.sueldos.SueldosRepositoryImpl;
+import app.barbman.core.repositories.salaries.SalariesRepository;
+import app.barbman.core.repositories.salaries.SalariesRepositoryImpl;
 import app.barbman.core.service.sueldos.SueldosService;
 import app.barbman.core.util.NumberFormatUtil;
 import app.barbman.core.util.WindowManager;
@@ -19,14 +19,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.net.URL;
-import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.ResourceBundle;
 
 /**
- * Controlador para la vista de sueldos.
- * Muestra una tabla con los sueldos de los barberos para la semana actual.
+ * Controlador para la vista de salaries.
+ * Muestra una tabla con los salaries de los barberos para la semana actual.
  * Permite ver detalles como producción total, monto liquidado y estado de pago.
  */
 public class SueldosController implements Initializable {
@@ -48,11 +47,11 @@ public class SueldosController implements Initializable {
     private static final Logger logger = LogManager.getLogger(SueldosController.class);
 
     // Repositorios
-    private final SueldosRepository sueldoRepo = new SueldosRepositoryImpl();
+    private final SalariesRepository sueldoRepo = new SalariesRepositoryImpl();
     private final ServicioRealizadoRepository servicioRealizadoRepository = new ServicioRealizadoRepositoryImpl();
     private final EgresosRepository egresosRepository = new EgresosRepositoryImpl();
 
-    // Servicio de lógica de sueldos
+    // Servicio de lógica de salaries
     private final SueldosService sueldosService = new SueldosService(sueldoRepo, servicioRealizadoRepository, egresosRepository);
 
     /**
@@ -60,7 +59,7 @@ public class SueldosController implements Initializable {
      * Se ejecuta automáticamente al cargarse el FXML.
      * <p>
      * - Define el rango de fecha (lunes a sábado)
-     * - Genera dinámicamente los sueldos
+     * - Genera dinámicamente los salaries
      * - Configura las columnas de la tabla
      * - Muestra los datos en pantalla
      *
@@ -88,9 +87,9 @@ public class SueldosController implements Initializable {
         LocalDate hoy = LocalDate.now();
         LocalDate lunes = hoy.with(java.time.DayOfWeek.MONDAY);
         LocalDate sabado = lunes.plusDays(5);
-        logger.info("[SUELDO-VIEW] Generando sueldos semanales desde {} hasta {}", lunes, sabado);
+        logger.info("[SUELDO-VIEW] Generando salaries semanales desde {} hasta {}", lunes, sabado);
 
-        // Obtener sueldos de esta semana
+        // Obtener salaries de esta semana
         List<SueldoDTO> lista = sueldosService.genSueldoDTOSemanal(lunes, sabado);
         logger.info("[SUELDO-VIEW] Se generaron {} registros temporales para mostrar en la tabla", lista.size());
 
@@ -123,7 +122,7 @@ public class SueldosController implements Initializable {
                     PagarSueldoController controller =
                             WindowManager.openWindowWithController(
                                     "/app/barbman/core/view/pagar-sueldo-view.fxml",
-                                    "Pagar Sueldo",
+                                    "Pagar Salary",
                                     currentStage
                             );
 
@@ -151,11 +150,11 @@ public class SueldosController implements Initializable {
 
         // Cargar en la tabla
         sueldosTable.getItems().setAll(lista);
-        logger.info("[SUELDO-VIEW] Datos cargados correctamente en la tabla de sueldos.");
+        logger.info("[SUELDO-VIEW] Datos cargados correctamente en la tabla de salaries.");
     }
 
     /**
-     * Vuelve a cargar los datos de la tabla de sueldos.
+     * Vuelve a cargar los datos de la tabla de salaries.
      */
     public void recargarTabla() {
         LocalDate hoy = LocalDate.now();
@@ -165,7 +164,7 @@ public class SueldosController implements Initializable {
         List<SueldoDTO> lista = sueldosService.genSueldoDTOSemanal(lunes, sabado);
         sueldosTable.getItems().setAll(lista);
 
-        logger.info("[SUELDO-VIEW] Tabla de sueldos recargada ({}) registros.", lista.size());
+        logger.info("[SUELDO-VIEW] Tabla de salaries recargada ({}) registros.", lista.size());
     }
 
 }

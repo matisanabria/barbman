@@ -25,7 +25,7 @@
             </children>
         </HBox>
 
-        <!-- Tabla de sueldos -->
+        <!-- Tabla de salaries -->
         <TableView fx:id="sueldosTable"
                    prefHeight="400.0"
                    prefWidth="750.0"

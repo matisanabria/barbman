@@ -81,10 +81,9 @@ public class DbBootstrap {
                             name TEXT NOT NULL,
                             role TEXT NOT NULL,
                             pin TEXT NOT NULL UNIQUE CHECK(length(pin) = 4 AND pin GLOB '[0-9][0-9][0-9][0-9]'),
-                            payment_method_id INTEGER NOT NULL,
+                            payment_type INTEGER NOT NULL DEFAULT 0,
                             param_1 REAL,
-                            param_2 REAL,
-                            FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id)
+                            param_2 REAL
                         );
                     """);
 
@@ -107,7 +106,7 @@ public class DbBootstrap {
                             date TEXT NOT NULL CHECK (date = date(date)),
                             payment_method_id INTEGER NOT NULL,
                             notes TEXT,
-                            FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id)
+                            FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id),
                             FOREIGN KEY (user_id) REFERENCES users(id),
                             FOREIGN KEY (service_type_id) REFERENCES service_definitions(id)
                         );
@@ -123,7 +122,7 @@ public class DbBootstrap {
                             stock INTEGER NOT NULL DEFAULT 0,
                             category TEXT,                 -- optional, can be NULL
                             brand TEXT,                    -- optional, can be NULL
-                            notes TEXT NOT                 -- optional
+                            notes TEXT NOT NULL                -- optional
                         );
                     """);
 
@@ -187,7 +186,7 @@ public class DbBootstrap {
                             pay_type_snapshot INTEGER NOT NULL,
                             pay_date TEXT,
                             payment_method_id INTEGER NOT NULL,
-                            FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id)
+                            FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id),
                             FOREIGN KEY (user_id) REFERENCES users(id)
                         );
                     """);

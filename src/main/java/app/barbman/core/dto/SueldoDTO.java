@@ -1,14 +1,14 @@
 package app.barbman.core.dto;
 
 /**
- * DTO para guardar información que se muestra en la vista de sueldos
+ * DTO para guardar información que se muestra en la vista de salaries
  */
 public class SueldoDTO {
     private int barberoId;
     private String nombreBarbero;
     private double produccionTotal;
     private double montoLiquidado;
-    private boolean pagado; // true si ya está en la tabla sueldos
+    private boolean pagado; // true si ya está en la tabla salaries
     private int sueldoId;   // si ya existe un sueldo, se usa este id, si no = -1
 
     public SueldoDTO() {

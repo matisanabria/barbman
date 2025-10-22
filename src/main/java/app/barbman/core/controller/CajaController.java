@@ -4,8 +4,8 @@ import app.barbman.core.dto.ResumenDTO;
 import app.barbman.core.model.User;
 import app.barbman.core.model.Egreso;
 import app.barbman.core.model.ServicioRealizado;
-import app.barbman.core.repositories.barbero.BarberoRepository;
-import app.barbman.core.repositories.barbero.BarberoRepositoryImpl;
+import app.barbman.core.repositories.users.UsersRepository;
+import app.barbman.core.repositories.users.UsersRepositoryImpl;
 import app.barbman.core.repositories.egresos.EgresosRepository;
 import app.barbman.core.repositories.egresos.EgresosRepositoryImpl;
 import app.barbman.core.repositories.serviciorealizado.ServicioRealizadoRepository;
@@ -46,7 +46,7 @@ public class CajaController implements Initializable {
 
     private final ServicioRealizadoRepository serviciosRepo = new ServicioRealizadoRepositoryImpl();
     private final EgresosRepository egresosRepo = new EgresosRepositoryImpl();
-    private final BarberoRepository barberoRepo = new BarberoRepositoryImpl();
+    private final UsersRepository barberoRepo = new UsersRepositoryImpl();
     private final CajaService cajaService = new CajaService(serviciosRepo, egresosRepo);
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");

@@ -1,8 +1,8 @@
 package app.barbman.core.controller;
 
 import app.barbman.core.model.User;
-import app.barbman.core.repositories.barbero.BarberoRepository;
-import app.barbman.core.repositories.barbero.BarberoRepositoryImpl;
+import app.barbman.core.repositories.users.UsersRepository;
+import app.barbman.core.repositories.users.UsersRepositoryImpl;
 import app.barbman.core.repositories.egresos.EgresosRepository;
 import app.barbman.core.repositories.egresos.EgresosRepositoryImpl;
 import app.barbman.core.service.egresos.EgresosService;
@@ -37,7 +37,7 @@ public class AdelantosController implements Initializable {
 
     private static final Logger logger = LogManager.getLogger(AdelantosController.class);
 
-    private final BarberoRepository barberoRepository = new BarberoRepositoryImpl();
+    private final UsersRepository usersRepository = new UsersRepositoryImpl();
     private final EgresosRepository egresosRepository = new EgresosRepositoryImpl();
     private final EgresosService egresosService = new EgresosService(egresosRepository);
 
@@ -63,7 +63,7 @@ public class AdelantosController implements Initializable {
      * Además, selecciona automáticamente al barbero activo si está disponible en la sesión.
      */
     private void cargarBarberos() {
-        List<User> users = barberoRepository.findAll();
+        List<User> users = usersRepository.findAll();
         barberoChoiceBox.setItems(FXCollections.observableArrayList(users));
         barberoChoiceBox.setConverter(new StringConverter<User>() {
             @Override

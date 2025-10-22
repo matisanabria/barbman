@@ -1,9 +1,9 @@
 package app.barbman.core.controller;
 
 import app.barbman.core.model.User;
+import app.barbman.core.repositories.users.UsersRepositoryImpl;
 import app.barbman.core.util.SessionManager;
-import app.barbman.core.repositories.barbero.BarberoRepository;
-import app.barbman.core.repositories.barbero.BarberoRepositoryImpl;
+import app.barbman.core.repositories.users.UsersRepository;
 import app.barbman.core.util.WindowManager;
 import javafx.animation.TranslateTransition;
 import javafx.fxml.FXML;
@@ -22,7 +22,7 @@ import org.apache.logging.log4j.Logger;
 
 public class LoginController {
     private static final Logger logger = LogManager.getLogger(LoginController.class);
-    private final BarberoRepository barberoRepo = new BarberoRepositoryImpl();
+    private final UsersRepository barberoRepo = new UsersRepositoryImpl();
 
     @FXML
     private Label loginLabel; // Label para mostrar mensajes de error

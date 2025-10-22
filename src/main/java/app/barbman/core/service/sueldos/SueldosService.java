@@ -1,14 +1,14 @@
 package app.barbman.core.service.sueldos;
 
 import app.barbman.core.dto.SueldoDTO;
+import app.barbman.core.model.Salary;
 import app.barbman.core.model.User;
 import app.barbman.core.model.Egreso;
-import app.barbman.core.model.Sueldo;
-import app.barbman.core.repositories.barbero.BarberoRepository;
-import app.barbman.core.repositories.barbero.BarberoRepositoryImpl;
+import app.barbman.core.repositories.users.UsersRepository;
+import app.barbman.core.repositories.users.UsersRepositoryImpl;
 import app.barbman.core.repositories.egresos.EgresosRepository;
 import app.barbman.core.repositories.serviciorealizado.ServicioRealizadoRepository;
-import app.barbman.core.repositories.sueldos.SueldosRepository;
+import app.barbman.core.repositories.salaries.SalariesRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -18,57 +18,56 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Servicio para gestionar el pago de sueldos a barberos.
+ * Servicio para gestionar el pago de salaries a barberos.
  * Incluye lógica para calcular montos según diferentes tipos de cobro.
  */
 public class SueldosService {
-    private final SueldosRepository sueldosRepository;
+    private final SalariesRepository salariesRepository;
     private static final List<String> FORMAS_VALIDAS = List.of("efectivo", "transferencia");
     private static final Logger logger = LogManager.getLogger(SueldosService.class);
     private final ServicioRealizadoRepository servicioRealizadoRepository;
-    private final BarberoRepository barberoRepository = new BarberoRepositoryImpl();
+    private final UsersRepository usersRepository = new UsersRepositoryImpl();
     private final EgresosRepository egresosRepository;
 
-    public SueldosService(SueldosRepository repo, ServicioRealizadoRepository servicioRealizadoRepo, EgresosRepository egresosRepository) {
-        this.sueldosRepository = repo;
+    public SueldosService(SalariesRepository repo, ServicioRealizadoRepository servicioRealizadoRepo, EgresosRepository egresosRepository) {
+        this.salariesRepository = repo;
         this.servicioRealizadoRepository = servicioRealizadoRepo;
         this.egresosRepository = egresosRepository;
     }
 
     /**
-     * Paga un sueldo a un barbero y registra el egreso correspondiente.
+     * Paga un salary a un barbero y registra el egreso correspondiente.
      *
-     * @param sueldo    Sueldo a pagar (debe tener barberoId, fechas y monto ya calculados)
-     * @param formaPago Forma de pago ("efectivo" o "transferencia")
+     * @param salary    Salary a pagar (debe tener barberoId, fechas y monto ya calculados)
+     * @param paymentMethodId Forma de pago ("efectivo" o "transferencia")
      * @throws IllegalArgumentException si los datos son inválidos
-     * @throws IllegalStateException    si el sueldo ya fue pagado
+     * @throws IllegalStateException    si el salary ya fue pagado
      */
-    public void pagarSueldo(Sueldo sueldo, String formaPago, double bono) {
-        if (sueldo == null) throw new IllegalArgumentException("Sueldo vacío");
-        if (formaPago == null || formaPago.isBlank()) throw new IllegalArgumentException("Forma de pago inválida");
-        // Verificar si ya se pagó este sueldo
-        if (isPagado(sueldo.getBarberoId(), sueldo.getFechaInicioSemana())) {
-            throw new IllegalStateException("Este barbero ya tiene un sueldo registrado esta semana.");
+    public void pagarSueldo(Salary salary, int paymentMethodId, double bono) {
+        if (salary == null) throw new IllegalArgumentException("Salary vacío");
+        // Verificar si ya se pagó este salary
+        if (isPagado(salary.getUserId(), salary.getWeekStartDate())) {
+            throw new IllegalStateException("Este barbero ya tiene un salary registrado esta semana.");
         }
 
-        sueldo.setMontoLiquidado(sueldo.getMontoLiquidado() + bono);
-        sueldo.setFechaPago(LocalDate.now());
-        sueldo.setFormaPago(formaPago);
-        sueldosRepository.save(sueldo);
+        salary.setAmountPaid(salary.getAmountPaid() + bono);
+        salary.setPayDate(LocalDate.now());
+        salary.setPaymentMethodId(paymentMethodId);
+        salariesRepository.save(salary);
 
-        String descripcion = "Pago de sueldo a barbero ID " + sueldo.getBarberoId() +
-                " (semana del " + sueldo.getFechaInicioSemana() + " al " + sueldo.getFechaFinSemana() + ")";
+        String descripcion = "Pago de salary a barbero ID " + salary.getUserId() +
+                " (semana del " + salary.getWeekStartDate() + " al " + salary.getWeekEndDate() + ")";
 
         Egreso egreso = new Egreso(
                 descripcion,
-                sueldo.getMontoLiquidado(),
+                salary.getAmountPaid(),
                 LocalDate.now(),
-                "sueldo",
-                formaPago
+                "salary",
+                paymentMethodId //FIXME: set Egreso payment method to int
         );
         egresosRepository.save(egreso);
 
-        logger.info("[SUELDOS] Sueldo pagado y egreso registrado para barbero ID {}", sueldo.getBarberoId());
+        logger.info("[SUELDOS] Salary pagado y egreso registrado para barbero ID {}", salary.getUserId());
     }
 
     /**
@@ -76,10 +75,10 @@ public class SueldosService {
      *
      * @param user User al que se le calcula el sueldo
      * @param bono    Bono adicional a sumar al sueldo (puede ser 0)
-     * @return Sueldo calculado (sin fecha de pago ni forma de pago)
+     * @return Salary calculado (sin fecha de pago ni forma de pago)
      * @throws IllegalArgumentException si el user es inválido
      */
-    public Sueldo calcularSueldo(User user, double bono) {
+    public Salary calcularSueldo(User user, double bono) {
         if (user == null || user.getId() <= 0) {
             throw new IllegalArgumentException("User inválido.");
         }
@@ -140,7 +139,7 @@ public class SueldosService {
             logger.info("[SUELDOS] Egreso adelantado automático generado: Gs. {}, fecha: {}", deudaPendiente, lunesProximo);
         }
 
-        return new Sueldo(
+        return new Salary(
                 user.getId(),
                 inicioSemana,
                 finSemana,
@@ -148,7 +147,7 @@ public class SueldosService {
                 montoFinal,
                 tipo,
                 null, // Fecha de pago se asignará en el paso final
-                null  // Forma de pago también se asigna al pagar
+                0  // Forma de pago también se asigna al pagar
         );
     }
 
@@ -224,13 +223,13 @@ public class SueldosService {
      * @return true si ya tiene un sueldo registrado, false si no
      */
     public boolean isPagado(int barberoId, LocalDate semanaInicio) {
-        return sueldosRepository.findByBarberoAndFecha(barberoId, semanaInicio) != null;
+        return salariesRepository.findByBarberoAndFecha(barberoId, semanaInicio) != null;
     }
 
     /**
      * Genera una lista de SueldoDTO para todos los barberos en el rango semanal dado.
      * Incluye producción, monto a liquidar y estado de pago.
-     * Se utiliza para mostrar en la vista de sueldos.
+     * Se utiliza para mostrar en la vista de salaries.
      *
      * @param inicio Fecha de inicio de la semana (lunes)
      * @param fin    Fecha de fin de la semana (sábado)
@@ -238,7 +237,7 @@ public class SueldosService {
      */
     public List<SueldoDTO> genSueldoDTOSemanal(LocalDate inicio, LocalDate fin){
         List<SueldoDTO> lista = new ArrayList<>();
-        List<User> users = barberoRepository.findAll();
+        List<User> users = usersRepository.findAll();
 
         for (User user : users) {
             int barberoId = user.getId();
@@ -248,17 +247,17 @@ public class SueldosService {
             double produccion = servicioRealizadoRepository.getProduccionSemanalPorBarbero(barberoId, inicio, fin);
 
             // Calcular sueldo base (sin bonos)
-            Sueldo sueldoTemp = calcularSueldo(user, 0);
+            Salary salaryTemp = calcularSueldo(user, 0);
 
             // Consultar adelantos
             double adelantos = egresosRepository.getTotalAdelantos(barberoId, inicio, fin);
 
             // Aplicar descuento de adelantos
-            double montoFinal = sueldoTemp.getMontoLiquidado() - adelantos;
+            double montoFinal = salaryTemp.getAmountPaid() - adelantos;
 
             // Verificar si ya está pagado
             boolean yaPagado = isPagado(barberoId, inicio);
-            int sueldoId = yaPagado ? sueldosRepository.findByBarberoAndFecha(barberoId, inicio).getId() : 0;
+            int sueldoId = yaPagado ? salariesRepository.findByBarberoAndFecha(barberoId, inicio).getId() : 0;
 
             SueldoDTO dto = new SueldoDTO();
             dto.setBarberoId(barberoId);
