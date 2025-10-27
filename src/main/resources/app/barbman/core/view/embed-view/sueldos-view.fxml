@@ -8,7 +8,7 @@
 <?import javafx.scene.control.TableColumn?>
 <VBox
         xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-        fx:controller="app.barbman.core.controller.SueldosController"
+        fx:controller="app.barbman.core.controller.salary.SueldosController"
         spacing="16"
         alignment="CENTER"
         fillWidth="true"

@@ -1,6 +1,6 @@
 package app.barbman.core.service.sueldos;
 
-import app.barbman.core.dto.SueldoDTO;
+import app.barbman.core.dto.SalaryDTO;
 import app.barbman.core.model.Salary;
 import app.barbman.core.model.User;
 import app.barbman.core.model.Egreso;
@@ -63,7 +63,7 @@ public class SueldosService {
                 salary.getAmountPaid(),
                 LocalDate.now(),
                 "salary",
-                paymentMethodId //FIXME: set Egreso payment method to int
+                "efectivo"//paymentMethodId //FIXME: set Egreso payment method to int
         );
         egresosRepository.save(egreso);
 
@@ -227,16 +227,16 @@ public class SueldosService {
     }
 
     /**
-     * Genera una lista de SueldoDTO para todos los barberos en el rango semanal dado.
+     * Genera una lista de SalaryDTO para todos los barberos en el rango semanal dado.
      * Incluye producción, monto a liquidar y estado de pago.
      * Se utiliza para mostrar en la vista de salaries.
      *
      * @param inicio Fecha de inicio de la semana (lunes)
      * @param fin    Fecha de fin de la semana (sábado)
-     * @return Lista de SueldoDTO con información para la vista
+     * @return Lista de SalaryDTO con información para la vista
      */
-    public List<SueldoDTO> genSueldoDTOSemanal(LocalDate inicio, LocalDate fin){
-        List<SueldoDTO> lista = new ArrayList<>();
+    public List<SalaryDTO> genSueldoDTOSemanal(LocalDate inicio, LocalDate fin){
+        List<SalaryDTO> lista = new ArrayList<>();
         List<User> users = usersRepository.findAll();
 
         for (User user : users) {
@@ -259,13 +259,13 @@ public class SueldosService {
             boolean yaPagado = isPagado(barberoId, inicio);
             int sueldoId = yaPagado ? salariesRepository.findByBarberoAndFecha(barberoId, inicio).getId() : 0;
 
-            SueldoDTO dto = new SueldoDTO();
-            dto.setBarberoId(barberoId);
-            dto.setNombreBarbero(nombre);
-            dto.setProduccionTotal(produccion);
-            dto.setMontoLiquidado(montoFinal);
-            dto.setPagado(yaPagado);
-            dto.setSueldoId(sueldoId);
+            SalaryDTO dto = new SalaryDTO();
+            dto.setUserId(barberoId);
+            dto.setUsername(nombre);
+            dto.setTotalProduction(produccion);
+            dto.setAmountPaid(montoFinal);
+            dto.setPaymentStatus(yaPagado);
+            dto.setSalaryId(sueldoId);
 
             lista.add(dto);
         }

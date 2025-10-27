@@ -6,7 +6,7 @@
 <AnchorPane prefHeight="400.0" prefWidth="320.0"
             xmlns="http://javafx.com/javafx/17"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="app.barbman.core.controller.PagarSueldoController">
+            fx:controller="app.barbman.core.controller.salary.ConfirmSalaryController">
 
     <children>
         <VBox alignment="CENTER" spacing="12.0"
@@ -15,41 +15,41 @@
               prefHeight="500.0"
               styleClass="adelanto-card">
 
-            <!-- Título -->
+            <!-- Title -->
             <Label text="Registrar Sueldo" styleClass="login-title"/>
 
             <!-- Caja de resumen -->
             <TitledPane text="Resumen semanal" expanded="true" collapsible="false" prefWidth="280.0">
                 <VBox spacing="6.0" style="-fx-padding: 8;">
-                    <Label fx:id="lblProduccion" text="Producción: 0 Gs"/>
-                    <Label fx:id="lblAdelantos" text="Adelantos: 0 Gs"/>
-                    <Label fx:id="lblSueldoFinal" text="Sueldo final: 0 Gs" style="-fx-font-weight: bold;"/>
+                    <Label fx:id="lblProduction" text="Producción: 0 Gs"/>
+                    <Label fx:id="lblSalaryAdvance" text="Adelantos: 0 Gs"/>
+                    <Label fx:id="lblFinalAmount" text="Sueldo final: 0 Gs" style="-fx-font-weight: bold;"/>
                 </VBox>
             </TitledPane>
 
-            <!-- Monto manual (solo si tipoCobro=0) -->
+            <!-- Manual amount (Default hidden) -->
             <VBox spacing="2.0" fx:id="manualMontoBox" visible="false" managed="false">
                 <Label text="Monto manual" styleClass="form-label"/>
-                <TextField fx:id="montoManualField" promptText="Ingrese monto manual" styleClass="services-textfield"/>
+                <TextField fx:id="manualAmountField" promptText="Ingrese monto manual" styleClass="services-textfield"/>
             </VBox>
 
             <!-- Bono -->
             <VBox spacing="2.0">
                 <Label text="Bono adicional" styleClass="form-label"/>
-                <TextField fx:id="bonoField" promptText="Ingrese bono (opcional)" styleClass="services-textfield"/>
+                <TextField fx:id="bonusField" promptText="Ingrese bono (opcional)" styleClass="services-textfield"/>
             </VBox>
 
             <!-- Forma de pago -->
             <VBox spacing="2.0">
                 <Label text="Forma de pago" styleClass="form-label"/>
-                <ChoiceBox fx:id="formaPagoChoiceBox" prefWidth="240.0" styleClass="services-choicebox"/>
+                <ChoiceBox fx:id="paymentTypeChoiceBox" prefWidth="240.0" styleClass="services-choicebox"/>
             </VBox>
 
 
             <!-- Botones -->
             <HBox spacing="10.0" alignment="CENTER">
-                <Button text="Pagar" fx:id="btnGuardar" styleClass="login-button" />
-                <Button text="Cancelar" fx:id="btnCancelar" styleClass="cancel-button" onAction="#onCancelar"/>
+                <Button text="Pagar" fx:id="saveBtn" styleClass="login-button" onAction="#onPay"/>
+                <Button text="Cancelar" fx:id="cancelBtn" styleClass="cancel-button" onAction="#onCancel"/>
             </HBox>
 
         </VBox>

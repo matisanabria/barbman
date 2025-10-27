@@ -26,29 +26,32 @@ import java.util.Comparator;
  */
 public class DbBootstrap {
     private static final Logger logger = LogManager.getLogger(DbBootstrap.class);
+    private static final String DB_NAME = "database.db";
+    private static final File DOCUMENTS_FOLDER = new File(System.getProperty("user.home"), "Documents");
 
-    public static final String DB_FOLDER = "data";  // Folder name
-    public static final String DB_NAME = "barbman.db";  // Database file name
+    private static File appFolder;
+    private static File dataFolder;
+    private static File dbFile;
 
     public static void init() {
         logger.info("[DB] Ensuring database exists...");
 
-        // Ensure the database folder exists
-        File folder = new File(DB_FOLDER);
-        if (!folder.exists()) {
-            logger.warn("[DB] Database folder not found. Creating folder: " + DB_FOLDER);
-            if (folder.mkdirs()) {
-                logger.info("[DB] Database folder created successfully.");
-            } else {
-                logger.error("[DB] Failed to create database folder: " + DB_FOLDER);
-            }
-        }
+        // Create app folder in documents if it doesn't exist
+        appFolder = new File(DOCUMENTS_FOLDER, "Barbman Data");
+        if (!appFolder.exists() && appFolder.mkdirs())
+            logger.info("[DB] Created app folder at {}", appFolder.getAbsolutePath());
 
-        // Ensure the database file exists
-        File dbFile = new File(DB_FOLDER + "/" + DB_NAME);
-        if (dbFile.exists()) logger.info("[DB] Database found: {}", dbFile.getAbsolutePath());
-        else {
-            logger.warn("[DB] Database file not found. Creating new database: " + DB_NAME);
+        // Create database folder path
+        dataFolder = new File(appFolder, "data");
+        if (!dataFolder.exists() && dataFolder.mkdirs())
+            logger.info("[DB] Created data folder at {}", dataFolder.getAbsolutePath());
+
+        // Create or verify database file
+        dbFile = new File(dataFolder, DB_NAME);
+        if (dbFile.exists()) {
+            logger.info("[DB] Database found: {}", dbFile.getAbsolutePath());
+        } else {
+            logger.warn("[DB] Database file not found. Creating new database...");
             createTables();
         }
     }
@@ -60,7 +63,7 @@ public class DbBootstrap {
      * @throws SQLException if a database access error occurs
      */
     public static Connection connect() throws SQLException {
-        String url = "jdbc:sqlite:" + DB_FOLDER + "/" + DB_NAME;
+        String url = "jdbc:sqlite:" + dbFile.getAbsolutePath();
         logger.debug("[DB] Connecting to database. URL: {}", url);
         Connection conn = DriverManager.getConnection(url);
         logger.debug("[DB] Database connected and ready to use.");
@@ -197,6 +200,29 @@ public class DbBootstrap {
                             name TEXT NOT NULL UNIQUE   -- ej: cash, transfer, qr, card
                          );
                      """);
+            // CASHBOX
+            stmt.execute("""
+                    CREATE TABLE IF NOT EXISTS cashbox (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        date TEXT NOT NULL UNIQUE,
+                        opening_balance REAL NOT NULL DEFAULT 0,
+                        closing_balance REAL NOT NULL DEFAULT 0
+                    );
+                    """);
+            // CASHBOX MOVEMENTS
+            stmt.execute("""
+                    CREATE TABLE IF NOT EXISTS cashbox_movements (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        cashbox_id INTEGER NOT NULL,       -- referencia al día correspondiente
+                        type TEXT NOT NULL,                -- 'INCOME' o 'EXPENSE'
+                        amount REAL NOT NULL,
+                        description TEXT,
+                        user_id INTEGER,                   -- quién registró el movimiento
+                        created_at TEXT NOT NULL DEFAULT (datetime('now')),
+                        FOREIGN KEY (cashbox_id) REFERENCES cashbox(id),
+                        FOREIGN KEY (user_id) REFERENCES users(id)
+                    );
+                    """);
 
             logger.info("[DB] Database tables created successfully.");
         } catch (SQLException e) {
@@ -213,10 +239,9 @@ public class DbBootstrap {
     public static void backupDatabase() {
         try {
             // Create backups directory if it doesn't exist
-            String backupDir = "backups";
-            File folder = new File(backupDir);
-            if (!folder.exists() && !folder.mkdirs()) {
-                logger.warn("[DB] Can't create backup directory: {}", backupDir);
+            File backupFolder = new File(appFolder, "backups");
+            if (!backupFolder.exists() && !backupFolder.mkdirs()) {
+                logger.warn("[DB] Can't create backup directory: {}", backupFolder.getAbsolutePath());
                 return;
             }
 
@@ -225,24 +250,21 @@ public class DbBootstrap {
                     .format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"));
             String backupName = "database_backup_" + timestamp + ".db";
 
-            Path source = Paths.get(DB_FOLDER, DB_NAME);
-            Path target = Paths.get(backupDir, backupName);
+            Path source = dbFile.toPath();
+            Path target = backupFolder.toPath().resolve(backupName);
 
             Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
             logger.info("[DB] Backup created: {}", target.toString());
 
             // Only keep the 7 most recent backups
-            File[] backups = folder.listFiles((dir, name) -> name.endsWith(".db"));
+            File[] backups = backupFolder.listFiles((dir, name) -> name.endsWith(".db"));
             if (backups != null && backups.length > 7) {
                 Arrays.stream(backups)
                         .sorted(Comparator.comparingLong(File::lastModified).reversed())
-                        .skip(7) // keep the 7 most recent
+                        .skip(7)
                         .forEach(file -> {
-                            if (file.delete()) {
+                            if (file.delete())
                                 logger.info("[DB] Removed old backup: {}", file.getName());
-                            } else {
-                                logger.warn("[DB] Can't remove old backup: {}", file.getName());
-                            }
                         });
             }
 

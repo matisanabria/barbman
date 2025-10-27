@@ -1,6 +1,6 @@
-package app.barbman.core.controller;
+package app.barbman.core.controller.salary;
 
-import app.barbman.core.dto.SueldoDTO;
+import app.barbman.core.dto.SalaryDTO;
 import app.barbman.core.repositories.egresos.EgresosRepository;
 import app.barbman.core.repositories.egresos.EgresosRepositoryImpl;
 import app.barbman.core.repositories.serviciorealizado.ServicioRealizadoRepository;
@@ -30,17 +30,17 @@ import java.util.ResourceBundle;
  */
 public class SueldosController implements Initializable {
     @FXML
-    private TableView<SueldoDTO> sueldosTable; // Tabla que muestra barberos
+    private TableView<SalaryDTO> sueldosTable; // Tabla que muestra barberos
     @FXML
-    private TableColumn<SueldoDTO, String> colBarbero;
+    private TableColumn<SalaryDTO, String> colBarbero;
     @FXML
-    private TableColumn<SueldoDTO, String> colProduccion;
+    private TableColumn<SalaryDTO, String> colProduccion;
     @FXML
-    private TableColumn<SueldoDTO, String> colMonto;
+    private TableColumn<SalaryDTO, String> colMonto;
     @FXML
-    private TableColumn<SueldoDTO, String> colEstado;
+    private TableColumn<SalaryDTO, String> colEstado;
     @FXML
-    private TableColumn<SueldoDTO, String> colAccion;
+    private TableColumn<SalaryDTO, String> colAccion;
     @FXML
     private Button btnRegistrarAdelanto;     // Botón para abrir ventana de registrar adelanto
 
@@ -90,22 +90,22 @@ public class SueldosController implements Initializable {
         logger.info("[SUELDO-VIEW] Generando salaries semanales desde {} hasta {}", lunes, sabado);
 
         // Obtener salaries de esta semana
-        List<SueldoDTO> lista = sueldosService.genSueldoDTOSemanal(lunes, sabado);
+        List<SalaryDTO> lista = sueldosService.genSueldoDTOSemanal(lunes, sabado);
         logger.info("[SUELDO-VIEW] Se generaron {} registros temporales para mostrar en la tabla", lista.size());
 
         // Configurar columnas
-        colBarbero.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getNombreBarbero()));
+        colBarbero.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getUsername()));
         colProduccion.setCellValueFactory(cellData -> {
-            double prod = cellData.getValue().getProduccionTotal();
+            double prod = cellData.getValue().getTotalProduction();
             return new SimpleStringProperty(NumberFormatUtil.format(prod) +  " Gs");
         });
 
         colMonto.setCellValueFactory(cellData -> {
-            double monto = cellData.getValue().getMontoLiquidado();
+            double monto = cellData.getValue().getAmountPaid();
             return new SimpleStringProperty(NumberFormatUtil.format(monto) +  " Gs");
         });
         colEstado.setCellValueFactory(cellData -> {
-            String estado = cellData.getValue().isPagado() ? "Pagado" : "Pendiente";
+            String estado = cellData.getValue().isPaymentStatus() ? "Pagado" : "Pendiente";
             return new SimpleStringProperty(estado);
         });
 
@@ -115,13 +115,13 @@ public class SueldosController implements Initializable {
 
             {
                 btnPagar.setOnAction(event -> {
-                    SueldoDTO dto = getTableView().getItems().get(getIndex());
+                    SalaryDTO dto = getTableView().getItems().get(getIndex());
                     Stage currentStage = (Stage) sueldosTable.getScene().getWindow();
 
                     // abrir ventana y obtener controller
-                    PagarSueldoController controller =
+                    ConfirmSalaryController controller =
                             WindowManager.openWindowWithController(
-                                    "/app/barbman/core/view/pagar-sueldo-view.fxml",
+                                    "/app/barbman/core/view/confirm-salary-view.fxml",
                                     "Pagar Salary",
                                     currentStage
                             );
@@ -138,8 +138,8 @@ public class SueldosController implements Initializable {
                 if (empty) {
                     setGraphic(null);
                 } else {
-                    SueldoDTO dto = getTableView().getItems().get(getIndex());
-                    if (dto.isPagado()) {
+                    SalaryDTO dto = getTableView().getItems().get(getIndex());
+                    if (dto.isPaymentStatus()) {
                         setGraphic(new Label("✔ Pagado"));
                     } else {
                         setGraphic(btnPagar);
@@ -161,7 +161,7 @@ public class SueldosController implements Initializable {
         LocalDate lunes = hoy.with(java.time.DayOfWeek.MONDAY);
         LocalDate sabado = lunes.plusDays(5);
 
-        List<SueldoDTO> lista = sueldosService.genSueldoDTOSemanal(lunes, sabado);
+        List<SalaryDTO> lista = sueldosService.genSueldoDTOSemanal(lunes, sabado);
         sueldosTable.getItems().setAll(lista);
 
         logger.info("[SUELDO-VIEW] Tabla de salaries recargada ({}) registros.", lista.size());
