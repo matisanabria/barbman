@@ -2,7 +2,7 @@ package app.barbman.core.controller;
 
 import app.barbman.core.model.Expense;
 import app.barbman.core.repositories.expense.ExpenseRepository;
-import app.barbman.core.repositories.expense.EgresosRepositoryImpl;
+import app.barbman.core.repositories.expense.ExpenseRepositoryImpl;
 import app.barbman.core.service.egresos.EgresosService;
 import app.barbman.core.util.NumberFormatterUtil;
 import javafx.collections.FXCollections;
@@ -47,7 +47,7 @@ public class EgresosController implements Initializable {
     @FXML
     private ChoiceBox<String> formaPagoBox;
 
-    ExpenseRepository expenseRepository = new EgresosRepositoryImpl();
+    ExpenseRepository expenseRepository = new ExpenseRepositoryImpl();
     EgresosService egresosService = new EgresosService(expenseRepository);
 
     @Override
@@ -66,7 +66,7 @@ public class EgresosController implements Initializable {
         });
         colFormaPago.setCellValueFactory(cellData -> {
             int formaPago = cellData.getValue().getPaymentMethodId();
-            return new SimpleStringProperty(formaPago != null ? formaPago : "");
+            return new SimpleStringProperty(formaPago != null ? formaPago : ""); // FIXME
         });
         colDescripcion.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
 
