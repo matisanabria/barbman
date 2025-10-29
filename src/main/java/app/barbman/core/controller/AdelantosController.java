@@ -1,13 +1,13 @@
 package app.barbman.core.controller;
 
 import app.barbman.core.model.User;
+import app.barbman.core.repositories.expense.ExpenseRepositoryImpl;
 import app.barbman.core.repositories.users.UsersRepository;
 import app.barbman.core.repositories.users.UsersRepositoryImpl;
-import app.barbman.core.repositories.egresos.EgresosRepository;
-import app.barbman.core.repositories.egresos.EgresosRepositoryImpl;
+import app.barbman.core.repositories.expense.ExpenseRepository;
 import app.barbman.core.service.egresos.EgresosService;
+import app.barbman.core.util.NumberFormatterUtil;
 import app.barbman.core.util.SessionManager;
-import app.barbman.core.util.NumberFormatUtil;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -38,8 +38,8 @@ public class AdelantosController implements Initializable {
     private static final Logger logger = LogManager.getLogger(AdelantosController.class);
 
     private final UsersRepository usersRepository = new UsersRepositoryImpl();
-    private final EgresosRepository egresosRepository = new EgresosRepositoryImpl();
-    private final EgresosService egresosService = new EgresosService(egresosRepository);
+    private final ExpenseRepository expenseRepository = new ExpenseRepositoryImpl();
+    private final EgresosService egresosService = new EgresosService(expenseRepository);
 
     /**
      * Inicializa la vista, cargando la lista de barberos y las formas de pago disponibles.
@@ -52,7 +52,7 @@ public class AdelantosController implements Initializable {
         ));
         formaPagoChoiceBox.setValue("efectivo");
 
-        NumberFormatUtil.applyToTextField(montoField);
+        NumberFormatterUtil.applyToTextField(montoField);
 
         logger.info("Vista de adelantos inicializada.");
         btnGuardar.setOnAction(e -> guardarAdelanto());

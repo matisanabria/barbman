@@ -30,7 +30,7 @@
             <!-- Manual amount (Default hidden) -->
             <VBox spacing="2.0" fx:id="manualMontoBox" visible="false" managed="false">
                 <Label text="Monto manual" styleClass="form-label"/>
-                <TextField fx:id="manualAmountField" promptText="Ingrese monto manual" styleClass="services-textfield"/>
+                <TextField fx:id="manualAmountField" promptText="Ingrese amount manual" styleClass="services-textfield"/>
             </VBox>
 
             <!-- Bono -->

@@ -9,9 +9,6 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Implementación de UsersRepository para gestionar operaciones CRUD en la tabla 'users'.
- */
 public class UsersRepositoryImpl implements UsersRepository {
     List<User> listaUsers = new ArrayList<>();
     private static final Logger logger = LogManager.getLogger(UsersRepositoryImpl.class);
@@ -22,11 +19,6 @@ public class UsersRepositoryImpl implements UsersRepository {
         """;
     public static final String PREFIX = "[USERS-REPO]";
 
-    /**
-     * Searches for a user by its ID.
-     * @param id The ID of the user to search for.
-     * @return The found user, or null if not found.
-     */
     @Override
     public User findById(Integer id) {
         String sql = SELECT_BASE + " WHERE id = ?";
@@ -44,10 +36,6 @@ public class UsersRepositoryImpl implements UsersRepository {
         return null;
     }
 
-    /**
-     * Put all users from the database into a list.
-     * @return User list.
-     */
     @Override
     public List<User> findAll() {
         List<User> lista = new ArrayList<>();
@@ -64,10 +52,6 @@ public class UsersRepositoryImpl implements UsersRepository {
         return List.of();
     }
 
-    /**
-     * Saves a new user to the database.
-     * @param user The user to save.
-     */
     @Override
     public void save(User user) {
         String sql = """
@@ -120,11 +104,6 @@ public class UsersRepositoryImpl implements UsersRepository {
 
     }
 
-    /**
-     * Borra un barbero de la base de datos.
-     *
-     * @param id El barbero a borrar.
-     */
     @Override
     public void delete(Integer id) {
         String sql = "DELETE FROM users WHERE id = ?";
@@ -139,10 +118,10 @@ public class UsersRepositoryImpl implements UsersRepository {
     }
 
     /**
-     * Busca un barbero por su PIN.
+     * Search for a barber by their PIN.
      *
-     * @param pin El PIN del barbero a buscar.
-     * @return El barbero encontrado o null si no existe.
+     * @param pin PIN.
+     * @return Barber object if found, null otherwise.
      */
     @Override
     public User findByPin(String pin) {

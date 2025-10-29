@@ -162,11 +162,12 @@ public class DbBootstrap {
                             date TEXT NOT NULL CHECK (date = date(date)),
                             type TEXT NOT NULL CHECK (
                                 type IN (
-                                    'supply', 'service', 'purchase', 'other', 'salary', 'advance'
+                                    'supply', 'service', 'purchase', 'tax', 'other', 'salary', 'advance'
 
                                     -- 'supply'    -> supplies and products (e.g., restocking inventory)
                                     -- 'service'   -> cleaning, rent, electricity, etc.
                                     -- 'purchase'  -> furniture, tools, decoration
+                                    -- 'tax'       -> taxes
                                     -- 'other'     -> irregular expenses, delivery, miscellaneous
                                     -- 'salary'    -> employees' wages
                                     -- 'advance'   -> advances before the weekly close

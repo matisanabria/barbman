@@ -1,17 +1,16 @@
 package app.barbman.core.controller;
 
-import app.barbman.core.dto.ResumenDTO;
+import app.barbman.core.model.Expense;
+import app.barbman.core.model.PerformedService;
 import app.barbman.core.model.User;
-import app.barbman.core.model.Egreso;
-import app.barbman.core.model.ServicioRealizado;
+import app.barbman.core.repositories.expense.ExpenseRepositoryImpl;
 import app.barbman.core.repositories.users.UsersRepository;
 import app.barbman.core.repositories.users.UsersRepositoryImpl;
-import app.barbman.core.repositories.egresos.EgresosRepository;
-import app.barbman.core.repositories.egresos.EgresosRepositoryImpl;
-import app.barbman.core.repositories.serviciorealizado.ServicioRealizadoRepository;
-import app.barbman.core.repositories.serviciorealizado.ServicioRealizadoRepositoryImpl;
-import app.barbman.core.service.caja.CajaService;
-import app.barbman.core.util.NumberFormatUtil;
+import app.barbman.core.repositories.expense.ExpenseRepository;
+import app.barbman.core.repositories.performedservice.PerformedServiceRepository;
+import app.barbman.core.repositories.performedservice.PerformedServiceRepositoryImpl;
+
+import app.barbman.core.util.NumberFormatterUtil;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -44,10 +43,10 @@ public class CajaController implements Initializable {
 
     private static final Logger logger = LogManager.getLogger(CajaController.class);
 
-    private final ServicioRealizadoRepository serviciosRepo = new ServicioRealizadoRepositoryImpl();
-    private final EgresosRepository egresosRepo = new EgresosRepositoryImpl();
+    private final PerformedServiceRepository serviciosRepo = new PerformedServiceRepositoryImpl();
+    private final ExpenseRepository egresosRepo = new ExpenseRepositoryImpl();
     private final UsersRepository barberoRepo = new UsersRepositoryImpl();
-    private final CajaService cajaService = new CajaService(serviciosRepo, egresosRepo);
+   // private final CajaService cajaService = new CajaService(serviciosRepo, egresosRepo);
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
@@ -56,14 +55,14 @@ public class CajaController implements Initializable {
         cargarFechasDiario();
         choiceFechas.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
-                mostrarResumenDiario(LocalDate.parse(newVal, DATE_FORMATTER));
+               // mostrarResumenDiario(LocalDate.parse(newVal, DATE_FORMATTER));
             }
         });
 
         if (!choiceFechas.getItems().isEmpty()) {
             String ultimaFecha = choiceFechas.getItems().get(0);
             choiceFechas.setValue(ultimaFecha);
-            mostrarResumenDiario(LocalDate.parse(ultimaFecha, DATE_FORMATTER));
+            //mostrarResumenDiario(LocalDate.parse(ultimaFecha, DATE_FORMATTER));
         } else {
             mostrarNoHayRegistrosDiario();
         }
@@ -98,12 +97,12 @@ public class CajaController implements Initializable {
 
     // ======= Métodos DIARIOS =======
     private void cargarFechasDiario() {
-        List<ServicioRealizado> servicios = serviciosRepo.findAll();
-        List<Egreso> egresos = egresosRepo.findAll();
+        List<PerformedService> servicios = serviciosRepo.findAll();
+        List<Expense> expenses = egresosRepo.findAll();
 
         Set<LocalDate> fechasUnicas = new HashSet<>();
-        servicios.forEach(s -> fechasUnicas.add(s.getFecha()));
-        egresos.forEach(e -> fechasUnicas.add(e.getFecha()));
+        servicios.forEach(s -> fechasUnicas.add(s.getDate()));
+        expenses.forEach(e -> fechasUnicas.add(e.getDate()));
 
         List<String> fechasFormateadas = fechasUnicas.stream()
                 .sorted(Comparator.reverseOrder())
@@ -112,21 +111,21 @@ public class CajaController implements Initializable {
 
         choiceFechas.setItems(FXCollections.observableArrayList(fechasFormateadas));
     }
-
+/*
     private void mostrarResumenDiario(LocalDate fecha) {
         logger.info("Mostrando resumen diario para la fecha: {}", fecha);
 
         ResumenDTO resumen = cajaService.calcularResumenDiario(fecha);
 
         lblFechaDiaria.setText("Fecha: " + fecha.format(DATE_FORMATTER));
-        lblIngresosDiaria.setText("Ingresos totales: " + NumberFormatUtil.format(resumen.getIngresosTotal()) + " Gs");
-        lblEgresosDiaria.setText("Egresos totales: " + NumberFormatUtil.format(resumen.getEgresosTotal()) + " Gs");
+        lblIngresosDiaria.setText("Ingresos totales: " + NumberFormatterUtil.format(resumen.getIngresosTotal()) + " Gs");
+        lblEgresosDiaria.setText("Egresos totales: " + NumberFormatterUtil.format(resumen.getEgresosTotal()) + " Gs");
 
         boxProduccionBarberosDiaria.getChildren().clear();
         List<User> users = barberoRepo.findAll();
         for (User b : users) {
             double produccion = serviciosRepo.getProduccionSemanalPorBarbero(b.getId(), fecha, fecha);
-            Label lbl = new Label("- " + b.getName() + ": " + NumberFormatUtil.format(produccion) + " Gs");
+            Label lbl = new Label("- " + b.getName() + ": " + NumberFormatterUtil.format(produccion) + " Gs");
             lbl.getStyleClass().add("caja-label");
             boxProduccionBarberosDiaria.getChildren().add(lbl);
             logger.debug("Producción para barbero {} el {}: {}", b.getName(), fecha, produccion);
@@ -138,7 +137,7 @@ public class CajaController implements Initializable {
             logger.warn("No hay users registrados en la fecha: {}", fecha);
         }
     }
-
+*/
     private void mostrarNoHayRegistrosDiario() {
         lblFechaDiaria.setText("⚠ No hay registros");
         lblIngresosDiaria.setText("Ingresos totales: --");
@@ -152,12 +151,12 @@ public class CajaController implements Initializable {
 
     // ======= Métodos SEMANALES =======
     private void cargarSemanasSemanal() {
-        List<ServicioRealizado> servicios = serviciosRepo.findAll();
-        List<Egreso> egresos = egresosRepo.findAll();
+        List<PerformedService> servicios = serviciosRepo.findAll();
+        List<Expense> expenses = egresosRepo.findAll();
 
         Set<LocalDate> fechasUnicas = new HashSet<>();
-        servicios.forEach(s -> fechasUnicas.add(s.getFecha()));
-        egresos.forEach(e -> fechasUnicas.add(e.getFecha()));
+        servicios.forEach(s -> fechasUnicas.add(s.getDate()));
+        expenses.forEach(e -> fechasUnicas.add(e.getDate()));
 
         if (fechasUnicas.isEmpty()) {
             choiceSemanas.setItems(FXCollections.observableArrayList());
@@ -186,25 +185,25 @@ public class CajaController implements Initializable {
     }
 
     private void mostrarResumenSemanal(LocalDate desde, LocalDate hasta) {
-        List<ServicioRealizado> serviciosRango = serviciosRepo.findAll().stream()
-                .filter(s -> !s.getFecha().isBefore(desde) && !s.getFecha().isAfter(hasta))
+        List<PerformedService> serviciosRango = serviciosRepo.findAll().stream()
+                .filter(s -> !s.getDate().isBefore(desde) && !s.getDate().isAfter(hasta))
                 .collect(Collectors.toList());
-        List<Egreso> egresosRango = egresosRepo.findAll().stream()
-                .filter(e -> !e.getFecha().isBefore(desde) && !e.getFecha().isAfter(hasta))
+        List<Expense> egresosRangos = egresosRepo.findAll().stream()
+                .filter(e -> !e.getDate().isBefore(desde) && !e.getDate().isAfter(hasta))
                 .collect(Collectors.toList());
 
-        double totalIngresos = serviciosRango.stream().mapToDouble(ServicioRealizado::getPrecio).sum();
-        double totalEgresos = egresosRango.stream().mapToDouble(Egreso::getMonto).sum();
+        double totalIngresos = serviciosRango.stream().mapToDouble(PerformedService::getPrice).sum();
+        double totalEgresos = egresosRangos.stream().mapToDouble(Expense::getAmount).sum();
 
         lblSemana.setText("Semana: " + desde.format(DATE_FORMATTER) + " al " + hasta.format(DATE_FORMATTER));
-        lblIngresosSemana.setText("Ingresos totales: " + NumberFormatUtil.format(totalIngresos) + " Gs");
-        lblEgresosSemana.setText("Egresos totales: " + NumberFormatUtil.format(totalEgresos) + " Gs");
+        lblIngresosSemana.setText("Ingresos totales: " + NumberFormatterUtil.format(totalIngresos) + " Gs");
+        lblEgresosSemana.setText("Egresos totales: " + NumberFormatterUtil.format(totalEgresos) + " Gs");
 
         boxProduccionBarberos.getChildren().clear();
         List<User> users = barberoRepo.findAll();
         for (User b : users) {
             double produccion = serviciosRepo.getProduccionSemanalPorBarbero(b.getId(), desde, hasta);
-            Label lbl = new Label("- " + b.getName() + ": " + NumberFormatUtil.format(produccion) + " Gs");
+            Label lbl = new Label("- " + b.getName() + ": " + NumberFormatterUtil.format(produccion) + " Gs");
             lbl.getStyleClass().add("caja-label");
             boxProduccionBarberos.getChildren().add(lbl);
         }

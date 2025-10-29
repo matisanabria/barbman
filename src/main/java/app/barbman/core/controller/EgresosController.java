@@ -1,10 +1,10 @@
 package app.barbman.core.controller;
 
-import app.barbman.core.model.Egreso;
-import app.barbman.core.repositories.egresos.EgresosRepository;
-import app.barbman.core.repositories.egresos.EgresosRepositoryImpl;
+import app.barbman.core.model.Expense;
+import app.barbman.core.repositories.expense.ExpenseRepository;
+import app.barbman.core.repositories.expense.EgresosRepositoryImpl;
 import app.barbman.core.service.egresos.EgresosService;
-import app.barbman.core.util.NumberFormatUtil;
+import app.barbman.core.util.NumberFormatterUtil;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -15,7 +15,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.net.URL;
-import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -25,17 +24,17 @@ public class EgresosController implements Initializable {
     private static final Logger logger = LogManager.getLogger(EgresosController.class);
 
     @FXML
-    private TableView<Egreso> egresosTable;
+    private TableView<Expense> egresosTable;
     @FXML
-    private TableColumn<Egreso, String> colFecha;
+    private TableColumn<Expense, String> colFecha;
     @FXML
-    private TableColumn<Egreso, String> colTipo;
+    private TableColumn<Expense, String> colTipo;
     @FXML
-    private TableColumn<Egreso, String> colMonto;
+    private TableColumn<Expense, String> colMonto;
     @FXML
-    private TableColumn<Egreso, String> colFormaPago;
+    private TableColumn<Expense, String> colFormaPago;
     @FXML
-    private TableColumn<Egreso, String> colDescripcion;
+    private TableColumn<Expense, String> colDescripcion;
 
     @FXML
     private ChoiceBox<String> tipoEgresoBox;
@@ -48,12 +47,12 @@ public class EgresosController implements Initializable {
     @FXML
     private ChoiceBox<String> formaPagoBox;
 
-    EgresosRepository egresosRepository = new EgresosRepositoryImpl();
-    EgresosService egresosService = new EgresosService(egresosRepository);
+    ExpenseRepository expenseRepository = new EgresosRepositoryImpl();
+    EgresosService egresosService = new EgresosService(expenseRepository);
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        logger.info("[EGRESOS-VIEW] Inicializando vista de egresos...");
+        logger.info("[EGRESOS-VIEW] Inicializando vista de expense...");
         // Para que las columnas queden fijas
         egresosTable.getColumns().forEach(col -> col.setReorderable(false));
         egresosTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
@@ -62,11 +61,11 @@ public class EgresosController implements Initializable {
         colFecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
         colTipo.setCellValueFactory(new PropertyValueFactory<>("tipo"));
         colMonto.setCellValueFactory(cellData -> {
-            double precio = cellData.getValue().getMonto();
-            return new SimpleStringProperty(NumberFormatUtil.format(precio) +  " Gs");
+            double precio = cellData.getValue().getAmount();
+            return new SimpleStringProperty(NumberFormatterUtil.format(precio) +  " Gs");
         });
         colFormaPago.setCellValueFactory(cellData -> {
-            String formaPago = cellData.getValue().getFormaPago();
+            int formaPago = cellData.getValue().getPaymentMethodId();
             return new SimpleStringProperty(formaPago != null ? formaPago : "");
         });
         colDescripcion.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
@@ -88,35 +87,35 @@ public class EgresosController implements Initializable {
         // Doble clic para borrar un egreso
         egresosTable.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2 && !egresosTable.getSelectionModel().isEmpty()) {
-                Egreso seleccionado = egresosTable.getSelectionModel().getSelectedItem();
+                Expense seleccionado = egresosTable.getSelectionModel().getSelectedItem();
                 if (seleccionado != null) {
                     confirmarYBorrarEgreso(seleccionado);
                 }
             }
         });
 
-        NumberFormatUtil.applyToTextField(montoField);
+        NumberFormatterUtil.applyToTextField(montoField);
 
         logger.info("[EGRESOS-VIEW] Vista inicializada correctamente.");
     }
 
     /**
-     * Carga y muestra los egresos en la tabla.
-     * Los egresos se muestran en orden inverso (más recientes primero).
+     * Carga y muestra los expense en la tabla.
+     * Los expense se muestran en orden inverso (más recientes primero).
      */
     void mostrarEgresos() {
-        logger.info("[EGRESOS-VIEW] Cargando lista de egresos...");
-        List<Egreso> egresos = egresosRepository.findAll();
-        Collections.reverse(egresos);
-        egresosTable.setItems(FXCollections.observableArrayList(egresos));
-        logger.info("[EGRESOS-VIEW] {} egresos cargados en la tabla.", egresos.size());
+        logger.info("[EGRESOS-VIEW] Cargando lista de expenses...");
+        List<Expense> expenses = expenseRepository.findAll();
+        Collections.reverse(expenses);
+        egresosTable.setItems(FXCollections.observableArrayList(expenses));
+        logger.info("[EGRESOS-VIEW] {} expenses cargados en la tabla.", expenses.size());
     }
 
     private void guardarEgreso() {
         String tipo = tipoEgresoBox.getValue();
         String descripcion = descripcionField.getText();
         String montoStr = montoField.getText().replace(".", "").trim();
-        String formaPago = formaPagoBox.getValue();
+        int formaPago = formaPagoBox.getValue();
 
         // Validación de campos vacíos
         if (tipo == null) {
@@ -141,7 +140,7 @@ public class EgresosController implements Initializable {
                 descripcion,    // descripcion
                 formaPago
         );
-        logger.info("[EGRESOS-VIEW] Egreso agregado -> Tipo: {}, Monto: {}, FormaPago: {}, Descripción: {}",
+        logger.info("[EGRESOS-VIEW] Expense agregado -> Tipo: {}, Monto: {}, FormaPago: {}, Descripción: {}",
                 tipo, monto, formaPago, descripcion);
         mostrarEgresos();
     }
@@ -154,26 +153,26 @@ public class EgresosController implements Initializable {
         alert.showAndWait();
     }
 
-    private void confirmarYBorrarEgreso(Egreso egreso) {
+    private void confirmarYBorrarEgreso(Expense expense) {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Confirmar eliminación");
-        confirm.setHeaderText("¿Seguro que quieres eliminar este egreso?");
+        confirm.setHeaderText("¿Seguro que quieres eliminar este expense?");
         confirm.setContentText(
-                "Egreso ID: " + egreso.getId() +
-                        "\nTipo: " + egreso.getTipo() +
-                        "\nMonto: " + NumberFormatUtil.format(egreso.getMonto()) + " Gs" +
-                        "\nFecha: " + egreso.getFecha()
+                "Expense ID: " + expense.getId() +
+                        "\nTipo: " + expense.getType() +
+                        "\nMonto: " + NumberFormatterUtil.format(expense.getAmount()) + " Gs" +
+                        "\nFecha: " + expense.getDate()
         );
 
         confirm.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
-                egresosRepository.delete(egreso.getId()); // <- delete en repo
+                expenseRepository.delete(expense.getId()); // <- delete en repo
                 mostrarEgresos(); // refresca la tabla
-                logger.info("[EGRESOS-VIEW] Egreso eliminado -> ID: {}, Tipo: {}, Monto: {}, Fecha: {}",
-                        egreso.getId(), egreso.getTipo(), egreso.getMonto(), egreso.getFecha());
+                logger.info("[EGRESOS-VIEW] Expense eliminado -> ID: {}, Tipo: {}, Monto: {}, Fecha: {}",
+                        expense.getId(), expense.getType(), expense.getAmount(), expense.getDate());
             }
             else{
-                logger.info("[EGRESOS-VIEW] Cancelada eliminación de egreso -> ID: {}", egreso.getId());            }
+                logger.info("[EGRESOS-VIEW] Cancelada eliminación de expense -> ID: {}", expense.getId());            }
         });
     }
 

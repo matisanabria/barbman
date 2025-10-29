@@ -1,13 +1,13 @@
 package app.barbman.core.service.sueldos;
 
 import app.barbman.core.dto.SalaryDTO;
+import app.barbman.core.model.Expense;
 import app.barbman.core.model.Salary;
 import app.barbman.core.model.User;
-import app.barbman.core.model.Egreso;
 import app.barbman.core.repositories.users.UsersRepository;
 import app.barbman.core.repositories.users.UsersRepositoryImpl;
-import app.barbman.core.repositories.egresos.EgresosRepository;
-import app.barbman.core.repositories.serviciorealizado.ServicioRealizadoRepository;
+import app.barbman.core.repositories.expense.ExpenseRepository;
+import app.barbman.core.repositories.performedservice.PerformedServiceRepository;
 import app.barbman.core.repositories.salaries.SalariesRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,14 +25,14 @@ public class SueldosService {
     private final SalariesRepository salariesRepository;
     private static final List<String> FORMAS_VALIDAS = List.of("efectivo", "transferencia");
     private static final Logger logger = LogManager.getLogger(SueldosService.class);
-    private final ServicioRealizadoRepository servicioRealizadoRepository;
+    private final PerformedServiceRepository performedServiceRepository;
     private final UsersRepository usersRepository = new UsersRepositoryImpl();
-    private final EgresosRepository egresosRepository;
+    private final ExpenseRepository expenseRepository;
 
-    public SueldosService(SalariesRepository repo, ServicioRealizadoRepository servicioRealizadoRepo, EgresosRepository egresosRepository) {
+    public SueldosService(SalariesRepository repo, PerformedServiceRepository servicioRealizadoRepo, ExpenseRepository expenseRepository) {
         this.salariesRepository = repo;
-        this.servicioRealizadoRepository = servicioRealizadoRepo;
-        this.egresosRepository = egresosRepository;
+        this.performedServiceRepository = servicioRealizadoRepo;
+        this.expenseRepository = expenseRepository;
     }
 
     /**
@@ -58,16 +58,16 @@ public class SueldosService {
         String descripcion = "Pago de salary a barbero ID " + salary.getUserId() +
                 " (semana del " + salary.getWeekStartDate() + " al " + salary.getWeekEndDate() + ")";
 
-        Egreso egreso = new Egreso(
+        Expense expense = new Expense(
                 descripcion,
                 salary.getAmountPaid(),
                 LocalDate.now(),
                 "salary",
-                "efectivo"//paymentMethodId //FIXME: set Egreso payment method to int
+                "efectivo"//paymentMethodId //FIXME: set Expense payment method to int
         );
-        egresosRepository.save(egreso);
+        expenseRepository.save(expense);
 
-        logger.info("[SUELDOS] Salary pagado y egreso registrado para barbero ID {}", salary.getUserId());
+        logger.info("[SUELDOS] Salary pagado y expense registrado para barbero ID {}", salary.getUserId());
     }
 
     /**
@@ -93,8 +93,8 @@ public class SueldosService {
         LocalDate finSemana = semana[1];
 
         // Producción y adelantos
-        double produccion = servicioRealizadoRepository.getProduccionSemanalPorBarbero(user.getId(), inicioSemana, finSemana);
-        double adelantos = egresosRepository.getTotalAdelantos(user.getId(), inicioSemana, finSemana);
+        double produccion = performedServiceRepository.getProduccionSemanalPorBarbero(user.getId(), inicioSemana, finSemana);
+        double adelantos = expenseRepository.getTotalAdelantos(user.getId(), inicioSemana, finSemana);
 
         logger.info("[SUELDOS] Calculando sueldo para user ID {} (tipoCobro={}, param1={}, param2={}, bono={})",
                 user.getId(), tipo, param1, param2, bono);
@@ -126,7 +126,7 @@ public class SueldosService {
 
             // Creamos un egreso tipo "adelanto" para registrar la deuda pendiente como adelanto automático
             String descripcion = "Saldo pendiente arrastrado (user ID " + user.getId() + ")";
-            Egreso egresoPendiente = new Egreso(
+            Expense expensePendiente = new Expense(
                     descripcion,
                     deudaPendiente,
                     lunesProximo,
@@ -135,8 +135,8 @@ public class SueldosService {
             );
 
             // Registramos el egreso en la base de datos
-            egresosRepository.save(egresoPendiente);
-            logger.info("[SUELDOS] Egreso adelantado automático generado: Gs. {}, fecha: {}", deudaPendiente, lunesProximo);
+            expenseRepository.save(expensePendiente);
+            logger.info("[SUELDOS] Expense adelantado automático generado: Gs. {}, fecha: {}", deudaPendiente, lunesProximo);
         }
 
         return new Salary(
@@ -244,13 +244,13 @@ public class SueldosService {
             String nombre = user.getName();
 
             // Producción semanal
-            double produccion = servicioRealizadoRepository.getProduccionSemanalPorBarbero(barberoId, inicio, fin);
+            double produccion = performedServiceRepository.getProduccionSemanalPorBarbero(barberoId, inicio, fin);
 
             // Calcular sueldo base (sin bonos)
             Salary salaryTemp = calcularSueldo(user, 0);
 
             // Consultar adelantos
-            double adelantos = egresosRepository.getTotalAdelantos(barberoId, inicio, fin);
+            double adelantos = expenseRepository.getTotalAdelantos(barberoId, inicio, fin);
 
             // Aplicar descuento de adelantos
             double montoFinal = salaryTemp.getAmountPaid() - adelantos;

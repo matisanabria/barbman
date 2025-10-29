@@ -1,21 +1,21 @@
 package app.barbman.core.service.servicios;
 
-import app.barbman.core.model.ServicioRealizado;
-import app.barbman.core.repositories.serviciorealizado.ServicioRealizadoRepository;
+import app.barbman.core.model.PerformedService;
+import app.barbman.core.repositories.performedservice.PerformedServiceRepository;
 
 import java.time.LocalDate;
 import java.util.List;
 
 public class ServicioRealizadoService {
-    private final ServicioRealizadoRepository servicioRealizadoRepository;
+    private final PerformedServiceRepository performedServiceRepository;
     private static final List<String> FORMAS_VALIDAS = List.of("efectivo", "transferencia", "pos");
 
 
-    public ServicioRealizadoService(ServicioRealizadoRepository repo) {
-        this.servicioRealizadoRepository = repo;
+    public ServicioRealizadoService(PerformedServiceRepository repo) {
+        this.performedServiceRepository = repo;
     }
 
-    public ServicioRealizado addServicioRealizado(int barberoId, int tipoServicio, double precio, String formaPago, String observaciones) {
+    public PerformedService addServicioRealizado(int barberoId, int tipoServicio, double precio, int formaPago, String observaciones) {
         if (barberoId <= 0) throw new IllegalArgumentException("Debe seleccionar un barbero.");
         if (tipoServicio <= 0) throw new IllegalArgumentException("Debe seleccionar un tipo de servicio.");
         if (precio <= 0) throw new IllegalArgumentException("El precio debe ser mayor a cero.");
@@ -31,15 +31,15 @@ public class ServicioRealizadoService {
 
 
         LocalDate hoy = LocalDate.now();
-        ServicioRealizado sr = new ServicioRealizado(barberoId, tipoServicio, precio, hoy, formaPago, observaciones);
-        servicioRealizadoRepository.save(sr);
+        PerformedService sr = new PerformedService(barberoId, tipoServicio, precio, hoy, formaPago, observaciones);
+        performedServiceRepository.save(sr);
         return sr;
     }
     public void eliminarServicio(int servicioId) {
         if (servicioId <= 0) {
             throw new IllegalArgumentException("ID de servicio inválido.");
         }
-        servicioRealizadoRepository.delete(servicioId);
+        performedServiceRepository.delete(servicioId);
     }
 
     

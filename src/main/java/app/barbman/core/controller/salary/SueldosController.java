@@ -1,14 +1,14 @@
 package app.barbman.core.controller.salary;
 
 import app.barbman.core.dto.SalaryDTO;
-import app.barbman.core.repositories.egresos.EgresosRepository;
-import app.barbman.core.repositories.egresos.EgresosRepositoryImpl;
-import app.barbman.core.repositories.serviciorealizado.ServicioRealizadoRepository;
-import app.barbman.core.repositories.serviciorealizado.ServicioRealizadoRepositoryImpl;
+import app.barbman.core.repositories.expense.ExpenseRepository;
+import app.barbman.core.repositories.expense.ExpenseRepositoryImpl;
+import app.barbman.core.repositories.performedservice.PerformedServiceRepository;
+import app.barbman.core.repositories.performedservice.PerformedServiceRepositoryImpl;
 import app.barbman.core.repositories.salaries.SalariesRepository;
 import app.barbman.core.repositories.salaries.SalariesRepositoryImpl;
 import app.barbman.core.service.sueldos.SueldosService;
-import app.barbman.core.util.NumberFormatUtil;
+import app.barbman.core.util.NumberFormatterUtil;
 import app.barbman.core.util.WindowManager;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
@@ -48,11 +48,11 @@ public class SueldosController implements Initializable {
 
     // Repositorios
     private final SalariesRepository sueldoRepo = new SalariesRepositoryImpl();
-    private final ServicioRealizadoRepository servicioRealizadoRepository = new ServicioRealizadoRepositoryImpl();
-    private final EgresosRepository egresosRepository = new EgresosRepositoryImpl();
+    private final PerformedServiceRepository performedServiceRepository = new PerformedServiceRepositoryImpl();
+    private final ExpenseRepository expenseRepository = new ExpenseRepositoryImpl();
 
     // Servicio de lógica de salaries
-    private final SueldosService sueldosService = new SueldosService(sueldoRepo, servicioRealizadoRepository, egresosRepository);
+    private final SueldosService sueldosService = new SueldosService(sueldoRepo, performedServiceRepository, expenseRepository);
 
     /**
      * Metodo principal de inicialización de la vista.
@@ -97,12 +97,12 @@ public class SueldosController implements Initializable {
         colBarbero.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getUsername()));
         colProduccion.setCellValueFactory(cellData -> {
             double prod = cellData.getValue().getTotalProduction();
-            return new SimpleStringProperty(NumberFormatUtil.format(prod) +  " Gs");
+            return new SimpleStringProperty(NumberFormatterUtil.format(prod) +  " Gs");
         });
 
         colMonto.setCellValueFactory(cellData -> {
             double monto = cellData.getValue().getAmountPaid();
-            return new SimpleStringProperty(NumberFormatUtil.format(monto) +  " Gs");
+            return new SimpleStringProperty(NumberFormatterUtil.format(monto) +  " Gs");
         });
         colEstado.setCellValueFactory(cellData -> {
             String estado = cellData.getValue().isPaymentStatus() ? "Pagado" : "Pendiente";

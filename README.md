@@ -22,7 +22,7 @@ Puedes descargar la última versión desde la sección de [Releases](../../relea
 
 - **Gestión de users**: autenticación rápida y cálculo automático de salarios.  
 - **Registro de servicios realizados**: con producción diaria, semanal y mensual.  
-- **Gestión de egresos**: control de gastos de la barbería.  
+- **Gestión de expenses**: control de gastos de la barbería.  
 - **Reportes y estadísticas**: generación de informes de caja y pagos.  
 - **Soporte de adelantos** en el módulo de sueldos.  
 - **Base de datos embebida** (`SQLite`) → carpeta `data/`, sin instalación adicional.  

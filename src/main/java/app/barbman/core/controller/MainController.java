@@ -50,12 +50,12 @@ public class MainController {
 
         // Selecciona el botón de inicio por defecto
         menuGroup.selectToggle(btnIncome);
-        WindowManager.setEmbeddedView(borderPane, "center", "/app/barbman/core/view/embed-view/servicios-view.fxml");
+        WindowManager.setEmbeddedView(borderPane, "center", "/app/barbman/core/view/embed-view/services-view.fxml");
 
         // Listener for menu buttons
         menuGroup.selectedToggleProperty().addListener((obs, oldToggle, newToggle) -> {
             if (newToggle == btnIncome) {
-                WindowManager.setEmbeddedView(borderPane, "center", "/app/barbman/core/view/embed-view/servicios-view.fxml");
+                WindowManager.setEmbeddedView(borderPane, "center", "/app/barbman/core/view/embed-view/services-view.fxml");
             } else if (newToggle == btnExpenses) {
                 WindowManager.setEmbeddedView(borderPane, "center", "/app/barbman/core/view/embed-view/egresos-view.fxml");
             } else if (newToggle == btnSalaries) {

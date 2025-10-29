@@ -32,7 +32,7 @@
             <!-- Monto -->
             <VBox spacing="2.0">
                 <Label text="Monto" styleClass="form-label"/>
-                <TextField fx:id="montoField" promptText="Ingrese monto" styleClass="services-textfield"/>
+                <TextField fx:id="montoField" promptText="Ingrese amount" styleClass="services-textfield"/>
             </VBox>
 
 

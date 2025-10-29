@@ -3,16 +3,16 @@ package app.barbman.core.controller.salary;
 import app.barbman.core.dto.SalaryDTO;
 import app.barbman.core.model.Salary;
 import app.barbman.core.model.User;
+import app.barbman.core.repositories.expense.ExpenseRepositoryImpl;
 import app.barbman.core.repositories.users.UsersRepository;
 import app.barbman.core.repositories.users.UsersRepositoryImpl;
-import app.barbman.core.repositories.egresos.EgresosRepository;
-import app.barbman.core.repositories.egresos.EgresosRepositoryImpl;
-import app.barbman.core.repositories.serviciorealizado.ServicioRealizadoRepository;
-import app.barbman.core.repositories.serviciorealizado.ServicioRealizadoRepositoryImpl;
+import app.barbman.core.repositories.expense.ExpenseRepository;;
+import app.barbman.core.repositories.performedservice.PerformedServiceRepository;
+import app.barbman.core.repositories.performedservice.PerformedServiceRepositoryImpl;
 import app.barbman.core.repositories.salaries.SalariesRepository;
 import app.barbman.core.repositories.salaries.SalariesRepositoryImpl;
 import app.barbman.core.service.sueldos.SueldosService;
-import app.barbman.core.util.NumberFormatUtil;
+import app.barbman.core.util.NumberFormatterUtil;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -54,10 +54,10 @@ public class ConfirmSalaryController implements Initializable {
     private static final String PREFIX = "[CONFIRM-SALARY]";
 
     private final SalariesRepository salariesRepository = new SalariesRepositoryImpl();
-    private final ServicioRealizadoRepository servicioRealizadoRepository = new ServicioRealizadoRepositoryImpl();
-    private final EgresosRepository egresosRepository = new EgresosRepositoryImpl();
+    private final PerformedServiceRepository performedServiceRepository = new PerformedServiceRepositoryImpl();
+    private final ExpenseRepository expenseRepository = new ExpenseRepositoryImpl();
     private final UsersRepository usersRepository = new UsersRepositoryImpl();
-    private final SueldosService sueldosService = new SueldosService(salariesRepository, servicioRealizadoRepository, egresosRepository);
+    private final SueldosService sueldosService = new SueldosService(salariesRepository, performedServiceRepository, expenseRepository);
     private SueldosController parentController;
 
     // User y sueldo seleccionado desde la tabla principal
@@ -74,10 +74,10 @@ public class ConfirmSalaryController implements Initializable {
         manualMontoBox.setManaged(false);
 
         // Format the manualAmountField
-        NumberFormatUtil.applyToTextField(manualAmountField);
+        NumberFormatterUtil.applyToTextField(manualAmountField);
 
         // Formateador para bono
-        NumberFormatUtil.applyToTextField(bonusField);
+        NumberFormatterUtil.applyToTextField(bonusField);
 
     }
 
@@ -90,11 +90,11 @@ public class ConfirmSalaryController implements Initializable {
         java.time.LocalDate lunes = hoy.with(java.time.DayOfWeek.MONDAY);
         java.time.LocalDate sabado = lunes.plusDays(5);
 
-        double adelantos = egresosRepository.getTotalAdelantos(dto.getUserId(), lunes, sabado);
+        double adelantos = expenseRepository.getTotalAdelantos(dto.getUserId(), lunes, sabado);
 
-        lblProduction.setText("Producción: " + NumberFormatUtil.format(dto.getTotalProduction()) + " Gs");
-        lblSalaryAdvance.setText("Adelantos: " + NumberFormatUtil.format(adelantos) + " Gs");
-        lblFinalAmount.setText("Salary final: " + NumberFormatUtil.format(dto.getAmountPaid()) + " Gs");
+        lblProduction.setText("Producción: " + NumberFormatterUtil.format(dto.getTotalProduction()) + " Gs");
+        lblSalaryAdvance.setText("Adelantos: " + NumberFormatterUtil.format(adelantos) + " Gs");
+        lblFinalAmount.setText("Salary final: " + NumberFormatterUtil.format(dto.getAmountPaid()) + " Gs");
 
         if (user != null && user.getPaymentType() == 0) {
             manualMontoBox.setVisible(true);

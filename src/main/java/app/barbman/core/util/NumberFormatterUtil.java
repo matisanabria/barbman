@@ -4,10 +4,8 @@ import javafx.scene.control.TextField;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.awt.*;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.text.ParseException;
 
 /**
  * Utilidades para formateo y parseo de números con separadores de miles.
@@ -18,9 +16,9 @@ import java.text.ParseException;
  *
  * También permite aplicar formato automático a un TextField.
  */
-public class NumberFormatUtil {
+public class NumberFormatterUtil {
 
-    private static final Logger logger = LogManager.getLogger(NumberFormatUtil.class);
+    private static final Logger logger = LogManager.getLogger(NumberFormatterUtil.class);
 
     // Configuración del formateador
     private static final DecimalFormatSymbols symbols;
@@ -64,7 +62,7 @@ public class NumberFormatUtil {
                 textField.setText(formateado);
                 textField.positionCaret(formateado.length()); // cursor al final
             } catch (NumberFormatException e) {
-                logger.warn("[NumberFormatUtil] Valor no numérico: {}", newValue);
+                logger.warn("[NumberFormatterUtil] Valor no numérico: {}", newValue);
             }
         });
     }
