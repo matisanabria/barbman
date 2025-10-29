@@ -1,36 +1,35 @@
 # Barbman (BETA)
 
-*Barbman* es una aplicación de escritorio pensada para la **gestión integral de barberías**.  
-Fue diseñada en **Java** con **JavaFX** y utiliza una base de datos embebida (`SQLite`), lo que permite usarla **sin conexión** en cualquier computadora.  
-
-El name *Barbman* proviene de *Barber Manager*
+Barbman* is a desktop application designed for **small business management**.  
+It is built in **Java** with **JavaFX** and uses an embedded database (`SQLite`), allowing it to run **offline** on any computer.
 
 ---
 
-## Estado del proyecto
-Actualmente en **fase BETA**.  
-Puedes descargar la última versión desde la sección de [Releases](../../releases).
+## Project Status
+Currently in **BETA phase**.  
+You can download the latest version from the [Releases](../../releases) section.
 
-**Notas importantes**:  
-- Los **datos por defecto de la base de datos** deben cargarse manualmente con una herramienta como [DB Browser for SQLite](https://sqlitebrowser.org/) u otra similar.  
-  En próximas versiones se incluirá un **modo setup inicial** para simplificar este paso.  
-- Es necesario **ejecutar el programa como administrador** para garantizar el correcto acceso a archivos y base de datos.  
-
----
-
-## Características principales
-
-- **Gestión de users**: autenticación rápida y cálculo automático de salarios.  
-- **Registro de servicios realizados**: con producción diaria, semanal y mensual.  
-- **Gestión de expenses**: control de gastos de la barbería.  
-- **Reportes y estadísticas**: generación de informes de caja y pagos.  
-- **Soporte de adelantos** en el módulo de sueldos.  
-- **Base de datos embebida** (`SQLite`) → carpeta `data/`, sin instalación adicional.  
-- **Sistema de logs**: todos los registros se guardan automáticamente en la carpeta `logs/`.  
+**Important Notes:**  
+- Default **database data** must be loaded manually using a tool like [DB Browser for SQLite](https://sqlitebrowser.org/) or similar.  
+  A **setup mode** will be included in future versions to simplify this step.  
+- It is recommended to **run the application as administrator** to ensure proper access to files and database.  
+- A **major update** is in progress: full code refactoring, migration to English on code, multiple language support, and complete UI redesign.
 
 ---
 
-## Tecnologías utilizadas
+## Main Features
+
+- **User management**: quick authentication and automatic salary calculations.  
+- **Record of completed services**: daily, weekly, and monthly production tracking.  
+- **Expense management**: control of business expenses.  
+- **Reports and statistics**: generation of cash and payment reports.  
+- **Advance payments support** in the salary module.  
+- **Embedded database** (`SQLite`) → folder `data/`, no installation required.  
+- **Logging system**: all logs are automatically saved in the `logs/` folder.
+
+---
+
+## Technologies Used
 
 - **Java 17+**
 - **JavaFX 17**
@@ -40,11 +39,10 @@ Puedes descargar la última versión desde la sección de [Releases](../../relea
 
 ---
 
-## Licencia
+## License
 
-Este proyecto está licenciado bajo los términos de la [Apache License 2.0](./LICENSE).  
-Puede usarse, modificarse y distribuirse libremente, pero considere dar créditos al creador.
+This project is licensed under the [Apache License 2.0](./LICENSE).  
+You can use, modify, and distribute it freely, but please give credit to the creator.
 
 ---
-
-💈 *Barbman: Gestiona tu barbería.*
+💼 *Barbman: Manage your small business quickly and easily.*
