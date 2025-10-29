@@ -71,7 +71,7 @@ public class PerformedServiceRepositoryImpl implements PerformedServiceRepositor
             ps.setInt(2, s.getServiceTypeId());
             ps.setDouble(3, s.getPrice());
             ps.setString(4, s.getDate().toString()); // LocalDate -> TEXT
-            ps.setInt(5, s.getPaymentMethod());
+            ps.setInt(5, s.getPaymentMethodId());
 
             if (s.getNotes() != null) {
                 ps.setString(6, s.getNotes());
@@ -108,7 +108,7 @@ public class PerformedServiceRepositoryImpl implements PerformedServiceRepositor
             ps.setInt(2, s.getServiceTypeId());
             ps.setDouble(3, s.getPrice());
             ps.setString(4, s.getDate().toString());
-            ps.setInt(5, s.getPaymentMethod());
+            ps.setInt(5, s.getPaymentMethodId());
             ps.setString(6, s.getNotes());
             ps.setInt(7, s.getId());
 
