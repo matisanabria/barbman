@@ -9,7 +9,7 @@
 <AnchorPane prefHeight="640.0" prefWidth="1280.0"
             xmlns="http://javafx.com/javafx/17"
             xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="app.barbman.core.controller.MainController">
+            fx:controller="app.barbman.core.controller.MainViewController">
     <children>
         <BorderPane fx:id="borderPane"
                     prefHeight="632.0"
@@ -20,16 +20,9 @@
                     AnchorPane.topAnchor="4.0"
                     styleClass="main-borderpane">
             <bottom>
-                <HBox alignment="BOTTOM_RIGHT"
-                      spacing="10"
-                      BorderPane.alignment="CENTER"
-                      styleClass="main-bottom-bar">
+                <HBox alignment="BOTTOM_RIGHT" spacing="10" BorderPane.alignment="CENTER" styleClass="main-bottom-bar">
                     <children>
-                        <Button fx:id="btnLock"
-                                prefWidth="32"
-                                prefHeight="32"
-                                onAction="#onLogout"
-                                styleClass="main-lock-btn">
+                        <Button fx:id="logoutButton" prefWidth="32" prefHeight="32" styleClass="main-lock-btn">
                             <graphic>
                                 <FontIcon iconLiteral="fas-lock" iconSize="18"/>
                             </graphic>

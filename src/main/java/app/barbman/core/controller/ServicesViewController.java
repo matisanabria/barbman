@@ -1,9 +1,6 @@
 package app.barbman.core.controller;
 
-import app.barbman.core.model.PaymentMethod;
-import app.barbman.core.model.PerformedService;
-import app.barbman.core.model.ServiceDefinition;
-import app.barbman.core.model.User;
+import app.barbman.core.model.*;
 import app.barbman.core.repositories.paymentmethod.PaymentMethodRepository;
 import app.barbman.core.repositories.paymentmethod.PaymentMethodRepositoryImpl;
 import app.barbman.core.repositories.users.UsersRepositoryImpl;
@@ -51,7 +48,7 @@ public class ServicesViewController implements Initializable {
 
     @FXML private ChoiceBox<User> userChoiceBox;
     @FXML private ChoiceBox<ServiceDefinition> serviceChoiceBox;
-    @FXML private ChoiceBox<PaymentMethod> paymentChoiceBox;
+    @FXML private ChoiceBox<PaymentMethod> paymentMethodBox;
     @FXML private TextField priceField;
     @FXML private TextField notesField;
     @FXML private Button saveButton;
@@ -74,6 +71,16 @@ public class ServicesViewController implements Initializable {
         loadPaymentMethods();
 
         displayServices();
+
+        // Double-click to delete
+        servicesTable.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2 && !servicesTable.getSelectionModel().isEmpty()) {
+                PerformedService selected = servicesTable.getSelectionModel().getSelectedItem();
+                if (selected != null) {
+                    confirmAndDelete(selected);
+                }
+            }
+        });
 
         saveButton.setOnAction(event -> saveService()); // It's better to set this in initialize than FXML
 
@@ -113,6 +120,49 @@ public class ServicesViewController implements Initializable {
         colNotes.setCellValueFactory(cd -> new SimpleStringProperty(cd.getValue().getNotes()));
     }
 
+    private void loadUsers() {
+        List<User> users = usersRepo.findAll();
+        userChoiceBox.setItems(FXCollections.observableArrayList(users));
+        userChoiceBox.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(User u) { return u != null ? u.getName() : ""; }
+            @Override
+            public User fromString(String s) { return null; }
+        });
+
+        User active = SessionManager.getActiveUser();
+        if (active != null && users.contains(active)) {
+            userChoiceBox.setValue(active);
+            logger.info("{} Active user preselected: {}", PREFIX, active.getName());
+        }
+    }
+
+    private void loadDefinedServices() {
+        List<ServiceDefinition> services = serviceRepo.findAll();
+        serviceChoiceBox.setItems(FXCollections.observableArrayList(services));
+        serviceChoiceBox.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(ServiceDefinition s) { return s != null ? s.getName() : ""; }
+            @Override
+            public ServiceDefinition fromString(String s) { return null; }
+        });
+        logger.info("{} {} defined services loaded into ChoiceBox.", PREFIX, services.size());
+    }
+
+    private void loadPaymentMethods() {
+        List<PaymentMethod> payments = paymentRepo.findAll();
+        paymentMethodBox.setItems(FXCollections.observableArrayList(payments));
+        paymentMethodBox.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(PaymentMethod p) {
+                return p != null ? TextFormatterUtil.capitalizeFirstLetter(p.getName()) : "";
+            }
+            @Override
+            public PaymentMethod fromString(String s) { return null; }
+        });
+        logger.info("{} {} payment methods loaded into ChoiceBox.", PREFIX, payments.size());
+    }
+
     private void displayServices() {
         logger.info("{} Loading performed services list...", PREFIX);
         List<PerformedService> services = performedRepo.findAll();
@@ -124,7 +174,7 @@ public class ServicesViewController implements Initializable {
     private void saveService() {
         User user = userChoiceBox.getValue();
         ServiceDefinition serviceDefinition = serviceChoiceBox.getValue();
-        PaymentMethod paymentMethod = paymentChoiceBox.getValue();
+        PaymentMethod paymentMethod = paymentMethodBox.getValue();
         String priceStr = priceField.getText().replace(".", "").trim();
         String notes = TextFormatterUtil.capitalizeFirstLetter(notesField.getText().trim());
 
@@ -166,7 +216,9 @@ public class ServicesViewController implements Initializable {
                     price,
                     paymentMethod.getId()
             );
+
             displayServices();
+            clearFields();
         } catch (NumberFormatException e) {
             showAlert("The 'Price' field must be a valid number.");
             logger.error("{} Error parsing price: {}", PREFIX, e.getMessage());
@@ -174,57 +226,6 @@ public class ServicesViewController implements Initializable {
             showAlert(e.getMessage());
             logger.warn("{} Validation failed when saving service: {}", PREFIX, e.getMessage());
         }
-    }
-
-    private void showAlert(String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Validation");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
-    private void loadUsers() {
-        List<User> users = usersRepo.findAll();
-        userChoiceBox.setItems(FXCollections.observableArrayList(users));
-        userChoiceBox.setConverter(new StringConverter<>() {
-            @Override
-            public String toString(User u) { return u != null ? u.getName() : ""; }
-            @Override
-            public User fromString(String s) { return null; }
-        });
-
-        User active = SessionManager.getActiveUser();
-        if (active != null && users.contains(active)) {
-            userChoiceBox.setValue(active);
-            logger.info("{} Active user preselected: {}", PREFIX, active.getName());
-        }
-    }
-
-    private void loadDefinedServices() {
-        List<ServiceDefinition> services = serviceRepo.findAll();
-        serviceChoiceBox.setItems(FXCollections.observableArrayList(services));
-        serviceChoiceBox.setConverter(new StringConverter<>() {
-            @Override
-            public String toString(ServiceDefinition s) { return s != null ? s.getName() : ""; }
-            @Override
-            public ServiceDefinition fromString(String s) { return null; }
-        });
-        logger.info("{} {} defined services loaded into ChoiceBox.", PREFIX, services.size());
-    }
-
-    private void loadPaymentMethods() {
-        List<PaymentMethod> payments = paymentRepo.findAll();
-        paymentChoiceBox.setItems(FXCollections.observableArrayList(payments));
-        paymentChoiceBox.setConverter(new StringConverter<>() {
-            @Override
-            public String toString(PaymentMethod p) {
-                return p != null ? TextFormatterUtil.capitalizeFirstLetter(p.getName()) : "";
-            }
-            @Override
-            public PaymentMethod fromString(String s) { return null; }
-        });
-        logger.info("{} {} payment methods loaded into ChoiceBox.", PREFIX, payments.size());
     }
 
 
@@ -290,6 +291,30 @@ public class ServicesViewController implements Initializable {
                 logger.info("{} Deletion cancelled -> Service ID: {}", PREFIX, service.getId());
             }
         });
+    }
+
+    private void clearFields() {
+        // Limpia los campos de texto
+        priceField.clear();
+        notesField.clear();
+
+        // Resetea las ChoiceBox al primer elemento disponible (si existe)
+        if (!userChoiceBox.getItems().isEmpty())
+            userChoiceBox.getSelectionModel().selectFirst();
+
+        if (!serviceChoiceBox.getItems().isEmpty())
+            serviceChoiceBox.getSelectionModel().selectFirst();
+
+        if (!paymentMethodBox.getItems().isEmpty())
+            paymentMethodBox.getSelectionModel().selectFirst();
+    }
+
+    private void showAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Validation");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
 }

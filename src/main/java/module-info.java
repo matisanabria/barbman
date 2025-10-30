@@ -9,7 +9,6 @@ module app.barbman.core {
     requires java.sql;
     requires org.apache.logging.log4j;
     requires java.desktop;
-    requires app.barbman.core;
 
     opens app.barbman.core to javafx.fxml;
     opens app.barbman.core.controller to javafx.fxml;

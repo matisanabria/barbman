@@ -8,8 +8,8 @@
         <Label text="Registrar servicio" styleClass="services-title"/>
         <HBox alignment="CENTER" spacing="18" styleClass="services-row">
             <children>
-                <ChoiceBox fx:id="userBox" prefWidth="130.0" styleClass="services-choicebox" />
-                <ChoiceBox fx:id="serviceTypeBox" prefWidth="250.0" styleClass="services-choicebox" />
+                <ChoiceBox fx:id="userChoiceBox" prefWidth="130.0" styleClass="services-choicebox" />
+                <ChoiceBox fx:id="serviceChoiceBox" prefWidth="250.0" styleClass="services-choicebox" />
                 <TextField fx:id="priceField" prefWidth="100.0" promptText="Precio" styleClass="services-textfield" />
             </children>
         </HBox>
