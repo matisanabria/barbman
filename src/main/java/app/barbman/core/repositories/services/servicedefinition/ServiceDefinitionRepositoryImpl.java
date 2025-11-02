@@ -1,6 +1,6 @@
-package app.barbman.core.repositories.servicedefinition;
+package app.barbman.core.repositories.services.servicedefinition;
 
-import app.barbman.core.model.ServiceDefinition;
+import app.barbman.core.model.services.ServiceDefinition;
 import app.barbman.core.repositories.DbBootstrap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,7 +15,7 @@ public class ServiceDefinitionRepositoryImpl implements ServiceDefinitionReposit
     private static final String PREFIX = "[SERVDEFINITIONS-REPO]";
 
     private static final String SELECT_BASE = """
-        SELECT id, name, base_price
+        SELECT id, name, base_price, available
         FROM service_definitions
         """;
 
@@ -54,17 +54,38 @@ public class ServiceDefinitionRepositoryImpl implements ServiceDefinitionReposit
         return list;
     }
 
+    /**
+     * Fetches all ServiceDefinitions that are marked as "available".
+     */
+    @Override
+    public List<ServiceDefinition> findAllAvailable() {
+        List<ServiceDefinition> list = new ArrayList<>();
+        String sql = SELECT_BASE + " WHERE available = 1";
+        try (Connection db = DbBootstrap.connect();
+             PreparedStatement ps = db.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                list.add(mapRow(rs));
+            }
+        } catch (Exception e) {
+            logger.warn("{} Error fetching available ServiceDefinitions: {}", PREFIX, e.getMessage());
+        }
+        return list;
+    }
+
     @Override
     public void save(ServiceDefinition service) {
         String sql = """
-            INSERT INTO service_definitions (name, base_price)
-            VALUES (?, ?)
+            INSERT INTO service_definitions (name, base_price, available)
+            VALUES (?, ?, ?)
             """;
         try (Connection db = DbBootstrap.connect();
              PreparedStatement ps = db.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setString(1, service.getName());
             ps.setDouble(2, service.getBasePrice());
+            ps.setInt(3, service.isAvailable() ? 1 : 0);
             ps.executeUpdate();
 
             try (ResultSet keys = ps.getGeneratedKeys()) {
@@ -81,7 +102,7 @@ public class ServiceDefinitionRepositoryImpl implements ServiceDefinitionReposit
     public void update(ServiceDefinition service) {
         String sql = """
             UPDATE service_definitions
-            SET name = ?, base_price = ?
+            SET name = ?, base_price = ?, available = ?
             WHERE id = ?
             """;
         try (Connection db = DbBootstrap.connect();
@@ -89,7 +110,8 @@ public class ServiceDefinitionRepositoryImpl implements ServiceDefinitionReposit
 
             ps.setString(1, service.getName());
             ps.setDouble(2, service.getBasePrice());
-            ps.setInt(3, service.getId());
+            ps.setInt(3, service.isAvailable() ? 1 : 0);
+            ps.setInt(4, service.getId());
 
             ps.executeUpdate();
         } catch (Exception e) {
@@ -114,7 +136,8 @@ public class ServiceDefinitionRepositoryImpl implements ServiceDefinitionReposit
         return new ServiceDefinition(
                 rs.getInt("id"),
                 rs.getString("name"),
-                rs.getDouble("base_price")
+                rs.getDouble("base_price"),
+                rs.getInt("available") == 1
         );
     }
 }

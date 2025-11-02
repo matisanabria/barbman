@@ -78,6 +78,7 @@ public class DbBootstrap {
             logger.info("[DB] Creating database tables...");
 
             // USERS
+            // Contains user information including a 4-digit PIN with uniqueness constraint
             stmt.execute("""
                         CREATE TABLE IF NOT EXISTS users (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -91,31 +92,47 @@ public class DbBootstrap {
                     """);
 
             // SERVICE DEFINITIONS
+            // Defines types of services offered with base prices and availability status
             stmt.execute("""
                         CREATE TABLE IF NOT EXISTS service_definitions (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
                             name TEXT NOT NULL UNIQUE,
-                            base_price REAL NOT NULL
+                            base_price REAL NOT NULL,
+                            available INTEGER NOT NULL DEFAULT 1 CHECK (available IN (0,1))
                         );
                     """);
 
-            // PERFORMED SERVICES
+            // SERVICES
+            // Records individual service transactions linked to users (employees) and payment methods
+            // Items are stored in a separate table (service_items)
             stmt.execute("""
-                        CREATE TABLE IF NOT EXISTS performed_services (
+                        CREATE TABLE IF NOT EXISTS services (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
                             user_id INTEGER NOT NULL,
-                            service_type_id INTEGER NOT NULL,
-                            price REAL NOT NULL,
                             date TEXT NOT NULL CHECK (date = date(date)),
                             payment_method_id INTEGER NOT NULL,
+                            total REAL NOT NULL DEFAULT 0,
                             notes TEXT,
                             FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id),
-                            FOREIGN KEY (user_id) REFERENCES users(id),
+                            FOREIGN KEY (user_id) REFERENCES users(id)
+                        );
+                    """);
+            // SERVICE ITEMS
+            // Links services to specific service definitions (items) with individual pricing
+            // This allows for multiple items per service record
+            stmt.execute("""
+                        CREATE TABLE IF NOT EXISTS service_items (
+                            id INTEGER PRIMARY KEY AUTOINCREMENT,
+                            service_id INTEGER NOT NULL,
+                            service_type_id INTEGER NOT NULL,
+                            price REAL NOT NULL CHECK (price > 0),
+                            FOREIGN KEY (service_id) REFERENCES services(id),
                             FOREIGN KEY (service_type_id) REFERENCES service_definitions(id)
                         );
                     """);
 
             // PRODUCTS
+            // Inventory of products with pricing, stock, and optional categorization
             stmt.execute("""
                         CREATE TABLE IF NOT EXISTS products (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -130,6 +147,8 @@ public class DbBootstrap {
                     """);
 
             // SALES
+            // Records individual sales transactions linked to payment methods
+            // Items sold are stored in a separate table (sale_items)
             stmt.execute("""
                         CREATE TABLE IF NOT EXISTS sales (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -141,6 +160,8 @@ public class DbBootstrap {
                     """);
 
             // SALE ITEMS
+            // Links sales to specific products sold with quantity and unit pricing
+            // This allows for multiple products per sale record
             stmt.execute("""
                         CREATE TABLE IF NOT EXISTS sale_items (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -154,6 +175,9 @@ public class DbBootstrap {
                     """);
 
             // EXPENSES
+            // Records various types of expenses with descriptions, amounts, dates, and payment methods
+            // Expense types are constrained to a predefined set of categories
+            // Categories salary and advance are used for employee payments and only registered by admins
             stmt.execute("""
                         CREATE TABLE IF NOT EXISTS expenses (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -179,6 +203,8 @@ public class DbBootstrap {
                     """);
 
             // SALARIES
+            // Records weekly salary payments to users with production totals and payment details
+            // TODO: Add monthly salary support
             stmt.execute("""
                         CREATE TABLE IF NOT EXISTS salaries (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -195,6 +221,7 @@ public class DbBootstrap {
                         );
                     """);
             // PAYMENT METHODS
+            // Defines available payment methods for transactions
             stmt.execute("""
                          CREATE TABLE IF NOT EXISTS payment_methods (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -202,6 +229,8 @@ public class DbBootstrap {
                          );
                      """);
             // CASHBOX
+            // Records daily cashbox openings and closings with unique date constraint
+            // Only one cashbox record per day is allowed
             stmt.execute("""
                     CREATE TABLE IF NOT EXISTS cashbox (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -211,6 +240,8 @@ public class DbBootstrap {
                     );
                     """);
             // CASHBOX MOVEMENTS
+            // Records individual cashbox movements (income/expense) linked to a specific day's cashbox
+            // and the user who registered the movement. It's used like a cash register log.
             stmt.execute("""
                     CREATE TABLE IF NOT EXISTS cashbox_movements (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,

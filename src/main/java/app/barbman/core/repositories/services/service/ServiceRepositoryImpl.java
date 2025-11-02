@@ -1,6 +1,6 @@
-package app.barbman.core.repositories.performedservice;
+package app.barbman.core.repositories.services.service;
 
-import app.barbman.core.model.PerformedService;
+import app.barbman.core.model.services.Service;
 import app.barbman.core.repositories.DbBootstrap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -10,39 +10,39 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PerformedServiceRepositoryImpl implements PerformedServiceRepository {
+public class ServiceRepositoryImpl implements ServiceRepository {
 
-    private static final Logger logger = LogManager.getLogger(PerformedServiceRepositoryImpl.class);
-    private static final String PREFIX = "[PERFORMEDSERV-REPO]";
+    private static final Logger logger = LogManager.getLogger(ServiceRepositoryImpl.class);
+    private static final String PREFIX = "[SERVICES-REPO]";
 
     // Base SELECT clause (used across multiple queries)
     private static final String SELECT_BASE = """
-        SELECT id, user_id, service_type_id, price, date, payment_method_id, notes
-        FROM servicios_realizados
+        SELECT id, user_id, date, payment_method_id, total, notes
+        FROM services
         """;
 
     @Override
-    public PerformedService findById(Integer id) {
+    public Service findById(Integer id) {
         String sql = SELECT_BASE + " WHERE id = ?";
         try (Connection db = DbBootstrap.connect();
              PreparedStatement ps = db.prepareStatement(sql)) {
 
             ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
 
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return mapRow(rs);
-                }
+            if (rs.next()) {
+                return mapRow(rs);
             }
+
         } catch (Exception e) {
-            logger.warn("{} Error fetching performed service by id {}: {}", PREFIX, id, e.getMessage());
+            logger.error("{} Error finding Service by id {}: {}", PREFIX, id, e.getMessage());
         }
         return null;
     }
 
     @Override
-    public List<PerformedService> findAll() {
-        List<PerformedService> list = new ArrayList<>();
+    public List<Service> findAll() {
+        List<Service> list = new ArrayList<>();
         try (Connection db = DbBootstrap.connect();
              PreparedStatement ps = db.prepareStatement(SELECT_BASE);
              ResultSet rs = ps.executeQuery()) {
@@ -51,33 +51,26 @@ public class PerformedServiceRepositoryImpl implements PerformedServiceRepositor
                 list.add(mapRow(rs));
             }
         } catch (Exception e) {
-            logger.warn("{} Error fetching all performed services: {}", PREFIX, e.getMessage());
+            logger.error("{} Error fetching all services: {}", PREFIX, e.getMessage());
         }
         return list;
     }
 
     @Override
-    public void save(PerformedService s) {
+    public void save(Service s) {
         String sql = """
-            INSERT INTO servicios_realizados
-                (user_id, service_type_id, price, date, payment_method_id, notes)
-            VALUES (?, ?, ?, ?, ?, ?)
+            INSERT INTO services (user_id, date, payment_method_id, total, notes)
+            VALUES (?, ?, ?, ?, ?)
             """;
 
         try (Connection db = DbBootstrap.connect();
              PreparedStatement ps = db.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setInt(1, s.getUserId());
-            ps.setInt(2, s.getServiceTypeId());
-            ps.setDouble(3, s.getPrice());
-            ps.setString(4, s.getDate().toString()); // LocalDate -> TEXT
-            ps.setInt(5, s.getPaymentMethodId());
-
-            if (s.getNotes() != null) {
-                ps.setString(6, s.getNotes());
-            } else {
-                ps.setNull(6, Types.VARCHAR);
-            }
+            ps.setString(2, s.getDate().toString());
+            ps.setInt(3, s.getPaymentMethodId());
+            ps.setDouble(4, s.getTotal());
+            ps.setString(5, s.getNotes());
 
             ps.executeUpdate();
 
@@ -87,51 +80,52 @@ public class PerformedServiceRepositoryImpl implements PerformedServiceRepositor
                 }
             }
 
-            logger.info("{} Performed service successfully saved (ID={})", PREFIX, s.getId());
+            logger.info("{} Service saved successfully (ID={})", PREFIX, s.getId());
 
         } catch (Exception e) {
-            logger.error("{} Failed to save performed service: {}", PREFIX, e.getMessage());
+            logger.error("{} Failed to save service: {}", PREFIX, e.getMessage());
         }
     }
 
     @Override
-    public void update(PerformedService s) {
+    public void update(Service s) {
         String sql = """
-            UPDATE servicios_realizados
-            SET user_id=?, service_type_id=?, price=?, date=?, payment_method_id=?, notes=?
-            WHERE id=?
+            UPDATE services
+            SET user_id = ?, date = ?, payment_method_id = ?, total = ?, notes = ?
+            WHERE id = ?
             """;
+
         try (Connection db = DbBootstrap.connect();
              PreparedStatement ps = db.prepareStatement(sql)) {
 
             ps.setInt(1, s.getUserId());
-            ps.setInt(2, s.getServiceTypeId());
-            ps.setDouble(3, s.getPrice());
-            ps.setString(4, s.getDate().toString());
-            ps.setInt(5, s.getPaymentMethodId());
-            ps.setString(6, s.getNotes());
-            ps.setInt(7, s.getId());
+            ps.setString(2, s.getDate().toString());
+            ps.setInt(3, s.getPaymentMethodId());
+            ps.setDouble(4, s.getTotal());
+            ps.setString(5, s.getNotes());
+            ps.setInt(6, s.getId());
 
             ps.executeUpdate();
-            logger.info("{} Performed service updated (ID={})", PREFIX, s.getId());
+            logger.info("{} Service updated (ID={})", PREFIX, s.getId());
 
         } catch (Exception e) {
-            logger.error("{} Error updating performed service (ID={}): {}", PREFIX, s.getId(), e.getMessage());
+            logger.error("{} Error updating service (ID={}): {}", PREFIX, s.getId(), e.getMessage());
         }
     }
 
     @Override
     public void delete(Integer id) {
-        String sql = "DELETE FROM servicios_realizados WHERE id = ?";
+        String sql = "DELETE FROM services WHERE id = ?";
         try (Connection db = DbBootstrap.connect();
              PreparedStatement ps = db.prepareStatement(sql)) {
 
             ps.setInt(1, id);
             ps.executeUpdate();
 
-            logger.info("{} Performed service deleted (ID={})", PREFIX, id);
+            logger.info("{} Service deleted (ID={})", PREFIX, id);
+
         } catch (Exception e) {
-            logger.error("{} Error deleting performed service (ID={}): {}", PREFIX, id, e.getMessage());
+            logger.error("{} Error deleting service (ID={}): {}", PREFIX, id, e.getMessage());
         }
     }
 
@@ -139,8 +133,8 @@ public class PerformedServiceRepositoryImpl implements PerformedServiceRepositor
     public double getProduccionSemanalPorBarbero(int barberoId, LocalDate desde, LocalDate hasta) {
         double total = 0.0;
         String sql = """
-            SELECT SUM(price)
-            FROM servicios_realizados
+            SELECT SUM(total)
+            FROM services
             WHERE user_id = ? AND date BETWEEN ? AND ?
             """;
 
@@ -165,15 +159,14 @@ public class PerformedServiceRepositoryImpl implements PerformedServiceRepositor
         return total;
     }
 
-    private PerformedService mapRow(ResultSet rs) throws SQLException {
+    private Service mapRow(ResultSet rs) throws SQLException {
         LocalDate date = LocalDate.parse(rs.getString("date"));
-        return new PerformedService(
+        return new Service(
                 rs.getInt("id"),
                 rs.getInt("user_id"),
-                rs.getInt("service_type_id"),
-                rs.getDouble("price"),
                 date,
                 rs.getInt("payment_method_id"),
+                rs.getDouble("total"),
                 rs.getString("notes")
         );
     }

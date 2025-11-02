@@ -1,16 +1,18 @@
 package app.barbman.core.controller;
 
 import app.barbman.core.model.*;
+import app.barbman.core.model.services.Service;
+import app.barbman.core.model.services.ServiceDefinition;
 import app.barbman.core.repositories.paymentmethod.PaymentMethodRepository;
 import app.barbman.core.repositories.paymentmethod.PaymentMethodRepositoryImpl;
 import app.barbman.core.repositories.users.UsersRepositoryImpl;
 import app.barbman.core.util.NumberFormatterUtil;
 import app.barbman.core.util.SessionManager;
 import app.barbman.core.repositories.users.UsersRepository;
-import app.barbman.core.repositories.servicedefinition.ServiceDefinitionRepository;
-import app.barbman.core.repositories.servicedefinition.ServiceDefinitionRepositoryImpl;
-import app.barbman.core.repositories.performedservice.PerformedServiceRepository;
-import app.barbman.core.repositories.performedservice.PerformedServiceRepositoryImpl;
+import app.barbman.core.repositories.services.servicedefinition.ServiceDefinitionRepository;
+import app.barbman.core.repositories.services.servicedefinition.ServiceDefinitionRepositoryImpl;
+import app.barbman.core.repositories.services.service.ServiceRepository;
+import app.barbman.core.repositories.services.service.ServiceRepositoryImpl;
 import app.barbman.core.service.servicios.ServicioRealizadoService;
 import app.barbman.core.util.TextFormatterUtil;
 import javafx.beans.property.SimpleStringProperty;
@@ -38,13 +40,13 @@ public class ServicesViewController implements Initializable {
     private static final Logger logger = LogManager.getLogger(ServicesViewController.class);
     private static final String PREFIX = "[SERV-VIEW]";
 
-    @FXML private TableView<PerformedService> servicesTable;
-    @FXML private TableColumn<PerformedService, String> colUser;
-    @FXML private TableColumn<PerformedService, String> colServiceType;
-    @FXML private TableColumn<PerformedService, String> colPrice;
-    @FXML private TableColumn<PerformedService, String> colPaymentMethod;
-    @FXML private TableColumn<PerformedService, java.util.Date> colDate;
-    @FXML private TableColumn<PerformedService, String> colNotes;
+    @FXML private TableView<Service> servicesTable;
+    @FXML private TableColumn<Service, String> colUser;
+    @FXML private TableColumn<Service, String> colServiceType;
+    @FXML private TableColumn<Service, String> colPrice;
+    @FXML private TableColumn<Service, String> colPaymentMethod;
+    @FXML private TableColumn<Service, java.util.Date> colDate;
+    @FXML private TableColumn<Service, String> colNotes;
 
     @FXML private ChoiceBox<User> userChoiceBox;
     @FXML private ChoiceBox<ServiceDefinition> serviceChoiceBox;
@@ -56,7 +58,7 @@ public class ServicesViewController implements Initializable {
     private final UsersRepository usersRepo = new UsersRepositoryImpl();
     private final ServiceDefinitionRepository serviceRepo = new ServiceDefinitionRepositoryImpl();
     private final PaymentMethodRepository paymentRepo = new PaymentMethodRepositoryImpl();
-    private final PerformedServiceRepository performedRepo = new PerformedServiceRepositoryImpl();
+    private final ServiceRepository performedRepo = new ServiceRepositoryImpl();
     private final ServicioRealizadoService performedService = new ServicioRealizadoService(performedRepo);
 
     @Override
@@ -75,7 +77,7 @@ public class ServicesViewController implements Initializable {
         // Double-click to delete
         servicesTable.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2 && !servicesTable.getSelectionModel().isEmpty()) {
-                PerformedService selected = servicesTable.getSelectionModel().getSelectedItem();
+                Service selected = servicesTable.getSelectionModel().getSelectedItem();
                 if (selected != null) {
                     confirmAndDelete(selected);
                 }
@@ -165,7 +167,7 @@ public class ServicesViewController implements Initializable {
 
     private void displayServices() {
         logger.info("{} Loading performed services list...", PREFIX);
-        List<PerformedService> services = performedRepo.findAll();
+        List<Service> services = performedRepo.findAll();
         Collections.reverse(services);
         servicesTable.setItems(FXCollections.observableArrayList(services));
         logger.info("{} {} services loaded in table.", PREFIX, services.size());
@@ -229,7 +231,7 @@ public class ServicesViewController implements Initializable {
     }
 
 
-    private void confirmAndDelete(PerformedService service) {
+    private void confirmAndDelete(Service service) {
         User activeUser = SessionManager.getActiveUser();
         String role = activeUser != null ? activeUser.getRole() : "";
 

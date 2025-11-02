@@ -7,7 +7,7 @@ import app.barbman.core.model.User;
 import app.barbman.core.repositories.users.UsersRepository;
 import app.barbman.core.repositories.users.UsersRepositoryImpl;
 import app.barbman.core.repositories.expense.ExpenseRepository;
-import app.barbman.core.repositories.performedservice.PerformedServiceRepository;
+import app.barbman.core.repositories.services.service.ServiceRepository;
 import app.barbman.core.repositories.salaries.SalariesRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,13 +25,13 @@ public class SueldosService {
     private final SalariesRepository salariesRepository;
     private static final List<String> FORMAS_VALIDAS = List.of("efectivo", "transferencia");
     private static final Logger logger = LogManager.getLogger(SueldosService.class);
-    private final PerformedServiceRepository performedServiceRepository;
+    private final ServiceRepository serviceRepository;
     private final UsersRepository usersRepository = new UsersRepositoryImpl();
     private final ExpenseRepository expenseRepository;
 
-    public SueldosService(SalariesRepository repo, PerformedServiceRepository servicioRealizadoRepo, ExpenseRepository expenseRepository) {
+    public SueldosService(SalariesRepository repo, ServiceRepository servicioRealizadoRepo, ExpenseRepository expenseRepository) {
         this.salariesRepository = repo;
-        this.performedServiceRepository = servicioRealizadoRepo;
+        this.serviceRepository = servicioRealizadoRepo;
         this.expenseRepository = expenseRepository;
     }
 
@@ -93,7 +93,7 @@ public class SueldosService {
         LocalDate finSemana = semana[1];
 
         // Producción y adelantos
-        double produccion = performedServiceRepository.getProduccionSemanalPorBarbero(user.getId(), inicioSemana, finSemana);
+        double produccion = serviceRepository.getProduccionSemanalPorBarbero(user.getId(), inicioSemana, finSemana);
         double adelantos = expenseRepository.getTotalAdelantos(user.getId(), inicioSemana, finSemana);
 
         logger.info("[SUELDOS] Calculando sueldo para user ID {} (tipoCobro={}, param1={}, param2={}, bono={})",
@@ -244,7 +244,7 @@ public class SueldosService {
             String nombre = user.getName();
 
             // Producción semanal
-            double produccion = performedServiceRepository.getProduccionSemanalPorBarbero(barberoId, inicio, fin);
+            double produccion = serviceRepository.getProduccionSemanalPorBarbero(barberoId, inicio, fin);
 
             // Calcular sueldo base (sin bonos)
             Salary salaryTemp = calcularSueldo(user, 0);

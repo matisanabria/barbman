@@ -3,8 +3,8 @@ package app.barbman.core.controller.salary;
 import app.barbman.core.dto.SalaryDTO;
 import app.barbman.core.repositories.expense.ExpenseRepository;
 import app.barbman.core.repositories.expense.ExpenseRepositoryImpl;
-import app.barbman.core.repositories.performedservice.PerformedServiceRepository;
-import app.barbman.core.repositories.performedservice.PerformedServiceRepositoryImpl;
+import app.barbman.core.repositories.services.service.ServiceRepository;
+import app.barbman.core.repositories.services.service.ServiceRepositoryImpl;
 import app.barbman.core.repositories.salaries.SalariesRepository;
 import app.barbman.core.repositories.salaries.SalariesRepositoryImpl;
 import app.barbman.core.service.sueldos.SueldosService;
@@ -48,11 +48,11 @@ public class SueldosController implements Initializable {
 
     // Repositorios
     private final SalariesRepository sueldoRepo = new SalariesRepositoryImpl();
-    private final PerformedServiceRepository performedServiceRepository = new PerformedServiceRepositoryImpl();
+    private final ServiceRepository serviceRepository = new ServiceRepositoryImpl();
     private final ExpenseRepository expenseRepository = new ExpenseRepositoryImpl();
 
     // Servicio de lógica de salaries
-    private final SueldosService sueldosService = new SueldosService(sueldoRepo, performedServiceRepository, expenseRepository);
+    private final SueldosService sueldosService = new SueldosService(sueldoRepo, serviceRepository, expenseRepository);
 
     /**
      * Metodo principal de inicialización de la vista.

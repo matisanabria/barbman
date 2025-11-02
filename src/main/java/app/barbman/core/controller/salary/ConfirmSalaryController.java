@@ -7,8 +7,8 @@ import app.barbman.core.repositories.expense.ExpenseRepositoryImpl;
 import app.barbman.core.repositories.users.UsersRepository;
 import app.barbman.core.repositories.users.UsersRepositoryImpl;
 import app.barbman.core.repositories.expense.ExpenseRepository;;
-import app.barbman.core.repositories.performedservice.PerformedServiceRepository;
-import app.barbman.core.repositories.performedservice.PerformedServiceRepositoryImpl;
+import app.barbman.core.repositories.services.service.ServiceRepository;
+import app.barbman.core.repositories.services.service.ServiceRepositoryImpl;
 import app.barbman.core.repositories.salaries.SalariesRepository;
 import app.barbman.core.repositories.salaries.SalariesRepositoryImpl;
 import app.barbman.core.service.sueldos.SueldosService;
@@ -54,10 +54,10 @@ public class ConfirmSalaryController implements Initializable {
     private static final String PREFIX = "[CONFIRM-SALARY]";
 
     private final SalariesRepository salariesRepository = new SalariesRepositoryImpl();
-    private final PerformedServiceRepository performedServiceRepository = new PerformedServiceRepositoryImpl();
+    private final ServiceRepository serviceRepository = new ServiceRepositoryImpl();
     private final ExpenseRepository expenseRepository = new ExpenseRepositoryImpl();
     private final UsersRepository usersRepository = new UsersRepositoryImpl();
-    private final SueldosService sueldosService = new SueldosService(salariesRepository, performedServiceRepository, expenseRepository);
+    private final SueldosService sueldosService = new SueldosService(salariesRepository, serviceRepository, expenseRepository);
     private SueldosController parentController;
 
     // User y sueldo seleccionado desde la tabla principal
