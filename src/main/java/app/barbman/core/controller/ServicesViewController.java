@@ -1,11 +1,20 @@
 package app.barbman.core.controller;
 
+import app.barbman.core.dto.services.ServiceDTO;
+import app.barbman.core.dto.services.ServiceHistoryDTO;
 import app.barbman.core.model.*;
 import app.barbman.core.model.services.Service;
 import app.barbman.core.model.services.ServiceDefinition;
+import app.barbman.core.model.services.ServiceItem;
 import app.barbman.core.repositories.paymentmethod.PaymentMethodRepository;
 import app.barbman.core.repositories.paymentmethod.PaymentMethodRepositoryImpl;
+import app.barbman.core.repositories.services.serviceitems.ServiceItemRepository;
+import app.barbman.core.repositories.services.serviceitems.ServiceItemRepositoryImpl;
 import app.barbman.core.repositories.users.UsersRepositoryImpl;
+import app.barbman.core.service.paymentmethods.PaymentMethodsService;
+import app.barbman.core.service.services.ServiceDefinitionsService;
+import app.barbman.core.service.users.UsersService;
+import app.barbman.core.util.AlertUtil;
 import app.barbman.core.util.NumberFormatterUtil;
 import app.barbman.core.util.SessionManager;
 import app.barbman.core.repositories.users.UsersRepository;
@@ -13,53 +22,74 @@ import app.barbman.core.repositories.services.servicedefinition.ServiceDefinitio
 import app.barbman.core.repositories.services.servicedefinition.ServiceDefinitionRepositoryImpl;
 import app.barbman.core.repositories.services.service.ServiceRepository;
 import app.barbman.core.repositories.services.service.ServiceRepositoryImpl;
-import app.barbman.core.service.servicios.ServicioRealizadoService;
+import app.barbman.core.service.services.ServicesService;
 import app.barbman.core.util.TextFormatterUtil;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyCode;
 import javafx.util.StringConverter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.net.URL;
 import java.time.LocalDate;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.ResourceBundle;
 
 /**
- * Controlador para la vista de servicios realizados.
- * Gestiona la tabla que muestra los servicios realizados por los barberos.
+ * Controlador para la vista de services realizados.
+ * Gestiona la tabla que muestra los services realizados por los barberos.
  */
 public class ServicesViewController implements Initializable {
 
     private static final Logger logger = LogManager.getLogger(ServicesViewController.class);
     private static final String PREFIX = "[SERV-VIEW]";
 
-    @FXML private TableView<Service> servicesTable;
-    @FXML private TableColumn<Service, String> colUser;
-    @FXML private TableColumn<Service, String> colServiceType;
-    @FXML private TableColumn<Service, String> colPrice;
-    @FXML private TableColumn<Service, String> colPaymentMethod;
-    @FXML private TableColumn<Service, java.util.Date> colDate;
-    @FXML private TableColumn<Service, String> colNotes;
+    @FXML private TableView<ServiceHistoryDTO> servicesTable;
+    @FXML private TableColumn<ServiceHistoryDTO, String> colDate;
+    @FXML private TableColumn<ServiceHistoryDTO, String> colUser;
+    @FXML private TableColumn<ServiceHistoryDTO, String> colServiceType;
+    @FXML private TableColumn<ServiceHistoryDTO, String> colPaymentMethod;
+    @FXML private TableColumn<ServiceHistoryDTO, String> colPrice;
+    @FXML private TableColumn<ServiceHistoryDTO, String> colNotes;
 
-    @FXML private ChoiceBox<User> userChoiceBox;
-    @FXML private ChoiceBox<ServiceDefinition> serviceChoiceBox;
-    @FXML private ChoiceBox<PaymentMethod> paymentMethodBox;
+    // Service registration block
+    @FXML private ComboBox<User> userComboBox;
+    @FXML private ComboBox<ServiceDefinition> serviceComboBox;
+    @FXML private ComboBox<PaymentMethod> paymentComboBox;
     @FXML private TextField priceField;
     @FXML private TextField notesField;
+    @FXML private Button addItemButton;
     @FXML private Button saveButton;
+    @FXML private Button resetButton;
+    @FXML private Label totalLabel;
+
+    // Service items table
+    @FXML private TableView<ServiceItem> itemsTable;
+    @FXML private TableColumn<ServiceItem, String> colItemServiceType;
+    @FXML private TableColumn<ServiceItem, String> colItemPrice;
+    @FXML private TableColumn<ServiceItem, String> colItemRemove;
+
+    // History table filter controls
+    @FXML private ComboBox<User> filterUserComboBox;
+    @FXML private DatePicker filterDatePicker;
+    @FXML private Button filterButton;
+    @FXML private Button clearFilterButton;
 
     private final UsersRepository usersRepo = new UsersRepositoryImpl();
-    private final ServiceDefinitionRepository serviceRepo = new ServiceDefinitionRepositoryImpl();
-    private final PaymentMethodRepository paymentRepo = new PaymentMethodRepositoryImpl();
-    private final ServiceRepository performedRepo = new ServiceRepositoryImpl();
-    private final ServicioRealizadoService performedService = new ServicioRealizadoService(performedRepo);
+    private final UsersService usersService = new UsersService(new UsersRepositoryImpl());
+
+    private final ServiceDefinitionsService serviceDefinitionsService =
+            new ServiceDefinitionsService(new ServiceDefinitionRepositoryImpl());
+
+    private final PaymentMethodsService paymentMethodsService =
+            new PaymentMethodsService(new PaymentMethodRepositoryImpl());
+
+    private final ServicesService servicesService = new ServicesService();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -67,12 +97,12 @@ public class ServicesViewController implements Initializable {
 
         setupTable();
 
-        // ChoiceBoxes
+        // ComboBoxes
         loadUsers();
         loadDefinedServices();
         loadPaymentMethods();
 
-        displayServices();
+        loadServicesHistory();
 
         // Double-click to delete
         servicesTable.setOnMouseClicked(event -> {
@@ -85,76 +115,63 @@ public class ServicesViewController implements Initializable {
         });
 
         saveButton.setOnAction(event -> saveService()); // It's better to set this in initialize than FXML
+        notesField.setOnKeyPressed(event -> {
+            if (event.isShiftDown() && event.getCode() == KeyCode.ENTER) {
+                confirmAndSaveService();
+            }
+        });
 
         logger.info("{} Initialized successfully.", PREFIX);
     }
 
-    private void setupTable() {
-        servicesTable.getColumns().forEach(c -> c.setReorderable(false));
-        servicesTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-
-        colUser.setCellValueFactory(cd -> {
-            User user = usersRepo.findById(cd.getValue().getUserId());
-            String userName = (user != null && user.getName() != null)
-                    ? TextFormatterUtil.capitalizeFirstLetter(user.getName())
-                    : "Unknown";
-            return new SimpleStringProperty(userName);
-        });
-
-        colServiceType.setCellValueFactory(cd -> {
-            ServiceDefinition serviceDef = serviceRepo.findById(cd.getValue().getServiceTypeId());
-            String serviceName = (serviceDef != null && serviceDef.getName() != null)
-                    ? TextFormatterUtil.capitalizeFirstLetter(serviceDef.getName())
-                    : "Unknown";
-            return new SimpleStringProperty(serviceName);
-        });
-
-        colPaymentMethod.setCellValueFactory(cd -> {
-            PaymentMethod p = paymentRepo.findById(cd.getValue().getPaymentMethodId());
-            String formattedName = (p != null && p.getName() != null)
-                    ? TextFormatterUtil.capitalizeFirstLetter(p.getName())
-                    : "Unknown";
-            return new SimpleStringProperty(formattedName);
-        });
-
-        colPrice.setCellValueFactory(cd -> new SimpleStringProperty(NumberFormatterUtil.format(cd.getValue().getPrice()) + " Gs"));
+    // ========================================================================
+    //                          HISTORY TABLE METHODS
+    // ========================================================================
+    /**
+     * Configures the table columns to map to ServiceHistoryDTO properties.
+     * And loads data from DTOs into the table.
+     */
+    private void setupTable() { // Checked
+        colUser.setCellValueFactory(new PropertyValueFactory<>("userName"));
+        colServiceType.setCellValueFactory(new PropertyValueFactory<>("serviceNames"));
+        colPaymentMethod.setCellValueFactory(new PropertyValueFactory<>("paymentMethod"));
+        colPrice.setCellValueFactory(new PropertyValueFactory<>("totalFormatted"));
         colDate.setCellValueFactory(new PropertyValueFactory<>("date"));
-        colNotes.setCellValueFactory(cd -> new SimpleStringProperty(cd.getValue().getNotes()));
+        colNotes.setCellValueFactory(new PropertyValueFactory<>("notes"));
+    }
+    private void loadServicesHistory() { // Checked
+        List<ServiceHistoryDTO> services = servicesService.getServiceHistory();
+        servicesTable.setItems(FXCollections.observableArrayList(services)); // Gets data from backend
     }
 
-    private void loadUsers() {
-        List<User> users = usersRepo.findAll();
-        userChoiceBox.setItems(FXCollections.observableArrayList(users));
-        userChoiceBox.setConverter(new StringConverter<>() {
-            @Override
-            public String toString(User u) { return u != null ? u.getName() : ""; }
-            @Override
-            public User fromString(String s) { return null; }
-        });
+    // ========================================================================
+    //                      SERVICE REGISTRATION METHODS
+    // ========================================================================
 
-        User active = SessionManager.getActiveUser();
-        if (active != null && users.contains(active)) {
-            userChoiceBox.setValue(active);
-            logger.info("{} Active user preselected: {}", PREFIX, active.getName());
-        }
+    private void loadUsers() {
+        userComboBox.setItems(FXCollections.observableArrayList(usersService.getAllUsers()));
     }
 
     private void loadDefinedServices() {
-        List<ServiceDefinition> services = serviceRepo.findAll();
-        serviceChoiceBox.setItems(FXCollections.observableArrayList(services));
-        serviceChoiceBox.setConverter(new StringConverter<>() {
+        List<ServiceDefinition> services = serviceDefinitionsService.getAll();
+        serviceComboBox.setItems(FXCollections.observableArrayList(services));
+        serviceComboBox.setConverter(new StringConverter<>() {
             @Override
-            public String toString(ServiceDefinition s) { return s != null ? s.getName() : ""; }
+            public String toString(ServiceDefinition s) {
+                return s != null ? s.getName() : "";
+            }
             @Override
-            public ServiceDefinition fromString(String s) { return null; }
+            public ServiceDefinition fromString(String s) {
+                return null; // not editable, safe to return null
+            }
         });
-        logger.info("{} {} defined services loaded into ChoiceBox.", PREFIX, services.size());
+        logger.info("{} {} defined services loaded into ComboBox.", PREFIX, services.size());
     }
 
     private void loadPaymentMethods() {
-        List<PaymentMethod> payments = paymentRepo.findAll();
-        paymentMethodBox.setItems(FXCollections.observableArrayList(payments));
-        paymentMethodBox.setConverter(new StringConverter<>() {
+        List<PaymentMethod> methods = paymentMethodsService.getAllPaymentMethods();
+        paymentComboBox.setItems(FXCollections.observableArrayList(methods));
+        paymentComboBox.setConverter(new StringConverter<>() {
             @Override
             public String toString(PaymentMethod p) {
                 return p != null ? TextFormatterUtil.capitalizeFirstLetter(p.getName()) : "";
@@ -162,75 +179,74 @@ public class ServicesViewController implements Initializable {
             @Override
             public PaymentMethod fromString(String s) { return null; }
         });
-        logger.info("{} {} payment methods loaded into ChoiceBox.", PREFIX, payments.size());
+        logger.info("{} {} payment methods loaded into ComboBox.", PREFIX, methods.size());
     }
 
-    private void displayServices() {
-        logger.info("{} Loading performed services list...", PREFIX);
-        List<Service> services = performedRepo.findAll();
-        Collections.reverse(services);
-        servicesTable.setItems(FXCollections.observableArrayList(services));
-        logger.info("{} {} services loaded in table.", PREFIX, services.size());
+    private void confirmAndSaveService() {
+        Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmAlert.setTitle("Confirmar registro");
+        confirmAlert.setHeaderText("¿Deseas registrar este servicio?");
+        confirmAlert.setContentText("Se guardará el servicio actual en el historial.");
+
+        // Botones personalizados (Aceptar por defecto)
+        ButtonType accept = new ButtonType("Aceptar", ButtonBar.ButtonData.OK_DONE);
+        ButtonType cancel = new ButtonType("Cancelar", ButtonBar.ButtonData.CANCEL_CLOSE);
+        confirmAlert.getButtonTypes().setAll(accept, cancel);
+
+        // Forzar foco en el botón "Aceptar" al abrir
+        confirmAlert.getDialogPane().lookupButton(accept).requestFocus();
+
+        confirmAlert.showAndWait().ifPresent(response -> {
+            if (response == accept) {
+                saveService(); // Ejecuta la lógica original
+            } else {
+                logger.info("{} Registro cancelado por el usuario.", PREFIX);
+            }
+        });
     }
 
     private void saveService() {
-        User user = userChoiceBox.getValue();
-        ServiceDefinition serviceDefinition = serviceChoiceBox.getValue();
-        PaymentMethod paymentMethod = paymentMethodBox.getValue();
+        User user = userComboBox.getValue();
+        ServiceDefinition serviceDefinition = serviceComboBox.getValue();
+        PaymentMethod paymentMethod = paymentComboBox.getValue();
         String priceStr = priceField.getText().replace(".", "").trim();
         String notes = TextFormatterUtil.capitalizeFirstLetter(notesField.getText().trim());
 
-        if (user == null) {
-            showAlert("You must select a barber.");
-            logger.warn("{} Validation failed: barber not selected.", PREFIX);
-            return;
-        }
-        if (serviceDefinition == null) {
-            showAlert("You must select a service type.");
-            logger.warn("{} Validation failed: service not selected.", PREFIX);
-            return;
-        }
-        if (priceStr.isEmpty()) {
-            showAlert("You must enter a price.");
-            logger.warn("{} Validation failed: price is empty.", PREFIX);
-            return;
-        }
-        if (paymentMethod == null) {
-            showAlert("You must select a payment method.");
-            logger.warn("{} Validation failed: payment method empty.", PREFIX);
+        if (user == null || serviceDefinition == null || paymentMethod == null || priceStr.isEmpty()) {
+            AlertUtil.showError("Debes completar todos los campos obligatorios.");
             return;
         }
 
         try {
             double price = Double.parseDouble(priceStr);
 
-            performedService.addServicioRealizado(
+            Service service = new Service(
                     user.getId(),
-                    serviceDefinition.getId(),
-                    price,
+                    LocalDate.now(),
                     paymentMethod.getId(),
+                    0,
                     notes
             );
-            logger.info("{} Service registered -> User: {}, Service: {}, Price: {}, PaymentMethod: {}",
-                    PREFIX,
-                    user.getName(),
-                    serviceDefinition.getName(),
-                    price,
-                    paymentMethod.getId()
-            );
 
-            displayServices();
+            ServiceDTO dto = new ServiceDTO(service);
+            dto.addItem(new ServiceItem(0, serviceDefinition.getId(), price));
+
+            servicesService.saveServiceWithItems(dto);
+
+            AlertUtil.showInfo("Servicio registrado con éxito.");
+            loadServicesHistory();
             clearFields();
+
         } catch (NumberFormatException e) {
-            showAlert("The 'Price' field must be a valid number.");
+            AlertUtil.showError("El campo 'Precio' debe ser numérico.");
             logger.error("{} Error parsing price: {}", PREFIX, e.getMessage());
-        } catch (IllegalArgumentException e) {
-            showAlert(e.getMessage());
-            logger.warn("{} Validation failed when saving service: {}", PREFIX, e.getMessage());
+        } catch (Exception e) {
+            AlertUtil.showError("Error al guardar el servicio:\n" + e.getMessage());
+            logger.error("{} Error saving service: {}", PREFIX, e.getMessage());
         }
     }
 
-
+    // FIXME: Repair
     private void confirmAndDelete(Service service) {
         User activeUser = SessionManager.getActiveUser();
         String role = activeUser != null ? activeUser.getRole() : "";
@@ -296,20 +312,22 @@ public class ServicesViewController implements Initializable {
     }
 
     private void clearFields() {
-        // Limpia los campos de texto
+        // Clear TextFields
         priceField.clear();
         notesField.clear();
 
-        // Resetea las ChoiceBox al primer elemento disponible (si existe)
-        if (!userChoiceBox.getItems().isEmpty())
-            userChoiceBox.getSelectionModel().selectFirst();
+        // Reset ComboBoxes
+        if (!userComboBox.getItems().isEmpty()) {userComboBox.getSelectionModel().selectFirst();}
+        if (!serviceComboBox.getItems().isEmpty()) {serviceComboBox.getSelectionModel().selectFirst();}
+        if (!paymentComboBox.getItems().isEmpty()) {paymentComboBox.getSelectionModel().selectFirst();}
 
-        if (!serviceChoiceBox.getItems().isEmpty())
-            serviceChoiceBox.getSelectionModel().selectFirst();
+        // Reset total label
+        totalLabel.setText("0 Gs");
 
-        if (!paymentMethodBox.getItems().isEmpty())
-            paymentMethodBox.getSelectionModel().selectFirst();
+        // Reset items table
+        if (itemsTable != null) {itemsTable.getItems().clear();}
     }
+
 
     private void showAlert(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);

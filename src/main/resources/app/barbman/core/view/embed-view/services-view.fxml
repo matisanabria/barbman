@@ -2,33 +2,96 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<VBox alignment="CENTER" fillWidth="true" prefWidth="600.0" spacing="16" style="-fx-padding: 24;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.barbman.core.controller.ServicesViewController">
-    <children>
-        <Label text="Registrar servicio" styleClass="services-title"/>
-        <HBox alignment="CENTER" spacing="18" styleClass="services-row">
+<ScrollPane fitToWidth="true" pannable="true"
+            style="-fx-background-color: transparent;"
+            xmlns="http://javafx.com/javafx/17.0.12"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="app.barbman.core.controller.ServicesViewController">
+
+    <content>
+        <VBox alignment="CENTER" fillWidth="true" prefWidth="600.0" spacing="16" style="-fx-padding: 24;">
+
             <children>
-                <ChoiceBox fx:id="userChoiceBox" prefWidth="130.0" styleClass="services-choicebox" />
-                <ChoiceBox fx:id="serviceChoiceBox" prefWidth="250.0" styleClass="services-choicebox" />
-                <TextField fx:id="priceField" prefWidth="100.0" promptText="Precio" styleClass="services-textfield" />
+                <!-- Título principal -->
+                <Label text="Registrar servicio" styleClass="services-title"/>
+
+                <!-- Bloque 1: selección de servicios e ítems -->
+                <VBox spacing="12" styleClass="services-section">
+                    <children>
+
+                        <!-- Agregar servicios individuales -->
+                        <HBox alignment="CENTER" spacing="18" styleClass="services-row">
+                            <children>
+                                <ComboBox fx:id="serviceComboBox" prefWidth="220.0" promptText="Seleccionar servicio" styleClass="services-combobox" />
+                                <TextField fx:id="priceField" prefWidth="100.0" promptText="Precio" styleClass="services-textfield" />
+                                <Button fx:id="addItemButton" text="+ Agregar" prefWidth="100.0" styleClass="services-button"/>
+                            </children>
+                        </HBox>
+
+                        <!-- Tabla de ítems agregados -->
+                        <TableView fx:id="itemsTable" prefHeight="150.0" prefWidth="580.0" styleClass="main-table services-table">
+                            <columns>
+                                <TableColumn fx:id="colItemServiceType" prefWidth="200" text="Servicio"/>
+                                <TableColumn fx:id="colItemPrice" prefWidth="120" text="Precio (Gs)"/>
+                                <TableColumn fx:id="colItemRemove" prefWidth="80" text="Acción"/>
+                            </columns>
+                        </TableView>
+
+                        <!-- Datos generales -->
+                        <HBox alignment="CENTER" spacing="18" styleClass="services-row">
+                            <children>
+                                <ComboBox fx:id="userComboBox" prefWidth="150.0" promptText="Usuario" styleClass="services-combobox" />
+                                <ComboBox fx:id="paymentComboBox" prefWidth="150.0" promptText="Forma de pago" styleClass="services-combobox" />
+                                <TextField fx:id="notesField" prefWidth="250.0" promptText="Observaciones" styleClass="services-textfield" />
+                            </children>
+                        </HBox>
+
+                        <!-- Total + botones -->
+                        <HBox alignment="CENTER_RIGHT" spacing="10">
+                            <children>
+                                <Label text="Total actual:"/>
+                                <Label fx:id="totalLabel" text="0 Gs" style="-fx-font-weight: bold;"/>
+                                <Button fx:id="saveButton" text="💾 Guardar todo" prefWidth="120.0" styleClass="services-button"/>
+                                <Button fx:id="resetButton" text="🔄 Limpiar" prefWidth="100.0" styleClass="services-button"/>
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+
+                <Separator />
+
+                <!-- Historial -->
+                <Label text="Historial de servicios" styleClass="services-title"/>
+
+                <TableView fx:id="servicesTable" prefHeight="300.0" prefWidth="580.0" styleClass="main-table services-table">
+                    <columns>
+                        <TableColumn fx:id="colDate" prefWidth="110" text="Fecha" />
+                        <TableColumn fx:id="colUser" prefWidth="100" text="Usuario" />
+                        <TableColumn fx:id="colServiceType" prefWidth="180" text="Detalle servicios" />
+                        <TableColumn fx:id="colPaymentMethod" prefWidth="100" text="Pago" />
+                        <TableColumn fx:id="colPrice" prefWidth="90" text="Total" />
+                        <TableColumn fx:id="colNotes" prefWidth="160" text="Notas" />
+                    </columns>
+                </TableView>
+
+                <!-- Filtros -->
+                <HBox alignment="CENTER" spacing="14" styleClass="services-row" style="-fx-padding: 6 0 0 0;">
+                    <children>
+                        <Label text="Filtrar:"/>
+                        <ComboBox fx:id="filterUserComboBox" prefWidth="130.0" promptText="Usuario" styleClass="services-combobox"/>
+                        <DatePicker fx:id="filterDatePicker" prefWidth="150.0" promptText="Fecha" styleClass="services-date"/>
+                        <Button fx:id="filterButton" prefWidth="40.0" styleClass="services-button">
+                            <graphic>
+                                <FontIcon iconLiteral="fa-check" iconSize="14"/>
+                            </graphic>
+                        </Button>
+                        <Button fx:id="clearFilterButton" text="Mostrar todo" prefWidth="120.0" styleClass="services-button"/>
+                    </children>
+                </HBox>
             </children>
-        </HBox>
-        <HBox alignment="CENTER" spacing="18" styleClass="services-row">
-            <children>
-                <ChoiceBox fx:id="paymentMethodBox" prefWidth="130.0" styleClass="services-choicebox" />
-                <TextField fx:id="notesField" prefWidth="220.0" promptText="Observaciones" styleClass="services-textfield" />
-                <Button fx:id="saveButton" mnemonicParsing="false" prefWidth="150.0" styleClass="services-button" text="Guardar" />
-            </children>
-        </HBox>
-        <TableView fx:id="servicesTable" prefHeight="300.0" prefWidth="580.0" styleClass="main-table services-table">
-            <columns>
-                <TableColumn fx:id="colUser" prefWidth="100" text="Usuario" />
-                <TableColumn fx:id="colServiceType" prefWidth="120" text="Servicio" />
-                <TableColumn fx:id="colPrice" text="Precio" />
-                <TableColumn fx:id="colPaymentMethod" prefWidth="100" text="Pago" />
-                <TableColumn fx:id="colDate" prefWidth="110" text="Fecha" />
-                <TableColumn fx:id="colNotes" text="Observaciones" />
-            </columns>
-        </TableView>
-    </children>
-</VBox>
+        </VBox>
+    </content>
+
+</ScrollPane>

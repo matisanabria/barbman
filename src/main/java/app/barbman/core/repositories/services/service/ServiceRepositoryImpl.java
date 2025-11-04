@@ -17,9 +17,9 @@ public class ServiceRepositoryImpl implements ServiceRepository {
 
     // Base SELECT clause (used across multiple queries)
     private static final String SELECT_BASE = """
-        SELECT id, user_id, date, payment_method_id, total, notes
-        FROM services
-        """;
+            SELECT id, user_id, date, payment_method_id, total, notes
+            FROM services
+            """;
 
     @Override
     public Service findById(Integer id) {
@@ -56,32 +56,72 @@ public class ServiceRepositoryImpl implements ServiceRepository {
         return list;
     }
 
+    /**
+     * Uses a shared connection.
+     * Used on ServicesService to manage transactions for preparing statements and adds possibility of rollbacks
+     * and multiple operations in a single transaction.
+     */
     @Override
-    public void save(Service s) {
+    public void save(Service s, Connection conn) throws SQLException {
         String sql = """
-            INSERT INTO services (user_id, date, payment_method_id, total, notes)
-            VALUES (?, ?, ?, ?, ?)
-            """;
+        INSERT INTO services (user_id, date, payment_method_id, total, notes)
+        VALUES (?, ?, ?, ?, ?)
+        """;
 
-        try (Connection db = DbBootstrap.connect();
-             PreparedStatement ps = db.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-
+        try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setInt(1, s.getUserId());
             ps.setString(2, s.getDate().toString());
             ps.setInt(3, s.getPaymentMethodId());
             ps.setDouble(4, s.getTotal());
             ps.setString(5, s.getNotes());
-
             ps.executeUpdate();
 
             try (ResultSet keys = ps.getGeneratedKeys()) {
-                if (keys.next()) {
-                    s.setId(keys.getInt(1));
-                }
+                if (keys.next()) s.setId(keys.getInt(1));
             }
 
-            logger.info("{} Service saved successfully (ID={})", PREFIX, s.getId());
+            logger.info("{} Service saved successfully (ID={}) [shared connection]", PREFIX, s.getId());
+        }
+    }
+    @Override
+    public void update(Service s, Connection conn) throws SQLException {
+        String sql = """
+        UPDATE services
+        SET user_id = ?, date = ?, payment_method_id = ?, total = ?, notes = ?
+        WHERE id = ?
+        """;
 
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, s.getUserId());
+            ps.setString(2, s.getDate().toString());
+            ps.setInt(3, s.getPaymentMethodId());
+            ps.setDouble(4, s.getTotal());
+            ps.setString(5, s.getNotes());
+            ps.setInt(6, s.getId());
+            ps.executeUpdate();
+
+            logger.info("{} Service updated (ID={}) [shared connection]", PREFIX, s.getId());
+        }
+    }
+    @Override
+    public void delete(Integer id, Connection conn) throws SQLException {
+        String sql = "DELETE FROM services WHERE id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            ps.executeUpdate();
+            logger.info("{} Service deleted (ID={}) [shared connection]", PREFIX, id);
+        }
+    }
+
+
+    /**
+     * Uses their own connection.
+     * Only for compatibility with the superinterface.
+     */
+    @Override
+    public void save(Service s) {
+        try (Connection conn = DbBootstrap.connect()) {
+            save(s, conn);
         } catch (Exception e) {
             logger.error("{} Failed to save service: {}", PREFIX, e.getMessage());
         }
@@ -89,25 +129,8 @@ public class ServiceRepositoryImpl implements ServiceRepository {
 
     @Override
     public void update(Service s) {
-        String sql = """
-            UPDATE services
-            SET user_id = ?, date = ?, payment_method_id = ?, total = ?, notes = ?
-            WHERE id = ?
-            """;
-
-        try (Connection db = DbBootstrap.connect();
-             PreparedStatement ps = db.prepareStatement(sql)) {
-
-            ps.setInt(1, s.getUserId());
-            ps.setString(2, s.getDate().toString());
-            ps.setInt(3, s.getPaymentMethodId());
-            ps.setDouble(4, s.getTotal());
-            ps.setString(5, s.getNotes());
-            ps.setInt(6, s.getId());
-
-            ps.executeUpdate();
-            logger.info("{} Service updated (ID={})", PREFIX, s.getId());
-
+        try (Connection conn = DbBootstrap.connect()) {
+            update(s, conn);
         } catch (Exception e) {
             logger.error("{} Error updating service (ID={}): {}", PREFIX, s.getId(), e.getMessage());
         }
@@ -115,19 +138,13 @@ public class ServiceRepositoryImpl implements ServiceRepository {
 
     @Override
     public void delete(Integer id) {
-        String sql = "DELETE FROM services WHERE id = ?";
-        try (Connection db = DbBootstrap.connect();
-             PreparedStatement ps = db.prepareStatement(sql)) {
-
-            ps.setInt(1, id);
-            ps.executeUpdate();
-
-            logger.info("{} Service deleted (ID={})", PREFIX, id);
-
+        try (Connection conn = DbBootstrap.connect()) {
+            delete(id, conn);
         } catch (Exception e) {
             logger.error("{} Error deleting service (ID={}): {}", PREFIX, id, e.getMessage());
         }
     }
+
 
     @Override
     public double getProduccionSemanalPorBarbero(int barberoId, LocalDate desde, LocalDate hasta) {
