@@ -105,6 +105,7 @@ public class ServicesService {
 
     /**
      * Fetches all services and maps them to ServiceHistoryDTO for UI display.
+     * Includes the service ID to allow safe deletion and reference.
      *
      * @return List of ServiceHistoryDTO containing formatted service information
      */
@@ -123,11 +124,12 @@ public class ServicesService {
                     .collect(Collectors.joining(" + "));
 
             dtoList.add(new ServiceHistoryDTO(
+                    s.getId(),
                     TextFormatterUtil.capitalizeFirstLetter(user.getName()),        // E.g., "Juan"
                     joined,                                                         // E.g., "Corte + Afeitado"
                     TextFormatterUtil.capitalizeFirstLetter(pay.getName()),         // E.g., "Cash"
                     NumberFormatterUtil.format(s.getTotal()) + " Gs",               // E.g., "150.000 Gs"
-                    s.getDate().toString(),                                         // E.g., "2024-10-05"
+                    s.getDate(),                                                    // E.g., "2024-10-05"
                     s.getNotes()                                                    // E.g., "Cliente habitual"
             ));
         }
@@ -136,4 +138,13 @@ public class ServicesService {
         return dtoList;
     }
 
+    /**
+     * Deletes a service (header + items) by ID.
+     * @param id the service ID to delete
+     */
+    public void deleteServiceById(int id) {
+        logger.info("{} Deleting service ID={}...", PREFIX, id);
+        serviceRepo.delete(id);
+        logger.info("{} Service deleted successfully (ID={}).", PREFIX, id);
+    }
 }

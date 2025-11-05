@@ -6,22 +6,15 @@ import app.barbman.core.model.*;
 import app.barbman.core.model.services.Service;
 import app.barbman.core.model.services.ServiceDefinition;
 import app.barbman.core.model.services.ServiceItem;
-import app.barbman.core.repositories.paymentmethod.PaymentMethodRepository;
-import app.barbman.core.repositories.paymentmethod.PaymentMethodRepositoryImpl;
-import app.barbman.core.repositories.services.serviceitems.ServiceItemRepository;
-import app.barbman.core.repositories.services.serviceitems.ServiceItemRepositoryImpl;
+import app.barbman.core.repositories.paymentmethod.PaymentMethodRepositoryImpl;;
 import app.barbman.core.repositories.users.UsersRepositoryImpl;
 import app.barbman.core.service.paymentmethods.PaymentMethodsService;
 import app.barbman.core.service.services.ServiceDefinitionsService;
 import app.barbman.core.service.users.UsersService;
 import app.barbman.core.util.AlertUtil;
-import app.barbman.core.util.NumberFormatterUtil;
 import app.barbman.core.util.SessionManager;
 import app.barbman.core.repositories.users.UsersRepository;
-import app.barbman.core.repositories.services.servicedefinition.ServiceDefinitionRepository;
 import app.barbman.core.repositories.services.servicedefinition.ServiceDefinitionRepositoryImpl;
-import app.barbman.core.repositories.services.service.ServiceRepository;
-import app.barbman.core.repositories.services.service.ServiceRepositoryImpl;
 import app.barbman.core.service.services.ServicesService;
 import app.barbman.core.util.TextFormatterUtil;
 import javafx.collections.FXCollections;
@@ -36,7 +29,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.net.URL;
 import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -104,10 +96,10 @@ public class ServicesViewController implements Initializable {
 
         loadServicesHistory();
 
-        // Double-click to delete
+        // Double-click to delete service from history table
         servicesTable.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2 && !servicesTable.getSelectionModel().isEmpty()) {
-                Service selected = servicesTable.getSelectionModel().getSelectedItem();
+                ServiceHistoryDTO selected = servicesTable.getSelectionModel().getSelectedItem();
                 if (selected != null) {
                     confirmAndDelete(selected);
                 }
@@ -142,6 +134,81 @@ public class ServicesViewController implements Initializable {
     private void loadServicesHistory() { // Checked
         List<ServiceHistoryDTO> services = servicesService.getServiceHistory();
         servicesTable.setItems(FXCollections.observableArrayList(services)); // Gets data from backend
+    }
+
+    /**
+     * Confirms and deletes a service from history after validating user permissions.
+     * Admins can delete any service, Users can only delete services from the current day.
+     * @param dto ServiceHistoryDTO to delete
+     */
+    private void confirmAndDelete(ServiceHistoryDTO dto) {
+        User activeUser = SessionManager.getActiveUser();
+        String role = activeUser.getRole();
+        boolean canDelete = false;
+
+        // Permissions. Admin can delete any, User only today's
+        if ("admin".equalsIgnoreCase(role)) {
+            canDelete = true;
+        } else if ("user".equalsIgnoreCase(role)) {
+            try {
+                LocalDate serviceDate = dto.getDate();
+                canDelete = serviceDate.isEqual(LocalDate.now());
+            } catch (Exception e) {
+                logger.warn("{} Fecha inválida al validar permisos de borrado: {}", PREFIX, e.getMessage());
+            }
+        }
+
+        // If no permission, show error and exit
+        if (!canDelete) {
+            AlertUtil.showError("No tienes permiso para eliminar este servicio.");
+            logger.warn("{} Usuario '{}' intentó eliminar un servicio sin permisos.", PREFIX, activeUser.getName());
+            return;
+        }
+
+        // First alert confirmation
+        Alert firstAlert = new Alert(Alert.AlertType.CONFIRMATION);
+        firstAlert.setTitle("Confirmar eliminación");
+        firstAlert.setHeaderText("¿Deseas eliminar este registro?");
+        firstAlert.setContentText(
+                        "Usuario: " + dto.getUserName() +
+                        "\nServicios: " + dto.getServiceNames() +
+                        "\nPago: " + dto.getPaymentMethod() +
+                        "\nTotal: " + dto.getTotalFormatted() +
+                        "\nFecha: " + dto.getDate() +
+                        "\nNotas: " + dto.getNotes()
+        );
+
+        ButtonType aceptar = new ButtonType("Eliminar", ButtonBar.ButtonData.OK_DONE);
+        ButtonType cancelar = new ButtonType("Cancelar", ButtonBar.ButtonData.CANCEL_CLOSE);
+        firstAlert.getButtonTypes().setAll(aceptar, cancelar);
+
+        firstAlert.getDialogPane().lookupButton(aceptar).requestFocus();
+
+        firstAlert.showAndWait().ifPresent(response -> {
+            if (response == aceptar) {
+                // Second confirmation alert
+                Alert secondAlert = new Alert(Alert.AlertType.CONFIRMATION);
+                secondAlert.setTitle("Confirmación final");
+                secondAlert.setHeaderText("Esta acción no se puede deshacer.");
+                secondAlert.setContentText("¿Confirmas la eliminación definitiva?");
+                secondAlert.getButtonTypes().setAll(aceptar, cancelar);
+                secondAlert.getDialogPane().lookupButton(aceptar).requestFocus();
+
+                secondAlert.showAndWait().ifPresent(res2 -> {
+                    if (res2 == aceptar) {
+                        try {
+                            servicesService.deleteServiceById(dto.getId());
+                            loadServicesHistory();
+                            AlertUtil.showInfo("Servicio eliminado con éxito.");
+                            logger.info("{} Service deleted by {} -> ID={}", PREFIX, activeUser.getName(), dto.getId());
+                        } catch (Exception e) {
+                            AlertUtil.showError("Error al eliminar el servicio:\n" + e.getMessage());
+                            logger.error("{} Error deleting service: {}", PREFIX, e.getMessage());
+                        }
+                    }
+                });
+            }
+        });
     }
 
     // ========================================================================
@@ -246,71 +313,6 @@ public class ServicesViewController implements Initializable {
         }
     }
 
-    // FIXME: Repair
-    private void confirmAndDelete(Service service) {
-        User activeUser = SessionManager.getActiveUser();
-        String role = activeUser != null ? activeUser.getRole() : "";
-
-        boolean canDelete = false;
-
-        if ("admin".equalsIgnoreCase(role)) {
-            canDelete = true;
-        } else if ("user".equalsIgnoreCase(role)) {
-            // service.getDate() is already LocalDate
-            LocalDate serviceDate = service.getDate();
-            LocalDate today = LocalDate.now();
-            canDelete = serviceDate.isEqual(today);
-        }
-
-        if (!canDelete) {
-            showAlert("You do not have permission to delete this service.");
-            logger.warn("{} User '{}' tried to delete service ID {} but lacks permission.",
-                    PREFIX, activeUser.getName(), service.getId());
-            return;
-        }
-
-        // Get service name from repository and capitalize
-        ServiceDefinition serviceDef = serviceRepo.findById(service.getServiceTypeId());
-        String serviceName = serviceDef != null ? TextFormatterUtil.capitalizeFirstLetter(serviceDef.getName()) : "Unknown";
-
-        // First alert: show service info
-        Alert firstAlert = new Alert(Alert.AlertType.CONFIRMATION);
-        firstAlert.setTitle("Confirm Deletion");
-        firstAlert.setHeaderText("Do you want to delete this service?");
-        firstAlert.setContentText(
-                "Service ID: " + service.getId() +
-                        "\nService Name: " + serviceName +
-                        "\nNotes: " + (service.getNotes() != null ? TextFormatterUtil.capitalizeFirstLetter(service.getNotes()) : "") +
-                        "\nPrice: " + NumberFormatterUtil.format(service.getPrice()) + " Gs" +
-                        "\nDate: " + service.getDate()
-        );
-
-        firstAlert.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.OK) {
-                // Second alert: final confirmation
-                Alert secondAlert = new Alert(Alert.AlertType.CONFIRMATION);
-                secondAlert.setTitle("Are you sure?");
-                secondAlert.setHeaderText("This action cannot be undone.");
-                secondAlert.setContentText("Do you really want to delete this service?");
-                secondAlert.showAndWait().ifPresent(secondResponse -> {
-                    if (secondResponse == ButtonType.OK) {
-                        performedRepo.delete(service.getId());
-                        displayServices();
-                        logger.info("{} Service deleted -> ID: {}, Name: {}, Price: {}, Date: {}",
-                                PREFIX, service.getId(),
-                                serviceName,
-                                service.getPrice(),
-                                service.getDate());
-                    } else {
-                        logger.info("{} Deletion cancelled at final confirmation -> Service ID: {}", PREFIX, service.getId());
-                    }
-                });
-            } else {
-                logger.info("{} Deletion cancelled -> Service ID: {}", PREFIX, service.getId());
-            }
-        });
-    }
-
     private void clearFields() {
         // Clear TextFields
         priceField.clear();
@@ -327,14 +329,4 @@ public class ServicesViewController implements Initializable {
         // Reset items table
         if (itemsTable != null) {itemsTable.getItems().clear();}
     }
-
-
-    private void showAlert(String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Validation");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
 }
