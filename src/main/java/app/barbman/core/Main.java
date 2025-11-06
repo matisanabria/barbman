@@ -33,16 +33,7 @@ public class Main extends Application {
                 alert.showAndWait();
             });
         });
-        WindowManager.openWindow("/app/barbman/core/view/login-view.fxml");
-        // Mostrar notificación beta
-        Notifications.create()
-                .title("Barbman BETA")
-                .text("¡Gracias por probar Barbman!\n" +
-                        "Estás usando una versión Beta \uD83D\uDE80\n" +
-                        "Avisanos si encontrás errores \uD83D\uDE4C")
-                .position(Pos.BOTTOM_RIGHT)   // esquina inferior derecha
-                .hideAfter(Duration.seconds(10)) // se oculta en 10s
-                .showInformation(); // icono azul (info)
+        WindowManager.openWindow("/app/barbman/core/view/login-view.fxml", null, "/app/barbman/core/styles");
     }
     @Override
     public void stop() {

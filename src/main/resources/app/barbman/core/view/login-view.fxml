@@ -1,28 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.control.Button?>
 
+<AnchorPane prefHeight="420.0" prefWidth="720.0"
+            xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="app.barbman.core.controller.LoginController"
+            styleClass="login-background">
 
-
-<?import javafx.scene.layout.VBox?>
-<AnchorPane prefHeight="400.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/17"
-            xmlns:fx="http://javafx.com/fxml" fx:controller="app.barbman.core.controller.LoginController">
-    <children>
-        <VBox alignment="CENTER" spacing="18.0" layoutX="50.0" layoutY="90.0" prefWidth="300.0" styleClass="login-card">
+    <HBox prefWidth="720.0" prefHeight="420.0">
+        <!-- Panel izquierdo con logo -->
+        <AnchorPane fx:id="leftPane" prefWidth="360.0" styleClass="login-left">
             <children>
-                <Label text="Ingresa tu PIN" styleClass="login-title"/>
-                <PasswordField fx:id="pinField" styleClass="login-pin-field" prefHeight="46.0" prefWidth="210.0"/>
-                <Label fx:id="loginLabel" text="PIN Inválido" visible="false" styleClass="login-error-label"/>
-                <Button mnemonicParsing="false"
-                        text="Acceder"
-                        onAction="#loginController"
-                        styleClass="login-button"
-                        prefHeight="42.0"
-                        prefWidth="140.0"/>
+                <VBox alignment="CENTER" spacing="18.0" layoutX="60.0" layoutY="120.0" prefWidth="240.0">
+                    <children>
+                        <ImageView fx:id="logoImageView" fitWidth="160.0" fitHeight="160.0"
+                                   preserveRatio="true" opacity="0.0">
+                            <image>
+                                <Image url="@/app/barbman/core/icons/icon-for-javafx.png"/>
+                            </image>
+                        </ImageView>
+                    </children>
+                </VBox>
+
+                <!-- Branding inferior -->
+                <HBox alignment="CENTER_LEFT" spacing="8.0" layoutX="16.0" layoutY="380.0">
+                    <children>
+                        <ImageView fitWidth="26.0" fitHeight="26.0" preserveRatio="true">
+                            <image>
+                                <Image url="@/app/barbman/core/icons/icon-for-javafx.png"/>
+                            </image>
+                        </ImageView>
+                        <Label text="Barbman" styleClass="login-brand-label"/>
+                    </children>
+                </HBox>
             </children>
-        </VBox>
-    </children>
+        </AnchorPane>
+
+        <!-- Panel derecho (formulario) -->
+        <AnchorPane prefWidth="360.0" styleClass="login-right">
+            <children>
+                <VBox alignment="CENTER" spacing="18.0" layoutX="80.0" layoutY="100.0" prefWidth="200.0">
+                    <children>
+                        <Label fx:id="loginTitle" text="¡Hola!" styleClass="login-title" opacity="0.0"/>
+                        <Label fx:id="subtitleLabel" wrapText="true" maxWidth="200.0"
+                               text="Listo para cortar historia."
+                               styleClass="login-subtitle" opacity="0.0"/>
+                        <PasswordField fx:id="pinField" styleClass="login-pin-field" promptText="PIN" prefWidth="180.0"/>
+                        <Label fx:id="loginLabel" text="PIN inválido" visible="false" styleClass="login-error-label"/>
+                        <Button text="Acceder" onAction="#loginController" styleClass="login-button" prefWidth="140.0"/>
+                    </children>
+                </VBox>
+            </children>
+        </AnchorPane>
+    </HBox>
+
 </AnchorPane>

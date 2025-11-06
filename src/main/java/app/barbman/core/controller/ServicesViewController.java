@@ -52,7 +52,6 @@ public class ServicesViewController implements Initializable {
     // Service registration block
     @FXML private ComboBox<User> userComboBox;
     @FXML private ComboBox<ServiceDefinition> serviceComboBox;
-    @FXML private ComboBox<PaymentMethod> paymentComboBox;
     @FXML private TextField priceField;
     @FXML private TextField notesField;
     @FXML private Button addItemButton;
@@ -65,6 +64,13 @@ public class ServicesViewController implements Initializable {
     @FXML private TableColumn<ServiceItem, String> colItemServiceType;
     @FXML private TableColumn<ServiceItem, String> colItemPrice;
     @FXML private TableColumn<ServiceItem, String> colItemRemove;
+
+    // Payment method ComboBox and ToggleButtons
+    @FXML private ToggleGroup paymentGroup;
+    @FXML private ToggleButton cashButton;
+    @FXML private ToggleButton cardButton;
+    @FXML private ToggleButton transferButton;
+    @FXML private ToggleButton qrButton;
 
     // History table filter controls
     @FXML private ComboBox<User> filterUserComboBox;
@@ -236,17 +242,15 @@ public class ServicesViewController implements Initializable {
     }
 
     private void loadPaymentMethods() {
-        List<PaymentMethod> methods = paymentMethodsService.getAllPaymentMethods();
-        paymentComboBox.setItems(FXCollections.observableArrayList(methods));
-        paymentComboBox.setConverter(new StringConverter<>() {
-            @Override
-            public String toString(PaymentMethod p) {
-                return p != null ? TextFormatterUtil.capitalizeFirstLetter(p.getName()) : "";
-            }
-            @Override
-            public PaymentMethod fromString(String s) { return null; }
-        });
-        logger.info("{} {} payment methods loaded into ComboBox.", PREFIX, methods.size());
+        if (paymentGroup == null) {
+            paymentGroup = new ToggleGroup();
+            cashButton.setToggleGroup(paymentGroup);
+            cardButton.setToggleGroup(paymentGroup);
+            transferButton.setToggleGroup(paymentGroup);
+            qrButton.setToggleGroup(paymentGroup);
+        }
+        cashButton.setSelected(true); // Default selection
+
     }
 
     private void confirmAndSaveService() {
@@ -272,10 +276,28 @@ public class ServicesViewController implements Initializable {
         });
     }
 
+    private PaymentMethod getSelectedPaymentMethod() {
+        ToggleButton selected = (ToggleButton) paymentGroup.getSelectedToggle();
+        if (selected == null) return null;
+
+        String key = switch (selected.getId()) {
+            case "cashButton" -> "cash";
+            case "cardButton" -> "card";
+            case "transferButton" -> "transfer";
+            case "qrButton" -> "qr";
+            default -> null;
+        };
+
+        if (key != null) {
+            return paymentMethodsService.getPaymentMethodByName(key);
+        }
+        return null;
+    }
+
     private void saveService() {
         User user = userComboBox.getValue();
         ServiceDefinition serviceDefinition = serviceComboBox.getValue();
-        PaymentMethod paymentMethod = paymentComboBox.getValue();
+        PaymentMethod paymentMethod = getSelectedPaymentMethod();
         String priceStr = priceField.getText().replace(".", "").trim();
         String notes = TextFormatterUtil.capitalizeFirstLetter(notesField.getText().trim());
 
@@ -321,7 +343,7 @@ public class ServicesViewController implements Initializable {
         // Reset ComboBoxes
         if (!userComboBox.getItems().isEmpty()) {userComboBox.getSelectionModel().selectFirst();}
         if (!serviceComboBox.getItems().isEmpty()) {serviceComboBox.getSelectionModel().selectFirst();}
-        if (!paymentComboBox.getItems().isEmpty()) {paymentComboBox.getSelectionModel().selectFirst();}
+        paymentGroup.selectToggle(null);
 
         // Reset total label
         totalLabel.setText("0 Gs");

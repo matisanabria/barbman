@@ -1,0 +1,72 @@
+.login-background {
+    -fx-background-color: #232323;
+}
+
+.login-left {
+    -fx-background-color: linear-gradient(to bottom right, #3a3a3a, #232323);
+}
+
+.login-right {
+    -fx-background-color: #2F2F2F;
+    -fx-background-radius: 0;
+}
+
+.login-logo-text {
+    -fx-text-fill: #FFDC60;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter', Arial, sans-serif;
+}
+
+.login-title {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter', Arial, sans-serif;
+}
+
+.login-pin-field {
+    -fx-background-color: #232323;
+    -fx-background-radius: 12;
+    -fx-text-fill: #fff;
+    -fx-font-size: 16px;
+    -fx-padding: 8 12 8 12;
+    -fx-prompt-text-fill: #AAAAAA;
+}
+
+.login-button {
+    -fx-background-color: #FFDC60;
+    -fx-background-radius: 12;
+    -fx-text-fill: #232323;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.login-button:hover {
+    -fx-background-color: #FFE46B;
+}
+
+.login-error-label {
+    -fx-text-fill: #FFDC60;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.login-left ImageView {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 20, 0, 4, 4);
+}
+.login-subtitle {
+    -fx-text-fill: #CCCCCC;
+    -fx-font-size: 13px;
+    -fx-font-weight: normal;
+    -fx-font-family: 'Inter', Arial, sans-serif;
+    -fx-wrap-text: true;
+    -fx-alignment: center;
+}
+.login-brand-label {
+    -fx-text-fill: #E7E7E7;
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
+    -fx-font-family: 'Inter', Arial, sans-serif;
+}

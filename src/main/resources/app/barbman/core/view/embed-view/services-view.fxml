@@ -40,13 +40,47 @@
                         </TableView>
 
                         <!-- Datos generales -->
-                        <HBox alignment="CENTER" spacing="18" styleClass="services-row">
+                        <VBox spacing="10" styleClass="services-section">
                             <children>
-                                <ComboBox fx:id="userComboBox" prefWidth="150.0" promptText="Usuario" styleClass="services-combobox" />
-                                <ComboBox fx:id="paymentComboBox" prefWidth="150.0" promptText="Forma de pago" styleClass="services-combobox" />
-                                <TextField fx:id="notesField" prefWidth="250.0" promptText="Observaciones" styleClass="services-textfield" />
+                                <!-- Métodos de pago -->
+                                <VBox spacing="6" alignment="CENTER">
+                                    <children>
+                                        <Label text="Método de pago:" style="-fx-font-weight: bold;"/>
+                                        <HBox alignment="CENTER" spacing="12">
+                                            <children>
+                                                <ToggleButton fx:id="cashButton" styleClass="payment-toggle">
+                                                    <graphic><FontIcon iconLiteral="fa-money-bill-wave" iconSize="16"/></graphic>
+                                                    <text> Efectivo</text>
+                                                </ToggleButton>
+
+                                                <ToggleButton fx:id="cardButton" styleClass="payment-toggle">
+                                                    <graphic><FontIcon iconLiteral="fa-credit-card" iconSize="16"/></graphic>
+                                                    <text> Tarjeta</text>
+                                                </ToggleButton>
+
+                                                <ToggleButton fx:id="transferButton" styleClass="payment-toggle">
+                                                    <graphic><FontIcon iconLiteral="fa-university" iconSize="16"/></graphic>
+                                                    <text> Transferencia</text>
+                                                </ToggleButton>
+
+                                                <ToggleButton fx:id="qrButton" styleClass="payment-toggle">
+                                                    <graphic><FontIcon iconLiteral="fa-qrcode" iconSize="16"/></graphic>
+                                                    <text> QR</text>
+                                                </ToggleButton>
+                                            </children>
+                                        </HBox>
+                                    </children>
+                                </VBox>
+
+                                <!-- Usuario y notas -->
+                                <HBox alignment="CENTER" spacing="18" styleClass="services-row">
+                                    <children>
+                                        <ComboBox fx:id="userComboBox" prefWidth="150.0" promptText="Usuario" styleClass="services-combobox" />
+                                        <TextField fx:id="notesField" prefWidth="250.0" promptText="Observaciones" styleClass="services-textfield" />
+                                    </children>
+                                </HBox>
                             </children>
-                        </HBox>
+                        </VBox>
 
                         <!-- Total + botones -->
                         <HBox alignment="CENTER_RIGHT" spacing="10">
@@ -93,5 +127,4 @@
             </children>
         </VBox>
     </content>
-
 </ScrollPane>
