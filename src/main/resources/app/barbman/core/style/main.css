@@ -1,7 +1,7 @@
 /* ====== BASE GLOBAL ====== */
 .root, .login-background, .main-background, .services-background {
     -fx-background-color: #232323;
-    -fx-font-family: 'Inter', Arial, sans-serif;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 }
 
 /* ====== CARDS & PANELS ====== */
@@ -24,6 +24,7 @@
     -fx-text-fill: #fff;
     -fx-font-size: 24px;
     -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
     -fx-padding: 0 0 8 0;
 }
 
@@ -35,6 +36,7 @@
     -fx-background-radius: 12;
     -fx-text-fill: #fff;
     -fx-font-size: 17px;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
     -fx-border-width: 0;
     -fx-prompt-text-fill: #B0B0B0;
     -fx-padding: 8 14 8 14;
@@ -45,6 +47,7 @@
     -fx-background-radius: 12;
     -fx-text-fill: #fff;
     -fx-font-size: 16px;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
     -fx-padding: 6 10 6 10;
     -fx-border-width: 0;
 }
@@ -52,6 +55,7 @@
 .choice-box .label {
     -fx-font-size: 15px;
     -fx-text-fill: #fff;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 }
 
 /* ====== BUTTONS ====== */
@@ -61,6 +65,7 @@
     -fx-text-fill: #232323;
     -fx-font-size: 17px;
     -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
     -fx-effect: dropshadow(gaussian, #00000088, 8, 0.15, 0, 2);
     -fx-cursor: hand;
     -fx-padding: 10 18 10 18;
@@ -80,6 +85,7 @@
     -fx-text-fill: #E0E0E0;
     -fx-font-size: 16px;
     -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
     -fx-effect: dropshadow(gaussian, #00000066, 6, 0.12, 0, 1);
     -fx-cursor: hand;
     -fx-padding: 8 16 8 16;
@@ -95,6 +101,7 @@
     -fx-text-fill: #fff;
     -fx-font-size: 16px;
     -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
     -fx-padding: 6 14 4 14;
     -fx-content-display: top;
     -fx-effect: dropshadow(gaussian, #00000088, 8, 0.1, 0, 1);
@@ -121,17 +128,20 @@
     -fx-table-cell-border-color: #232323;
     -fx-table-header-border-color: #232323;
     -fx-font-size: 16px;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 }
 
 .services-table-large {
     -fx-font-size: 18px;
     -fx-background-color: #232323;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 }
 
 .services-table-large .table-row-cell {
     -fx-cell-size: 44px;
     -fx-font-size: 18px;
     -fx-text-fill: #fff;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 }
 
 .services-table-large .table-row-cell:filled:selected {
@@ -144,20 +154,21 @@
     -fx-text-fill: #fff;
     -fx-font-size: 14px;
     -fx-font-weight: 600;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
     -fx-padding: 0 0 2 0;
 }
 
 /* ====== CAJA DIARIA ====== */
-.caja-titulo { -fx-text-fill: #fff; -fx-font-size: 20px; -fx-font-weight: bold; }
+.caja-titulo { -fx-text-fill: #fff; -fx-font-size: 20px; -fx-font-weight: bold; -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif; }
 .caja-ticket {
     -fx-background-color: #2B2B2B;
     -fx-background-radius: 12;
     -fx-padding: 18;
     -fx-spacing: 8;
 }
-.caja-label { -fx-text-fill: #E0E0E0; -fx-font-size: 15px; }
-.caja-label-strong { -fx-text-fill: #FFDC60; -fx-font-weight: bold; }
-.caja-label-titulo { -fx-text-fill: #fff; -fx-font-size: 16px; -fx-font-weight: bold; }
+.caja-label { -fx-text-fill: #E0E0E0; -fx-font-size: 15px; -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif; }
+.caja-label-strong { -fx-text-fill: #FFDC60; -fx-font-weight: bold; -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif; }
+.caja-label-titulo { -fx-text-fill: #fff; -fx-font-size: 16px; -fx-font-weight: bold; -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif; }
 
 /* ====== SCROLLPANE GENERAL ====== */
 .main-scrollpane, .main-scrollpane .viewport {
@@ -168,12 +179,6 @@
     -fx-background-radius: 8;
 }
 
-/* ====== FORM ERRORS ====== */
-.login-pin-field.error, .password-field.error {
-    -fx-background-color: #FFDC60;
-    -fx-text-fill: #232323;
-}
-
 /* ====== SEPARATOR ====== */
 .separator { -fx-background-color: #242424; }
 
@@ -182,4 +187,5 @@
     -fx-text-fill: #FFDC60;
     -fx-font-size: 15px;
     -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 }

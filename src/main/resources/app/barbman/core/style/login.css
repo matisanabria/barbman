@@ -15,14 +15,16 @@
     -fx-text-fill: #FFDC60;
     -fx-font-size: 20px;
     -fx-font-weight: bold;
-    -fx-font-family: 'Inter', Arial, sans-serif;
+-fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+
 }
 
 .login-title {
     -fx-text-fill: #FFFFFF;
     -fx-font-size: 22px;
     -fx-font-weight: bold;
-    -fx-font-family: 'Inter', Arial, sans-serif;
+-fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+
 }
 
 .login-pin-field {
@@ -60,7 +62,8 @@
     -fx-text-fill: #CCCCCC;
     -fx-font-size: 13px;
     -fx-font-weight: normal;
-    -fx-font-family: 'Inter', Arial, sans-serif;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+
     -fx-wrap-text: true;
     -fx-alignment: center;
 }
@@ -68,5 +71,11 @@
     -fx-text-fill: #E7E7E7;
     -fx-font-size: 14px;
     -fx-font-weight: 700;
-    -fx-font-family: 'Inter', Arial, sans-serif;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+
+}
+.login-pin-field.error, .password-field.error {
+    -fx-background-color: #FFDC60;
+    -fx-text-fill: #000000;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 }

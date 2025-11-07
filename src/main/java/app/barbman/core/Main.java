@@ -33,7 +33,7 @@ public class Main extends Application {
                 alert.showAndWait();
             });
         });
-        WindowManager.openWindow("/app/barbman/core/view/login-view.fxml", null, "/app/barbman/core/styles");
+        WindowManager.openWindow("/app/barbman/core/view/login-view.fxml", null, "/app/barbman/core/style/login.css");
     }
     @Override
     public void stop() {
@@ -51,11 +51,11 @@ public class Main extends Application {
 
         logger.info("""
             \n{}
-            [BARBMAN] Iniciando aplicación
-            Hora de inicio: {}
-            Sistema: {} {}
-            Usuario: {}
-            Java: {}
+            [BARBMAN] Starting application
+            Hour: {}
+            System OS: {} {}
+            User: {}
+            Java ver.: {}
             {}
             """,
                 separador,

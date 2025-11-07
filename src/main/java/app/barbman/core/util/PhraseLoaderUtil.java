@@ -10,7 +10,7 @@ import java.util.*;
 public class PhraseLoaderUtil {
     private static final Logger logger = LogManager.getLogger(PhraseLoaderUtil.class);
     private static final String FOLDER_PATH =
-            System.getProperty("user.home") + File.separator + "Documents" + File.separator + "Barbman" + File.separator + "data";
+            System.getProperty("user.home") + File.separator + "Documents" + File.separator + "Barbman Data" + File.separator + "phrases";
     private static final String FILE_PATH = FOLDER_PATH + File.separator + "login_phrases.txt";
 
     /**
