@@ -57,22 +57,22 @@ public class MainViewController {
         logoutButton.setOnAction(event -> onLogout());
 
         // Listener for menu buttons
-        menuGroup.selectedToggleProperty().addListener((obs, oldToggle, newToggle) -> {
-            ToggleButton selected = (ToggleButton) newToggle;
-            // If none selected, revert to old or default
-            if (selected == null) {
-                menuGroup.selectToggle(oldToggle != null ? oldToggle : incomeButton);
-                return;
-            }
-            // Load corresponding view according to selection
-            String viewPath = viewMap.get(selected);
-            if (viewPath != null) {
-                WindowManager.setEmbeddedView(borderPane, "center", viewPath);
-            }
-        });
+//        menuGroup.selectedToggleProperty().addListener((obs, oldToggle, newToggle) -> {
+//            ToggleButton selected = (ToggleButton) newToggle;
+//            // If none selected, revert to old or default
+//            if (selected == null) {
+//                menuGroup.selectToggle(oldToggle != null ? oldToggle : incomeButton);
+//                return;
+//            }
+//            // Load corresponding view according to selection
+//            String viewPath = viewMap.get(selected);
+//            if (viewPath != null) {
+//                WindowManager.setEmbeddedView(borderPane, "center", viewPath);
+//            }
+//        });
 
-        menuGroup.selectToggle(incomeButton);
-        WindowManager.setEmbeddedView(borderPane, "center", viewMap.get(incomeButton));
+//        menuGroup.selectToggle(incomeButton);
+//        WindowManager.setEmbeddedView(borderPane, "center", viewMap.get(incomeButton));
     }
 
     @FXML
