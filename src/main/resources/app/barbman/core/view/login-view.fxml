@@ -16,7 +16,7 @@
             styleClass="login-background">
 
     <HBox prefWidth="720.0" prefHeight="420.0">
-        <!-- Panel izquierdo con logo -->
+        <!-- Left panel (branding) -->
         <AnchorPane fx:id="leftPane" prefWidth="360.0" styleClass="login-left">
             <children>
                 <VBox alignment="CENTER" spacing="18.0" layoutX="60.0" layoutY="120.0" prefWidth="240.0">
@@ -24,18 +24,18 @@
                         <ImageView fx:id="logoImageView" fitWidth="160.0" fitHeight="160.0"
                                    preserveRatio="true" opacity="0.0">
                             <image>
-                                <Image url="@/app/barbman/core/icons/icon-for-javafx.png"/>
+                                <Image url="@../icons/icon-for-javafx.png"/>
                             </image>
                         </ImageView>
                     </children>
                 </VBox>
 
-                <!-- Branding inferior -->
+                <!-- Branding at the bottom left -->
                 <HBox alignment="CENTER_LEFT" spacing="8.0" layoutX="16.0" layoutY="380.0">
                     <children>
                         <ImageView fitWidth="26.0" fitHeight="26.0" preserveRatio="true">
                             <image>
-                                <Image url="@/app/barbman/core/icons/icon-for-javafx.png"/>
+                                <Image url="@../icons/icon-for-javafx.png"/>
                             </image>
                         </ImageView>
                         <Label text="Barbman" styleClass="login-brand-label"/>
@@ -44,18 +44,18 @@
             </children>
         </AnchorPane>
 
-        <!-- Panel derecho (formulario) -->
+        <!-- Left panel (login form) -->
         <AnchorPane prefWidth="360.0" styleClass="login-right">
             <children>
                 <VBox alignment="CENTER" spacing="18.0" layoutX="80.0" layoutY="100.0" prefWidth="200.0">
                     <children>
-                        <Label fx:id="loginTitle" text="¡Hola!" styleClass="login-title" opacity="0.0"/>
+                        <Label fx:id="loginTitle" text="%login_title_generic" styleClass="login-title" opacity="0.0"/>
                         <Label fx:id="subtitleLabel" wrapText="true" maxWidth="200.0"
-                               text="Listo para cortar historia."
+                               text="%login_subtitle_phrase"
                                styleClass="login-subtitle" opacity="0.0"/>
-                        <PasswordField fx:id="pinField" styleClass="login-pin-field" promptText="PIN" prefWidth="180.0"/>
-                        <Label fx:id="loginLabel" text="PIN inválido" visible="false" styleClass="login-error-label"/>
-                        <Button text="Acceder" onAction="#loginController" styleClass="login-button" prefWidth="140.0"/>
+                        <PasswordField fx:id="pinField" styleClass="login-pin-field" promptText="%login_prompt_pin" prefWidth="180.0"/>
+                        <Label fx:id="loginLabel" text="%login_error_pin_invalid" visible="false" styleClass="login-error-label"/>
+                        <Button text="%login_button_enter" onAction="#loginController" styleClass="login-button" prefWidth="140.0"/>
                     </children>
                 </VBox>
             </children>

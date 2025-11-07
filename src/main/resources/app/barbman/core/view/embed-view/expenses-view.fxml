@@ -1,43 +1,90 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
-<VBox
-        xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-        fx:controller="app.barbman.core.controller.ExpensesViewController"
-        spacing="16"
-        alignment="CENTER"
-        fillWidth="true"
-        prefWidth="600.0"
-        style="-fx-padding: 24;">
-    <children>
-        <Label text="Registrar expense" styleClass="services-title"/>
-        <HBox alignment="CENTER" spacing="18" styleClass="services-row">
+<?import javafx.scene.layout.*?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<ScrollPane fitToWidth="true" pannable="true"
+            style="-fx-background-color: transparent;"
+            xmlns="http://javafx.com/javafx/17.0.12"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="app.barbman.core.controller.ExpensesViewController">
+
+    <content>
+        <VBox alignment="CENTER" fillWidth="true" prefWidth="600.0" spacing="16" style="-fx-padding: 24;">
             <children>
-                <ChoiceBox fx:id="expenseTypeBox" prefWidth="170.0" styleClass="services-choicebox"/>
-                <TextField fx:id="amountField" promptText="Monto" prefWidth="120.0" styleClass="services-textfield"/>
-                <ChoiceBox fx:id="paymentMethodBox" prefWidth="170.0" styleClass="services-choicebox"/>
+
+                <!-- ====================================== -->
+                <!-- Registro de Egreso -->
+                <!-- ====================================== -->
+                <Label text="Registrar egreso" styleClass="services-title"/>
+
+                <VBox spacing="12" styleClass="services-section">
+                    <children>
+
+                        <!-- Línea 1: tipo, monto -->
+                        <HBox alignment="CENTER" spacing="18" styleClass="services-row">
+                            <children>
+                                <ComboBox fx:id="expenseTypeBox" prefWidth="180.0" promptText="Tipo de egreso" styleClass="services-combobox"/>
+                                <TextField fx:id="amountField" prefWidth="120.0" promptText="Monto (Gs)" styleClass="services-textfield"/>
+                            </children>
+                        </HBox>
+
+                        <!-- Línea 2: descripción -->
+                        <HBox alignment="CENTER" spacing="18" styleClass="services-row">
+                            <children>
+                                <TextField fx:id="descriptionField" promptText="Descripción del egreso" prefWidth="300.0" styleClass="services-textfield"/>
+                            </children>
+                        </HBox>
+
+                        <!-- Línea 3: métodos de pago -->
+                        <VBox spacing="6" alignment="CENTER">
+                            <children>
+                                <Label text="Método de pago:" style="-fx-font-weight: bold;"/>
+                                <HBox fx:id="paymentButtonsBox" spacing="10" alignment="CENTER">
+                                    <!-- ToggleButtons se generan dinámicamente -->
+                                </HBox>
+                            </children>
+                        </VBox>
+
+                        <!-- Línea 4: botón de guardar -->
+                        <HBox alignment="CENTER_RIGHT" spacing="10" styleClass="services-row">
+                            <children>
+                                <Button fx:id="saveButton" text="💾 Guardar egreso" prefWidth="150.0" styleClass="services-button"/>
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+
+                <Separator/>
+
+                <!-- ====================================== -->
+                <!-- Historial de Egresos -->
+                <!-- ====================================== -->
+                <Label text="Historial de egresos" styleClass="services-title"/>
+
+                <TableView fx:id="expensesTable"
+                           prefHeight="320.0"
+                           prefWidth="580.0"
+                           styleClass="main-table services-table">
+                    <columns>
+                        <TableColumn fx:id="colDate" prefWidth="110" text="Fecha"/>
+                        <TableColumn fx:id="colType" prefWidth="100" text="Tipo"/>
+                        <TableColumn fx:id="colAmount" prefWidth="120" text="Monto"/>
+                        <TableColumn fx:id="colPaymentMethod" prefWidth="100" text="Pago"/>
+                        <TableColumn fx:id="colDescription" prefWidth="200" text="Descripción"/>
+                    </columns>
+                </TableView>
+
+                <!-- Pie informativo -->
+                <HBox alignment="CENTER_RIGHT" spacing="10" styleClass="services-row" style="-fx-padding: 8 0 0 0;">
+                    <children>
+                        <Label text="Doble clic para eliminar un egreso" style="-fx-font-size: 11px; -fx-text-fill: #999;"/>
+                        <!--FontIcon iconLiteral="fa-info-circle" iconSize="12" iconColor="#888"/-->
+                    </children>
+                </HBox>
+
             </children>
-        </HBox>
-        <HBox alignment="CENTER" spacing="18" styleClass="services-row">
-            <children>
-                <TextField fx:id="descriptionField" promptText="Descripción" prefWidth="220.0" styleClass="services-textfield"/>
-                <Button mnemonicParsing="false" text="Guardar" prefWidth="150.0" fx:id="saveButton" styleClass="services-button"/>
-            </children>
-        </HBox>
-        <TableView fx:id="expensesTable"
-                   prefHeight="300.0"
-                   prefWidth="580.0"
-                   styleClass="main-table services-table">
-            <columns>
-                <TableColumn fx:id="colDate" prefWidth="110" text="Fecha"/>
-                <TableColumn fx:id="colType" text="Tipo"/>
-                <TableColumn fx:id="colAmount" prefWidth="120" text="Monto"/>
-                <TableColumn fx:id="colPaymentMethod" prefWidth="100" text="Pago"/>
-                <TableColumn fx:id="colDescription" text="Descripción"/>
-            </columns>
-        </TableView>
-    </children>
-</VBox>
+        </VBox>
+    </content>
+</ScrollPane>

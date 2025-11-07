@@ -24,6 +24,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -146,5 +147,13 @@ public class ServicesService {
         logger.info("{} Deleting service ID={}...", PREFIX, id);
         serviceRepo.delete(id);
         logger.info("{} Service deleted successfully (ID={}).", PREFIX, id);
+    }
+
+    /** Calculates the total production for a barber in a given week. */
+    public double getWeeklyProductionByBarber(int userId, LocalDate weekStart, LocalDate weekEnd) {
+        double total = serviceRepo.getProduccionSemanalPorBarbero(userId, weekStart, weekEnd);
+        logger.info("{} Weekly production calculated -> user={}, total={}, range {} to {}",
+                PREFIX, userId, total, weekStart, weekEnd);
+        return total;
     }
 }

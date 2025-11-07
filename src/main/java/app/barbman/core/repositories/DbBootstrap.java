@@ -204,22 +204,44 @@ public class DbBootstrap {
 
             // SALARIES
             // Records weekly salary payments to users with production totals and payment details
+            // Each salary can optionally reference an expense entry for accounting linkage
             // TODO: Add monthly salary support
+                        stmt.execute("""
+                CREATE TABLE IF NOT EXISTS salaries (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_id INTEGER NOT NULL,
+                    week_start TEXT NOT NULL,
+                    week_end TEXT NOT NULL,
+                    total_production REAL NOT NULL,
+                    amount_paid REAL NOT NULL,
+                    pay_type_snapshot INTEGER NOT NULL,
+                    pay_date TEXT,
+                    payment_method_id INTEGER NOT NULL,
+                    expense_id INTEGER, -- links to expenses table for traceability
+                    FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id),
+                    FOREIGN KEY (user_id) REFERENCES users(id),
+                    FOREIGN KEY (expense_id) REFERENCES expenses(id)
+                );
+            """);
+
+
+            // ADVANCES
+            // Keeps a detailed record of all cash advances given to users (barbers)
+            // Each advance is linked to an expense entry for unified accounting
             stmt.execute("""
-                        CREATE TABLE IF NOT EXISTS salaries (
+                        CREATE TABLE IF NOT EXISTS advances (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
                             user_id INTEGER NOT NULL,
-                            week_start TEXT NOT NULL,
-                            week_end TEXT NOT NULL,
-                            total_production REAL NOT NULL,
-                            amount_paid REAL NOT NULL,
-                            pay_type_snapshot INTEGER NOT NULL,
-                            pay_date TEXT,
+                            amount REAL NOT NULL CHECK (amount > 0),
+                            date TEXT NOT NULL CHECK (date = date(date)),
                             payment_method_id INTEGER NOT NULL,
+                            expense_id INTEGER NOT NULL,
+                            FOREIGN KEY (user_id) REFERENCES users(id),
                             FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id),
-                            FOREIGN KEY (user_id) REFERENCES users(id)
+                            FOREIGN KEY (expense_id) REFERENCES expenses(id)
                         );
                     """);
+
             // PAYMENT METHODS
             // Defines available payment methods for transactions
             stmt.execute("""

@@ -1,7 +1,7 @@
 package app.barbman.core.controller.salary;
 
 import app.barbman.core.dto.SalaryDTO;
-import app.barbman.core.model.Salary;
+import app.barbman.core.model.salaries.Salary;
 import app.barbman.core.model.User;
 import app.barbman.core.repositories.expense.ExpenseRepositoryImpl;
 import app.barbman.core.repositories.users.UsersRepository;
@@ -11,7 +11,7 @@ import app.barbman.core.repositories.services.service.ServiceRepository;
 import app.barbman.core.repositories.services.service.ServiceRepositoryImpl;
 import app.barbman.core.repositories.salaries.SalariesRepository;
 import app.barbman.core.repositories.salaries.SalariesRepositoryImpl;
-import app.barbman.core.service.sueldos.SueldosService;
+import app.barbman.core.service.salaries.SalariesService;
 import app.barbman.core.util.NumberFormatterUtil;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -57,7 +57,7 @@ public class ConfirmSalaryController implements Initializable {
     private final ServiceRepository serviceRepository = new ServiceRepositoryImpl();
     private final ExpenseRepository expenseRepository = new ExpenseRepositoryImpl();
     private final UsersRepository usersRepository = new UsersRepositoryImpl();
-    private final SueldosService sueldosService = new SueldosService(salariesRepository, serviceRepository, expenseRepository);
+    //private final SalariesService salariesService = new SalariesService(salariesRepository, serviceRepository, expenseRepository);
     private SueldosController parentController;
 
     // User y sueldo seleccionado desde la tabla principal
@@ -90,10 +90,10 @@ public class ConfirmSalaryController implements Initializable {
         java.time.LocalDate lunes = hoy.with(java.time.DayOfWeek.MONDAY);
         java.time.LocalDate sabado = lunes.plusDays(5);
 
-        double adelantos = expenseRepository.getTotalAdelantos(dto.getUserId(), lunes, sabado);
+        //double adelantos = expenseRepository.getTotalAdelantos(dto.getUserId(), lunes, sabado);
 
         lblProduction.setText("Producción: " + NumberFormatterUtil.format(dto.getTotalProduction()) + " Gs");
-        lblSalaryAdvance.setText("Adelantos: " + NumberFormatterUtil.format(adelantos) + " Gs");
+        //lblSalaryAdvance.setText("Adelantos: " + NumberFormatterUtil.format(adelantos) + " Gs");
         lblFinalAmount.setText("Salary final: " + NumberFormatterUtil.format(dto.getAmountPaid()) + " Gs");
 
         if (user != null && user.getPaymentType() == 0) {
@@ -129,17 +129,17 @@ public class ConfirmSalaryController implements Initializable {
             }
             manualAmount = Double.parseDouble(manualAmountField.getText().replace(".", ""));
 
-            Salary salary = sueldosService.calcularSueldo(user, bonus);
+            //Salary salary = salariesService.calcularSueldo(user, bonus);
             if (manualAmount >= 0) { // I'm setting this on frontend ?? I'm too bad at this
-                salary.setAmountPaid(manualAmount);
+                //salary.setAmountPaid(manualAmount);
             }
 
-            int formaPago = paymentTypeChoiceBox.getValue(); // TODO: set this to int based on choicebox value
+            //int formaPago = paymentTypeChoiceBox.getValue(); // TODO: set this to int based on choicebox value
             // Guardar pago con bonus
-            sueldosService.pagarSueldo(salary, formaPago, bonus);
+            //salariesService.pagarSueldo(salary, formaPago, bonus);
 
-            logger.info("{} Salary registered successfully -> User: {}, Amount: {}, PaymentMethod: {}",
-                    PREFIX ,user.getName(), salary.getAmountPaid(), formaPago);
+            //logger.info("{} Salary registered successfully -> User: {}, Amount: {}, PaymentMethod: {}",
+                    //PREFIX ,user.getName(), salary.getAmountPaid(), formaPago);
 
         } catch (Exception e) {
             logger.error("{} Error registering salary: {}", PREFIX, e.getMessage(), e);

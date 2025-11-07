@@ -23,6 +23,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.HBox;
 import javafx.util.StringConverter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -40,6 +41,7 @@ public class ServicesViewController implements Initializable {
 
     private static final Logger logger = LogManager.getLogger(ServicesViewController.class);
     private static final String PREFIX = "[SERV-VIEW]";
+    private final ToggleGroup paymentGroup = new ToggleGroup();
 
     @FXML private TableView<ServiceHistoryDTO> servicesTable;
     @FXML private TableColumn<ServiceHistoryDTO, String> colDate;
@@ -65,12 +67,10 @@ public class ServicesViewController implements Initializable {
     @FXML private TableColumn<ServiceItem, String> colItemPrice;
     @FXML private TableColumn<ServiceItem, String> colItemRemove;
 
-    // Payment method ComboBox and ToggleButtons
-    @FXML private ToggleGroup paymentGroup;
-    @FXML private ToggleButton cashButton;
-    @FXML private ToggleButton cardButton;
-    @FXML private ToggleButton transferButton;
-    @FXML private ToggleButton qrButton;
+    @FXML
+    private ResourceBundle resources; // This will be injected by JavaFX
+    @FXML
+    private HBox paymentButtonsBox;
 
     // History table filter controls
     @FXML private ComboBox<User> filterUserComboBox;
@@ -98,7 +98,7 @@ public class ServicesViewController implements Initializable {
         // ComboBoxes
         loadUsers();
         loadDefinedServices();
-        loadPaymentMethods();
+        loadPaymentMethodButtons();
 
         loadServicesHistory();
 
@@ -225,6 +225,7 @@ public class ServicesViewController implements Initializable {
         userComboBox.setItems(FXCollections.observableArrayList(usersService.getAllUsers()));
     }
 
+    /** Loads defined services into the serviceComboBox with a custom StringConverter. */
     private void loadDefinedServices() {
         List<ServiceDefinition> services = serviceDefinitionsService.getAll();
         serviceComboBox.setItems(FXCollections.observableArrayList(services));
@@ -241,18 +242,27 @@ public class ServicesViewController implements Initializable {
         logger.info("{} {} defined services loaded into ComboBox.", PREFIX, services.size());
     }
 
-    private void loadPaymentMethods() {
-        if (paymentGroup == null) {
-            paymentGroup = new ToggleGroup();
-            cashButton.setToggleGroup(paymentGroup);
-            cardButton.setToggleGroup(paymentGroup);
-            transferButton.setToggleGroup(paymentGroup);
-            qrButton.setToggleGroup(paymentGroup);
-        }
-        cashButton.setSelected(true); // Default selection
+    /** Dynamically loads payment method buttons into the HBox. */
+    private void loadPaymentMethodButtons() {
+        List<PaymentMethod> methods = paymentMethodsService.getAllPaymentMethods();
 
+        for (PaymentMethod method : methods) {
+            // Traduce el nombre usando el bundle si existe
+            String key = "payment_method_togglebutton_" + method.getName().toLowerCase();
+            String label = resources.containsKey(key) ? resources.getString(key) : method.getName();
+
+            ToggleButton btn = new ToggleButton(label);
+            btn.setUserData(method);              // Guarda el objeto PaymentMethod
+            btn.setToggleGroup(paymentGroup);     // Hace que sean exclusivos
+            btn.getStyleClass().add("payment-toggle");
+
+            paymentButtonsBox.getChildren().add(btn);
+        }
+
+        logger.info("{} Loaded {} payment method buttons.", PREFIX, methods.size());
     }
 
+    /** Shows a confirmation dialog before saving the service. */
     private void confirmAndSaveService() {
         Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
         confirmAlert.setTitle("Confirmar registro");
@@ -276,23 +286,16 @@ public class ServicesViewController implements Initializable {
         });
     }
 
+    /** Returns the selected PaymentMethod from the ToggleGroup, or null if none is selected. */
     private PaymentMethod getSelectedPaymentMethod() {
-        ToggleButton selected = (ToggleButton) paymentGroup.getSelectedToggle();
-        if (selected == null) return null;
-
-        String key = switch (selected.getId()) {
-            case "cashButton" -> "cash";
-            case "cardButton" -> "card";
-            case "transferButton" -> "transfer";
-            case "qrButton" -> "qr";
-            default -> null;
-        };
-
-        if (key != null) {
-            return paymentMethodsService.getPaymentMethodByName(key);
+        Toggle selected = paymentGroup.getSelectedToggle();
+        if (selected == null) {
+            AlertUtil.showError("Please select a payment method.");
+            return null;
         }
-        return null;
+        return (PaymentMethod) selected.getUserData();
     }
+
 
     private void saveService() {
         User user = userComboBox.getValue();

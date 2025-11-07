@@ -192,11 +192,11 @@ public class CajaController implements Initializable {
                 .filter(e -> !e.getDate().isBefore(desde) && !e.getDate().isAfter(hasta))
                 .collect(Collectors.toList());
 
-        double totalIngresos = serviciosRango.stream().mapToDouble(Service::getPrice).sum();
+        //double totalIngresos = serviciosRango.stream().mapToDouble(Service::getPrice).sum();
         double totalEgresos = egresosRangos.stream().mapToDouble(Expense::getAmount).sum();
 
         lblSemana.setText("Semana: " + desde.format(DATE_FORMATTER) + " al " + hasta.format(DATE_FORMATTER));
-        lblIngresosSemana.setText("Ingresos totales: " + NumberFormatterUtil.format(totalIngresos) + " Gs");
+        //lblIngresosSemana.setText("Ingresos totales: " + NumberFormatterUtil.format(totalIngresos) + " Gs");
         lblEgresosSemana.setText("Egresos totales: " + NumberFormatterUtil.format(totalEgresos) + " Gs");
 
         boxProduccionBarberos.getChildren().clear();

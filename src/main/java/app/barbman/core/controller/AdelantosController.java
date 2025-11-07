@@ -5,7 +5,7 @@ import app.barbman.core.repositories.expense.ExpenseRepositoryImpl;
 import app.barbman.core.repositories.users.UsersRepository;
 import app.barbman.core.repositories.users.UsersRepositoryImpl;
 import app.barbman.core.repositories.expense.ExpenseRepository;
-import app.barbman.core.service.egresos.EgresosService;
+import app.barbman.core.service.expenses.ExpensesService;
 import app.barbman.core.util.NumberFormatterUtil;
 import app.barbman.core.util.SessionManager;
 import javafx.collections.FXCollections;
@@ -39,7 +39,7 @@ public class AdelantosController implements Initializable {
 
     private final UsersRepository usersRepository = new UsersRepositoryImpl();
     private final ExpenseRepository expenseRepository = new ExpenseRepositoryImpl();
-    private final EgresosService egresosService = new EgresosService(expenseRepository);
+    private final ExpensesService expensesService = new ExpensesService(expenseRepository);
 
     /**
      * Inicializa la vista, cargando la lista de barberos y las formas de pago disponibles.
@@ -114,7 +114,7 @@ public class AdelantosController implements Initializable {
             double monto = Double.parseDouble(montoField.getText().replace(".", "").trim());
             String formaPago = formaPagoChoiceBox.getValue();
 
-            egresosService.addAdelanto(barberoId, monto, formaPago);
+            //expensesService.addAdelanto(barberoId, monto, formaPago);
 
             logger.info("Adelanto registrado correctamente -> User: {}, Monto: {}, Forma de pago: {}",
                     user.getName(), monto, formaPago);

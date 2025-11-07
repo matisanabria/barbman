@@ -1,6 +1,6 @@
 package app.barbman.core.repositories.salaries;
 
-import app.barbman.core.model.Salary;
+import app.barbman.core.model.salaries.Salary;
 import app.barbman.core.repositories.DbBootstrap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,15 +12,14 @@ import java.util.List;
 
 public class SalariesRepositoryImpl implements SalariesRepository {
     private static final Logger logger = LogManager.getLogger(SalariesRepositoryImpl.class);
+    public static final String PREFIX = "[SALARIES-REPO]";
 
     private static final String SELECT_BASE = """
         SELECT id, user_id, week_start, week_end,
                total_production, amount_paid, pay_type_snapshot,
-               pay_date, payment_method_id
+               pay_date, payment_method_id, expense_id
         FROM salaries
         """;
-
-    public static final String PREFIX = "[SALARIES-REPO]";
 
     @Override
     public List<Salary> findAll() {
@@ -29,10 +28,11 @@ public class SalariesRepositoryImpl implements SalariesRepository {
              PreparedStatement ps = db.prepareStatement(SELECT_BASE);
              ResultSet rs = ps.executeQuery()) {
 
-            while (rs.next()) {
-                list.add(mapRow(rs));
-            }
+            while (rs.next()) list.add(mapRow(rs));
+
+            logger.debug("{} Retrieved {} salaries.", PREFIX, list.size());
             return list;
+
         } catch (Exception e) {
             logger.warn("{} Error listing salaries: {}", PREFIX, e.getMessage());
         }
@@ -61,11 +61,12 @@ public class SalariesRepositoryImpl implements SalariesRepository {
     @Override
     public void save(Salary salary) {
         String sql = """
-            INSERT INTO sueldos (user_id, week_start, week_end,
+            INSERT INTO salaries (user_id, week_start, week_end,
                total_production, amount_paid, pay_type_snapshot,
-               pay_date, payment_method_id)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+               pay_date, payment_method_id, expense_id)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             """;
+
         try (Connection db = DbBootstrap.connect();
              PreparedStatement ps = db.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
@@ -75,8 +76,9 @@ public class SalariesRepositoryImpl implements SalariesRepository {
             ps.setDouble(4, salary.getTotalProduction());
             ps.setDouble(5, salary.getAmountPaid());
             ps.setInt(6, salary.getPayTypeSnapshot());
-            ps.setString(7, salary.getPayDate().toString());
+            ps.setString(7, salary.getPayDate() != null ? salary.getPayDate().toString() : null);
             ps.setInt(8, salary.getPaymentMethodId());
+            ps.setObject(9, salary.getExpenseId() == 0 ? null : salary.getExpenseId());
 
             ps.executeUpdate();
 
@@ -85,6 +87,9 @@ public class SalariesRepositoryImpl implements SalariesRepository {
                     salary.setId(keys.getInt(1));
                 }
             }
+
+            logger.info("{} Salary saved successfully (ID={})", PREFIX, salary.getId());
+
         } catch (Exception e) {
             logger.warn("{} Error saving salary: {}", PREFIX, e.getMessage());
         }
@@ -96,9 +101,11 @@ public class SalariesRepositoryImpl implements SalariesRepository {
             UPDATE salaries
             SET user_id = ?, week_start = ?, week_end = ?,
                 total_production = ?, amount_paid = ?,
-                pay_type_snapshot = ?, pay_date = ?, payment_method_id = ?
+                pay_type_snapshot = ?, pay_date = ?, 
+                payment_method_id = ?, expense_id = ?
             WHERE id = ?
             """;
+
         try (Connection db = DbBootstrap.connect();
              PreparedStatement ps = db.prepareStatement(sql)) {
 
@@ -108,11 +115,15 @@ public class SalariesRepositoryImpl implements SalariesRepository {
             ps.setDouble(4, salary.getTotalProduction());
             ps.setDouble(5, salary.getAmountPaid());
             ps.setInt(6, salary.getPayTypeSnapshot());
-            ps.setString(7, salary.getPayDate().toString());
+            ps.setString(7, salary.getPayDate() != null ? salary.getPayDate().toString() : null);
             ps.setInt(8, salary.getPaymentMethodId());
-            ps.setInt(9, salary.getId());
+            ps.setObject(9, salary.getExpenseId() == 0 ? null : salary.getExpenseId());
+            ps.setInt(10, salary.getId());
 
             ps.executeUpdate();
+
+            logger.info("{} Salary updated successfully (ID={})", PREFIX, salary.getId());
+
         } catch (Exception e) {
             logger.warn("{} Error updating salary id {}: {}", PREFIX, salary.getId(), e.getMessage());
         }
@@ -126,6 +137,9 @@ public class SalariesRepositoryImpl implements SalariesRepository {
 
             ps.setInt(1, id);
             ps.executeUpdate();
+
+            logger.info("{} Salary deleted (ID={})", PREFIX, id);
+
         } catch (Exception e) {
             logger.warn("{} Error deleting salary id {}: {}", PREFIX, id, e.getMessage());
         }
@@ -148,9 +162,8 @@ public class SalariesRepositoryImpl implements SalariesRepository {
             ps.setString(2, date.toString());
             ps.setString(3, date.toString());
 
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                return mapRow(rs);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return mapRow(rs);
             }
 
         } catch (Exception e) {
@@ -169,8 +182,9 @@ public class SalariesRepositoryImpl implements SalariesRepository {
         salary.setTotalProduction(rs.getDouble("total_production"));
         salary.setAmountPaid(rs.getDouble("amount_paid"));
         salary.setPayTypeSnapshot(rs.getInt("pay_type_snapshot"));
-        salary.setPayDate(LocalDate.parse(rs.getString("pay_date")));
+        salary.setPayDate(rs.getString("pay_date") != null ? LocalDate.parse(rs.getString("pay_date")) : null);
         salary.setPaymentMethodId(rs.getInt("payment_method_id"));
+        salary.setExpenseId(rs.getInt("expense_id"));
         return salary;
     }
 }

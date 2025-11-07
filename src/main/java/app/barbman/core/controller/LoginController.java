@@ -75,8 +75,19 @@ public class LoginController implements Initializable {
             return newText.matches("\\d{0,4}") ? change : null;
         }));
 
+        // Focus on PIN field at start
+        Platform.runLater(() -> {
+            pinField.requestFocus();
+            pinField.positionCaret(pinField.getText().length()); // cursor al final, por si acaso
+        });
+
         // Enter key triggers login
-        pinField.setOnAction(event -> loginController());
+        pinField.setOnKeyPressed(event -> {
+            switch (event.getCode()) {
+                case ENTER -> loginController();   // Enter calls login
+                default -> {} // inores other keys
+            }
+        });
 
         // Wait a bit to let window finish rendering (avoids cachedNode issues)
         Platform.runLater(() -> {

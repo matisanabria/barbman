@@ -11,12 +11,33 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Locale;
 import java.util.Properties;
+import java.util.ResourceBundle;
 import java.util.function.Consumer;
 
 public class WindowManager {
     private static final Logger logger = LogManager.getLogger(WindowManager.class);
     private static boolean fontsLoaded = false;
+
+    // --- Soporte multilenguaje ---
+    private static Locale currentLocale = new Locale("es", "ES");
+    private static ResourceBundle currentBundle = ResourceBundle.getBundle("app.barbman.core.lang.lang", currentLocale);
+
+    public static void setLocale(Locale locale) {
+        if (locale != null) {
+            currentLocale = locale;
+            currentBundle = ResourceBundle.getBundle("app.barbman.core.lang.lang", currentLocale);
+        }
+    }
+
+    public static Locale getCurrentLocale() {
+        return currentLocale;
+    }
+
+    public static ResourceBundle getBundle() {
+        return currentBundle;
+    }
 
     /**
      * Abre una nueva ventana con el FXML indicado y configura fuentes, estilos y título con versión.
@@ -28,7 +49,7 @@ public class WindowManager {
         try {
             loadFontsOnce();
 
-            FXMLLoader loader = new FXMLLoader(WindowManager.class.getResource(fxmlPath));
+            FXMLLoader loader = new FXMLLoader(WindowManager.class.getResource(fxmlPath), currentBundle);
             Parent root = loader.load();
             Scene scene = new Scene(root);
 
@@ -65,7 +86,7 @@ public class WindowManager {
         try {
             loadFontsOnce();
 
-            FXMLLoader loader = new FXMLLoader(WindowManager.class.getResource(fxmlPath));
+            FXMLLoader loader = new FXMLLoader(WindowManager.class.getResource(fxmlPath), currentBundle);
             Parent root = loader.load();
             Scene scene = new Scene(root);
 
@@ -100,7 +121,7 @@ public class WindowManager {
         try {
             loadFontsOnce();
 
-            FXMLLoader loader = new FXMLLoader(WindowManager.class.getResource(fxmlPath));
+            FXMLLoader loader = new FXMLLoader(WindowManager.class.getResource(fxmlPath), currentBundle);
             Parent root = loader.load();
             Scene scene = new Scene(root);
 
@@ -159,7 +180,7 @@ public class WindowManager {
         try {
             loadFontsOnce();
 
-            FXMLLoader loader = new FXMLLoader(WindowManager.class.getResource(fxmlPath));
+            FXMLLoader loader = new FXMLLoader(WindowManager.class.getResource(fxmlPath), currentBundle);
             Parent root = loader.load();
             Scene scene = new Scene(root);
 
@@ -230,7 +251,7 @@ public class WindowManager {
         try {
             loadFontsOnce();
 
-            FXMLLoader loader = new FXMLLoader(WindowManager.class.getResource(fxmlPath));
+            FXMLLoader loader = new FXMLLoader(WindowManager.class.getResource(fxmlPath), currentBundle);
             Parent root = loader.load();
             Scene scene = new Scene(root);
 
@@ -272,7 +293,7 @@ public class WindowManager {
      */
     public static void setEmbeddedView(BorderPane borderPane, String position, String fxmlPath) {
         try {
-            FXMLLoader loader = new FXMLLoader(WindowManager.class.getResource(fxmlPath));
+            FXMLLoader loader = new FXMLLoader(WindowManager.class.getResource(fxmlPath), currentBundle);
             Parent view = loader.load();
 
             switch (position.toLowerCase()) {
@@ -287,5 +308,4 @@ public class WindowManager {
             logger.error("Error loading view: " + fxmlPath, e);
         }
     }
-
 }

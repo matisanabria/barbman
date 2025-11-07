@@ -5,7 +5,8 @@ import app.barbman.core.repositories.expense.ExpenseRepository;
 import app.barbman.core.repositories.expense.ExpenseRepositoryImpl;
 import app.barbman.core.repositories.paymentmethod.PaymentMethodRepository;
 import app.barbman.core.repositories.paymentmethod.PaymentMethodRepositoryImpl;
-import app.barbman.core.service.egresos.EgresosService;
+import app.barbman.core.service.expenses.ExpensesService;
+import app.barbman.core.service.paymentmethods.PaymentMethodsService;
 import app.barbman.core.util.NumberFormatterUtil;
 import app.barbman.core.util.SessionManager;
 import app.barbman.core.util.TextFormatterUtil;
@@ -15,6 +16,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.scene.layout.HBox;
 import javafx.util.StringConverter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,22 +40,23 @@ public class ExpensesViewController implements Initializable {
     @FXML private TableColumn<Expense, String> colDescription;
 
     @FXML private ChoiceBox<String> expenseTypeBox;
-    @FXML private ChoiceBox<PaymentMethod> paymentMethodBox;
     @FXML private TextField amountField;
     @FXML private TextField descriptionField;
     @FXML private Button saveButton;
 
-
+    // Payment Method toggle buttons
+    private final ToggleGroup paymentGroup = new ToggleGroup();
+    @FXML private HBox paymentButtonsBox; // This will be initialized via FXML
+    private final PaymentMethodsService paymentMethodsService = new PaymentMethodsService(new PaymentMethodRepositoryImpl());
     private final ExpenseRepository expenseRepo = new ExpenseRepositoryImpl();
-    private final PaymentMethodRepository paymentRepo = new PaymentMethodRepositoryImpl();
-    private final EgresosService expenseService = new EgresosService(expenseRepo);
+    private final ExpensesService expenseService = new ExpensesService(expenseRepo);
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         logger.info("{} Initializing expenses view...", PREFIX);
 
         setupTable();
-        loadPaymentMethods();
+        loadPaymentMethodButtons();
         loadExpenseTypes();
 
         displayExpenses();
@@ -85,7 +88,7 @@ public class ExpensesViewController implements Initializable {
         colAmount.setCellValueFactory(cd ->
                 new SimpleStringProperty(NumberFormatterUtil.format(cd.getValue().getAmount()) + " Gs"));
         colPaymentMethod.setCellValueFactory(cd -> {
-            PaymentMethod p = paymentRepo.findById(cd.getValue().getPaymentMethodId());
+            PaymentMethod p = paymentMethodsService.getPaymentMethodById(cd.getValue().getPaymentMethodId());
             String name = (p != null && p.getName() != null)
                     ? TextFormatterUtil.capitalizeFirstLetter(p.getName())
                     : "Unknown";
@@ -95,19 +98,33 @@ public class ExpensesViewController implements Initializable {
                 new SimpleStringProperty(cd.getValue().getDescription()));
     }
 
-    private void loadPaymentMethods() {
-        List<PaymentMethod> payments = paymentRepo.findAll();
-        paymentMethodBox.setItems(FXCollections.observableArrayList(payments));
-        paymentMethodBox.setConverter(new StringConverter<>() {
-            @Override
-            public String toString(PaymentMethod p) {
-                return p != null ? TextFormatterUtil.capitalizeFirstLetter(p.getName()) : "";
+    private void loadPaymentMethodButtons() {
+        List<PaymentMethod> methods = paymentMethodsService.getAllPaymentMethods();
+        ToggleButton defaultButton = null;
+
+        for (PaymentMethod method : methods) {
+            ToggleButton btn = new ToggleButton(TextFormatterUtil.capitalizeFirstLetter(method.getName()));
+            btn.setUserData(method);
+            btn.setToggleGroup(paymentGroup);
+            btn.getStyleClass().add("payment-toggle");
+            paymentButtonsBox.getChildren().add(btn);
+
+            // Guardar referencia al botón de "cash" o, si no hay, al primero
+            if (defaultButton == null || "cash".equalsIgnoreCase(method.getName())) {
+                defaultButton = btn;
             }
-            @Override
-            public PaymentMethod fromString(String s) { return null; }
-        });
-        logger.info("{} {} payment methods loaded into ChoiceBox.", PREFIX, payments.size());
+        }
+
+        // Seleccionar el botón por defecto
+        if (defaultButton != null) {
+            paymentGroup.selectToggle(defaultButton);
+            logger.info("{} Default payment method selected -> {}", PREFIX,
+                    ((PaymentMethod) defaultButton.getUserData()).getName());
+        }
+
+        logger.info("{} Loaded {} payment method buttons.", PREFIX, methods.size());
     }
+
 
     private void loadExpenseTypes() {
         List<String> expenseTypes = List.of(
@@ -137,17 +154,30 @@ public class ExpensesViewController implements Initializable {
 
     private void displayExpenses() {
         logger.info("{} Loading expenses list...", PREFIX);
-        List<Expense> expenses = expenseRepo.findAll();
+        List<Expense> expenses = expenseService.findAll();
         Collections.reverse(expenses);
         expensesTable.setItems(FXCollections.observableArrayList(expenses));
         logger.info("{} {} expenses loaded in table.", PREFIX, expenses.size());
+    }
+
+    private PaymentMethod getSelectedPaymentMethod() {
+        Toggle selected = paymentGroup.getSelectedToggle();
+        if (selected == null) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Seleccionar método de pago");
+            alert.setHeaderText(null);
+            alert.setContentText("Por favor, selecciona un método de pago antes de guardar.");
+            alert.showAndWait();
+            return null;
+        }
+        return (PaymentMethod) selected.getUserData();
     }
 
     private void saveExpense() {
         String type = expenseTypeBox.getValue();
         String desc = TextFormatterUtil.capitalizeFirstLetter(descriptionField.getText().trim());
         String amountStr = amountField.getText().replace(".", "").trim();
-        PaymentMethod payment = paymentMethodBox.getValue();
+        PaymentMethod payment = getSelectedPaymentMethod();
 
         if (type == null || type.isEmpty()) {
             showAlert("You must select an expense type.");
@@ -173,7 +203,7 @@ public class ExpensesViewController implements Initializable {
         try {
             double amount = Double.parseDouble(amountStr);
 
-            expenseService.addEgreso(
+            expenseService.registerExpense(
                     type,
                     amount,
                     desc,
@@ -235,7 +265,7 @@ public class ExpensesViewController implements Initializable {
                 secondAlert.setContentText("Do you really want to delete this expense?");
                 secondAlert.showAndWait().ifPresent(secondResponse -> {
                     if (secondResponse == ButtonType.OK) {
-                        expenseRepo.delete(expense.getId());
+                        expenseService.deleteExpense(expense.getId());
                         displayExpenses();
                         logger.info("{} Expense deleted -> ID: {}, Type: {}, Amount: {}, Date: {}",
                                 PREFIX,
@@ -258,8 +288,6 @@ public class ExpensesViewController implements Initializable {
         descriptionField.clear();
         amountField.clear();
         expenseTypeBox.getSelectionModel().selectFirst();
-        if (!paymentMethodBox.getItems().isEmpty())
-            paymentMethodBox.setValue(paymentMethodBox.getItems().get(0));
     }
 
     private void showAlert(String message) {

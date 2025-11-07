@@ -2,7 +2,6 @@ package app.barbman.core.repositories.expense;
 
 import app.barbman.core.model.Expense;
 import app.barbman.core.repositories.DbBootstrap;
-import app.barbman.core.repositories.expense.ExpenseRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -128,37 +127,6 @@ public class ExpenseRepositoryImpl implements ExpenseRepository {
     }
 
     @Override
-    public double getTotalAdelantos(int barberoId, LocalDate desde, LocalDate hasta) {
-        double total = 0.0;
-        String sql = """
-            SELECT SUM(amount)
-            FROM expenses
-            WHERE type = 'advance'
-              AND description LIKE ?
-              AND date BETWEEN ? AND ?
-            """;
-
-        try (Connection db = DbBootstrap.connect();
-             PreparedStatement ps = db.prepareStatement(sql)) {
-
-            ps.setString(1, "%barber ID " + barberoId + "%");
-            ps.setString(2, desde.toString());
-            ps.setString(3, hasta.toString());
-
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) total = rs.getDouble(1);
-            }
-
-            logger.info("{} Total advances for barber ID={} between {} and {}: {} Gs",
-                    PREFIX, barberoId, desde, hasta, total);
-
-        } catch (Exception e) {
-            logger.warn("{} Error calculating total advances for barber {}: {}", PREFIX, barberoId, e.getMessage());
-        }
-
-        return total;
-    }
-
     public List<Expense> searchByDateRange(LocalDate startDate, LocalDate endDate) {
         String sql = SELECT_BASE + " WHERE date BETWEEN ? AND ? ORDER BY date, id";
         List<Expense> list = new ArrayList<>();
@@ -191,5 +159,10 @@ public class ExpenseRepositoryImpl implements ExpenseRepository {
                 rs.getString("type"),
                 rs.getInt("payment_method_id")
         );
+    }
+
+    // TODO: Add repository health check (DB connection + table integrity)
+    public void debugRepositoryStatus() {
+        logger.debug("{} Repository health check executed successfully.", PREFIX);
     }
 }

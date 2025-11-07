@@ -7,7 +7,7 @@ import app.barbman.core.repositories.services.service.ServiceRepository;
 import app.barbman.core.repositories.services.service.ServiceRepositoryImpl;
 import app.barbman.core.repositories.salaries.SalariesRepository;
 import app.barbman.core.repositories.salaries.SalariesRepositoryImpl;
-import app.barbman.core.service.sueldos.SueldosService;
+import app.barbman.core.service.salaries.SalariesService;
 import app.barbman.core.util.NumberFormatterUtil;
 import app.barbman.core.util.WindowManager;
 import javafx.beans.property.SimpleStringProperty;
@@ -52,7 +52,7 @@ public class SueldosController implements Initializable {
     private final ExpenseRepository expenseRepository = new ExpenseRepositoryImpl();
 
     // Servicio de lógica de salaries
-    private final SueldosService sueldosService = new SueldosService(sueldoRepo, serviceRepository, expenseRepository);
+    //private final SalariesService salariesService = new SalariesService(sueldoRepo, serviceRepository, expenseRepository);
 
     /**
      * Metodo principal de inicialización de la vista.
@@ -90,8 +90,8 @@ public class SueldosController implements Initializable {
         logger.info("[SUELDO-VIEW] Generando salaries semanales desde {} hasta {}", lunes, sabado);
 
         // Obtener salaries de esta semana
-        List<SalaryDTO> lista = sueldosService.genSueldoDTOSemanal(lunes, sabado);
-        logger.info("[SUELDO-VIEW] Se generaron {} registros temporales para mostrar en la tabla", lista.size());
+        //List<SalaryDTO> lista = salariesService.genSueldoDTOSemanal(lunes, sabado);
+        //logger.info("[SUELDO-VIEW] Se generaron {} registros temporales para mostrar en la tabla", lista.size());
 
         // Configurar columnas
         colBarbero.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getUsername()));
@@ -149,7 +149,7 @@ public class SueldosController implements Initializable {
         });
 
         // Cargar en la tabla
-        sueldosTable.getItems().setAll(lista);
+        //sueldosTable.getItems().setAll(lista);
         logger.info("[SUELDO-VIEW] Datos cargados correctamente en la tabla de salaries.");
     }
 
@@ -161,10 +161,10 @@ public class SueldosController implements Initializable {
         LocalDate lunes = hoy.with(java.time.DayOfWeek.MONDAY);
         LocalDate sabado = lunes.plusDays(5);
 
-        List<SalaryDTO> lista = sueldosService.genSueldoDTOSemanal(lunes, sabado);
-        sueldosTable.getItems().setAll(lista);
+        //<SalaryDTO> lista = salariesService.genSueldoDTOSemanal(lunes, sabado);
+        //sueldosTable.getItems().setAll(lista);
 
-        logger.info("[SUELDO-VIEW] Tabla de salaries recargada ({}) registros.", lista.size());
+        //logger.info("[SUELDO-VIEW] Tabla de salaries recargada ({}) registros.", lista.size());
     }
 
 }

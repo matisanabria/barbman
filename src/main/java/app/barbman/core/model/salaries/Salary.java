@@ -1,4 +1,4 @@
-package app.barbman.core.model;
+package app.barbman.core.model.salaries;
 
 import java.time.LocalDate;
 import java.util.Objects;
@@ -13,11 +13,14 @@ public class Salary {
     private int payTypeSnapshot; // saves payment type at the time of payment
     private LocalDate payDate;
     private int paymentMethodId;
+    private int expenseId; // links to expenses table for traceability
 
     public Salary() { }
+
     public Salary(int id) {
         this.id = id;
     }
+
     public Salary(int userId,
                   LocalDate weekStartDate,
                   LocalDate weekEndDate,
@@ -36,6 +39,18 @@ public class Salary {
         this.paymentMethodId = paymentMethodId;
     }
 
+    public Salary(int userId,
+                  LocalDate weekStartDate,
+                  LocalDate weekEndDate,
+                  double totalProduction,
+                  double amountPaid,
+                  int payTypeSnapshot,
+                  LocalDate payDate,
+                  int paymentMethodId,
+                  int expenseId) {
+        this(userId, weekStartDate, weekEndDate, totalProduction, amountPaid, payTypeSnapshot, payDate, paymentMethodId);
+        this.expenseId = expenseId;
+    }
 
     // Getters
     public int getId() { return id; }
@@ -47,6 +62,7 @@ public class Salary {
     public int getPayTypeSnapshot() { return payTypeSnapshot; }
     public LocalDate getPayDate() { return payDate; }
     public int getPaymentMethodId() { return paymentMethodId; }
+    public int getExpenseId() { return expenseId; }
 
     // Setters
     public void setId(int id) { this.id = id; }
@@ -58,17 +74,28 @@ public class Salary {
     public void setPayTypeSnapshot(int payTypeSnapshot) { this.payTypeSnapshot = payTypeSnapshot; }
     public void setPayDate(LocalDate payDate) { this.payDate = payDate; }
     public void setPaymentMethodId(int paymentMethodId) { this.paymentMethodId = paymentMethodId; }
+    public void setExpenseId(int expenseId) { this.expenseId = expenseId; }
 
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Salary salary = (Salary) o;
-        return id == salary.id && userId == salary.userId && Double.compare(totalProduction, salary.totalProduction) == 0 && Double.compare(amountPaid, salary.amountPaid) == 0 && payTypeSnapshot == salary.payTypeSnapshot && paymentMethodId == salary.paymentMethodId && Objects.equals(weekStartDate, salary.weekStartDate) && Objects.equals(weekEndDate, salary.weekEndDate) && Objects.equals(payDate, salary.payDate);
+        return id == salary.id &&
+                userId == salary.userId &&
+                Double.compare(totalProduction, salary.totalProduction) == 0 &&
+                Double.compare(amountPaid, salary.amountPaid) == 0 &&
+                payTypeSnapshot == salary.payTypeSnapshot &&
+                paymentMethodId == salary.paymentMethodId &&
+                expenseId == salary.expenseId &&
+                Objects.equals(weekStartDate, salary.weekStartDate) &&
+                Objects.equals(weekEndDate, salary.weekEndDate) &&
+                Objects.equals(payDate, salary.payDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, userId, weekStartDate, weekEndDate, totalProduction, amountPaid, payTypeSnapshot, payDate, paymentMethodId);
+        return Objects.hash(id, userId, weekStartDate, weekEndDate, totalProduction,
+                amountPaid, payTypeSnapshot, payDate, paymentMethodId, expenseId);
     }
 
     @Override
@@ -83,6 +110,7 @@ public class Salary {
                 ", payTypeSnapshot=" + payTypeSnapshot +
                 ", payDate=" + payDate +
                 ", paymentMethodId=" + paymentMethodId +
+                ", expenseId=" + expenseId +
                 '}';
     }
 }
