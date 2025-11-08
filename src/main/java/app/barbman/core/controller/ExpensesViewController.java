@@ -39,7 +39,7 @@ public class ExpensesViewController implements Initializable {
     @FXML private TableColumn<Expense, String> colPaymentMethod;
     @FXML private TableColumn<Expense, String> colDescription;
 
-    @FXML private ChoiceBox<String> expenseTypeBox;
+    @FXML private ComboBox<String> expenseTypeBox;
     @FXML private TextField amountField;
     @FXML private TextField descriptionField;
     @FXML private Button saveButton;

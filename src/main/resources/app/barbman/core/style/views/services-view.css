@@ -1,0 +1,192 @@
+/* ===================================================
+   💈 Services View - Estilo de la vista de ingresos
+   =================================================== */
+
+.scroll-pane {
+    -fx-background-color: transparent;
+}
+
+.services-title {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-padding: 8 0 4 0;
+}
+
+/* Bloques */
+.services-section {
+    -fx-background-color: #2F2F2F;
+    -fx-background-radius: 14;
+    -fx-padding: 18 22 18 22;
+    -fx-spacing: 12;
+    -fx-effect: dropshadow(gaussian, #17171760, 12, 0.15, 0, 2);
+}
+
+.services-row {
+    -fx-spacing: 14;
+}
+
+/* Inputs */
+.services-combobox,
+.services-textfield,
+.services-date {
+    -fx-background-color: #232323;
+    -fx-background-radius: 10;
+    -fx-text-fill: #fff;
+    -fx-font-size: 15px;
+    -fx-padding: 6 10 6 10;
+    -fx-border-width: 0;
+    -fx-prompt-text-fill: #B0B0B0;
+}
+
+.services-button {
+    -fx-background-color: #FFDC60;
+    -fx-background-radius: 12;
+    -fx-text-fill: #232323;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, #00000055, 8, 0.15, 0, 2);
+    -fx-cursor: hand;
+}
+
+.services-button:hover {
+    -fx-background-color: #FFE46B;
+}
+
+/* Tablas */
+.services-table {
+    -fx-background-color: #232323;
+    -fx-control-inner-background: #232323;
+    -fx-text-fill: #FFF;
+    -fx-font-size: 14px;
+    -fx-background-radius: 10;
+}
+
+.services-table .column-header-background {
+    -fx-background-color: #2F2F2F;
+}
+
+.services-table .table-row-cell:filled:selected {
+    -fx-background-color: #3A3A3A;
+    -fx-text-fill: #FFDC60;
+}
+
+
+/* ===== COMBOBOX MODERNO ===== */
+.combo-box, .services-combobox {
+    -fx-background-color: #232323;
+    -fx-background-radius: 10;
+    -fx-border-width: 0;
+    -fx-text-fill: #fff;
+    -fx-font-size: 15px;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-padding: 6 10 6 10;
+    -fx-mark-color: #FFDC60; /* Color de la flecha */
+}
+
+/* Texto del elemento seleccionado */
+.combo-box .list-cell {
+    -fx-text-fill: #fff;
+}
+
+/* ===== Dropdown (popup) ===== */
+.combo-box-popup .list-view {
+    -fx-background-color: #2F2F2F;
+    -fx-background-radius: 10;
+    -fx-control-inner-background: #2F2F2F;
+    -fx-border-color: #3A3A3A;
+    -fx-border-radius: 10;
+    -fx-padding: 4;
+}
+
+.combo-box-popup .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #fff;
+    -fx-font-size: 14px;
+}
+
+.combo-box-popup .list-cell:hover {
+    -fx-background-color: #3A3A3A;
+    -fx-text-fill: #FFDC60;
+}
+
+/* Para ComboBox deshabilitado */
+.combo-box:disabled {
+    -fx-opacity: 0.6;
+}
+
+
+/* ===== TABLE MODERNA ===== */
+.table-view, .services-table {
+    -fx-background-color: #232323;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: #2F2F2F;
+    -fx-control-inner-background: #232323;
+    -fx-table-cell-border-color: #2F2F2F;
+    -fx-table-header-border-color: #2F2F2F;
+    -fx-padding: 6;
+    -fx-text-fill: #fff;
+    -fx-font-size: 14px;
+}
+
+/* Cabecera */
+.table-view .column-header-background {
+    -fx-background-color: #2F2F2F;
+    -fx-background-radius: 10 10 0 0;
+}
+
+.table-view .column-header, .table-view .column-header .label {
+    -fx-background-color: transparent;
+    -fx-text-fill: #EAEAEA;
+    -fx-font-weight: 600;
+    -fx-font-size: 13px;
+}
+
+/* Filas */
+.table-row-cell {
+    -fx-background-color: transparent;
+    -fx-cell-size: 36px;
+    -fx-text-fill: #fff;
+}
+
+.table-row-cell:odd {
+    -fx-background-color: #262626;
+}
+
+.table-row-cell:even {
+    -fx-background-color: #232323;
+}
+
+/* Hover y selección */
+.table-row-cell:hover {
+    -fx-background-color: #343434;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #3A3A3A;
+    -fx-text-fill: #FFDC60;
+    -fx-font-weight: bold;
+}
+
+/* Scrollbars */
+.table-view .scroll-bar:vertical, .table-view .scroll-bar:horizontal {
+    -fx-background-color: transparent;
+}
+
+.table-view .scroll-bar .thumb {
+    -fx-background-color: #444;
+    -fx-background-radius: 6;
+}
+
+
+/* ===== HR MODERNO ===== */
+.separator {
+    -fx-padding: 6 0 6 0;
+}
+
+.separator .line {
+    -fx-border-color: #393939;
+    -fx-border-width: 1;
+    -fx-border-style: solid hidden hidden hidden;
+}

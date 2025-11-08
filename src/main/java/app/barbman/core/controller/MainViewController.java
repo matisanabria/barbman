@@ -4,6 +4,8 @@ import app.barbman.core.model.User;
 import app.barbman.core.util.SessionManager;
 import app.barbman.core.util.WindowManager;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
@@ -12,6 +14,7 @@ import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,29 +32,30 @@ public class MainViewController {
 
     private final Map<ToggleButton, String> viewMap = new HashMap<>();
 
+    public void loadCenterView(String fxmlPath) {
+        WindowManager.setEmbeddedView(borderPane, "center", fxmlPath);
+    }
+
     @FXML
     public void initialize() {
         User activeUser = SessionManager.getActiveUser();
         if (activeUser != null && "admin".equals(activeUser.getRole())) {
-            WindowManager.setEmbeddedView(borderPane, "left", "/app/barbman/core/view/sidebar/sidebar-admin.fxml");
-        }
-        // Map buttons to their respective views
-        viewMap.put(incomeButton, "/app/barbman/core/view/embed-view/services-view.fxml");
-        viewMap.put(expenseButton, "/app/barbman/core/view/embed-view/expenses-view.fxml");
-        viewMap.put(salariesButton, "/app/barbman/core/view/embed-view/sueldos-view.fxml");
-        viewMap.put(cashButton, "/app/barbman/core/view/embed-view/caja-view.fxml");
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/app/barbman/core/view/sidebar/sidebar-admin.fxml"));
+                Node sidebar = loader.load();
 
-        // Prevents deselection of toggle buttons
-        ToggleButton[] botones = new ToggleButton[]{incomeButton, expenseButton, salariesButton, cashButton /*, btnResumen*/};
-        for (ToggleButton btn : botones) {
-            if (btn != null) {
-                btn.addEventFilter(javafx.scene.input.MouseEvent.MOUSE_PRESSED, event -> {
-                    if (btn.isSelected()) {
-                        event.consume();
-                    }
-                });
+                SidebarController sidebarController = loader.getController();
+                sidebarController.setMainController(this);
+
+                borderPane.setLeft(sidebar);
+                logger.info("{} Sidebar admin cargado correctamente.", PREFIX);
+            } catch (IOException e) {
+                logger.error("{} Error al cargar sidebar: {}", PREFIX, e.getMessage());
             }
         }
+
+        // Vista inicial (puede ser ingresos o lo que prefieras)
+        loadCenterView("/app/barbman/core/view/embed-view/services-view.fxml");
 
         // Logout button action
         logoutButton.setOnAction(event -> onLogout());
@@ -73,15 +77,14 @@ public class MainViewController {
 
 //        menuGroup.selectToggle(incomeButton);
 //        WindowManager.setEmbeddedView(borderPane, "center", viewMap.get(incomeButton));
+
     }
 
     @FXML
     private void onLogout() {
         logger.info("{} Logging out.", PREFIX);
         SessionManager.endSession();
-        WindowManager.switchWindow(
-                (Stage) borderPane.getScene().getWindow(),
-                "/app/barbman/core/view/login-view.fxml"
-        );
+        WindowManager.switchWindow((Stage) borderPane.getScene().getWindow(), "/app/barbman/core/view/login-view.fxml",
+           null, "/app/barbman/core/style/login.css");
     }
 }

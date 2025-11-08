@@ -13,6 +13,7 @@
 
 <VBox xmlns="http://javafx.com/javafx/17"
       xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="app.barbman.core.controller.SidebarController"
       spacing="8.0"
       styleClass="sidebar"
       prefWidth="250">
@@ -26,7 +27,7 @@
             </padding>
             <ImageView fx:id="userAvatar" fitWidth="40" fitHeight="40" pickOnBounds="true" preserveRatio="true">
                 <image>
-                    <Image url="@/path/to/default-avatar.png"/>
+                    <!-- <Image url="/path/to/default-avatar.png" /> -->
                 </image>
             </ImageView>
             <Label fx:id="userName" text="Nombre Usuario" styleClass="sidebar-username"/>

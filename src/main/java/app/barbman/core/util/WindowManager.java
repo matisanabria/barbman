@@ -39,178 +39,212 @@ public class WindowManager {
         return currentBundle;
     }
 
-    /**
-     * Abre una nueva ventana con el FXML indicado y configura fuentes, estilos y título con versión.
-     *
-     * @param fxmlPath Ruta del archivo FXML
-     */
-    // Sobrecarga para permitir CSS adicional
+    // ============================================================
+    // =============== MÉTODOS DE APERTURA DE VENTANAS ============
+    // ============================================================
+
     public static void openWindow(String fxmlPath, String title, String extraCssPath) {
         try {
             loadFontsOnce();
-
             FXMLLoader loader = new FXMLLoader(WindowManager.class.getResource(fxmlPath), currentBundle);
             Parent root = loader.load();
-            Scene scene = new Scene(root);
 
-            // CSS global
+            Scene scene = new Scene(root);
             scene.getStylesheets().add(WindowManager.class.getResource("/app/barbman/core/style/main.css").toExternalForm());
 
-            // CSS adicional por vista
             if (extraCssPath != null && !extraCssPath.isBlank()) {
                 scene.getStylesheets().add(WindowManager.class.getResource(extraCssPath).toExternalForm());
             }
 
             Stage stage = new Stage();
             stage.setResizable(false);
-            stage.getIcons().add(
-                    new javafx.scene.image.Image(
-                            WindowManager.class.getResourceAsStream("/app/barbman/core/icons/icon-for-javafx.png")
-                    )
-            );
+            stage.getIcons().add(new javafx.scene.image.Image(
+                    WindowManager.class.getResourceAsStream("/app/barbman/core/icons/icon-for-javafx.png")
+            ));
+            stage.setTitle(title == null || title.isBlank()
+                    ? "Barbman (" + getAppVersion() + ")"
+                    : title);
+            stage.setScene(scene);
+            stage.show();
 
+        } catch (IOException e) {
+            logger.error("Error abriendo ventana: " + fxmlPath, e);
+        }
+    }
+
+    public static void openWindow(String fxmlPath, String title, Stage owner) {
+        openWindow(fxmlPath, title, owner, null);
+    }
+
+    // 🔹 Nueva versión de openWindow con soporte de CSS adicional + owner
+    public static void openWindow(String fxmlPath, String title, Stage owner, String extraCssPath) {
+        try {
+            loadFontsOnce();
+
+            FXMLLoader loader = new FXMLLoader(WindowManager.class.getResource(fxmlPath), currentBundle);
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
+
+            scene.getStylesheets().add(WindowManager.class.getResource("/app/barbman/core/style/main.css").toExternalForm());
+
+            if (extraCssPath != null && !extraCssPath.isBlank()) {
+                scene.getStylesheets().add(WindowManager.class.getResource(extraCssPath).toExternalForm());
+            }
+
+            Stage stage = new Stage();
+            stage.setResizable(false);
+            stage.getIcons().add(new javafx.scene.image.Image(
+                    WindowManager.class.getResourceAsStream("/app/barbman/core/icons/icon-for-javafx.png")
+            ));
             stage.setTitle(title == null || title.isBlank()
                     ? "Barbman (" + getAppVersion() + ")"
                     : title);
 
-            stage.setScene(scene);
-            stage.show();
-
-        } catch (IOException e) {
-            logger.error("Error abriendo ventana: " + fxmlPath, e);
-        }
-    }
-
-    // Sobrecarga para permitir establecer una ventana padre (owner)
-    public static void openWindow(String fxmlPath, String title, Stage owner){
-        try {
-            loadFontsOnce();
-
-            FXMLLoader loader = new FXMLLoader(WindowManager.class.getResource(fxmlPath), currentBundle);
-            Parent root = loader.load();
-            Scene scene = new Scene(root);
-
-            scene.getStylesheets().add(WindowManager.class.getResource("/app/barbman/core/style/main.css").toExternalForm());
-
-            Stage stage = new Stage();
-            stage.setResizable(false);
-            // Icono de la aplicación
-            stage.getIcons().add(
-                    new javafx.scene.image.Image(
-                            WindowManager.class.getResourceAsStream("/app/barbman/core/icons/icon-for-javafx.png")
-                    )
-            );
-            if (title == null || title.isBlank()) {
-                stage.setTitle("Barbman (" + getAppVersion() + ")");
-            } else {
-                stage.setTitle(title);
-            }
-
             if (owner != null) {
-                stage.initOwner(owner); // hace que sea hijo
+                stage.initOwner(owner);
             }
 
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
-            logger.error("Error abriendo ventana: " + fxmlPath, e);
+            logger.error("Error abriendo ventana con owner: " + fxmlPath, e);
         }
     }
-    // Sobrecarga para establecer título
+
     public static void openWindow(String fxmlPath, String title) {
-        try {
-            loadFontsOnce();
-
-            FXMLLoader loader = new FXMLLoader(WindowManager.class.getResource(fxmlPath), currentBundle);
-            Parent root = loader.load();
-            Scene scene = new Scene(root);
-
-            scene.getStylesheets().add(WindowManager.class.getResource("/app/barbman/core/style/main.css").toExternalForm());
-
-            Stage stage = new Stage();
-            stage.setResizable(false);
-            // Icono de la aplicación
-            stage.getIcons().add(
-                    new javafx.scene.image.Image(
-                            WindowManager.class.getResourceAsStream("/app/barbman/core/icons/icon-for-javafx.png")
-                    )
-            );
-            if (title == null || title.isBlank()) {
-                stage.setTitle("Barbman (" + getAppVersion() + ")");
-            } else {
-                stage.setTitle(title);
-            }
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            logger.error("Error abriendo ventana: " + fxmlPath, e);
-        }
+        openWindow(fxmlPath, title, (String) null);
     }
-    // Sobrecarga para no establecer titulo (usa default)
+
     public static void openWindow(String fxmlPath) {
         openWindow(fxmlPath, null);
     }
 
+    // ============================================================
+    // =================== SWITCH WINDOWS =========================
+    // ============================================================
 
-    /**
-     * Cambia de ventana: abre una nueva y cierra la actual.
-     *
-     * @param currentStage Stage actual a cerrar
-     * @param fxmlPath     FXML de la nueva ventana
-     * @param title        Título de la ventana nueva (puede ser null)
-     */
     public static void switchWindow(Stage currentStage, String fxmlPath, String title) {
-        openWindow(fxmlPath, title);
+        switchWindow(currentStage, fxmlPath, title, null);
+    }
+
+    // 🔹 Ahora switchWindow también soporta CSS adicional
+    public static void switchWindow(Stage currentStage, String fxmlPath, String title, String extraCssPath) {
+        openWindow(fxmlPath, title, extraCssPath);
         currentStage.close();
     }
+
     public static void switchWindow(Stage currentStage, String fxmlPath) {
         switchWindow(currentStage, fxmlPath, null);
     }
 
-    /**
-     * Abre una nueva ventana y devuelve el controller asociado.
-     *
-     * @param fxmlPath Ruta al archivo FXML
-     * @param title    Título de la ventana
-     * @param owner    Stage padre (puede ser null)
-     * @param <T>      Tipo del controller
-     * @return El controller del FXML cargado
-     */
+    // ============================================================
+    // =================== OPEN WITH CONTROLLER ===================
+    // ============================================================
+
     public static <T> T openWindowWithController(String fxmlPath, String title, Stage owner) {
         try {
             loadFontsOnce();
-
             FXMLLoader loader = new FXMLLoader(WindowManager.class.getResource(fxmlPath), currentBundle);
             Parent root = loader.load();
-            Scene scene = new Scene(root);
 
+            Scene scene = new Scene(root);
             scene.getStylesheets().add(WindowManager.class.getResource("/app/barbman/core/style/main.css").toExternalForm());
 
             Stage stage = new Stage();
             stage.setResizable(false);
-            if (title == null || title.isBlank()) {
-                stage.setTitle("Barbman (" + getAppVersion() + ")");
-            } else {
-                stage.setTitle(title);
-            }
-
+            stage.setTitle(title == null || title.isBlank()
+                    ? "Barbman (" + getAppVersion() + ")"
+                    : title);
             if (owner != null) {
-                stage.initOwner(owner); // hace que sea hijo
+                stage.initOwner(owner);
             }
-
             stage.setScene(scene);
             stage.show();
 
             return loader.getController();
         } catch (IOException e) {
-            logger.error("Error abriendo ventana con controller: " + fxmlPath, e);
+            logger.error("Error abriendo ventana con controller: {}", fxmlPath, e);
             throw new RuntimeException("No se pudo abrir ventana: " + fxmlPath, e);
         }
     }
 
-    /**
-     * Carga las fuentes personalizadas solo una vez en toda la aplicación.
-     */
+    // ============================================================
+    // ======================= MODALES ============================
+    // ============================================================
+
+    public static <T> void openModal(String fxmlPath, Consumer<T> controllerInitializer) {
+        try {
+            loadFontsOnce();
+            FXMLLoader loader = new FXMLLoader(WindowManager.class.getResource(fxmlPath), currentBundle);
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
+
+            scene.getStylesheets().add(WindowManager.class
+                    .getResource("/app/barbman/core/style/main.css").toExternalForm());
+
+            Stage stage = new Stage();
+            stage.setResizable(false);
+            stage.setTitle("Barbman (" + getAppVersion() + ")");
+            stage.getIcons().add(new javafx.scene.image.Image(
+                    WindowManager.class.getResourceAsStream("/app/barbman/core/icons/icon-for-javafx.png")
+            ));
+            stage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+            stage.setScene(scene);
+
+            T controller = loader.getController();
+            if (controllerInitializer != null) {
+                controllerInitializer.accept(controller);
+            }
+
+            stage.showAndWait();
+        } catch (IOException e) {
+            logger.error("Error abriendo ventana modal: {}", fxmlPath, e);
+        }
+    }
+
+    // ============================================================
+    // =================== EMBEDDED VIEW (CSS!) ===================
+    // ============================================================
+
+    public static void setEmbeddedView(BorderPane borderPane, String position, String fxmlPath) {
+        try {
+            FXMLLoader loader = new FXMLLoader(WindowManager.class.getResource(fxmlPath), currentBundle);
+            Parent view = loader.load();
+
+            // CSS global
+            view.getStylesheets().add(WindowManager.class
+                    .getResource("/app/barbman/core/style/main.css").toExternalForm());
+
+            // CSS específico
+            String cssName = extractCssNameFromFxml(fxmlPath);
+            String customCssPath = "/app/barbman/core/style/views/" + cssName + ".css";
+            var cssUrl = WindowManager.class.getResource(customCssPath);
+            if (cssUrl != null) {
+                view.getStylesheets().add(cssUrl.toExternalForm());
+                logger.info("[CSS-INJECT] CSS personalizado cargado: {}", customCssPath);
+            } else {
+                logger.debug("[CSS-INJECT] No se encontró CSS personalizado para {}", fxmlPath);
+            }
+
+            // Insertar vista en posición
+            switch (position.toLowerCase()) {
+                case "center" -> borderPane.setCenter(view);
+                case "left" -> borderPane.setLeft(view);
+                case "right" -> borderPane.setRight(view);
+                case "top" -> borderPane.setTop(view);
+                case "bottom" -> borderPane.setBottom(view);
+                default -> borderPane.setCenter(view);
+            }
+
+        } catch (IOException e) {
+            logger.error("Error loading view: {}", fxmlPath, e);
+        }
+    }
+
+    // ============================================================
+    // ======================= UTILIDADES =========================
+    // ============================================================
+
     private static void loadFontsOnce() {
         if (!fontsLoaded) {
             logger.info("Cargando fuentes personalizadas (solo una vez)");
@@ -222,11 +256,6 @@ public class WindowManager {
         }
     }
 
-    /**
-     * Obtiene la versión de la aplicación desde el archivo version.properties.
-     *
-     * @return La versión de la aplicación como una cadena.
-     */
     public static String getAppVersion() {
         try (InputStream input = WindowManager.class.getResourceAsStream("/version.properties")) {
             Properties props = new Properties();
@@ -238,74 +267,8 @@ public class WindowManager {
         }
     }
 
-    /**
-     * Abre una ventana modal bloqueante con el FXML indicado.
-     * Permite inicializar el controller mediante un callback.
-     *
-     * @param fxmlPath             Ruta del archivo FXML
-     * @param controllerInitializer Callback para inicializar el controller (puede ser null)
-     * @param <T>                  Tipo del controller
-     * Nota: Luego corrijo errores y adapto lo necesario
-     */
-    public static <T> void openModal(String fxmlPath, Consumer<T> controllerInitializer) {
-        try {
-            loadFontsOnce();
-
-            FXMLLoader loader = new FXMLLoader(WindowManager.class.getResource(fxmlPath), currentBundle);
-            Parent root = loader.load();
-            Scene scene = new Scene(root);
-
-            scene.getStylesheets().add(WindowManager.class
-                    .getResource("/app/barbman/core/style/main.css").toExternalForm());
-
-            Stage stage = new Stage();
-            stage.setResizable(false);
-            stage.setTitle("Barbman (" + getAppVersion() + ")");
-            stage.getIcons().add(
-                    new javafx.scene.image.Image(
-                            WindowManager.class.getResourceAsStream("/app/barbman/core/icons/icon-for-javafx.png")
-                    )
-            );
-
-            // Modal bloqueante
-            stage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
-
-            stage.setScene(scene);
-
-            // Pasamos el controller al callback para configurarlo
-            T controller = loader.getController();
-            if (controllerInitializer != null) {
-                controllerInitializer.accept(controller);
-            }
-
-            stage.showAndWait(); // Bloquea hasta cerrar
-        } catch (IOException e) {
-            logger.error("Error abriendo ventana modal: " + fxmlPath, e);
-        }
-    }
-
-    /**
-     * Sets an embedded view into a BorderPane at the specified position.
-     *
-     * @param borderPane BorderPane where the view will be set
-     * @param position   Position ("center", "left", "right", "top", "bottom")
-     * @param fxmlPath   Path to the FXML file of the view
-     */
-    public static void setEmbeddedView(BorderPane borderPane, String position, String fxmlPath) {
-        try {
-            FXMLLoader loader = new FXMLLoader(WindowManager.class.getResource(fxmlPath), currentBundle);
-            Parent view = loader.load();
-
-            switch (position.toLowerCase()) {
-                case "center" -> borderPane.setCenter(view);
-                case "left" -> borderPane.setLeft(view);
-                case "right" -> borderPane.setRight(view);
-                case "top" -> borderPane.setTop(view);
-                case "bottom" -> borderPane.setBottom(view);
-                default -> borderPane.setCenter(view);
-            }
-        } catch (IOException e) {
-            logger.error("Error loading view: " + fxmlPath, e);
-        }
+    private static String extractCssNameFromFxml(String fxmlPath) {
+        String fileName = fxmlPath.substring(fxmlPath.lastIndexOf('/') + 1);
+        return fileName.replace(".fxml", "");
     }
 }

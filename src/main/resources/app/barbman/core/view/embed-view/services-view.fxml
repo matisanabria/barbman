@@ -72,7 +72,7 @@
                 </VBox>
 
                 <Separator />
-
+                <VBox spacing="12" styleClass="services-section">
                 <!-- Historial -->
                 <Label text="Historial de servicios" styleClass="services-title"/>
 
@@ -95,12 +95,13 @@
                         <DatePicker fx:id="filterDatePicker" prefWidth="150.0" promptText="Fecha" styleClass="services-date"/>
                         <Button fx:id="filterButton" prefWidth="40.0" styleClass="services-button">
                             <graphic>
-                                <FontIcon iconLiteral="fa-check" iconSize="14"/>
+                                <FontIcon iconLiteral="fas-check" iconSize="14"/>
                             </graphic>
                         </Button>
                         <Button fx:id="clearFilterButton" text="Mostrar todo" prefWidth="120.0" styleClass="services-button"/>
                     </children>
                 </HBox>
+                </VBox>
             </children>
         </VBox>
     </content>

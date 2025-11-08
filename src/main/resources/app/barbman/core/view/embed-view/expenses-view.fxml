@@ -80,7 +80,7 @@
                 <HBox alignment="CENTER_RIGHT" spacing="10" styleClass="services-row" style="-fx-padding: 8 0 0 0;">
                     <children>
                         <Label text="Doble clic para eliminar un egreso" style="-fx-font-size: 11px; -fx-text-fill: #999;"/>
-                        <!--FontIcon iconLiteral="fa-info-circle" iconSize="12" iconColor="#888"/-->
+                        <FontIcon iconLiteral="fas-info-circle" iconSize="12" iconColor="#888"/>
                     </children>
                 </HBox>
 
