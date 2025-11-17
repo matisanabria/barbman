@@ -16,18 +16,27 @@ import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
 
+/**
+ * Clase central para gestión de ventanas, vistas embebidas y carga de idiomas.
+ * Inyecta automáticamente el ResourceBundle actual para soporte multilenguaje.
+ */
 public class WindowManager {
     private static final Logger logger = LogManager.getLogger(WindowManager.class);
     private static boolean fontsLoaded = false;
 
-    // --- Soporte multilenguaje ---
+    // ============================================================
+    // =============== GESTIÓN DE IDIOMA ==========================
+    // ============================================================
+
     private static Locale currentLocale = new Locale("es", "ES");
-    private static ResourceBundle currentBundle = ResourceBundle.getBundle("app.barbman.core.lang.lang", currentLocale);
+    private static ResourceBundle currentBundle =
+            ResourceBundle.getBundle("app.barbman.core.lang.lang", currentLocale);
 
     public static void setLocale(Locale locale) {
         if (locale != null) {
             currentLocale = locale;
             currentBundle = ResourceBundle.getBundle("app.barbman.core.lang.lang", currentLocale);
+            logger.info("[LANG] Idioma actualizado -> {}", currentLocale);
         }
     }
 
@@ -36,21 +45,31 @@ public class WindowManager {
     }
 
     public static ResourceBundle getBundle() {
+        // Si AppSession tiene configuración de idioma, usarla
+        try {
+            Locale sessionLocale = SessionManager.getCurrentLocale();
+            if (sessionLocale != null && !sessionLocale.equals(currentLocale)) {
+                setLocale(sessionLocale);
+            }
+        } catch (Exception e) {
+            logger.debug("[LANG] No se encontró idioma en AppSession, se usa por defecto: {}", currentLocale);
+        }
         return currentBundle;
     }
 
     // ============================================================
-    // =============== MÉTODOS DE APERTURA DE VENTANAS ============
+    // =============== APERTURA DE VENTANAS =======================
     // ============================================================
 
     public static void openWindow(String fxmlPath, String title, String extraCssPath) {
         try {
             loadFontsOnce();
-            FXMLLoader loader = new FXMLLoader(WindowManager.class.getResource(fxmlPath), currentBundle);
+            FXMLLoader loader = new FXMLLoader(WindowManager.class.getResource(fxmlPath), getBundle());
             Parent root = loader.load();
 
             Scene scene = new Scene(root);
-            scene.getStylesheets().add(WindowManager.class.getResource("/app/barbman/core/style/main.css").toExternalForm());
+            scene.getStylesheets().add(WindowManager.class
+                    .getResource("/app/barbman/core/style/main.css").toExternalForm());
 
             if (extraCssPath != null && !extraCssPath.isBlank()) {
                 scene.getStylesheets().add(WindowManager.class.getResource(extraCssPath).toExternalForm());
@@ -76,16 +95,16 @@ public class WindowManager {
         openWindow(fxmlPath, title, owner, null);
     }
 
-    // 🔹 Nueva versión de openWindow con soporte de CSS adicional + owner
     public static void openWindow(String fxmlPath, String title, Stage owner, String extraCssPath) {
         try {
             loadFontsOnce();
 
-            FXMLLoader loader = new FXMLLoader(WindowManager.class.getResource(fxmlPath), currentBundle);
+            FXMLLoader loader = new FXMLLoader(WindowManager.class.getResource(fxmlPath), getBundle());
             Parent root = loader.load();
             Scene scene = new Scene(root);
 
-            scene.getStylesheets().add(WindowManager.class.getResource("/app/barbman/core/style/main.css").toExternalForm());
+            scene.getStylesheets().add(WindowManager.class
+                    .getResource("/app/barbman/core/style/main.css").toExternalForm());
 
             if (extraCssPath != null && !extraCssPath.isBlank()) {
                 scene.getStylesheets().add(WindowManager.class.getResource(extraCssPath).toExternalForm());
@@ -127,7 +146,6 @@ public class WindowManager {
         switchWindow(currentStage, fxmlPath, title, null);
     }
 
-    // 🔹 Ahora switchWindow también soporta CSS adicional
     public static void switchWindow(Stage currentStage, String fxmlPath, String title, String extraCssPath) {
         openWindow(fxmlPath, title, extraCssPath);
         currentStage.close();
@@ -144,11 +162,12 @@ public class WindowManager {
     public static <T> T openWindowWithController(String fxmlPath, String title, Stage owner) {
         try {
             loadFontsOnce();
-            FXMLLoader loader = new FXMLLoader(WindowManager.class.getResource(fxmlPath), currentBundle);
+            FXMLLoader loader = new FXMLLoader(WindowManager.class.getResource(fxmlPath), getBundle());
             Parent root = loader.load();
 
             Scene scene = new Scene(root);
-            scene.getStylesheets().add(WindowManager.class.getResource("/app/barbman/core/style/main.css").toExternalForm());
+            scene.getStylesheets().add(WindowManager.class
+                    .getResource("/app/barbman/core/style/main.css").toExternalForm());
 
             Stage stage = new Stage();
             stage.setResizable(false);
@@ -175,7 +194,7 @@ public class WindowManager {
     public static <T> void openModal(String fxmlPath, Consumer<T> controllerInitializer) {
         try {
             loadFontsOnce();
-            FXMLLoader loader = new FXMLLoader(WindowManager.class.getResource(fxmlPath), currentBundle);
+            FXMLLoader loader = new FXMLLoader(WindowManager.class.getResource(fxmlPath), getBundle());
             Parent root = loader.load();
             Scene scene = new Scene(root);
 
@@ -203,12 +222,12 @@ public class WindowManager {
     }
 
     // ============================================================
-    // =================== EMBEDDED VIEW (CSS!) ===================
+    // =================== EMBEDDED VIEW (CSS + LANG) ==============
     // ============================================================
 
     public static void setEmbeddedView(BorderPane borderPane, String position, String fxmlPath) {
         try {
-            FXMLLoader loader = new FXMLLoader(WindowManager.class.getResource(fxmlPath), currentBundle);
+            FXMLLoader loader = new FXMLLoader(WindowManager.class.getResource(fxmlPath), getBundle());
             Parent view = loader.load();
 
             // CSS global
@@ -235,6 +254,8 @@ public class WindowManager {
                 case "bottom" -> borderPane.setBottom(view);
                 default -> borderPane.setCenter(view);
             }
+
+            logger.info("[LANG-INJECT] ResourceBundle inyectado en {}", fxmlPath);
 
         } catch (IOException e) {
             logger.error("Error loading view: {}", fxmlPath, e);

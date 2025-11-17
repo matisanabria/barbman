@@ -41,7 +41,10 @@ public class MainViewController {
         User activeUser = SessionManager.getActiveUser();
         if (activeUser != null && "admin".equals(activeUser.getRole())) {
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/app/barbman/core/view/sidebar/sidebar-admin.fxml"));
+                FXMLLoader loader = new FXMLLoader(
+                        getClass().getResource("/app/barbman/core/view/sidebar/sidebar-admin.fxml"),
+                        WindowManager.getBundle() // 💬 inyecta el lang actual
+                );
                 Node sidebar = loader.load();
 
                 SidebarController sidebarController = loader.getController();

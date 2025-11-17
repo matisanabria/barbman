@@ -90,8 +90,12 @@ public class ServicesViewController implements Initializable {
     private final ServicesService servicesService = new ServicesService();
 
     @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    public void initialize(URL url, ResourceBundle resourceBundle) {
         logger.info("{} Initializing services view...", PREFIX);
+
+        this.resources = resourceBundle; // ✅ Guardamos el bundle recibido
+        logger.info("{} Bundle cargado -> {}", PREFIX,
+                (resources != null ? resources.getBaseBundleName() : "null"));
 
         setupTable();
 
@@ -243,17 +247,24 @@ public class ServicesViewController implements Initializable {
     }
 
     /** Dynamically loads payment method buttons into the HBox. */
+    /** Dynamically loads payment method buttons into the HBox. */
     private void loadPaymentMethodButtons() {
         List<PaymentMethod> methods = paymentMethodsService.getAllPaymentMethods();
 
         for (PaymentMethod method : methods) {
-            // Traduce el nombre usando el bundle si existe
-            String key = "payment_method_togglebutton_" + method.getName().toLowerCase();
-            String label = resources.containsKey(key) ? resources.getString(key) : method.getName();
+            String key = "payment_method_" + method.getName().toLowerCase();
+            String label;
+
+            // ✅ Evitar NullPointerException si resources es null o no tiene la clave
+            if (resources != null && resources.containsKey(key)) {
+                label = resources.getString(key);
+            } else {
+                label = method.getName(); // Usa el nombre original del método
+            }
 
             ToggleButton btn = new ToggleButton(label);
-            btn.setUserData(method);              // Guarda el objeto PaymentMethod
-            btn.setToggleGroup(paymentGroup);     // Hace que sean exclusivos
+            btn.setUserData(method);          // Guarda el objeto PaymentMethod
+            btn.setToggleGroup(paymentGroup); // Hace que sean exclusivos
             btn.getStyleClass().add("payment-toggle");
 
             paymentButtonsBox.getChildren().add(btn);
@@ -261,6 +272,7 @@ public class ServicesViewController implements Initializable {
 
         logger.info("{} Loaded {} payment method buttons.", PREFIX, methods.size());
     }
+
 
     /** Shows a confirmation dialog before saving the service. */
     private void confirmAndSaveService() {

@@ -2,6 +2,8 @@ package app.barbman.core.util;
 
 import app.barbman.core.model.User;
 
+import java.util.Locale;
+
 public class SessionManager {
     private static User activeUser;
 
@@ -19,5 +21,10 @@ public class SessionManager {
 
     public static boolean isSessionActive() {
         return activeUser != null;
+    }
+
+    public static Locale getCurrentLocale() {
+        // TODO: implementar selección de idioma real más adelante
+        return null;
     }
 }
