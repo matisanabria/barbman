@@ -106,6 +106,9 @@ public class ServicesViewController implements Initializable {
 
         loadServicesHistory();
 
+        itemsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        servicesTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
         // Double-click to delete service from history table
         servicesTable.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2 && !servicesTable.getSelectionModel().isEmpty()) {

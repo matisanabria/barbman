@@ -1,8 +1,7 @@
 /* ===================================================
-   🌍 Barbman Global Styles (main.css)
+   🌍 Barbman Global Styles (main.css) v1
    =================================================== */
 
-/* Fondo base */
 .root {
     -fx-background-color: #232323;
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
@@ -13,25 +12,28 @@
     -fx-background-color: transparent;
 }
 
-/* Separadores */
-.separator {
-    -fx-background-color: #242424;
-}
-
-/* Tipografía general */
+/* Etiquetas */
 .label {
     -fx-text-fill: #EAEAEA;
     -fx-font-size: 14px;
 }
 
-/* Botones globales */
+/* Botón primario */
 .button {
     -fx-background-radius: 12;
     -fx-cursor: hand;
+    -fx-font-weight: 600;
 }
 
-/* Sombra ligera */
+/* Sombra limpia */
 .card, .panel {
     -fx-background-radius: 12;
-    -fx-effect: dropshadow(gaussian, #17171760, 10, 0.15, 0, 1);
+    -fx-background-color: #2A2A2A;
+    -fx-effect: dropshadow(gaussian, #00000055, 14, 0.18, 0, 2);
+}
+
+/* Separadores ultra clean */
+.separator .line {
+    -fx-border-color: #3A3A3A;
+    -fx-border-width: 1;
 }
