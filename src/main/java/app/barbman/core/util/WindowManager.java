@@ -6,14 +6,13 @@ import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Locale;
-import java.util.Properties;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.function.Consumer;
 
 /**
@@ -292,4 +291,35 @@ public class WindowManager {
         String fileName = fxmlPath.substring(fxmlPath.lastIndexOf('/') + 1);
         return fileName.replace(".fxml", "");
     }
+
+    /**
+     * Closes all open windows except the specified one.
+     * @param allowed
+     */
+    public static void closeAllWindowsExcept(Stage allowed) {
+        List<Window> windows = new ArrayList<>(Window.getWindows());
+
+        for (Window w : windows) {
+            if (w instanceof Stage stage) {
+                if (stage != allowed) {
+                    stage.close();
+                }
+            }
+        }
+    }
+
+    /**
+     * Closes all open windows.
+     */
+    public static void closeAllWindows() {
+        // make a SAFE copy
+        List<Window> windows = new ArrayList<>(Window.getWindows());
+
+        for (Window w : windows) {
+            if (w instanceof Stage stage) {
+                stage.close();
+            }
+        }
+    }
+
 }

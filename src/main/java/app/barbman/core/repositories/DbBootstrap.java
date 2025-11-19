@@ -1,5 +1,9 @@
 package app.barbman.core.repositories;
 
+import com.sun.jna.Pointer;
+import com.sun.jna.platform.win32.Ole32;
+import com.sun.jna.platform.win32.WinNT;
+import com.sun.jna.ptr.PointerByReference;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -17,6 +21,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Comparator;
+import com.sun.jna.platform.win32.KnownFolders;
+import com.sun.jna.platform.win32.Shell32;
 
 /**
  * Initializes and manages the SQLite database.
@@ -27,7 +33,7 @@ import java.util.Comparator;
 public class DbBootstrap {
     private static final Logger logger = LogManager.getLogger(DbBootstrap.class);
     private static final String DB_NAME = "database.db";
-    private static final File DOCUMENTS_FOLDER = new File(System.getProperty("user.home"), "Documents");
+    private static final File DOCUMENTS_FOLDER = getRealDocumentsFolder();
 
     private static File appFolder;
     private static File dataFolder;
@@ -36,23 +42,32 @@ public class DbBootstrap {
     public static void init() {
         logger.info("[DB] Ensuring database exists...");
 
+        logger.info("[DB] Windows Documents resolved at: {}", DOCUMENTS_FOLDER.getAbsolutePath());
+
         // Create app folder in documents if it doesn't exist
         appFolder = new File(DOCUMENTS_FOLDER, "Barbman Data");
-        if (!appFolder.exists() && appFolder.mkdirs())
-            logger.info("[DB] Created app folder at {}", appFolder.getAbsolutePath());
+        if (!appFolder.exists() && !appFolder.mkdirs()) {
+            throw new IllegalStateException(
+                    "Failed to create application folder: " + appFolder.getAbsolutePath()
+            );
+        }
 
         // Create database folder path
         dataFolder = new File(appFolder, "data");
-        if (!dataFolder.exists() && dataFolder.mkdirs())
-            logger.info("[DB] Created data folder at {}", dataFolder.getAbsolutePath());
+        if (!dataFolder.exists() && !dataFolder.mkdirs()) {
+            throw new IllegalStateException(
+                    "Failed to create data folder: " + dataFolder.getAbsolutePath()
+            );
+        }
 
         // Create or verify database file
         dbFile = new File(dataFolder, DB_NAME);
         if (dbFile.exists()) {
-            logger.info("[DB] Database found: {}", dbFile.getAbsolutePath());
+            logger.info("[DB] Database found at {}", dbFile.getAbsolutePath());
         } else {
-            logger.warn("[DB] Database file not found. Creating new database...");
-            createTables();
+            logger.warn("[DB] Database file missing. Creating new database...");
+            createTables();  // This already throws on failure
+            logger.info("[DB] New database created successfully.");
         }
     }
 
@@ -325,6 +340,45 @@ public class DbBootstrap {
         } catch (IOException e) {
             logger.error("[DB] Error creating database backup: {}", e.getMessage());
         }
+    }
+
+    public static File getRealDocumentsFolder() {
+        try {
+            PointerByReference pbr = new PointerByReference();
+
+            WinNT.HRESULT hr = Shell32.INSTANCE.SHGetKnownFolderPath(
+                    KnownFolders.FOLDERID_Documents,
+                    0,
+                    null,
+                    pbr
+            );
+
+            if (!WinNT.S_OK.equals(hr)) {
+                throw new IllegalStateException(
+                        "Failed to resolve Windows 'Documents' folder. HRESULT=" + hr
+                );
+            }
+
+            Pointer ptr = pbr.getValue();
+            if (ptr == null) {
+                throw new IllegalStateException(
+                        "Native pointer for 'Documents' folder is null."
+                );
+            }
+
+            String path = ptr.getWideString(0);
+
+            // Free native memory
+            Ole32.INSTANCE.CoTaskMemFree(ptr);
+
+            return new File(path);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Critical error while resolving Documents folder.", e);
+        }
+    }
+    public static File getAppFolder() {
+        return appFolder;
     }
 
 }

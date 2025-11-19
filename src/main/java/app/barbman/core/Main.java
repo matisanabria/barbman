@@ -1,6 +1,7 @@
 package app.barbman.core;
 
 import app.barbman.core.repositories.DbBootstrap;
+import app.barbman.core.util.ErrorWindowUtil;
 import app.barbman.core.util.WindowManager;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -20,28 +21,30 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        // Manejo global de errores no capturados
-        Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
-            logger.error("Error no capturado en hilo " + thread.getName(), throwable);
-
-            // Mostrar alerta al usuario
-            Platform.runLater(() -> {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error inesperado");
-                alert.setHeaderText("Ha ocurrido un problema en la aplicación.");
-                alert.setContentText(throwable.getMessage());
-                alert.showAndWait();
-            });
-        });
         WindowManager.openWindow("/app/barbman/core/view/login-view.fxml", null, "/app/barbman/core/style/login.css");
+        Platform.runLater(() -> {
+        });
     }
     @Override
     public void stop() {
         // Esto lo hago para evitar errores, no es estrictamente necesario
-        logger.info("[BARBMAN] Aplicación cerrada.");
+        logger.info("[BARBMAN] App closed.");
         LogManager.shutdown();
     }
     public static void main(String[] args) {
+
+        Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
+            Logger logger = LogManager.getLogger(Main.class);
+            logger.error("[FATAL] Uncaught exception in thread {}:", thread.getName(), throwable);
+
+            Platform.runLater(() -> {
+                ErrorWindowUtil.showFatalError(
+                        throwable.getMessage() != null
+                                ? throwable.getMessage()
+                                : "Unknown critical error."
+                );
+            });
+        });
         // Inicializa la base de datos
         DbBootstrap.init();
 

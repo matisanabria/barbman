@@ -12,7 +12,7 @@
 }
 
 .login-logo-text {
-    -fx-text-fill: #FFDC60;
+    -fx-text-fill: #F0C667;
     -fx-font-size: 20px;
     -fx-font-weight: bold;
 -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
@@ -37,7 +37,7 @@
 }
 
 .login-button {
-    -fx-background-color: #FFDC60;
+    -fx-background-color: #F0C667;
     -fx-background-radius: 12;
     -fx-text-fill: #232323;
     -fx-font-size: 16px;
@@ -46,11 +46,11 @@
 }
 
 .login-button:hover {
-    -fx-background-color: #FFE46B;
+    -fx-background-color: #F0C667;
 }
 
 .login-error-label {
-    -fx-text-fill: #FFDC60;
+    -fx-text-fill: #F0C667;
     -fx-font-size: 14px;
     -fx-font-weight: bold;
 }
@@ -75,7 +75,7 @@
 
 }
 .login-pin-field.error, .password-field.error {
-    -fx-background-color: #FFDC60;
+    -fx-background-color: #F0C667;
     -fx-text-fill: #000000;
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 }

@@ -41,18 +41,19 @@
                             </children>
                         </HBox>
 
+                        <HBox alignment="CENTER" spacing="18" styleClass="services-row">
                         <!-- Tabla de items agregados -->
                         <TableView fx:id="itemsTable"
                                    prefHeight="90.0"
                                    prefWidth="100.0"
-                                   styleClass="table-view">
+                                   styleClass="services-table-mini">
                             <columns>
                                 <TableColumn fx:id="colItemServiceType" prefWidth="200" text="Servicio"/>
                                 <TableColumn fx:id="colItemPrice" prefWidth="120" text="Precio (Gs)"/>
                                 <TableColumn fx:id="colItemRemove" prefWidth="80"  text="Acción"/>
                             </columns>
                         </TableView>
-
+                        </HBox>
                         <!-- Panel secundario -->
                         <VBox spacing="10" styleClass="services-subsection">
                             <children>

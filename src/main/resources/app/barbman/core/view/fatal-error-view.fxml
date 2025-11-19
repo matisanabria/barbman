@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17.0.12"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="app.barbman.core.controller.FatalErrorController"
+            style="-fx-background-color: #1f1f1f;">
+
+    <!-- CENTRO -->
+    <center>
+        <VBox spacing="18" alignment="CENTER">
+            <padding>
+                <Insets top="40" right="40" bottom="40" left="40"/>
+            </padding>
+
+            <!-- Imagen de Don Barbman triste -->
+            <ImageView fx:id="errorImage"
+                       fitWidth="140"
+                       preserveRatio="true"
+                       opacity="0.9"
+                       style="-fx-effect: dropshadow(gaussian, #000000AA, 18, 0.2, 0, 3);" />
+
+            <!-- Título -->
+            <Label text="A critical error has occurred"
+                   style="-fx-text-fill: #FFFFFF; -fx-font-size: 22px; -fx-font-weight: bold;" />
+
+            <!-- Mensaje -->
+            <Label fx:id="errorMessage"
+                  style="-fx-fill: #CCCCCC; -fx-font-size: 14px;"
+                  text="The application encountered an unexpected error and cannot continue." />
+
+            <!-- Línea separadora -->
+            <Separator prefWidth="300" style="-fx-background-color: #333333;"/>
+
+            <!-- Botones -->
+            <VBox spacing="10" alignment="CENTER">
+
+                <Button fx:id="contactButton"
+                        text="Contact Developer"
+                        style="-fx-background-radius: 10;
+                               -fx-background-color: #FFC94A;
+                               -fx-font-weight: bold;
+                               -fx-text-fill: #1F1F1F;
+                               -fx-padding: 8 20 8 20;" />
+
+                <Button fx:id="reportButton"
+                        text="Report Issue"
+                        style="-fx-background-radius: 10;
+                               -fx-background-color: #3A3A3A;
+                               -fx-text-fill: #EAEAEA;
+                               -fx-font-weight: bold;
+                               -fx-padding: 8 20 8 20;" />
+
+                <Button fx:id="exitButton"
+                        text="Exit"
+                        style="-fx-background-radius: 10;
+                               -fx-background-color: #2A2A2A;
+                               -fx-text-fill: #FFFFFF;
+                               -fx-padding: 8 20 8 20;" />
+
+            </VBox>
+
+        </VBox>
+    </center>
+
+</BorderPane>
