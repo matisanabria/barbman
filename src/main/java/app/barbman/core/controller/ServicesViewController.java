@@ -27,6 +27,7 @@ import javafx.scene.layout.HBox;
 import javafx.util.StringConverter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.net.URL;
 import java.time.LocalDate;
@@ -250,31 +251,65 @@ public class ServicesViewController implements Initializable {
     }
 
     /** Dynamically loads payment method buttons into the HBox. */
-    /** Dynamically loads payment method buttons into the HBox. */
+    private FontIcon getPaymentIcon(String methodName) {
+        switch (methodName.toLowerCase()) {
+            case "cash":
+                return new FontIcon("fas-money-bill");
+            case "transfer":
+                return new FontIcon("fas-university"); // banco
+            case "qr":
+                return new FontIcon("fas-qrcode");
+            case "card":
+                return new FontIcon("fas-credit-card");
+            default:
+                return new FontIcon("fas-question-circle");
+        }
+    }
     private void loadPaymentMethodButtons() {
         List<PaymentMethod> methods = paymentMethodsService.getAllPaymentMethods();
 
         for (PaymentMethod method : methods) {
+
+            // === 🔤 1) Buscar traducción si existe ===
             String key = "payment_method_" + method.getName().toLowerCase();
             String label;
 
-            // ✅ Evitar NullPointerException si resources es null o no tiene la clave
             if (resources != null && resources.containsKey(key)) {
-                label = resources.getString(key);
+                label = resources.getString(key); // traducido
             } else {
-                label = method.getName(); // Usa el nombre original del método
+                label = method.getName(); // fallback
             }
 
-            ToggleButton btn = new ToggleButton(label);
-            btn.setUserData(method);          // Guarda el objeto PaymentMethod
-            btn.setToggleGroup(paymentGroup); // Hace que sean exclusivos
+            // === 🧩 2) Crear botón ===
+            ToggleButton btn = new ToggleButton();
+            btn.setUserData(method);
+            btn.setToggleGroup(paymentGroup);
             btn.getStyleClass().add("payment-toggle");
+
+            // === 🎨 3) Color por método ===
+            switch (method.getName().toLowerCase()) {
+                case "cash", "efectivo" -> btn.getStyleClass().add("payment-cash");
+                case "transfer", "transferencia" -> btn.getStyleClass().add("payment-transfer");
+                case "qr" -> btn.getStyleClass().add("payment-qr");
+                case "card", "tarjeta" -> btn.getStyleClass().add("payment-card");
+                default -> btn.getStyleClass().add("payment-default");
+            }
+
+            // === 🖼️ 4) Icono según método ===
+            FontIcon icon = getPaymentIcon(method.getName());
+            icon.setIconSize(16);
+
+            Label text = new Label(label); // 👈 ahora sí usa traducción
+
+            HBox box = new HBox(8, icon, text);
+            box.setStyle("-fx-alignment: center;");
+            btn.setGraphic(box);
 
             paymentButtonsBox.getChildren().add(btn);
         }
-
-        logger.info("{} Loaded {} payment method buttons.", PREFIX, methods.size());
     }
+
+
 
 
     /** Shows a confirmation dialog before saving the service. */

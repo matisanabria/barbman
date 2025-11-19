@@ -216,3 +216,65 @@
     -fx-alignment: CENTER;
     -fx-padding: 18 0 0 0;
 }
+
+/* Base */
+.payment-toggle {
+    -fx-background-color: #3A3A3A;
+    -fx-text-fill: #EAEAEA;
+    -fx-background-radius: 10;
+    -fx-padding: 6 12;
+    -fx-border-radius: 10;
+    -fx-border-color: #4A4A4A;
+}
+
+/* Hover genérico */
+.payment-toggle:hover {
+    -fx-background-color: #4A4A4A;
+}
+
+/* ===============================
+   🎨 COLORES POR MÉTODO DE PAGO
+   =============================== */
+
+/* CASH - VERDE */
+.payment-cash:selected {
+    -fx-background-color: #49A078;
+    -fx-border-color: #49A078;
+    -fx-text-fill: #ffffff;
+}
+
+/* TRANSFER - AZUL */
+.payment-transfer:selected {
+    -fx-background-color: #3A8DDB;
+    -fx-border-color: #3A8DDB;
+    -fx-text-fill: #ffffff;
+}
+
+/* QR - VIOLETA */
+.payment-qr:selected {
+    -fx-background-color: #9A6BFF;
+    -fx-border-color: #9A6BFF;
+    -fx-text-fill: #ffffff;
+}
+
+/* CARD - NARANJA */
+.payment-card:selected {
+    -fx-background-color: #E3953E;
+    -fx-border-color: #E3953E;
+    -fx-text-fill: #ffffff;
+}
+
+/* Default fallback */
+.payment-default:selected {
+    -fx-background-color: #777;
+    -fx-border-color: #777;
+    -fx-text-fill: #ffffff;
+}
+
+/* Iconos blancos al seleccionar */
+.payment-toggle:selected .ikonli-font-icon {
+    -fx-icon-color: #FFFFFF;
+}
+.payment-toggle .ikonli-font-icon {
+    -fx-icon-color: #FFFFFF;
+}
