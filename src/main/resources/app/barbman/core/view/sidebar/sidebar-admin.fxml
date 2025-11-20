@@ -11,12 +11,13 @@
 <?import javafx.scene.layout.HBox?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<VBox xmlns="http://javafx.com/javafx/17"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="app.barbman.core.controller.SidebarController"
-      spacing="8.0"
-      styleClass="sidebar"
-      prefWidth="250">
+<VBox   xmlns="http://javafx.com/javafx/17"
+    xmlns:fx="http://javafx.com/fxml/1"
+    fx:controller="app.barbman.core.controller.SidebarController"
+    stylesheets="@../../style/sidebar.css"
+    spacing="8.0"
+    styleClass="sidebar"
+    prefWidth="250">
 
     <VBox spacing="10" styleClass="sidebar-main">
 

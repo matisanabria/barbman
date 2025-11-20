@@ -2,6 +2,7 @@ package app.barbman.core.controller;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToggleGroup;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -18,6 +19,8 @@ public class SidebarController {
     @FXML private ToggleButton btnCash;
     @FXML private ToggleButton btnSettings;
 
+    private final ToggleGroup sidebarGroup = new ToggleGroup();
+
     public void setMainController(MainViewController mainController) {
         this.mainController = mainController;
     }
@@ -26,7 +29,14 @@ public class SidebarController {
     private void initialize() {
         logger.info("{} Sidebar initialized.", PREFIX);
 
-        // Checks if null 'cause this controller might be used for other sidebars without all buttons
+        // --- Exclusive selection ---
+        if (btnIncome != null) btnIncome.setToggleGroup(sidebarGroup);
+        if (btnExpenses != null) btnExpenses.setToggleGroup(sidebarGroup);
+        if (btnSalaries != null) btnSalaries.setToggleGroup(sidebarGroup);
+        if (btnCash != null) btnCash.setToggleGroup(sidebarGroup);
+        if (btnSettings != null) btnSettings.setToggleGroup(sidebarGroup);
+
+        // --- Actions ---
         if (btnIncome != null)
             btnIncome.setOnAction(e -> loadView("/app/barbman/core/view/embed-view/services-view.fxml", "Ingresos"));
 
@@ -41,7 +51,11 @@ public class SidebarController {
 
         if (btnSettings != null)
             btnSettings.setOnAction(e -> loadView("/app/barbman/core/view/embed-view/settings-view.fxml", "Configuración"));
+
+        // Opcional: marcar botón inicial
+        if (btnIncome != null) sidebarGroup.selectToggle(btnIncome);
     }
+
 
     private void loadView(String path, String name) {
         if (mainController != null) {

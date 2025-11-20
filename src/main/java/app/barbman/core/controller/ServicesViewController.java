@@ -79,6 +79,8 @@ public class ServicesViewController implements Initializable {
     @FXML private Button filterButton;
     @FXML private Button clearFilterButton;
 
+    @FXML private ComboBox<String> dateFilterCombo;
+
     private final UsersRepository usersRepo = new UsersRepositoryImpl();
     private final UsersService usersService = new UsersService(new UsersRepositoryImpl());
 
@@ -106,6 +108,35 @@ public class ServicesViewController implements Initializable {
         loadPaymentMethodButtons();
 
         loadServicesHistory();
+
+
+        dateFilterCombo.setItems(FXCollections.observableArrayList(
+                "Today",
+                "Yesterday",
+                "Last 7 days",
+                "This month",
+                "Last month",
+                "Custom..."
+        ));
+
+        dateFilterCombo.getSelectionModel().selectedItemProperty().addListener((obs, old, selected) -> {
+            if (selected == null) return;
+
+            switch (selected) {
+                case "Today" -> filterDatePicker.setValue(LocalDate.now());
+                case "Yesterday" -> filterDatePicker.setValue(LocalDate.now().minusDays(1));
+                case "Last 7 days" -> {
+                    // TODO
+                }
+                case "This month" -> {
+                }
+                case "Last month" -> {
+                }
+                case "Custom..." -> {
+                }
+            }
+        });
+
 
         itemsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         servicesTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);

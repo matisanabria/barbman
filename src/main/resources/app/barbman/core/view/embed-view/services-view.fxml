@@ -96,7 +96,7 @@
 
                                 <!-- Botón guardar (primario) -->
                                 <Button fx:id="saveButton"
-                                        text="💾 Guardar todo"
+                                        text="💾 Guardar"
                                         prefWidth="120.0"
                                         styleClass="services-button"/>
 
@@ -145,10 +145,10 @@
                                           promptText="Usuario"
                                           styleClass="services-combobox"/>
 
-                                <DatePicker fx:id="filterDatePicker"
-                                            prefWidth="150.0"
-                                            promptText="Fecha"
-                                            styleClass="services-date"/>
+                                <ComboBox fx:id="dateFilterCombo"
+                                          prefWidth="160"
+                                          promptText="Rango de fechas"
+                                          styleClass="services-combobox"/>
 
                                 <Button fx:id="filterButton"
                                         prefWidth="40.0"

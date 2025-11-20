@@ -1,0 +1,61 @@
+/* --- Sidebar container --- */
+.sidebar {
+    -fx-background-color: #1F1F1F;
+    -fx-padding: 12 0 12 0;
+    -fx-spacing: 10;
+}
+
+/* Main block */
+.sidebar-main {
+    -fx-background-color: transparent;
+    -fx-spacing: 12;
+}
+
+/* --- Header (avatar + username) --- */
+.sidebar-header {
+    -fx-background-color: transparent;
+}
+
+.sidebar-username {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 16px;
+    -fx-font-weight: 700;
+}
+
+/* --- Separator --- */
+.sidebar .separator .line {
+    -fx-border-color: #333333;
+}
+
+/* --- Sidebar buttons --- */
+.sidebar-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #E0E0E0;
+    -fx-padding: 10 14;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-background-radius: 10;
+    -fx-alignment: CENTER_LEFT;
+}
+
+/* Hover */
+.sidebar-btn:hover {
+    -fx-background-color: #2C2C2C;
+}
+
+/* Selected */
+.sidebar-btn:selected {
+    -fx-background-color: #F0C667;
+    -fx-text-fill: #1F1F1F;
+    -fx-font-weight: 700;
+}
+
+/* Icon default */
+.sidebar-btn .ikonli-font-icon {
+    -fx-icon-color: #FFFFFF;
+}
+
+/* Icon when selected */
+.sidebar-btn:selected .ikonli-font-icon {
+    -fx-icon-color: #1F1F1F;
+}

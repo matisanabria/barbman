@@ -29,7 +29,7 @@
                 <StackPane fx:id="centerPane"/>
             </center>
             <bottom>
-                <HBox alignment="BOTTOM_RIGHT" spacing="10" BorderPane.alignment="CENTER" styleClass="main-bottom-bar">
+                <HBox alignment="BOTTOM_LEFT" spacing="10" BorderPane.alignment="CENTER" styleClass="main-bottom-bar">
                     <children>
                         <Button fx:id="logoutButton" prefWidth="32" prefHeight="32" styleClass="main-lock-btn">
                             <graphic>

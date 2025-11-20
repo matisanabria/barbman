@@ -1,39 +1,144 @@
-/* ===================================================
-   🌍 Barbman Global Styles (main.css) v1
-   =================================================== */
-
+/* ==============================
+   Root Configuration
+   ============================== */
 .root {
     -fx-background-color: #232323;
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 }
 
-/* ScrollPane transparente */
-.scroll-pane, .scroll-pane .viewport {
+/* Transparent ScrollPane */
+.scroll-pane,
+.scroll-pane .viewport {
     -fx-background-color: transparent;
 }
 
-/* Etiquetas */
+/* ==============================
+   Labels
+   ============================== */
 .label {
     -fx-text-fill: #EAEAEA;
     -fx-font-size: 14px;
 }
 
-/* Botón primario */
+/* ==============================
+   Base Button
+   ============================== */
 .button {
     -fx-background-radius: 12;
     -fx-cursor: hand;
     -fx-font-weight: 600;
 }
 
-/* Sombra limpia */
-.card, .panel {
+/* ==============================
+   Cards & Panels
+   ============================== */
+.card,
+.panel {
     -fx-background-radius: 12;
     -fx-background-color: #2A2A2A;
     -fx-effect: dropshadow(gaussian, #00000055, 14, 0.18, 0, 2);
 }
 
-/* Separadores ultra clean */
+/* ==============================
+   Separators
+   ============================== */
 .separator .line {
     -fx-border-color: #3A3A3A;
     -fx-border-width: 1;
+}
+
+/* ==========================================================
+   ScrollBar Styling
+   ========================================================== */
+
+/* ScrollBar container */
+.scroll-bar {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+/* Track */
+.scroll-bar:vertical .track,
+.scroll-bar:horizontal .track {
+    -fx-background-color: #1E1E1E;
+    -fx-background-radius: 8;
+}
+
+/* Thumb */
+.scroll-bar:vertical .thumb,
+.scroll-bar:horizontal .thumb {
+    -fx-background-color: #4A4A4A;
+    -fx-background-radius: 8;
+}
+
+/* Thumb hover */
+.scroll-bar:vertical .thumb:hover,
+.scroll-bar:horizontal .thumb:hover {
+    -fx-background-color: #6A6A6A;
+}
+
+/* Thumb pressed */
+.scroll-bar:vertical .thumb:pressed,
+.scroll-bar:horizontal .thumb:pressed {
+    -fx-background-color: #808080;
+}
+
+/* Increment/Decrement buttons (minimal) */
+.increment-button,
+.decrement-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-opacity: 0.3;
+}
+
+.increment-button:hover,
+.decrement-button:hover {
+    -fx-opacity: 0.6;
+}
+
+/* Arrow icons in increment/decrement buttons */
+.increment-arrow,
+.decrement-arrow {
+    -fx-background-color: #888888;
+}
+
+/* ==========================================================
+   Lock Button (Bottom-Left)
+   ========================================================== */
+
+.main-lock-btn {
+    -fx-background-color: #2A2A2A;
+    -fx-background-radius: 12;
+    -fx-padding: 6;
+    -fx-cursor: hand;
+    -fx-border-color: #3A3A3A;
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, #00000040, 10, 0.2, 0, 2);
+}
+
+.main-lock-btn:hover {
+    -fx-background-color: #3A3A3A;
+}
+
+.main-lock-btn:pressed {
+    -fx-background-color: #1F1F1F;
+}
+
+/* Icon inside lock button */
+.main-lock-btn .ikonli-font-icon {
+    -fx-icon-color: rgb(106, 106, 106);
+}
+
+.main-lock-btn:hover .ikonli-font-icon {
+    -fx-icon-color: #ff8c8c;
+}
+
+.main-lock-btn:pressed .ikonli-font-icon {
+    -fx-icon-color: #c33a3a;
+}
+
+/* Bottom bar padding */
+.main-bottom-bar {
+    -fx-padding: 20 10 12 10; /* top | right | bottom | left */
 }
