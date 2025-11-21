@@ -14,13 +14,10 @@
         <VBox alignment="CENTER" fillWidth="true" prefWidth="600.0" spacing="16" style="-fx-padding: 24;">
             <children>
 
-                <!-- Título -->
-                <Label text="Registrar servicio" styleClass="services-title"/>
-
                 <!-- PANEL PRINCIPAL -->
                 <VBox spacing="12" styleClass="services-section">
                     <children>
-
+                        <Label text="Registrar servicio" styleClass="services-title"/>
                         <!-- Agregar servicios individuales -->
                         <HBox alignment="CENTER" spacing="18" styleClass="services-row">
                             <children>
@@ -58,14 +55,13 @@
                         <VBox spacing="10" styleClass="services-subsection">
                             <children>
 
-                                <!-- Método de pago -->
+                                <!-- Metodo de pago -->
                                 <VBox spacing="6" alignment="CENTER">
                                     <children>
                                         <Label text="Método de pago:" style="-fx-font-weight: bold;"/>
                                         <HBox fx:id="paymentButtonsBox" spacing="10" alignment="CENTER"/>
                                     </children>
                                 </VBox>
-                                <Separator/>
                                 <!-- Usuario + notas -->
                                 <HBox alignment="CENTER" spacing="18" styleClass="services-row">
                                     <children>

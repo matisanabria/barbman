@@ -12,6 +12,7 @@ import app.barbman.core.service.paymentmethods.PaymentMethodsService;
 import app.barbman.core.service.services.ServiceDefinitionsService;
 import app.barbman.core.service.users.UsersService;
 import app.barbman.core.util.AlertUtil;
+import app.barbman.core.util.NumberFormatterUtil;
 import app.barbman.core.util.SessionManager;
 import app.barbman.core.repositories.users.UsersRepository;
 import app.barbman.core.repositories.services.servicedefinition.ServiceDefinitionRepositoryImpl;
@@ -109,6 +110,7 @@ public class ServicesViewController implements Initializable {
 
         loadServicesHistory();
 
+        NumberFormatterUtil.applyToTextField(priceField);
 
         dateFilterCombo.setItems(FXCollections.observableArrayList(
                 "Today",
@@ -262,6 +264,29 @@ public class ServicesViewController implements Initializable {
 
     private void loadUsers() {
         userComboBox.setItems(FXCollections.observableArrayList(usersService.getAllUsers()));
+        filterUserComboBox.setItems(FXCollections.observableArrayList(usersService.getAllUsers()));
+        userComboBox.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(User user) {
+                return user == null ? "" : TextFormatterUtil.capitalizeFirstLetter(user.getName());
+            }
+            @Override
+            public User fromString(String string) {return null;} // Not using this, combobox is not editable
+        });
+        filterUserComboBox.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(User user) {
+                return user == null ? "" : TextFormatterUtil.capitalizeFirstLetter(user.getName());
+            }
+            @Override
+            public User fromString(String string) {return null;} // Not using this, combobox is not editable
+        });
+        if (!userComboBox.getItems().isEmpty()) { // Select first user by default
+            userComboBox.getSelectionModel().select(0);
+        }
+        if (!filterUserComboBox.getItems().isEmpty()) { // Select first user by default
+            filterUserComboBox.getSelectionModel().select(0);
+        }
     }
 
     /** Loads defined services into the serviceComboBox with a custom StringConverter. */
@@ -275,73 +300,88 @@ public class ServicesViewController implements Initializable {
             }
             @Override
             public ServiceDefinition fromString(String s) {
-                return null; // not editable, safe to return null
-            }
+                return null;
+            } // not editable, safe to return null
         });
         logger.info("{} {} defined services loaded into ComboBox.", PREFIX, services.size());
+        serviceComboBox.getSelectionModel().selectedItemProperty().addListener((obs, old, selected) -> {
+            if (selected != null) {
+                double price = selected.getBasePrice(); // asegúrate de que ServiceDefinition tiene getPrice()
+                String formatted = NumberFormatterUtil.format(price);
+                priceField.setText(formatted);
+                priceField.positionCaret(formatted.length());
+            }
+        });
+        if (!serviceComboBox.getItems().isEmpty()) { // Select first service by default
+            serviceComboBox.getSelectionModel().select(0);
+        }
+    }
+
+    /** Returns a FontIcon based on the payment method name. */
+    private FontIcon getPaymentIcon(String methodName) {
+        switch (methodName.toLowerCase()) {
+            case "cash": return new FontIcon("fas-money-bill");
+            case "transfer": return new FontIcon("fas-university"); // banco
+            case "qr": return new FontIcon("fas-qrcode");
+            case "card": return new FontIcon("fas-credit-card");
+            default: return new FontIcon("fas-question-circle");
+        }
     }
 
     /** Dynamically loads payment method buttons into the HBox. */
-    private FontIcon getPaymentIcon(String methodName) {
-        switch (methodName.toLowerCase()) {
-            case "cash":
-                return new FontIcon("fas-money-bill");
-            case "transfer":
-                return new FontIcon("fas-university"); // banco
-            case "qr":
-                return new FontIcon("fas-qrcode");
-            case "card":
-                return new FontIcon("fas-credit-card");
-            default:
-                return new FontIcon("fas-question-circle");
-        }
-    }
     private void loadPaymentMethodButtons() {
         List<PaymentMethod> methods = paymentMethodsService.getAllPaymentMethods();
+        ToggleButton cashButtonRef = null;
 
         for (PaymentMethod method : methods) {
-
-            // === 🔤 1) Buscar traducción si existe ===
+            // Search for translation key
             String key = "payment_method_" + method.getName().toLowerCase();
             String label;
-
             if (resources != null && resources.containsKey(key)) {
-                label = resources.getString(key); // traducido
+                label = resources.getString(key); // try to get translated label
             } else {
                 label = method.getName(); // fallback
             }
 
-            // === 🧩 2) Crear botón ===
+            // Create ToggleButton
             ToggleButton btn = new ToggleButton();
             btn.setUserData(method);
             btn.setToggleGroup(paymentGroup);
             btn.getStyleClass().add("payment-toggle");
 
-            // === 🎨 3) Color por método ===
+            // Choose style based on method name
             switch (method.getName().toLowerCase()) {
-                case "cash", "efectivo" -> btn.getStyleClass().add("payment-cash");
+                case "cash", "efectivo" -> {
+                    btn.getStyleClass().add("payment-cash");
+                    cashButtonRef = btn;
+                }
                 case "transfer", "transferencia" -> btn.getStyleClass().add("payment-transfer");
                 case "qr" -> btn.getStyleClass().add("payment-qr");
                 case "card", "tarjeta" -> btn.getStyleClass().add("payment-card");
                 default -> btn.getStyleClass().add("payment-default");
             }
 
-            // === 🖼️ 4) Icono según método ===
+            // Set icon and label
             FontIcon icon = getPaymentIcon(method.getName());
             icon.setIconSize(16);
 
-            Label text = new Label(label); // 👈 ahora sí usa traducción
-
+            Label text = new Label(label); // Now uses translated label
             HBox box = new HBox(8, icon, text);
             box.setStyle("-fx-alignment: center;");
             btn.setGraphic(box);
+            paymentButtonsBox.getChildren().add(btn); // Add to HBox container
+        }
 
-            paymentButtonsBox.getChildren().add(btn);
+        if (cashButtonRef != null) {paymentGroup.selectToggle(cashButtonRef);} // Select cash by default
+        for (Toggle btn : paymentGroup.getToggles()) {
+            ToggleButton tb = (ToggleButton) btn;
+            tb.addEventFilter(javafx.scene.input.MouseEvent.MOUSE_PRESSED, event -> {
+                if (tb.isSelected()) {
+                    event.consume(); // prevent unselecting
+                }
+            });
         }
     }
-
-
-
 
     /** Shows a confirmation dialog before saving the service. */
     private void confirmAndSaveService() {
@@ -376,7 +416,6 @@ public class ServicesViewController implements Initializable {
         }
         return (PaymentMethod) selected.getUserData();
     }
-
 
     private void saveService() {
         User user = userComboBox.getValue();
@@ -434,5 +473,11 @@ public class ServicesViewController implements Initializable {
 
         // Reset items table
         if (itemsTable != null) {itemsTable.getItems().clear();}
+
+        ServiceDefinition first = serviceComboBox.getSelectionModel().getSelectedItem();
+        if (first != null) {
+            String formatted = NumberFormatterUtil.format(first.getBasePrice());
+            priceField.setText(formatted);
+        }
     }
 }
