@@ -19,4 +19,5 @@ module app.barbman.core {
     opens app.barbman.core.controller.salary to javafx.fxml;
     opens app.barbman.core.model.services to javafx.base;
     opens app.barbman.core.model.salaries to javafx.base;
+    opens app.barbman.core.dto.services to javafx.base;
 }

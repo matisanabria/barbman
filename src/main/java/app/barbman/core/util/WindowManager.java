@@ -230,8 +230,10 @@ public class WindowManager {
             Parent view = loader.load();
 
             // CSS global
-            view.getStylesheets().add(WindowManager.class
-                    .getResource("/app/barbman/core/style/main.css").toExternalForm());
+            borderPane.getStylesheets().add(
+                    WindowManager.class.getResource("/app/barbman/core/style/main.css").toExternalForm()
+            );
+
 
             // CSS específico
             String cssName = extractCssNameFromFxml(fxmlPath);

@@ -1,7 +1,7 @@
 package app.barbman.core.service.services;
 
-import app.barbman.core.dto.services.ServiceDTO;
 import app.barbman.core.dto.services.ServiceHistoryDTO;
+import app.barbman.core.dto.services.ServiceSaveDTO;
 import app.barbman.core.model.PaymentMethod;
 import app.barbman.core.model.User;
 import app.barbman.core.model.services.Service;
@@ -47,7 +47,7 @@ public class ServicesService {
      * @param dto ServiceDTO containing the Service and all its associated ServiceItems
      */
 
-    public void saveServiceWithItems(ServiceDTO dto) {
+    public void saveServiceWithItems(ServiceSaveDTO dto) {
         if (dto == null || !dto.isReadyToSave()) {
             logger.warn("{} Invalid or incomplete DTO. Aborting save operation.", PREFIX);
             throw new IllegalArgumentException("ServiceDTO is incomplete or invalid.");
@@ -105,7 +105,7 @@ public class ServicesService {
     }
 
     /**
-     * Fetches all services and maps them to ServiceHistoryDTO for UI display.
+     * Fetches all legacy and maps them to ServiceHistoryDTO for UI display.
      * Includes the service ID to allow safe deletion and reference.
      *
      * @return List of ServiceHistoryDTO containing formatted service information

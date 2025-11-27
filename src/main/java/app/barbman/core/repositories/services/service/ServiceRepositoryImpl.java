@@ -18,7 +18,7 @@ public class ServiceRepositoryImpl implements ServiceRepository {
     // Base SELECT clause (used across multiple queries)
     private static final String SELECT_BASE = """
             SELECT id, user_id, date, payment_method_id, total, notes
-            FROM services
+            FROM legacy
             """;
 
     @Override
@@ -51,7 +51,7 @@ public class ServiceRepositoryImpl implements ServiceRepository {
                 list.add(mapRow(rs));
             }
         } catch (Exception e) {
-            logger.error("{} Error fetching all services: {}", PREFIX, e.getMessage());
+            logger.error("{} Error fetching all legacy: {}", PREFIX, e.getMessage());
         }
         return list;
     }
@@ -86,7 +86,7 @@ public class ServiceRepositoryImpl implements ServiceRepository {
     @Override
     public void update(Service s, Connection conn) throws SQLException {
         String sql = """
-        UPDATE services
+        UPDATE legacy
         SET user_id = ?, date = ?, payment_method_id = ?, total = ?, notes = ?
         WHERE id = ?
         """;
@@ -105,7 +105,7 @@ public class ServiceRepositoryImpl implements ServiceRepository {
     }
     @Override
     public void delete(Integer id, Connection conn) throws SQLException {
-        String sql = "DELETE FROM services WHERE id = ?";
+        String sql = "DELETE FROM legacy WHERE id = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, id);
             ps.executeUpdate();
@@ -151,7 +151,7 @@ public class ServiceRepositoryImpl implements ServiceRepository {
         double total = 0.0;
         String sql = """
             SELECT SUM(total)
-            FROM services
+            FROM legacy
             WHERE user_id = ? AND date BETWEEN ? AND ?
             """;
 

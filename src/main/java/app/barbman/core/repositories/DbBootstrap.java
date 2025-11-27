@@ -107,7 +107,7 @@ public class DbBootstrap {
                     """);
 
             // SERVICE DEFINITIONS
-            // Defines types of services offered with base prices and availability status
+            // Defines types of legacy offered with base prices and availability status
             stmt.execute("""
                         CREATE TABLE IF NOT EXISTS service_definitions (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -126,6 +126,7 @@ public class DbBootstrap {
                             user_id INTEGER NOT NULL,
                             date TEXT NOT NULL CHECK (date = date(date)),
                             payment_method_id INTEGER NOT NULL,
+                            quantity INTEGER NOT NULL DEFAULT 1 CHECK (quantity > 0),
                             total REAL NOT NULL DEFAULT 0,
                             notes TEXT,
                             FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id),
@@ -133,7 +134,7 @@ public class DbBootstrap {
                         );
                     """);
             // SERVICE ITEMS
-            // Links services to specific service definitions (items) with individual pricing
+            // Links legacy to specific service definitions (items) with individual pricing
             // This allows for multiple items per service record
             stmt.execute("""
                         CREATE TABLE IF NOT EXISTS service_items (

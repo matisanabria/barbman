@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17.0.12"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="app.barbman.core.controller.ServiceCreateViewController"
+            stylesheets="@../../style/views/services-view.css">
+
+    <!-- ==========================
+         TOP – TITLE
+         ========================== -->
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-padding: 16 24;">
+            <children>
+                <Label text="Registrar servicio" styleClass="services-title"/>
+            </children>
+        </HBox>
+    </top>
+
+    <!-- ==========================
+         LEFT – SERVICES LIST (DB)
+         ========================== -->
+    <left>
+        <ScrollPane fitToWidth="true" style="-fx-padding: 16;"
+                    styleClass="scroll-pane">
+            <content>
+                <VBox fx:id="servicesListContainer"
+                      spacing="12"
+                      fillWidth="true">
+                    <!-- Los items se agregan dinámicamente -->
+                </VBox>
+            </content>
+        </ScrollPane>
+    </left>
+
+    <!-- ==========================
+         CENTER – CART
+         ========================== -->
+    <center>
+        <VBox styleClass="cart-container" spacing="12">
+            <children>
+
+                <!-- HEADER -->
+                <HBox spacing="40" style="-fx-padding: 0 0 10 10;">
+                    <children>
+                        <Label text="Item" styleClass="cart-header" prefWidth="120"/>
+                        <Label text="Precio" styleClass="cart-header" prefWidth="80"/>
+                        <Label text="Cantidad" styleClass="cart-header" prefWidth="80"/>
+                    </children>
+                </HBox>
+
+                <!-- SCROLLABLE CART -->
+                <ScrollPane fitToWidth="true"
+                            fx:id="cartScroll"
+                            style="-fx-background-color: transparent;"
+                            prefHeight="350">
+                    <content>
+                        <VBox fx:id="cartContainer"
+                              spacing="10"
+                              fillWidth="true"
+                              style="-fx-padding: 4;">
+                        </VBox>
+                    </content>
+                </ScrollPane>
+
+                <!-- TOTAL -->
+                <HBox alignment="CENTER_RIGHT" spacing="6">
+                    <children>
+                        <Label text="Total:" styleClass="cart-total-label"/>
+                        <Label fx:id="totalLabel" text="0 Gs" styleClass="cart-total-value"/>
+                    </children>
+                </HBox>
+
+                <!-- CONFIRM BUTTON -->
+                <Button fx:id="confirmButton"
+                        text="Confirmar"
+                        prefHeight="46"
+                        prefWidth="300"
+                        styleClass="cart-confirm-button"/>
+
+            </children>
+        </VBox>
+    </center>
+
+</BorderPane>

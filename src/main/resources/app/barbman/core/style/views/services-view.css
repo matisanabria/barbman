@@ -283,3 +283,193 @@
 .payment-toggle:selected .ikonli-font-icon {
     -fx-icon-color: #FFFFFF;
 }
+
+
+
+/* ==========================================================
+   CREATE SERVICE VIEW — DISEÑO NUEVO
+   ========================================================== */
+
+/* ------------------------------------------
+   CONTENEDOR GENERAL
+-------------------------------------------*/
+.service-create-root {
+    -fx-background-color: transparent;
+}
+
+/* ------------------------------------------
+   SCROLL
+-------------------------------------------*/
+.scroll-pane {
+    -fx-background-color: transparent;
+}
+.scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+.scroll-pane .scroll-bar:vertical .thumb {
+    -fx-background-color: #3d3d3d;
+    -fx-background-radius: 6;
+}
+
+/* ==========================================================
+   LEFT COLUMN — SERVICE CARDS
+   ========================================================== */
+.svc-card {
+    -fx-background-color: #2d2d2d;
+    -fx-background-radius: 10;
+    -fx-border-color: #3a3a3a;
+    -fx-border-radius: 10;
+    -fx-padding: 12 16;
+    -fx-spacing: 16;
+    -fx-alignment: CENTER_LEFT;
+
+    /* NUEVO */
+    -fx-pref-width: 400;
+    -fx-min-width: 260;
+    -fx-max-width: 1000;
+}
+
+
+.svc-card:hover {
+    -fx-background-color: #373737;
+}
+
+/* nombre del servicio */
+.svc-card-name {
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-font-weight: 600;
+}
+
+/* precio editable */
+.svc-card-price {
+    -fx-background-color: #1f1f1f;
+    -fx-background-radius: 8;
+    -fx-border-color: #444;
+    -fx-border-radius: 8;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-padding: 4 10;
+    -fx-pref-width: 90;
+}
+
+.svc-card-price:focused {
+    -fx-border-color: #F0C667;
+}
+
+/* botón + */
+.svc-card-add {
+    -fx-background-color: #F0C667;
+    -fx-background-radius: 8;
+    -fx-text-fill: #232323;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-padding: 4 10;
+}
+
+.svc-card-add:hover {
+    -fx-background-color: #ffd77a;
+}
+
+/* ==========================================================
+   CART HEADER (mejorado)
+   ========================================================== */
+.cart-header {
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #CFCFCF;
+    -fx-padding: 0 10 6 10;
+}
+
+/* ==========================================================
+   CART ROW
+   ========================================================== */
+
+.cart-row {
+    -fx-background-color: #262626;
+    -fx-background-radius: 10;
+    -fx-padding: 10 14;
+    -fx-spacing: 20;
+
+    -fx-alignment: CENTER_LEFT;
+}
+
+.cart-row:hover {
+    -fx-background-color: #333333;
+}
+
+.cart-row-name {
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-pref-width: 140;
+}
+
+.cart-row-price {
+    -fx-text-fill: #F0C667;
+    -fx-font-size: 15px;
+    -fx-font-weight: 600;
+    -fx-pref-width: 120;
+}
+
+.cart-row-qty {
+    -fx-text-fill: #eaeaea;
+    -fx-font-size: 14px;
+    -fx-pref-width: 40;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.cart-row-remove {
+    -fx-background-color: transparent;
+    -fx-text-fill: #ff6f6f;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-padding: 0 4;
+}
+
+.cart-row-remove:hover {
+    -fx-text-fill: #ff8989;
+}
+
+/* ==========================================================
+   TOTAL
+   ========================================================== */
+
+.cart-total-label {
+    -fx-text-fill: #cccccc;
+    -fx-font-size: 15px;
+}
+
+.cart-total-value {
+    -fx-text-fill: #F0C667;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+/* ==========================================================
+   CONFIRM BUTTON
+   ========================================================== */
+
+.cart-confirm-button {
+    -fx-background-color: #49A078;
+    -fx-background-radius: 12;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-padding: 8 20;
+}
+
+.cart-confirm-button:hover {
+    -fx-background-color: #5ab58e;
+}
+.cart-container {
+    -fx-background-color: #1f1f1f;
+    -fx-background-radius: 14;
+    -fx-border-color: #2f2f2f;
+    -fx-border-radius: 14;
+    -fx-padding: 16;
+    -fx-spacing: 12;
+    -fx-effect: dropshadow(gaussian, #00000055, 20, 0.12, 0, 4);
+
+    /* NUEVO */
+    -fx-translate-x: -5; /* pequeño margen a la derecha */
+}

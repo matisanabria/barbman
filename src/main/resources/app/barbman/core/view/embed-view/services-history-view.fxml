@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<ScrollPane fitToWidth="true" pannable="true"
+            style="-fx-background-color: transparent;"
+            xmlns="http://javafx.com/javafx/17.0.12"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="app.barbman.core.controller.ServicesHistoryViewController"
+            stylesheets="@../../style/views/services-view.css"
+>
+
+    <content>
+        <VBox alignment="TOP_CENTER" fillWidth="true" prefWidth="600.0" spacing="16" style="-fx-padding: 24;">
+            <children>
+
+                <!-- TÍTULO -->
+                <Label text="Historial de servicios" styleClass="services-title"/>
+
+                <!-- BOTÓN PARA CREAR NUEVO SERVICIO -->
+                <HBox alignment="CENTER_RIGHT">
+                    <children>
+                        <Button fx:id="createServiceButton"
+                                text="+ Registrar nuevo servicio"
+                                styleClass="services-button"
+                                prefWidth="220"/>
+                    </children>
+                </HBox>
+
+                <!-- TABLA HISTORIAL -->
+                <TableView fx:id="servicesTable"
+                           prefHeight="350.0"
+                           prefWidth="580.0"
+                           styleClass="table-view">
+                    <columns>
+                        <TableColumn fx:id="colDate" prefWidth="110" text="Fecha"/>
+                        <TableColumn fx:id="colUser" prefWidth="100" text="Usuario"/>
+                        <TableColumn fx:id="colServiceType" prefWidth="180" text="Detalle"/>
+                        <TableColumn fx:id="colPaymentMethod" prefWidth="100" text="Pago"/>
+                        <TableColumn fx:id="colPrice" prefWidth="90" text="Total"/>
+                        <TableColumn fx:id="colNotes" prefWidth="160" text="Notas"/>
+                    </columns>
+                </TableView>
+
+                <!-- FILTROS -->
+                <HBox alignment="CENTER" spacing="14" styleClass="services-row" style="-fx-padding: 6 0 0 0;">
+                    <children>
+                        <Label text="Filtrar:"/>
+
+                        <ComboBox fx:id="filterUserComboBox"
+                                  prefWidth="130.0"
+                                  promptText="Usuario"
+                                  styleClass="services-combobox"/>
+
+                        <ComboBox fx:id="dateFilterCombo"
+                                  prefWidth="160"
+                                  promptText="Rango de fechas"
+                                  styleClass="services-combobox"/>
+
+                        <Button fx:id="filterButton"
+                                prefWidth="40.0"
+                                styleClass="services-button">
+                            <graphic>
+                                <FontIcon iconLiteral="fas-check" iconSize="14"/>
+                            </graphic>
+                        </Button>
+
+                        <Button fx:id="clearFilterButton"
+                                text="Mostrar todo"
+                                prefWidth="120.0"
+                                styleClass="services-button"/>
+                    </children>
+                </HBox>
+
+            </children>
+        </VBox>
+    </content>
+</ScrollPane>

@@ -1,6 +1,5 @@
-package app.barbman.core.controller;
+package app.barbman.core.controller.legacy;
 
-import app.barbman.core.dto.services.ServiceDTO;
 import app.barbman.core.dto.services.ServiceHistoryDTO;
 import app.barbman.core.model.*;
 import app.barbman.core.model.services.Service;
@@ -36,8 +35,8 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 /**
- * Controlador para la vista de services realizados.
- * Gestiona la tabla que muestra los services realizados por los barberos.
+ * Controlador para la vista de legacy realizados.
+ * Gestiona la tabla que muestra los legacy realizados por los barberos.
  */
 public class ServicesViewController implements Initializable {
 
@@ -95,7 +94,7 @@ public class ServicesViewController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        logger.info("{} Initializing services view...", PREFIX);
+        logger.info("{} Initializing legacy view...", PREFIX);
 
         this.resources = resourceBundle; // ✅ Guardamos el bundle recibido
         logger.info("{} Bundle cargado -> {}", PREFIX,
@@ -185,7 +184,7 @@ public class ServicesViewController implements Initializable {
 
     /**
      * Confirms and deletes a service from history after validating user permissions.
-     * Admins can delete any service, Users can only delete services from the current day.
+     * Admins can delete any service, Users can only delete legacy from the current day.
      * @param dto ServiceHistoryDTO to delete
      */
     private void confirmAndDelete(ServiceHistoryDTO dto) {
@@ -289,7 +288,7 @@ public class ServicesViewController implements Initializable {
         }
     }
 
-    /** Loads defined services into the serviceComboBox with a custom StringConverter. */
+    /** Loads defined legacy into the serviceComboBox with a custom StringConverter. */
     private void loadDefinedServices() {
         List<ServiceDefinition> services = serviceDefinitionsService.getAll();
         serviceComboBox.setItems(FXCollections.observableArrayList(services));
@@ -303,7 +302,7 @@ public class ServicesViewController implements Initializable {
                 return null;
             } // not editable, safe to return null
         });
-        logger.info("{} {} defined services loaded into ComboBox.", PREFIX, services.size());
+        logger.info("{} {} defined legacy loaded into ComboBox.", PREFIX, services.size());
         serviceComboBox.getSelectionModel().selectedItemProperty().addListener((obs, old, selected) -> {
             if (selected != null) {
                 double price = selected.getBasePrice(); // asegúrate de que ServiceDefinition tiene getPrice()
@@ -440,7 +439,7 @@ public class ServicesViewController implements Initializable {
                     notes
             );
 
-            ServiceDTO dto = new ServiceDTO(service);
+            ServiceHistoryDTO dto = new ServiceHistoryDTO(service);
             dto.addItem(new ServiceItem(0, serviceDefinition.getId(), price));
 
             servicesService.saveServiceWithItems(dto);

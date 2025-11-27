@@ -57,8 +57,9 @@ public class MainViewController {
             }
         }
 
+        SessionManager.setMainBorderPane(borderPane);
         // Vista inicial (puede ser ingresos o lo que prefieras)
-        loadCenterView("/app/barbman/core/view/embed-view/services-view.fxml");
+        loadCenterView("/app/barbman/core/view/embed-view/services-history-view.fxml");
 
         // Logout button action
         logoutButton.setOnAction(event -> onLogout());

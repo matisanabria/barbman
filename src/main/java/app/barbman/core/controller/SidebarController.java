@@ -38,7 +38,7 @@ public class SidebarController {
 
         // --- Actions ---
         if (btnIncome != null)
-            btnIncome.setOnAction(e -> loadView("/app/barbman/core/view/embed-view/services-view.fxml", "Ingresos"));
+            btnIncome.setOnAction(e -> loadView("/app/barbman/core/view/embed-view/services-history-view.fxml", "Ingresos"));
 
         if (btnExpenses != null)
             btnExpenses.setOnAction(e -> loadView("/app/barbman/core/view/embed-view/expenses-view.fxml", "Egresos"));
