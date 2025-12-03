@@ -126,11 +126,13 @@ public class DbBootstrap {
                             user_id INTEGER NOT NULL,
                             date TEXT NOT NULL CHECK (date = date(date)),
                             payment_method_id INTEGER NOT NULL,
+                            client_id INTEGER,
                             quantity INTEGER NOT NULL DEFAULT 1 CHECK (quantity > 0),
                             total REAL NOT NULL DEFAULT 0,
                             notes TEXT,
                             FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id),
                             FOREIGN KEY (user_id) REFERENCES users(id)
+                            FOREIGN KEY (client_id) REFERENCES clients(id)
                         );
                     """);
             // SERVICE ITEMS
@@ -171,7 +173,9 @@ public class DbBootstrap {
                             date TEXT NOT NULL CHECK (date = date(date)),
                             total REAL NOT NULL,
                             payment_method_id INTEGER NOT NULL,
+                            client_id INTEGER,
                             FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id)
+                            FOREIGN KEY (client_id) REFERENCES clients(id)
                         );
                     """);
 
@@ -291,6 +295,19 @@ public class DbBootstrap {
                         created_at TEXT NOT NULL DEFAULT (datetime('now')),
                         FOREIGN KEY (cashbox_id) REFERENCES cashbox(id),
                         FOREIGN KEY (user_id) REFERENCES users(id)
+                    );
+                    """);
+            // CLIENTS
+            // Stores client information for appointments and marketing purposes
+            stmt.execute("""
+                    CREATE TABLE IF NOT EXISTS clients (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        name TEXT NOT NULL,
+                        document TEXT,
+                        phone TEXT,
+                        email TEXT,
+                        notes TEXT,
+                        active INTEGER NOT NULL DEFAULT 1 CHECK (active IN (0,1))
                     );
                     """);
 

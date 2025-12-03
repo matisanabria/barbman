@@ -1,39 +1,53 @@
-package app.barbman.core.dto.services;
+package app.barbman.core.dto.cart;
 
-/**
- * Represents an item in a shopping cart for services.
- */
+import java.util.Objects;
+
 public class CartItem {
-    private int serviceTypeId;
-    private String serviceName;
-    private double price;
-    private int quantity;
 
-    public CartItem(int serviceTypeId, String serviceName, double price, int quantity) {
-        this.serviceTypeId = serviceTypeId;
-        this.serviceName = serviceName;
+    public enum ItemType { SERVICE, PRODUCT }
+
+    private ItemType type;       // SERVICE o PRODUCT
+    private int definitionId;    // id del service_definition o product
+    private String name;         // nombre visible
+    private double price;        // precio actual cargado
+    private int quantity;        // unidades
+
+    public CartItem(ItemType type, int definitionId, String name, double price, int quantity) {
+        this.type = type;
+        this.definitionId = definitionId;
+        this.name = name;
         this.price = price;
         this.quantity = quantity;
     }
 
+    // Subtotal (clean)
     public double getSubtotal() {
         return price * quantity;
     }
 
-    public int getServiceTypeId() {
-        return serviceTypeId;
+    // Getters & Setters
+    public ItemType getType() {
+        return type;
     }
 
-    public void setServiceTypeId(int serviceTypeId) {
-        this.serviceTypeId = serviceTypeId;
+    public void setType(ItemType type) {
+        this.type = type;
     }
 
-    public String getServiceName() {
-        return serviceName;
+    public int getDefinitionId() {
+        return definitionId;
     }
 
-    public void setServiceName(String serviceName) {
-        this.serviceName = serviceName;
+    public void setDefinitionId(int definitionId) {
+        this.definitionId = definitionId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public double getPrice() {
@@ -50,5 +64,17 @@ public class CartItem {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        CartItem cartItem = (CartItem) o;
+        return definitionId == cartItem.definitionId && Double.compare(price, cartItem.price) == 0 && quantity == cartItem.quantity && type == cartItem.type && Objects.equals(name, cartItem.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, definitionId, name, price, quantity);
     }
 }

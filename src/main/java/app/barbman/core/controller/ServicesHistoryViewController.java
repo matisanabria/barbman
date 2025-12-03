@@ -1,6 +1,6 @@
 package app.barbman.core.controller;
 
-import app.barbman.core.dto.services.ServiceCartDTO;
+import app.barbman.core.dto.services.SaleCartDTO;
 import app.barbman.core.dto.services.ServiceHistoryDTO;
 import app.barbman.core.model.User;
 import app.barbman.core.repositories.users.UsersRepositoryImpl;
@@ -199,7 +199,7 @@ public class ServicesHistoryViewController implements Initializable {
         }
 
         // 🔥 Crear el nuevo carrito vacío
-        ServiceCartDTO cartDTO = new ServiceCartDTO(active.getId());
+        SaleCartDTO cartDTO = new SaleCartDTO(active.getId());
 
         // Guardarlo en sesión
         SessionManager.setCurrentCartDTO(cartDTO);
@@ -208,7 +208,7 @@ public class ServicesHistoryViewController implements Initializable {
         WindowManager.setEmbeddedView(
                 SessionManager.getMainBorderPane(),
                 "center",
-                "/app/barbman/core/view/embed-view/service-creation-view.fxml"
+                "/app/barbman/core/view/embed-view/sale-create-view.fxml"
         );
 
         logger.info("{} Redirected to service-create-view.", PREFIX);

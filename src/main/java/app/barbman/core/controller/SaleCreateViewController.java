@@ -1,6 +1,6 @@
 package app.barbman.core.controller;
 
-import app.barbman.core.dto.services.ServiceCartDTO;
+import app.barbman.core.dto.services.SaleCartDTO;
 import app.barbman.core.dto.services.CartItem;
 import app.barbman.core.model.User;
 import app.barbman.core.model.services.ServiceDefinition;
@@ -24,9 +24,9 @@ import org.apache.logging.log4j.Logger;
 import java.net.URL;
 import java.util.*;
 
-public class ServiceCreateViewController implements Initializable {
+public class SaleCreateViewController implements Initializable {
 
-    private static final Logger logger = LogManager.getLogger(ServiceCreateViewController.class);
+    private static final Logger logger = LogManager.getLogger(SaleCreateViewController.class);
     private static final String PREFIX = "[SERV-CREATE]";
 
     // ========= FXML =========
@@ -40,7 +40,7 @@ public class ServiceCreateViewController implements Initializable {
     private final UsersService usersService =
             new UsersService(new UsersRepositoryImpl());
 
-    private ServiceCartDTO dto;
+    private SaleCartDTO dto;
 
     // ====================================================================================
     //                                    INITIALIZE
@@ -65,7 +65,7 @@ public class ServiceCreateViewController implements Initializable {
         }
 
         // DTO moderno
-        dto = new ServiceCartDTO(user.getId());
+        dto = new SaleCartDTO(user.getId());
     }
 
     // ====================================================================================

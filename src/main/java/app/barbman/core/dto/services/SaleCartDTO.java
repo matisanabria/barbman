@@ -9,15 +9,15 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ServiceCartDTO {
+public class SaleCartDTO {
 
-    private static final Logger logger = LogManager.getLogger(ServiceCartDTO.class);
+    private static final Logger logger = LogManager.getLogger(SaleCartDTO.class);
     private static final String PREFIX = "[CART-DTO]";
 
     private final Service service;            // contiene user_id, date, payment_method_id, total, notes
     private final List<CartItem> cartItems;   // items con quantity y subtotales
 
-    public ServiceCartDTO(int userId) {
+    public SaleCartDTO(int userId) {
         this.service = new Service(
                 userId,
                 LocalDate.now(), // date
@@ -33,7 +33,7 @@ public class ServiceCartDTO {
     // -----------------------
     public void addItem(int serviceTypeId, String serviceName, double price) {
         CartItem existing = cartItems.stream()
-                .filter(i -> i.getServiceTypeId() == serviceTypeId && i.getPrice() == price)
+                .filter(i -> i.getTypeId() == serviceTypeId && i.getPrice() == price)
                 .findFirst()
                 .orElse(null);
 
@@ -105,7 +105,7 @@ public class ServiceCartDTO {
         List<ServiceItem> list = new ArrayList<>();
         for (CartItem ci : cartItems) {
             for (int i = 0; i < ci.getQuantity(); i++) {
-                list.add(new ServiceItem(0, ci.getServiceTypeId(), ci.getPrice()));
+                list.add(new ServiceItem(0, ci.getTypeId(), ci.getPrice()));
             }
         }
         return list;
