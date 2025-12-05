@@ -302,10 +302,10 @@ public class DbBootstrap {
             stmt.execute("""
                     CREATE TABLE IF NOT EXISTS clients (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        name TEXT NOT NULL,
-                        document TEXT,
-                        phone TEXT,
-                        email TEXT,
+                        name TEXT NOT NULL,          -- requerido
+                        document TEXT,               -- RUC (opcional)
+                        phone TEXT NOT NULL,         -- requerido
+                        email TEXT,                  -- opcional
                         notes TEXT,
                         active INTEGER NOT NULL DEFAULT 1 CHECK (active IN (0,1))
                     );

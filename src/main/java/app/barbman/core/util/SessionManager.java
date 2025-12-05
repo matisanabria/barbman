@@ -16,6 +16,9 @@ public class SessionManager {
     /** Temporal storage for the ServiceDTO being created/edited */
     private static SaleCartDTO currentServiceDTO;
 
+    /** Region code for validation rules (default PY) */
+    private static String regionCode = "PY";  // Default Paraguay
+
     /**
      * USER SESSION METHODS
      */
@@ -70,5 +73,19 @@ public class SessionManager {
 
     public static void clearCurrentCartDTO() {
         currentServiceDTO = null;
+    }
+
+    /**
+     * REGION CODE METHODS
+     */
+    public static String getRegionCode() {
+        return regionCode;
+    }
+    public static void setRegionCode(String code) {
+        if (code == null || code.isBlank()) return;
+        regionCode = code.toUpperCase();
+    }
+    public static boolean isParaguay() {
+        return "PY".equalsIgnoreCase(regionCode);
     }
 }

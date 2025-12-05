@@ -5,14 +5,14 @@ import java.util.Objects;
 public class Client {
 
     private int id;
-    private String name;      // Name and surname OR business name
-    private String document;  // CI o RUC
+    private String name;
+    private String document;
     private String phone;
     private String email;
     private String notes;
     private boolean active;
 
-    // Constructor for creating new clients
+    // Constructor para insertar
     public Client(String name, String document, String phone, String email, String notes, boolean active) {
         this.name = name;
         this.document = document;
@@ -22,7 +22,7 @@ public class Client {
         this.active = active;
     }
 
-    // Constructor for reading from DB
+    // Constructor para leer
     public Client(int id, String name, String document, String phone, String email, String notes, boolean active) {
         this(name, document, phone, email, notes, active);
         this.id = id;
@@ -46,14 +46,19 @@ public class Client {
 
     @Override
     public String toString() {
-        return name + " (" + document + ")";
+        return name + (document != null ? " (" + document + ")" : "");
     }
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        Client client = (Client) o;
-        return id == client.id && active == client.active && Objects.equals(name, client.name) && Objects.equals(document, client.document) && Objects.equals(phone, client.phone) && Objects.equals(email, client.email) && Objects.equals(notes, client.notes);
+        if (this == o) return true;
+        if (!(o instanceof Client c)) return false;
+        return id == c.id && active == c.active &&
+                Objects.equals(name, c.name) &&
+                Objects.equals(document, c.document) &&
+                Objects.equals(phone, c.phone) &&
+                Objects.equals(email, c.email) &&
+                Objects.equals(notes, c.notes);
     }
 
     @Override
