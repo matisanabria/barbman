@@ -9,11 +9,16 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Repository implementation for the `service_definitions` table.
+ * Provides CRUD operations and filtered queries.
+ */
 public class ServiceDefinitionRepositoryImpl implements ServiceDefinitionRepository {
 
     private static final Logger logger = LogManager.getLogger(ServiceDefinitionRepositoryImpl.class);
-    private static final String PREFIX = "[SERVDEFINITIONS-REPO]";
+    private static final String PREFIX = "[SERVICE-DEFS-REPO]";
 
+    /** Base SELECT clause reused across queries */
     private static final String SELECT_BASE = """
         SELECT id, name, base_price, available
         FROM service_definitions
@@ -22,55 +27,62 @@ public class ServiceDefinitionRepositoryImpl implements ServiceDefinitionReposit
     @Override
     public ServiceDefinition findById(Integer id) {
         String sql = SELECT_BASE + " WHERE id = ?";
+
         try (Connection db = DbBootstrap.connect();
              PreparedStatement ps = db.prepareStatement(sql)) {
 
             ps.setInt(1, id);
 
             try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return mapRow(rs);
-                }
+                if (rs.next()) return mapRow(rs);
             }
+
         } catch (Exception e) {
-            logger.warn("{} Error finding ServiceDefinition by id {}: {}", PREFIX, id, e.getMessage());
+            logger.error("{} Failed to fetch ServiceDefinition ID {}: {}", PREFIX, id, e.getMessage());
         }
+
         return null;
     }
 
     @Override
     public List<ServiceDefinition> findAll() {
         List<ServiceDefinition> list = new ArrayList<>();
+
         try (Connection db = DbBootstrap.connect();
              PreparedStatement ps = db.prepareStatement(SELECT_BASE);
              ResultSet rs = ps.executeQuery()) {
 
-            while (rs.next()) {
-                list.add(mapRow(rs));
-            }
+            while (rs.next()) list.add(mapRow(rs));
+
+            logger.debug("{} Loaded {} service definitions.", PREFIX, list.size());
+
         } catch (Exception e) {
-            logger.warn("{} Error fetching all ServiceDefinitions: {}", PREFIX, e.getMessage());
+            logger.error("{} Failed to fetch service definitions: {}", PREFIX, e.getMessage());
         }
+
         return list;
     }
 
     /**
-     * Fetches all ServiceDefinitions that are marked as "available".
+     * Returns all service definitions where available = 1.
      */
     @Override
     public List<ServiceDefinition> findAllAvailable() {
-        List<ServiceDefinition> list = new ArrayList<>();
         String sql = SELECT_BASE + " WHERE available = 1";
+        List<ServiceDefinition> list = new ArrayList<>();
+
         try (Connection db = DbBootstrap.connect();
              PreparedStatement ps = db.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 
-            while (rs.next()) {
-                list.add(mapRow(rs));
-            }
+            while (rs.next()) list.add(mapRow(rs));
+
+            logger.debug("{} Loaded {} available service definitions.", PREFIX, list.size());
+
         } catch (Exception e) {
-            logger.warn("{} Error fetching available ServiceDefinitions: {}", PREFIX, e.getMessage());
+            logger.error("{} Failed to fetch available service definitions: {}", PREFIX, e.getMessage());
         }
+
         return list;
     }
 
@@ -80,21 +92,24 @@ public class ServiceDefinitionRepositoryImpl implements ServiceDefinitionReposit
             INSERT INTO service_definitions (name, base_price, available)
             VALUES (?, ?, ?)
             """;
+
         try (Connection db = DbBootstrap.connect();
              PreparedStatement ps = db.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setString(1, service.getName());
             ps.setDouble(2, service.getBasePrice());
             ps.setInt(3, service.isAvailable() ? 1 : 0);
+
             ps.executeUpdate();
 
             try (ResultSet keys = ps.getGeneratedKeys()) {
-                if (keys.next()) {
-                    service.setId(keys.getInt(1));
-                }
+                if (keys.next()) service.setId(keys.getInt(1));
             }
+
+            logger.info("{} Inserted ServiceDefinition '{}', ID={}", PREFIX, service.getName(), service.getId());
+
         } catch (Exception e) {
-            logger.warn("{} Error saving ServiceDefinition: {}", PREFIX, e.getMessage());
+            logger.error("{} Failed to save ServiceDefinition '{}': {}", PREFIX, service.getName(), e.getMessage());
         }
     }
 
@@ -105,6 +120,7 @@ public class ServiceDefinitionRepositoryImpl implements ServiceDefinitionReposit
             SET name = ?, base_price = ?, available = ?
             WHERE id = ?
             """;
+
         try (Connection db = DbBootstrap.connect();
              PreparedStatement ps = db.prepareStatement(sql)) {
 
@@ -114,23 +130,31 @@ public class ServiceDefinitionRepositoryImpl implements ServiceDefinitionReposit
             ps.setInt(4, service.getId());
 
             ps.executeUpdate();
+
+            logger.info("{} Updated ServiceDefinition ID={} ({})", PREFIX, service.getId(), service.getName());
+
         } catch (Exception e) {
-            logger.warn("{} Error updating ServiceDefinition id {}: {}", PREFIX, service.getId(), e.getMessage());
+            logger.error("{} Failed to update ServiceDefinition ID {}: {}", PREFIX, service.getId(), e.getMessage());
         }
     }
 
     @Override
     public void delete(Integer id) {
         String sql = "DELETE FROM service_definitions WHERE id = ?";
+
         try (Connection db = DbBootstrap.connect();
              PreparedStatement ps = db.prepareStatement(sql)) {
 
             ps.setInt(1, id);
             ps.executeUpdate();
+
+            logger.info("{} Deleted ServiceDefinition ID={}", PREFIX, id);
+
         } catch (Exception e) {
-            logger.warn("{} Error deleting ServiceDefinition id {}: {}", PREFIX, id, e.getMessage());
+            logger.error("{} Failed to delete ServiceDefinition ID {}: {}", PREFIX, id, e.getMessage());
         }
     }
+
 
     private ServiceDefinition mapRow(ResultSet rs) throws SQLException {
         return new ServiceDefinition(

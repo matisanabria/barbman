@@ -139,13 +139,17 @@ public class DbBootstrap {
             // Links legacy to specific service definitions (items) with individual pricing
             // This allows for multiple items per service record
             stmt.execute("""
-                        CREATE TABLE IF NOT EXISTS service_items (
+                        CREATE TABLE IF NOT EXISTS services (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            service_id INTEGER NOT NULL,
-                            service_type_id INTEGER NOT NULL,
-                            price REAL NOT NULL CHECK (price > 0),
-                            FOREIGN KEY (service_id) REFERENCES services(id),
-                            FOREIGN KEY (service_type_id) REFERENCES service_definitions(id)
+                            user_id INTEGER NOT NULL,
+                            client_id INTEGER,
+                            date TEXT NOT NULL CHECK (date = date(date)),
+                            payment_method_id INTEGER NOT NULL,
+                            total REAL NOT NULL DEFAULT 0,
+                            notes TEXT,
+                            FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id),
+                            FOREIGN KEY (user_id) REFERENCES users(id),
+                            FOREIGN KEY (client_id) REFERENCES clients(id)
                         );
                     """);
 
@@ -164,32 +168,32 @@ public class DbBootstrap {
                         );
                     """);
 
-            // SALES
+            // PRODUCT SALES
             // Records individual sales transactions linked to payment methods
             // Items sold are stored in a separate table (sale_items)
             stmt.execute("""
-                        CREATE TABLE IF NOT EXISTS sales (
+                        CREATE TABLE IF NOT EXISTS product_sales (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
                             date TEXT NOT NULL CHECK (date = date(date)),
                             total REAL NOT NULL,
                             payment_method_id INTEGER NOT NULL,
                             client_id INTEGER,
-                            FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id)
+                            FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id),
                             FOREIGN KEY (client_id) REFERENCES clients(id)
                         );
                     """);
 
-            // SALE ITEMS
+            // PRODUCT SALE ITEMS
             // Links sales to specific products sold with quantity and unit pricing
             // This allows for multiple products per sale record
             stmt.execute("""
-                        CREATE TABLE IF NOT EXISTS sale_items (
+                        CREATE TABLE IF NOT EXISTS product_sale_items (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
                             sale_id INTEGER NOT NULL,
                             product_id INTEGER NOT NULL,
                             quantity INTEGER NOT NULL CHECK (quantity > 0),
                             unit_price REAL NOT NULL,
-                            FOREIGN KEY (sale_id) REFERENCES sales(id),
+                            FOREIGN KEY (sale_id) REFERENCES product_sales(id),
                             FOREIGN KEY (product_id) REFERENCES products(id)
                         );
                     """);

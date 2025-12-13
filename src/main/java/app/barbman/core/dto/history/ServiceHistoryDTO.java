@@ -1,4 +1,4 @@
-package app.barbman.core.dto.services;
+package app.barbman.core.dto.history;
 
 import java.time.LocalDate;
 

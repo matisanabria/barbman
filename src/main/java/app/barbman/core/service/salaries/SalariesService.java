@@ -7,7 +7,7 @@ import app.barbman.core.model.User;
 import app.barbman.core.repositories.salaries.SalariesRepository;
 import app.barbman.core.service.advances.AdvancesService;
 import app.barbman.core.service.expenses.ExpensesService;
-import app.barbman.core.service.services.ServicesService;
+import app.barbman.core.service.sales.ServicesService;
 import app.barbman.core.service.users.UsersService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

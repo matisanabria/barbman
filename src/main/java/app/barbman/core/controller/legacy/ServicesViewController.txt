@@ -1,6 +1,6 @@
 package app.barbman.core.controller.legacy;
 
-import app.barbman.core.dto.services.ServiceHistoryDTO;
+import app.barbman.core.dto.history.ServiceHistoryDTO;
 import app.barbman.core.model.*;
 import app.barbman.core.model.services.Service;
 import app.barbman.core.model.services.ServiceDefinition;
@@ -15,7 +15,7 @@ import app.barbman.core.util.NumberFormatterUtil;
 import app.barbman.core.util.SessionManager;
 import app.barbman.core.repositories.users.UsersRepository;
 import app.barbman.core.repositories.services.servicedefinition.ServiceDefinitionRepositoryImpl;
-import app.barbman.core.service.services.ServicesService;
+import app.barbman.core.service.sales.ServicesService;
 import app.barbman.core.util.TextFormatterUtil;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;

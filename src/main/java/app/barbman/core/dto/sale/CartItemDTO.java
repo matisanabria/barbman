@@ -1,31 +1,35 @@
-package app.barbman.core.dto.cart;
+package app.barbman.core.dto.sale;
 
 import java.util.Objects;
 
-public class CartItem {
+public class CartItemDTO {
 
     public enum ItemType { SERVICE, PRODUCT }
 
-    private ItemType type;       // SERVICE o PRODUCT
-    private int definitionId;    // id del service_definition o product
-    private String name;         // nombre visible
-    private double price;        // precio actual cargado
-    private int quantity;        // unidades
+    private ItemType type;
+    private int definitionId;
+    private String name;
+    private double price;
+    private int quantity;
 
-    public CartItem(ItemType type, int definitionId, String name, double price, int quantity) {
+    public CartItemDTO(ItemType type, int definitionId, String name, double price) {
         this.type = type;
         this.definitionId = definitionId;
         this.name = name;
         this.price = price;
-        this.quantity = quantity;
+        this.quantity = 1;
     }
 
-    // Subtotal (clean)
     public double getSubtotal() {
         return price * quantity;
     }
 
-    // Getters & Setters
+    public void increment() { quantity++; }
+
+    public void decrement() {
+        if (quantity > 1) quantity--;
+    }
+
     public ItemType getType() {
         return type;
     }
@@ -69,12 +73,24 @@ public class CartItem {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        CartItem cartItem = (CartItem) o;
-        return definitionId == cartItem.definitionId && Double.compare(price, cartItem.price) == 0 && quantity == cartItem.quantity && type == cartItem.type && Objects.equals(name, cartItem.name);
+        CartItemDTO cartItemDTO = (CartItemDTO) o;
+        return definitionId == cartItemDTO.definitionId && Double.compare(price, cartItemDTO.price) == 0 && quantity == cartItemDTO.quantity && type == cartItemDTO.type && Objects.equals(name, cartItemDTO.name);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(type, definitionId, name, price, quantity);
     }
+
+    @Override
+    public String toString() {
+        return "CartItemDTO{" +
+                "type=" + type +
+                ", definitionId=" + definitionId +
+                ", name='" + name + '\'' +
+                ", price=" + price +
+                ", quantity=" + quantity +
+                '}';
+    }
 }
+

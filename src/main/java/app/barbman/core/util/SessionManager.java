@@ -1,6 +1,6 @@
 package app.barbman.core.util;
 
-import app.barbman.core.dto.services.SaleCartDTO;
+import app.barbman.core.dto.sale.CheckoutDTO;
 import app.barbman.core.model.User;
 import javafx.scene.layout.BorderPane;
 
@@ -14,7 +14,7 @@ public class SessionManager {
     private static BorderPane mainBorderPane;
 
     /** Temporal storage for the ServiceDTO being created/edited */
-    private static SaleCartDTO currentServiceDTO;
+    private static CheckoutDTO currentServiceDTO;
 
     /** Region code for validation rules (default PY) */
     private static String regionCode = "PY";  // Default Paraguay
@@ -63,11 +63,11 @@ public class SessionManager {
      * SERVICE DTO METHODS
      * Methods to manage the current ServiceDTO in session
      */
-    public static void setCurrentCartDTO(SaleCartDTO dto) {
+    public static void setCurrentCartDTO(CheckoutDTO dto) {
         currentServiceDTO = dto;
     }
 
-    public static SaleCartDTO getCurrentCartDTO() {
+    public static CheckoutDTO getCurrentCartDTO() {
         return currentServiceDTO;
     }
 

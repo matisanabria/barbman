@@ -1,7 +1,6 @@
 package app.barbman.core.controller;
 
-import app.barbman.core.dto.services.SaleCartDTO;
-import app.barbman.core.dto.services.CartItem;
+import app.barbman.core.dto.sale.CheckoutDTO;
 import app.barbman.core.model.User;
 import app.barbman.core.model.services.ServiceDefinition;
 import app.barbman.core.repositories.services.servicedefinition.ServiceDefinitionRepositoryImpl;
@@ -12,6 +11,7 @@ import app.barbman.core.util.NumberFormatterUtil;
 import app.barbman.core.util.SessionManager;
 import app.barbman.core.util.TextFormatterUtil;
 import app.barbman.core.util.WindowManager;
+import app.barbman.core.dto.sale.CartItemDTO;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
@@ -40,7 +40,7 @@ public class SaleCreateViewController implements Initializable {
     private final UsersService usersService =
             new UsersService(new UsersRepositoryImpl());
 
-    private SaleCartDTO dto;
+    private CheckoutDTO dto;
 
     // ====================================================================================
     //                                    INITIALIZE
@@ -65,7 +65,7 @@ public class SaleCreateViewController implements Initializable {
         }
 
         // DTO moderno
-        dto = new SaleCartDTO(user.getId());
+        dto = new CheckoutDTO(user.getId());
     }
 
     // ====================================================================================
@@ -143,46 +143,46 @@ public class SaleCreateViewController implements Initializable {
     //                                        CART
     // ====================================================================================
 
-    /** Refreshes the cart UI to reflect the current state of the DTO. */
+    /** Refreshes the sale UI to reflect the current state of the DTO. */
     private void refreshCart() {
         cartContainer.getChildren().clear();
 
-        for (CartItem item : dto.getCartItems()) {
+        for (CartItemDTO item : dto.getCartItems()) {
             cartContainer.getChildren().add(buildCartRow(item));
         }
 
         totalLabel.setText(NumberFormatterUtil.format(dto.getTotal()) + " Gs");
     }
 
-    /** Builds a cart row UI component for a given cart item. */
-    private HBox buildCartRow(CartItem item) {
+    /** Builds a sale row UI component for a given sale item. */
+    private HBox buildCartRow(CartItemDTO item) {
         HBox row = new HBox(20);
-        row.getStyleClass().add("cart-row");
+        row.getStyleClass().add("sale-row");
         row.setPadding(new Insets(8, 12, 8, 12));
 
         Label name = new Label(TextFormatterUtil.capitalizeFirstLetter(item.getServiceName()));
         name.setPrefWidth(150);
-        name.getStyleClass().add("cart-row-name");
+        name.getStyleClass().add("sale-row-name");
 
         Label price = new Label(NumberFormatterUtil.format(item.getPrice()));
         price.setPrefWidth(80);
-        price.getStyleClass().add("cart-row-price");
+        price.getStyleClass().add("sale-row-price");
 
         Label qty = new Label("x" + item.getQuantity());
         qty.setPrefWidth(40);
-        qty.getStyleClass().add("cart-row-qty");
+        qty.getStyleClass().add("sale-row-qty");
 
         // remover only 1 item
         Button removeOne = new Button("-");
-        removeOne.getStyleClass().add("cart-row-remove");
+        removeOne.getStyleClass().add("sale-row-remove");
         removeOne.setOnAction(e -> {
             dto.removeSingleUnit(item);
             refreshCart();
         });
 
-        // removes completely the item from the cart
+        // removes completely the item from the sale
         Button removeAll = new Button("✕");
-        removeAll.getStyleClass().add("cart-row-remove");
+        removeAll.getStyleClass().add("sale-row-remove");
         removeAll.setOnAction(e -> {
             dto.removeItem(item);
             refreshCart();
