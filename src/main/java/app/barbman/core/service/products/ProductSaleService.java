@@ -1,4 +1,4 @@
-package app.barbman.core.service.sales;
+package app.barbman.core.service.products;
 
 import app.barbman.core.dto.sale.CartItemDTO;
 import app.barbman.core.dto.sale.CheckoutDTO;

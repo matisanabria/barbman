@@ -3,7 +3,7 @@ package app.barbman.core.service.checkout;
 import app.barbman.core.dto.sale.CartItemDTO;
 import app.barbman.core.dto.sale.CheckoutDTO;
 import app.barbman.core.repositories.DbBootstrap;
-import app.barbman.core.service.sales.ProductSaleService;
+import app.barbman.core.service.products.ProductSaleService;
 import app.barbman.core.service.services.ServiceSaleService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -43,11 +43,11 @@ public class CheckoutService {
     public void processCheckout(CheckoutDTO dto) {
 
         // Separate SERVICE and PRODUCT items
-        List<CartItemDTO> serviceItems = dto.getItems().stream()
+        List<CartItemDTO> serviceItems = dto.getCartItems().stream()
                 .filter(i -> i.getType() == CartItemDTO.ItemType.SERVICE)
                 .collect(Collectors.toList());
 
-        List<CartItemDTO> productItems = dto.getItems().stream()
+        List<CartItemDTO> productItems = dto.getCartItems().stream()
                 .filter(i -> i.getType() == CartItemDTO.ItemType.PRODUCT)
                 .collect(Collectors.toList());
 

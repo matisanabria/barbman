@@ -4,7 +4,6 @@ import app.barbman.core.dto.sale.CheckoutDTO;
 import app.barbman.core.dto.history.ServiceHistoryDTO;
 import app.barbman.core.model.User;
 import app.barbman.core.repositories.users.UsersRepositoryImpl;
-import app.barbman.core.service.sales.ServicesService;
 import app.barbman.core.service.users.UsersService;
 import app.barbman.core.util.AlertUtil;
 import app.barbman.core.util.SessionManager;
@@ -49,7 +48,7 @@ public class ServicesHistoryViewController implements Initializable {
     @FXML private Button clearFilterButton;
 
     private final UsersService usersService = new UsersService(new UsersRepositoryImpl());
-    private final ServicesService servicesService = new ServicesService();
+    //private final ServicesService servicesService = new ServicesService();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {

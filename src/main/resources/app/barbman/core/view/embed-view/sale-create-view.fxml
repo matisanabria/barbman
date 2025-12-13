@@ -1,22 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<BorderPane xmlns="http://javafx.com/javafx/17.0.12"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="app.barbman.core.controller.SaleCreateViewController"
-            stylesheets="@../../style/views/services-view.css">
+<BorderPane stylesheets="@../../style/views/services-view.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.barbman.core.controller.SaleCreateViewController">
 
     <!-- ==========================
          TOP – TITLE
          ========================== -->
     <top>
-        <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-padding: 16 24;">
+        <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-padding: 16 24;">
             <children>
-                <Label text="Registrar servicio" styleClass="services-title"/>
+
+                <!-- Pills -->
+                <ToggleButton fx:id="servicesToggle" selected="true" styleClass="pill-toggle" text="Servicios" />
+
+                <ToggleButton fx:id="productsToggle" styleClass="pill-toggle" text="Productos" />
+
+                <Label style="-fx-padding: 0 0 0 16;" styleClass="services-title" text="Registrar venta" />
+
+                <Label styleClass="services-title" text="Registrar servicio" />
+
             </children>
         </HBox>
     </top>
@@ -25,12 +29,9 @@
          LEFT – SERVICES LIST (DB)
          ========================== -->
     <left>
-        <ScrollPane fitToWidth="true" style="-fx-padding: 16;"
-                    styleClass="scroll-pane">
+        <ScrollPane fitToWidth="true" style="-fx-padding: 16;" styleClass="scroll-pane">
             <content>
-                <VBox fx:id="servicesListContainer"
-                      spacing="12"
-                      fillWidth="true">
+                <VBox fx:id="servicesListContainer" fillWidth="true" spacing="12">
                     <!-- Los items se agregan dinámicamente -->
                 </VBox>
             </content>
@@ -41,28 +42,22 @@
          CENTER – CART
          ========================== -->
     <center>
-        <VBox styleClass="cart-container" spacing="12">
+        <VBox spacing="12" styleClass="cart-container">
             <children>
 
                 <!-- HEADER -->
                 <HBox spacing="40" style="-fx-padding: 0 0 10 10;">
                     <children>
-                        <Label text="Item" styleClass="cart-header" prefWidth="120"/>
-                        <Label text="Precio" styleClass="cart-header" prefWidth="80"/>
-                        <Label text="Cantidad" styleClass="cart-header" prefWidth="80"/>
+                        <Label prefWidth="120" styleClass="cart-header" text="Item" />
+                        <Label prefWidth="80" styleClass="cart-header" text="Precio" />
+                        <Label prefWidth="80" styleClass="cart-header" text="Cantidad" />
                     </children>
                 </HBox>
 
                 <!-- SCROLLABLE CART -->
-                <ScrollPane fitToWidth="true"
-                            fx:id="cartScroll"
-                            style="-fx-background-color: transparent;"
-                            prefHeight="350">
+                <ScrollPane fx:id="cartScroll" fitToWidth="true" prefHeight="350" style="-fx-background-color: transparent;">
                     <content>
-                        <VBox fx:id="cartContainer"
-                              spacing="10"
-                              fillWidth="true"
-                              style="-fx-padding: 4;">
+                        <VBox fx:id="cartContainer" fillWidth="true" spacing="10" style="-fx-padding: 4;">
                         </VBox>
                     </content>
                 </ScrollPane>
@@ -70,17 +65,13 @@
                 <!-- TOTAL -->
                 <HBox alignment="CENTER_RIGHT" spacing="6">
                     <children>
-                        <Label text="Total:" styleClass="cart-total-label"/>
-                        <Label fx:id="totalLabel" text="0 Gs" styleClass="cart-total-value"/>
+                        <Label styleClass="cart-total-label" text="Total:" />
+                        <Label fx:id="totalLabel" styleClass="cart-total-value" text="0 Gs" />
                     </children>
                 </HBox>
 
                 <!-- CONFIRM BUTTON -->
-                <Button fx:id="confirmButton"
-                        text="Confirmar"
-                        prefHeight="46"
-                        prefWidth="300"
-                        styleClass="cart-confirm-button"/>
+                <Button fx:id="confirmButton" prefHeight="46" prefWidth="370.0" styleClass="cart-confirm-button" text="Confirmar" />
 
             </children>
         </VBox>

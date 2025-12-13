@@ -2,9 +2,12 @@ package app.barbman.core.controller;
 
 import app.barbman.core.dto.sale.CheckoutDTO;
 import app.barbman.core.model.User;
+import app.barbman.core.model.products.Product;
 import app.barbman.core.model.services.ServiceDefinition;
+import app.barbman.core.repositories.products.product.ProductRepositoryImpl;
 import app.barbman.core.repositories.services.servicedefinition.ServiceDefinitionRepositoryImpl;
 import app.barbman.core.repositories.users.UsersRepositoryImpl;
+import app.barbman.core.service.products.ProductService;
 import app.barbman.core.service.services.ServiceDefinitionsService;
 import app.barbman.core.service.users.UsersService;
 import app.barbman.core.util.NumberFormatterUtil;
@@ -34,11 +37,15 @@ public class SaleCreateViewController implements Initializable {
     @FXML private VBox cartContainer;           // right side
     @FXML private Label totalLabel;
     @FXML private Button confirmButton;
+    @FXML private ToggleButton servicesToggle;
+    @FXML private ToggleButton productsToggle;
 
     private final ServiceDefinitionsService serviceDefinitionsService =
             new ServiceDefinitionsService(new ServiceDefinitionRepositoryImpl());
     private final UsersService usersService =
             new UsersService(new UsersRepositoryImpl());
+    private final ProductService productService =
+            new ProductService(new ProductRepositoryImpl());
 
     private CheckoutDTO dto;
 
@@ -52,6 +59,7 @@ public class SaleCreateViewController implements Initializable {
 
         initDTO();
         loadServiceCards();
+        setupToggleSwitch();
         setupConfirmButton();
         refreshCart();
     }
@@ -69,6 +77,39 @@ public class SaleCreateViewController implements Initializable {
     }
 
     // ====================================================================================
+    //                                  TOGGLE SWITCH
+    // ====================================================================================
+
+    private void setupToggleSwitch() {
+
+        ToggleGroup group = new ToggleGroup();
+        servicesToggle.setToggleGroup(group);
+        productsToggle.setToggleGroup(group);
+
+        servicesToggle.setSelected(true);
+        group.selectedToggleProperty().addListener((obs, old, newT) -> {
+            if (newT == servicesToggle) {
+                loadServiceCards();
+            } else if (newT == productsToggle) {
+                loadProductCards();
+            }
+        });
+
+
+        // Default view
+        loadServiceCards();
+
+        servicesToggle.setOnAction(e -> {
+            loadServiceCards();
+        });
+
+        productsToggle.setOnAction(e -> {
+            loadProductCards(); // lo hacemos mañana
+        });
+    }
+
+
+    // ====================================================================================
     //                                    LEFT SIDE
     // ====================================================================================
 
@@ -82,7 +123,16 @@ public class SaleCreateViewController implements Initializable {
             servicesListContainer.getChildren().add(buildServiceCard(def));
         }
     }
+    /** Loads product cards into the left container. */
+    private void loadProductCards() {
+        servicesListContainer.getChildren().clear();
 
+        var products = productService.getAll();
+
+        for (var p : products) {
+            servicesListContainer.getChildren().add(buildProductCard(p));
+        }
+    }
     /** Builds a service card UI component for a given service definition. */
     private HBox buildServiceCard(ServiceDefinition def) {
         HBox card = new HBox(12);
@@ -126,7 +176,7 @@ public class SaleCreateViewController implements Initializable {
 
             double price = Double.parseDouble(clean);
 
-            dto.addItem(
+            dto.addService(
                     def.getId(),
                     def.getName(),
                     price
@@ -138,6 +188,54 @@ public class SaleCreateViewController implements Initializable {
         card.getChildren().addAll(name, priceField, add);
         return card;
     }
+
+
+    /** Builds the UI card for a product. */
+    private HBox buildProductCard(Product p) {
+
+        HBox card = new HBox(12);
+        card.getStyleClass().add("svc-card");
+        card.setPadding(new Insets(8, 12, 8, 12));
+
+        // NAME
+        Label name = new Label(TextFormatterUtil.capitalizeFirstLetter(p.getName()));
+        name.getStyleClass().add("svc-card-name");
+        name.setPrefWidth(140);
+
+        // PRICE (not editable)
+        Label price = new Label(NumberFormatterUtil.format(p.getUnitPrice()));
+        price.getStyleClass().add("svc-card-price");
+        price.setPrefWidth(80);
+
+        // STOCK
+        Label stock = new Label("Stock: " + p.getStock());
+        stock.getStyleClass().add("svc-card-stock");
+        stock.setPrefWidth(80);
+
+        // BUTTON +
+        Button add = new Button("+");
+        add.getStyleClass().add("svc-card-add");
+
+        add.setOnAction(e -> {
+            if (p.getStock() <= 0) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "No stock available for this product.", ButtonType.OK);
+                alert.show();
+                return;
+            }
+
+            dto.addProduct(
+                    p.getId(),
+                    p.getName(),
+                    p.getUnitPrice()
+            );
+
+            refreshCart();
+        });
+
+        card.getChildren().addAll(name, price, stock, add);
+        return card;
+    }
+
 
     // ====================================================================================
     //                                        CART
@@ -160,7 +258,7 @@ public class SaleCreateViewController implements Initializable {
         row.getStyleClass().add("sale-row");
         row.setPadding(new Insets(8, 12, 8, 12));
 
-        Label name = new Label(TextFormatterUtil.capitalizeFirstLetter(item.getServiceName()));
+        Label name = new Label(TextFormatterUtil.capitalizeFirstLetter(item.getName()));
         name.setPrefWidth(150);
         name.getStyleClass().add("sale-row-name");
 

@@ -473,3 +473,19 @@
     /* NUEVO */
     -fx-translate-x: -5; /* pequeño margen a la derecha */
 }
+.pill-toggle {
+    -fx-background-radius: 40;
+    -fx-padding: 6 16;
+    -fx-background-color: #2E2E2E;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 14px;
+}
+
+.pill-toggle:selected {
+    -fx-background-color: #4A90E2;
+    -fx-text-fill: white;
+}
+.svc-card-stock {
+    -fx-text-fill: #BBBBBB;
+    -fx-font-size: 13px;
+}
