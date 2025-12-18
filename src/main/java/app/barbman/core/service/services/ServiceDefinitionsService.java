@@ -8,8 +8,12 @@ import org.apache.logging.log4j.Logger;
 import java.util.List;
 
 /**
- * Handles logic related to service definitions (e.g. haircut, beard trim, combos).
- * Provides CRUD operations and acts as the abstraction between controller and repository.
+ * Handles logic related to services already defined in the system.
+ * Those services can then be used when registering service sales.
+ *
+ * These predefined services are not the services sold to customers, only their definitions.
+ *
+ * THIS METHOD HANDLES TYPES OF SERVICES SUCH AS HAIRCUTS, SHAVES, ETC.
  */
 public class ServiceDefinitionsService {
 

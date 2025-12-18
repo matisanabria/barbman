@@ -202,7 +202,7 @@ public class CajaController implements Initializable {
         boxProduccionBarberos.getChildren().clear();
         List<User> users = barberoRepo.findAll();
         for (User b : users) {
-            double produccion = serviciosRepo.getProduccionSemanalPorBarbero(b.getId(), desde, hasta);
+            double produccion = serviciosRepo.sumServiceTotalsByUserAndDateRange(b.getId(), desde, hasta);
             Label lbl = new Label("- " + b.getName() + ": " + NumberFormatterUtil.format(produccion) + " Gs");
             lbl.getStyleClass().add("caja-label");
             boxProduccionBarberos.getChildren().add(lbl);

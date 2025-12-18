@@ -87,26 +87,16 @@ public class SaleCreateViewController implements Initializable {
         productsToggle.setToggleGroup(group);
 
         servicesToggle.setSelected(true);
-        group.selectedToggleProperty().addListener((obs, old, newT) -> {
-            if (newT == servicesToggle) {
+
+        group.selectedToggleProperty().addListener((obs, old, selected) -> {
+            if (selected == servicesToggle) {
                 loadServiceCards();
-            } else if (newT == productsToggle) {
+            } else if (selected == productsToggle) {
                 loadProductCards();
             }
         });
-
-
-        // Default view
-        loadServiceCards();
-
-        servicesToggle.setOnAction(e -> {
-            loadServiceCards();
-        });
-
-        productsToggle.setOnAction(e -> {
-            loadProductCards(); // lo hacemos mañana
-        });
     }
+
 
 
     // ====================================================================================

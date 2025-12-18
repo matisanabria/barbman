@@ -19,6 +19,8 @@ import java.util.List;
  *  - Calculating the subtotal of SERVICE items
  *  - Creating the service header
  *  - Inserting individual service items (1 row per unit)
+ *
+ *  THIS METHOD ONLY REGISTERS SERVICES SOLD TO CUSTOMERS. AND HANDLES RELEVANT LOGIC FOR THAT.
  */
 public class ServiceSaleService {
 

@@ -7,7 +7,7 @@ import app.barbman.core.model.User;
 import app.barbman.core.repositories.salaries.SalariesRepository;
 import app.barbman.core.service.advances.AdvancesService;
 import app.barbman.core.service.expenses.ExpensesService;
-import app.barbman.core.service.sales.ServicesService;
+import app.barbman.core.service.services.ServicesService;
 import app.barbman.core.service.users.UsersService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,22 +26,22 @@ public class SalariesService {
 
     private final SalariesRepository salariesRepository;
     private final ExpensesService expensesService;
-    private final ServicesService servicesService;
     private final AdvancesService advancesService;
     private final UsersService usersService;
+    private final ServicesService servicesService;
 
     public SalariesService(
             SalariesRepository repo,
             ExpensesService expensesService,
-            ServicesService servicesService,
             AdvancesService advancesService,
             UsersService usersService
+            ServicesService servicesService
     ) {
         this.salariesRepository = repo;
         this.expensesService = expensesService;
-        this.servicesService = servicesService;
         this.advancesService = advancesService;
         this.usersService = usersService;
+        this.servicesService = servicesService;
     }
 
     /**
