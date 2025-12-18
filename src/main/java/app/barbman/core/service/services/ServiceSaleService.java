@@ -17,7 +17,7 @@ import java.util.List;
  * Registers service sales using a shared DB transaction.
  * Responsible for:
  *  - Calculating the subtotal of SERVICE items
- *  - Creating the service header
+ *  - Creating the service header which contains TOTAL
  *  - Inserting individual service items (1 row per unit)
  *
  *  THIS METHOD ONLY REGISTERS SERVICES SOLD TO CUSTOMERS. AND HANDLES RELEVANT LOGIC FOR THAT.

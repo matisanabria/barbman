@@ -21,7 +21,7 @@ public class ServiceRepositoryImpl implements ServiceRepository {
 
     /** Base SELECT clause used in all read queries */
     private static final String SELECT_BASE = """
-            SELECT id, user_id, client_id, quantity, date, payment_method_id, total, notes
+            SELECT id, user_id, client_id, date, payment_method_id, total, notes
             FROM services
             """;
 
@@ -75,15 +75,14 @@ public class ServiceRepositoryImpl implements ServiceRepository {
     public void save(Service s, Connection conn) throws SQLException {
 
         String sql = """
-            INSERT INTO services (user_id, client_id, quantity, date, payment_method_id, total, notes)
-            VALUES (?, ?, ?, ?, ?, ?. ?)
+            INSERT INTO services (user_id, client_id, date, payment_method_id, total, notes)
+            VALUES (?, ?, ?, ?, ?. ?)
             """;
 
         try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setInt(1, s.getUserId());
             ps.setObject(2, s.getClientId()); // may be NULL
-            ps.setInt(3, s.getQuantity());
             ps.setString(4, s.getDate().toString());
             ps.setInt(5, s.getPaymentMethodId());
             ps.setDouble(6, s.getTotal());
@@ -107,7 +106,7 @@ public class ServiceRepositoryImpl implements ServiceRepository {
 
         String sql = """
             UPDATE services
-            SET user_id = ?, client_id = ?, quantity = ?, date = ?, payment_method_id = ?, total = ?, notes = ?
+            SET user_id = ?, client_id = ?, date = ?, payment_method_id = ?, total = ?, notes = ?
             WHERE id = ?
             """;
 
@@ -115,12 +114,11 @@ public class ServiceRepositoryImpl implements ServiceRepository {
 
             ps.setInt(1, s.getUserId());
             ps.setObject(2, s.getClientId());
-            ps.setInt(3, s.getQuantity());
-            ps.setString(4, s.getDate().toString());
-            ps.setInt(5, s.getPaymentMethodId());
-            ps.setDouble(6, s.getTotal());
-            ps.setString(7, s.getNotes());
-            ps.setInt(8, s.getId());
+            ps.setString(3, s.getDate().toString());
+            ps.setInt(4, s.getPaymentMethodId());
+            ps.setDouble(5, s.getTotal());
+            ps.setString(6, s.getNotes());
+            ps.setInt(7, s.getId());
 
             ps.executeUpdate();
 
@@ -217,8 +215,7 @@ public class ServiceRepositoryImpl implements ServiceRepository {
                 rs.getInt("payment_method_id"),
                 rs.getDouble("total"),
                 rs.getString("notes"),
-                clientId,
-                rs.getInt("quantity")
+                clientId
         );
     }
 }

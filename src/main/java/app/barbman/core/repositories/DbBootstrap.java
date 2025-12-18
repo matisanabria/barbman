@@ -106,10 +106,10 @@ public class DbBootstrap {
                         );
                     """);
 
-            // SERVICE DEFINITIONS
+            // SERVICE DEFINITION
             // Defines types of legacy offered with base prices and availability status
             stmt.execute("""
-                        CREATE TABLE IF NOT EXISTS service_definitions (
+                        CREATE TABLE IF NOT EXISTS service_definition (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
                             name TEXT NOT NULL UNIQUE,
                             base_price REAL NOT NULL,
@@ -117,39 +117,35 @@ public class DbBootstrap {
                         );
                     """);
 
-            // SERVICES
-            // Records individual service transactions linked to users (employees) and payment methods
-            // Items are stored in a separate table (service_items)
+            // SERVICE HEADER
+            // Header for services performed by users on specific dates
+            // We use user_id as a snapshot of who performed the service, and
+            // date to track when it was done. Total is the sum of all service items.
+            // Those columns are kept for calculating production per user/date.
             stmt.execute("""
-                        CREATE TABLE IF NOT EXISTS services (
+                        CREATE TABLE IF NOT EXISTS service_header (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
                             user_id INTEGER NOT NULL,
+                            sale_id INTEGER NOT NULL,                   -- links to sales table
                             date TEXT NOT NULL CHECK (date = date(date)),
-                            payment_method_id INTEGER NOT NULL,
-                            client_id INTEGER,
-                            quantity INTEGER NOT NULL DEFAULT 1 CHECK (quantity > 0),
-                            total REAL NOT NULL DEFAULT 0,
-                            notes TEXT,
-                            FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id),
-                            FOREIGN KEY (user_id) REFERENCES users(id)
-                            FOREIGN KEY (client_id) REFERENCES clients(id)
+                            subtotal REAL NOT NULL DEFAULT 0,
+                            FOREIGN KEY (user_id) REFERENCES users(id),
+                            FOREIGN KEY (sale_id) REFERENCES sales(id)
                         );
                     """);
-            // SERVICE ITEMS
+            // SERVICE ITEM
             // Links legacy to specific service definitions (items) with individual pricing
             // This allows for multiple items per service record
             stmt.execute("""
-                        CREATE TABLE IF NOT EXISTS services (
+                        CREATE TABLE IF NOT EXISTS service_item (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            user_id INTEGER NOT NULL,
-                            client_id INTEGER,
-                            date TEXT NOT NULL CHECK (date = date(date)),
-                            payment_method_id INTEGER NOT NULL,
-                            total REAL NOT NULL DEFAULT 0,
-                            notes TEXT,
-                            FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id),
-                            FOREIGN KEY (user_id) REFERENCES users(id),
-                            FOREIGN KEY (client_id) REFERENCES clients(id)
+                            service_header_id INTEGER NOT NULL,
+                            service_definition_id INTEGER NOT NULL,
+                            quantity INTEGER NOT NULL DEFAULT 1 CHECK (quantity > 0),
+                            unit_price REAL NOT NULL,               -- snapshot of the price at the time of service
+                            item_total REAL NOT NULL DEFAULT 0
+                            FOREIGN KEY (service_header_id) REFERENCES service_header(id),
+                            FOREIGN KEY (service_definition_id) REFERENCES service_definition(id)
                         );
                     """);
 
@@ -164,39 +160,55 @@ public class DbBootstrap {
                             stock INTEGER NOT NULL DEFAULT 0,
                             category TEXT,                 -- optional, can be NULL
                             brand TEXT,                    -- optional, can be NULL
+                            image_path TEXT,               -- image file path of the product
                             notes TEXT NOT NULL                -- optional
                         );
                     """);
 
-            // PRODUCT SALES
-            // Records individual sales transactions linked to payment methods
-            // Items sold are stored in a separate table (sale_items)
+            // PRODUCT HEADER
+            // Header for products sold
+            // Links to sales table for unified sales tracking
             stmt.execute("""
                         CREATE TABLE IF NOT EXISTS product_sales (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            date TEXT NOT NULL CHECK (date = date(date)),
-                            total REAL NOT NULL,
-                            payment_method_id INTEGER NOT NULL,
-                            client_id INTEGER,
-                            FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id),
-                            FOREIGN KEY (client_id) REFERENCES clients(id)
+                            sale_id INTEGER NOT NULL,                   -- links to sales table
+                            subtotal REAL NOT NULL,
+                            FOREIGN KEY (sale_id) REFERENCES sales(id)
                         );
                     """);
 
-            // PRODUCT SALE ITEMS
-            // Links sales to specific products sold with quantity and unit pricing
-            // This allows for multiple products per sale record
+            // PRODUCT ITEMS
+            // Links individual products to product sales with quantity and pricing details
+            // Allows multiple products per sale record
             stmt.execute("""
                         CREATE TABLE IF NOT EXISTS product_sale_items (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            sale_id INTEGER NOT NULL,
+                            product_header_id INTEGER NOT NULL,
                             product_id INTEGER NOT NULL,
                             quantity INTEGER NOT NULL CHECK (quantity > 0),
                             unit_price REAL NOT NULL,
-                            FOREIGN KEY (sale_id) REFERENCES product_sales(id),
+                            item_total REAL NOT NULL,
+                            FOREIGN KEY (product_header_id) REFERENCES product_sales(id),
                             FOREIGN KEY (product_id) REFERENCES products(id)
                         );
                     """);
+            // SALES
+            // A header table for all sales transactions (services + products)
+            // Links to users, clients, payment methods, and records the total amount
+            stmt.execute(
+                    """
+                        CREATE TABLE IF NOT EXISTS sales (
+                            id INTEGER PRIMARY KEY AUTOINCREMENT,
+                            user_id INTEGER NOT NULL,
+                            client_id INTEGER,                  -- can be NULL
+                            payment_method_id INTEGER NOT NULL,
+                            date TEXT NOT NULL CHECK (date = date(date)),
+                            total REAL NOT NULL,
+                            FOREIGN KEY (user_id) REFERENCES users(id),
+                            FOREIGN KEY (client_id) REFERENCES clients(id),
+                            FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id)
+                        );"""
+            );
 
             // EXPENSES
             // Records various types of expenses with descriptions, amounts, dates, and payment methods
