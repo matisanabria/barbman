@@ -272,6 +272,7 @@ public class DbBootstrap {
                             date TEXT NOT NULL CHECK (date = date(date)),
                             payment_method_id INTEGER NOT NULL,
                             expense_id INTEGER NOT NULL,
+                            description TEXT NOT NULL,
                             FOREIGN KEY (user_id) REFERENCES users(id),
                             FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id),
                             FOREIGN KEY (expense_id) REFERENCES expenses(id)
