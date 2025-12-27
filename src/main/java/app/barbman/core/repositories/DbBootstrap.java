@@ -207,8 +207,8 @@ public class DbBootstrap {
                             FOREIGN KEY (user_id) REFERENCES users(id),
                             FOREIGN KEY (client_id) REFERENCES clients(id),
                             FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id)
-                        );"""
-            );
+                        );
+                    """);
 
             // EXPENSES
             // Records various types of expenses with descriptions, amounts, dates, and payment methods
@@ -239,26 +239,25 @@ public class DbBootstrap {
                     """);
 
             // SALARIES
-            // Records weekly salary payments to users with production totals and payment details
-            // Each salary can optionally reference an expense entry for accounting linkage
-            // TODO: Add monthly salary support
-                        stmt.execute("""
-                CREATE TABLE IF NOT EXISTS salaries (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    user_id INTEGER NOT NULL,
-                    week_start TEXT NOT NULL,
-                    week_end TEXT NOT NULL,
-                    total_production REAL NOT NULL,
-                    amount_paid REAL NOT NULL,
-                    pay_type_snapshot INTEGER NOT NULL,
-                    pay_date TEXT,
-                    payment_method_id INTEGER NOT NULL,
-                    expense_id INTEGER, -- links to expenses table for traceability
-                    FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id),
-                    FOREIGN KEY (user_id) REFERENCES users(id),
-                    FOREIGN KEY (expense_id) REFERENCES expenses(id)
-                );
-            """);
+            // Records salary payments of users. Each salary entry links to an expense record for traceability.
+            // Includes production totals, payment amounts, payment methods, and pay date.
+            stmt.execute("""
+                        CREATE TABLE IF NOT EXISTS salaries (
+                            id INTEGER PRIMARY KEY AUTOINCREMENT,
+                            user_id INTEGER NOT NULL,
+                            start_date TEXT NOT NULL,
+                            end_date TEXT NOT NULL,
+                            total_production REAL NOT NULL,
+                            amount_paid REAL NOT NULL,
+                            pay_type_snapshot INTEGER NOT NULL,
+                            pay_date TEXT,
+                            payment_method_id INTEGER NOT NULL,
+                            expense_id INTEGER, -- links to expenses table for traceability
+                            FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id),
+                            FOREIGN KEY (user_id) REFERENCES users(id),
+                            FOREIGN KEY (expense_id) REFERENCES expenses(id)
+                        );
+                    """);
 
 
             // ADVANCES
