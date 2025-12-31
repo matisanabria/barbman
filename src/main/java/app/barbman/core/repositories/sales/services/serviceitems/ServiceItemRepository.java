@@ -1,6 +1,6 @@
-package app.barbman.core.repositories.services.serviceitems;
+package app.barbman.core.repositories.sales.services.serviceitems;
 
-import app.barbman.core.model.services.ServiceItem;
+import app.barbman.core.model.sales.services.ServiceItem;
 import app.barbman.core.repositories.GenericRepository;
 
 import java.sql.Connection;

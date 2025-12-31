@@ -1,6 +1,6 @@
-    package app.barbman.core.repositories.services.service;
+    package app.barbman.core.repositories.sales.services.serviceheader;
 
-    import app.barbman.core.model.services.Service;
+    import app.barbman.core.model.sales.services.ServiceHeader;
     import app.barbman.core.repositories.GenericRepository;
 
 
@@ -8,11 +8,11 @@
     import java.sql.SQLException;
     import java.time.LocalDate;
 
-    public interface ServiceRepository extends GenericRepository<Service, Integer> {
+    public interface ServiceHeaderRepository extends GenericRepository<ServiceHeader, Integer> {
         double sumServiceTotalsByUserAndDateRange(int barberoId, LocalDate desde, LocalDate hasta);
 
         // Extended methods with shared connection
-        void save(Service s, Connection conn) throws SQLException;
-        void update(Service s, Connection conn) throws SQLException;
+        void save(ServiceHeader s, Connection conn) throws SQLException;
+        void update(ServiceHeader s, Connection conn) throws SQLException;
         void delete(Integer id, Connection conn) throws SQLException;
     }

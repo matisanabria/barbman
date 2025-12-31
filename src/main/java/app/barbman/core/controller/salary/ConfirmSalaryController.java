@@ -1,17 +1,15 @@
 package app.barbman.core.controller.salary;
 
 import app.barbman.core.dto.SalaryDTO;
-import app.barbman.core.model.salaries.Salary;
 import app.barbman.core.model.User;
 import app.barbman.core.repositories.expense.ExpenseRepositoryImpl;
+import app.barbman.core.repositories.sales.services.serviceheader.ServiceHeaderRepositoryImpl;
 import app.barbman.core.repositories.users.UsersRepository;
 import app.barbman.core.repositories.users.UsersRepositoryImpl;
 import app.barbman.core.repositories.expense.ExpenseRepository;;
-import app.barbman.core.repositories.services.service.ServiceRepository;
-import app.barbman.core.repositories.services.service.ServiceRepositoryImpl;
+import app.barbman.core.repositories.sales.services.serviceheader.ServiceHeaderRepository;
 import app.barbman.core.repositories.salaries.SalariesRepository;
 import app.barbman.core.repositories.salaries.SalariesRepositoryImpl;
-import app.barbman.core.service.salaries.SalariesService;
 import app.barbman.core.util.NumberFormatterUtil;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -54,10 +52,10 @@ public class ConfirmSalaryController implements Initializable {
     private static final String PREFIX = "[CONFIRM-SALARY]";
 
     private final SalariesRepository salariesRepository = new SalariesRepositoryImpl();
-    private final ServiceRepository serviceRepository = new ServiceRepositoryImpl();
+    private final ServiceHeaderRepository serviceHeaderRepository = new ServiceHeaderRepositoryImpl();
     private final ExpenseRepository expenseRepository = new ExpenseRepositoryImpl();
     private final UsersRepository usersRepository = new UsersRepositoryImpl();
-    //private final SalariesService salariesService = new SalariesService(salariesRepository, serviceRepository, expenseRepository);
+    //private final SalariesService salariesService = new SalariesService(salariesRepository, serviceHeaderRepository, expenseRepository);
     private SueldosController parentController;
 
     // User y sueldo seleccionado desde la tabla principal

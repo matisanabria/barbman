@@ -2,10 +2,10 @@ package app.barbman.core.service.services;
 
 import app.barbman.core.dto.sale.CartItemDTO;
 import app.barbman.core.dto.sale.CheckoutDTO;
-import app.barbman.core.model.services.Service;
-import app.barbman.core.model.services.ServiceItem;
-import app.barbman.core.repositories.services.service.ServiceRepository;
-import app.barbman.core.repositories.services.serviceitems.ServiceItemRepository;
+import app.barbman.core.model.sales.services.ServiceHeader;
+import app.barbman.core.model.sales.services.ServiceItem;
+import app.barbman.core.repositories.sales.services.serviceheader.ServiceHeaderRepository;
+import app.barbman.core.repositories.sales.services.serviceitems.ServiceItemRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -14,11 +14,11 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * Registers service sales using a shared DB transaction.
+ * Registers serviceheader sales using a shared DB transaction.
  * Responsible for:
  *  - Calculating the subtotal of SERVICE items
- *  - Creating the service header which contains TOTAL
- *  - Inserting individual service items (1 row per unit)
+ *  - Creating the serviceheader header which contains TOTAL
+ *  - Inserting individual serviceheader items (1 row per unit)
  *
  *  THIS METHOD ONLY REGISTERS SERVICES SOLD TO CUSTOMERS. AND HANDLES RELEVANT LOGIC FOR THAT.
  */
@@ -26,12 +26,12 @@ public class ServiceSaleService {
 
     private static final Logger logger = LogManager.getLogger(ServiceSaleService.class);
 
-    private final ServiceRepository serviceRepository;
+    private final ServiceHeaderRepository serviceHeaderRepository;
     private final ServiceItemRepository serviceItemRepository;
 
-    public ServiceSaleService(ServiceRepository serviceRepository,
+    public ServiceSaleService(ServiceHeaderRepository serviceHeaderRepository,
                               ServiceItemRepository serviceItemRepository) {
-        this.serviceRepository = serviceRepository;
+        this.serviceHeaderRepository = serviceHeaderRepository;
         this.serviceItemRepository = serviceItemRepository;
     }
 
@@ -55,8 +55,8 @@ public class ServiceSaleService {
 
         logger.debug("[SERVICE-SALE] Subtotal (services) = {}", subtotalServicios);
 
-        // 2. Build and save service header
-        Service service = new Service(
+        // 2. Build and save serviceheader header
+        ServiceHeader serviceHeader = new ServiceHeader(
                 dto.getUserId(),
                 dto.getDate(),
                 dto.getPaymentMethod(),
@@ -65,15 +65,15 @@ public class ServiceSaleService {
                 dto.getClientId()
         );
 
-        serviceRepository.save(service, conn);
-        logger.info("[SERVICE-SALE] Header saved (ServiceID={})", service.getId());
+        serviceHeaderRepository.save(serviceHeader, conn);
+        logger.info("[SERVICE-SALE] Header saved (ServiceID={})", serviceHeader.getId());
 
         // 3. Insert rows for each unit
         for (CartItemDTO item : serviceItems) {
             for (int i = 0; i < item.getQuantity(); i++) {
 
                 ServiceItem si = new ServiceItem(
-                        service.getId(),
+                        serviceHeader.getId(),
                         item.getDefinitionId(),  // fk to service_definitions
                         item.getPrice()
                 );
@@ -83,7 +83,7 @@ public class ServiceSaleService {
         }
 
         logger.info("[SERVICE-SALE] {} ServiceItems inserted for ServiceID={}",
-                serviceItems.size(), service.getId());
+                serviceItems.size(), serviceHeader.getId());
 
         // 4. Placeholder for future movement logging
         // movementService.registerIncome(...);

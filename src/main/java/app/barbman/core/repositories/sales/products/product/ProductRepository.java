@@ -1,6 +1,6 @@
-package app.barbman.core.repositories.products.product;
+package app.barbman.core.repositories.sales.products.product;
 
-import app.barbman.core.model.products.Product;
+import app.barbman.core.model.sales.products.Product;
 import app.barbman.core.repositories.GenericRepository;
 
 import java.util.List;

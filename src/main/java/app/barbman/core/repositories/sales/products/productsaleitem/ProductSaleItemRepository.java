@@ -1,6 +1,6 @@
-package app.barbman.core.repositories.products.productsaleitem;
+package app.barbman.core.repositories.sales.products.productsaleitem;
 
-import app.barbman.core.model.products.ProductSaleItem;
+import app.barbman.core.model.sales.products.ProductSaleItem;
 import app.barbman.core.repositories.GenericRepository;
 
 import java.sql.Connection;

@@ -1,12 +1,11 @@
-package app.barbman.core.repositories.products.productsale;
+package app.barbman.core.repositories.sales.products.productheader;
 
-import app.barbman.core.model.products.ProductSale;
+import app.barbman.core.model.sales.products.ProductHeader;
 import app.barbman.core.repositories.DbBootstrap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,17 +13,18 @@ import java.util.List;
  * Repository implementation for the `product_sales` table.
  * Provides CRUD operations and support for shared-connection transactions.
  */
-public class ProductSaleRepositoryImpl implements ProductSaleRepository {
-    private static final Logger logger = LogManager.getLogger(ProductSaleRepositoryImpl.class);
+public class ProductHeaderRepositoryImpl implements ProductHeaderRepository {
+
+    private static final Logger logger = LogManager.getLogger(ProductHeaderRepositoryImpl.class);
     private static final String PREFIX = "[PRODUCT-SALES-REPO]";
 
     private static final String SELECT_BASE = """
-        SELECT id, date, total, payment_method_id, client_id
+        SELECT id, sale_id, subtotal
         FROM product_sales
         """;
 
     @Override
-    public ProductSale findById(Integer id) {
+    public ProductHeader findById(Integer id) {
         String sql = SELECT_BASE + " WHERE id = ?";
 
         try (Connection db = DbBootstrap.connect();
@@ -44,8 +44,8 @@ public class ProductSaleRepositoryImpl implements ProductSaleRepository {
     }
 
     @Override
-    public List<ProductSale> findAll() {
-        List<ProductSale> list = new ArrayList<>();
+    public List<ProductHeader> findAll() {
+        List<ProductHeader> list = new ArrayList<>();
 
         try (Connection db = DbBootstrap.connect();
              PreparedStatement ps = db.prepareStatement(SELECT_BASE);
@@ -66,50 +66,48 @@ public class ProductSaleRepositoryImpl implements ProductSaleRepository {
 
     /** Saves a product sale using a shared connection. */
     @Override
-    public void save(ProductSale sale, Connection conn) throws SQLException {
+    public void save(ProductHeader header, Connection conn) throws SQLException {
 
         String sql = """
-            INSERT INTO product_sales (date, total, payment_method_id, client_id)
-            VALUES (?, ?, ?, ?)
+            INSERT INTO product_sales (sale_id, subtotal)
+            VALUES (?, ?)
             """;
 
         try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            ps.setString(1, sale.getDate().toString());
-            ps.setDouble(2, sale.getTotal());
-            ps.setInt(3, sale.getPaymentMethodId());
-            ps.setObject(4, sale.getClientId());
+            ps.setInt(1, header.getSaleId());
+            ps.setDouble(2, header.getSubtotal());
 
             ps.executeUpdate();
 
             try (ResultSet keys = ps.getGeneratedKeys()) {
-                if (keys.next()) sale.setId(keys.getInt(1));
+                if (keys.next()) header.setId(keys.getInt(1));
             }
 
-            logger.info("{} ProductSale inserted successfully (ID={}) [shared]", PREFIX, sale.getId());
+            logger.info("{} ProductHeader inserted successfully (ID={}) [shared]",
+                    PREFIX, header.getId());
         }
     }
 
     @Override
-    public void update(ProductSale sale, Connection conn) throws SQLException {
+    public void update(ProductHeader header, Connection conn) throws SQLException {
 
         String sql = """
             UPDATE product_sales
-            SET date = ?, total = ?, payment_method_id = ?, client_id = ?
+            SET sale_id = ?, subtotal = ?
             WHERE id = ?
             """;
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setString(1, sale.getDate().toString());
-            ps.setDouble(2, sale.getTotal());
-            ps.setInt(3, sale.getPaymentMethodId());
-            ps.setObject(4, sale.getClientId());
-            ps.setInt(5, sale.getId());
+            ps.setInt(1, header.getSaleId());
+            ps.setDouble(2, header.getSubtotal());
+            ps.setInt(3, header.getId());
 
             ps.executeUpdate();
 
-            logger.info("{} ProductSale updated successfully (ID={}) [shared]", PREFIX, sale.getId());
+            logger.info("{} ProductHeader updated successfully (ID={}) [shared]",
+                    PREFIX, header.getId());
         }
     }
 
@@ -122,25 +120,26 @@ public class ProductSaleRepositoryImpl implements ProductSaleRepository {
             ps.setInt(1, id);
             ps.executeUpdate();
 
-            logger.info("{} ProductSale deleted (ID={}) [shared]", PREFIX, id);
+            logger.info("{} ProductHeader deleted (ID={}) [shared]", PREFIX, id);
         }
     }
 
     @Override
-    public void save(ProductSale sale) {
+    public void save(ProductHeader header) {
         try (Connection conn = DbBootstrap.connect()) {
-            save(sale, conn);
+            save(header, conn);
         } catch (Exception e) {
             logger.error("{} Failed to save product sale: {}", PREFIX, e.getMessage());
         }
     }
 
     @Override
-    public void update(ProductSale sale) {
+    public void update(ProductHeader header) {
         try (Connection conn = DbBootstrap.connect()) {
-            update(sale, conn);
+            update(header, conn);
         } catch (Exception e) {
-            logger.error("{} Failed to update product sale ID {}: {}", PREFIX, sale.getId(), e.getMessage());
+            logger.error("{} Failed to update product sale ID {}: {}",
+                    PREFIX, header.getId(), e.getMessage());
         }
     }
 
@@ -153,20 +152,11 @@ public class ProductSaleRepositoryImpl implements ProductSaleRepository {
         }
     }
 
-    private ProductSale mapRow(ResultSet rs) throws SQLException {
-
-        LocalDate date = LocalDate.parse(rs.getString("date"));
-
-        Integer clientId = rs.getObject("client_id") != null
-                ? rs.getInt("client_id")
-                : null;
-
-        return new ProductSale(
+    private ProductHeader mapRow(ResultSet rs) throws SQLException {
+        return new ProductHeader(
                 rs.getInt("id"),
-                date,
-                rs.getDouble("total"),
-                rs.getInt("payment_method_id"),
-                clientId
+                rs.getInt("sale_id"),
+                rs.getDouble("subtotal")
         );
     }
 }

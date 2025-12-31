@@ -2,10 +2,10 @@ package app.barbman.core.controller;
 
 import app.barbman.core.dto.sale.CheckoutDTO;
 import app.barbman.core.model.User;
-import app.barbman.core.model.products.Product;
-import app.barbman.core.model.services.ServiceDefinition;
-import app.barbman.core.repositories.products.product.ProductRepositoryImpl;
-import app.barbman.core.repositories.services.servicedefinition.ServiceDefinitionRepositoryImpl;
+import app.barbman.core.model.sales.products.Product;
+import app.barbman.core.model.sales.services.ServiceDefinition;
+import app.barbman.core.repositories.sales.products.product.ProductRepositoryImpl;
+import app.barbman.core.repositories.sales.services.servicedefinition.ServiceDefinitionRepositoryImpl;
 import app.barbman.core.repositories.users.UsersRepositoryImpl;
 import app.barbman.core.service.products.ProductService;
 import app.barbman.core.service.services.ServiceDefinitionsService;
@@ -55,7 +55,7 @@ public class SaleCreateViewController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        logger.info("{} Initializing service creation view...", PREFIX);
+        logger.info("{} Initializing serviceheader creation view...", PREFIX);
 
         initDTO();
         loadServiceCards();
@@ -103,7 +103,7 @@ public class SaleCreateViewController implements Initializable {
     //                                    LEFT SIDE
     // ====================================================================================
 
-    /** Loads service definition cards into the left container.*/
+    /** Loads serviceheader definition cards into the left container.*/
     private void loadServiceCards() {
         servicesListContainer.getChildren().clear(); // clear existing
 
@@ -123,7 +123,7 @@ public class SaleCreateViewController implements Initializable {
             servicesListContainer.getChildren().add(buildProductCard(p));
         }
     }
-    /** Builds a service card UI component for a given service definition. */
+    /** Builds a serviceheader card UI component for a given serviceheader definition. */
     private HBox buildServiceCard(ServiceDefinition def) {
         HBox card = new HBox(12);
         card.getStyleClass().add("svc-card");
@@ -290,7 +290,7 @@ public class SaleCreateViewController implements Initializable {
         confirmButton.setOnAction(e -> {
             if (dto.getCartItems().isEmpty()) {
                 // If item list is empty, show alert
-                Alert alert = new Alert(Alert.AlertType.ERROR, "You must add at least 1 service to proceed.", ButtonType.OK);
+                Alert alert = new Alert(Alert.AlertType.ERROR, "You must add at least 1 serviceheader to proceed.", ButtonType.OK);
                 alert.show();
                 return;
             }

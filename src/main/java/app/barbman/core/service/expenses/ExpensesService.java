@@ -27,7 +27,7 @@ public class ExpensesService {
     /**
      * Registers a general expense record.
      *
-     * @param type Expense type (e.g., supply, purchase, tax, service, other)
+     * @param type Expense type (e.g., supply, purchase, tax, serviceheader, other)
      * @param amount Expense amount (must be greater than zero)
      * @param description Optional description (max length: 500)
      * @param paymentMethodId Payment method ID (cash, transfer, etc.)

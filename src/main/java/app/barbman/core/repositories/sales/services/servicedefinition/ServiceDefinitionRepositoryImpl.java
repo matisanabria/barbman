@@ -1,6 +1,6 @@
-package app.barbman.core.repositories.services.servicedefinition;
+package app.barbman.core.repositories.sales.services.servicedefinition;
 
-import app.barbman.core.model.services.ServiceDefinition;
+import app.barbman.core.model.sales.services.ServiceDefinition;
 import app.barbman.core.repositories.DbBootstrap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -54,17 +54,17 @@ public class ServiceDefinitionRepositoryImpl implements ServiceDefinitionReposit
 
             while (rs.next()) list.add(mapRow(rs));
 
-            logger.debug("{} Loaded {} service definitions.", PREFIX, list.size());
+            logger.debug("{} Loaded {} serviceheader definitions.", PREFIX, list.size());
 
         } catch (Exception e) {
-            logger.error("{} Failed to fetch service definitions: {}", PREFIX, e.getMessage());
+            logger.error("{} Failed to fetch serviceheader definitions: {}", PREFIX, e.getMessage());
         }
 
         return list;
     }
 
     /**
-     * Returns all service definitions where available = 1.
+     * Returns all serviceheader definitions where available = 1.
      */
     @Override
     public List<ServiceDefinition> findAllAvailable() {
@@ -77,10 +77,10 @@ public class ServiceDefinitionRepositoryImpl implements ServiceDefinitionReposit
 
             while (rs.next()) list.add(mapRow(rs));
 
-            logger.debug("{} Loaded {} available service definitions.", PREFIX, list.size());
+            logger.debug("{} Loaded {} available serviceheader definitions.", PREFIX, list.size());
 
         } catch (Exception e) {
-            logger.error("{} Failed to fetch available service definitions: {}", PREFIX, e.getMessage());
+            logger.error("{} Failed to fetch available serviceheader definitions: {}", PREFIX, e.getMessage());
         }
 
         return list;

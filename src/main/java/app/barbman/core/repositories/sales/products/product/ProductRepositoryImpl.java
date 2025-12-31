@@ -1,6 +1,6 @@
-package app.barbman.core.repositories.products.product;
+package app.barbman.core.repositories.sales.products.product;
 
-import app.barbman.core.model.products.Product;
+import app.barbman.core.model.sales.products.Product;
 import app.barbman.core.repositories.DbBootstrap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,7 +19,7 @@ public class ProductRepositoryImpl implements ProductRepository {
     private static final String PREFIX = "[PRODUCT-REPO]";
 
     private static final String SELECT_BASE = """
-        SELECT id, name, cost_price, unit_price, stock, category, brand, notes
+        SELECT id, name, cost_price, unit_price, stock, category, brand, image_path, notes
         FROM products
         """;
 
@@ -103,8 +103,9 @@ public class ProductRepositoryImpl implements ProductRepository {
     @Override
     public void save(Product p) {
         String sql = """
-            INSERT INTO products (name, cost_price, unit_price, stock, category, brand, notes)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO products
+            (name, cost_price, unit_price, stock, category, brand, image_path, notes)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """;
 
         try (Connection db = DbBootstrap.connect();
@@ -116,7 +117,8 @@ public class ProductRepositoryImpl implements ProductRepository {
             ps.setInt(4, p.getStock());
             ps.setString(5, p.getCategory());
             ps.setString(6, p.getBrand());
-            ps.setString(7, p.getNotes());
+            ps.setString(7, p.getImagePath());
+            ps.setString(8, p.getNotes());
 
             ps.executeUpdate();
 
@@ -134,7 +136,8 @@ public class ProductRepositoryImpl implements ProductRepository {
     public void update(Product p) {
         String sql = """
             UPDATE products
-            SET name = ?, cost_price = ?, unit_price = ?, stock = ?, category = ?, brand = ?, notes = ?
+            SET name = ?, cost_price = ?, unit_price = ?, stock = ?,
+                category = ?, brand = ?, image_path = ?, notes = ?
             WHERE id = ?
             """;
 
@@ -147,8 +150,9 @@ public class ProductRepositoryImpl implements ProductRepository {
             ps.setInt(4, p.getStock());
             ps.setString(5, p.getCategory());
             ps.setString(6, p.getBrand());
-            ps.setString(7, p.getNotes());
-            ps.setInt(8, p.getId());
+            ps.setString(7, p.getImagePath());
+            ps.setString(8, p.getNotes());
+            ps.setInt(9, p.getId());
 
             ps.executeUpdate();
 
@@ -185,6 +189,7 @@ public class ProductRepositoryImpl implements ProductRepository {
                 rs.getInt("stock"),
                 rs.getString("category"),
                 rs.getString("brand"),
+                rs.getString("image_path"),
                 rs.getString("notes")
         );
     }

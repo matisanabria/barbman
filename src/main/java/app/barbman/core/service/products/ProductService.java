@@ -1,7 +1,7 @@
 package app.barbman.core.service.products;
 
-import app.barbman.core.model.products.Product;
-import app.barbman.core.repositories.products.product.ProductRepository;
+import app.barbman.core.model.sales.products.Product;
+import app.barbman.core.repositories.sales.products.product.ProductRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

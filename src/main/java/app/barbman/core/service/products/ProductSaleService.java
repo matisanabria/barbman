@@ -2,12 +2,12 @@ package app.barbman.core.service.products;
 
 import app.barbman.core.dto.sale.CartItemDTO;
 import app.barbman.core.dto.sale.CheckoutDTO;
-import app.barbman.core.model.products.Product;
-import app.barbman.core.model.products.ProductSale;
-import app.barbman.core.model.products.ProductSaleItem;
-import app.barbman.core.repositories.products.product.ProductRepository;
-import app.barbman.core.repositories.products.productsale.ProductSaleRepository;
-import app.barbman.core.repositories.products.productsaleitem.ProductSaleItemRepository;
+import app.barbman.core.model.sales.products.Product;
+import app.barbman.core.model.sales.products.ProductHeader;
+import app.barbman.core.model.sales.products.ProductSaleItem;
+import app.barbman.core.repositories.sales.products.product.ProductRepository;
+import app.barbman.core.repositories.sales.products.productheader.ProductHeaderRepository;
+import app.barbman.core.repositories.sales.products.productsaleitem.ProductSaleItemRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * Handles the process of registering a product sale.
  *
- * This service does NOT manage its own DB connections. All actions occur inside
+ * This serviceheader does NOT manage its own DB connections. All actions occur inside
  * the transaction created in CheckoutService to ensure atomicity for mixed checkouts
  * (products + services together).
  *
@@ -32,11 +32,11 @@ public class ProductSaleService {
 
     private static final Logger logger = LogManager.getLogger(ProductSaleService.class);
 
-    private final ProductSaleRepository saleRepository;
+    private final ProductHeaderRepository saleRepository;
     private final ProductSaleItemRepository saleItemRepository;
     private final ProductRepository productRepository;
 
-    public ProductSaleService(ProductSaleRepository saleRepository,
+    public ProductSaleService(ProductHeaderRepository saleRepository,
                               ProductSaleItemRepository saleItemRepository,
                               ProductRepository productRepository) {
         this.saleRepository = saleRepository;
@@ -62,7 +62,7 @@ public class ProductSaleService {
         // ======================
         double subtotalProductos = calculateSubtotal(productItems);
 
-        ProductSale sale = new ProductSale(
+        ProductHeader sale = new ProductHeader(
                 dto.getDate(),
                 subtotalProductos,
                 dto.getPaymentMethod(),
@@ -70,7 +70,7 @@ public class ProductSaleService {
         );
 
         saleRepository.save(sale, conn);
-        logger.info("[PRODUCT-SALE] Created ProductSale ID={}", sale.getId());
+        logger.info("[PRODUCT-SALE] Created ProductHeader ID={}", sale.getId());
 
         // ======================
         // 2. Insert sale items

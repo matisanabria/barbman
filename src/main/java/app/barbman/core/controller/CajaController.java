@@ -1,14 +1,14 @@
 package app.barbman.core.controller;
 
 import app.barbman.core.model.Expense;
-import app.barbman.core.model.services.Service;
+import app.barbman.core.model.sales.services.ServiceHeader;
 import app.barbman.core.model.User;
 import app.barbman.core.repositories.expense.ExpenseRepositoryImpl;
+import app.barbman.core.repositories.sales.services.serviceheader.ServiceHeaderRepositoryImpl;
 import app.barbman.core.repositories.users.UsersRepository;
 import app.barbman.core.repositories.users.UsersRepositoryImpl;
 import app.barbman.core.repositories.expense.ExpenseRepository;
-import app.barbman.core.repositories.services.service.ServiceRepository;
-import app.barbman.core.repositories.services.service.ServiceRepositoryImpl;
+import app.barbman.core.repositories.sales.services.serviceheader.ServiceHeaderRepository;
 
 import app.barbman.core.util.NumberFormatterUtil;
 import javafx.collections.FXCollections;
@@ -43,7 +43,7 @@ public class CajaController implements Initializable {
 
     private static final Logger logger = LogManager.getLogger(CajaController.class);
 
-    private final ServiceRepository serviciosRepo = new ServiceRepositoryImpl();
+    private final ServiceHeaderRepository serviciosRepo = new ServiceHeaderRepositoryImpl();
     private final ExpenseRepository egresosRepo = new ExpenseRepositoryImpl();
     private final UsersRepository barberoRepo = new UsersRepositoryImpl();
    // private final CajaService cajaService = new CajaService(serviciosRepo, egresosRepo);
@@ -97,7 +97,7 @@ public class CajaController implements Initializable {
 
     // ======= Métodos DIARIOS =======
     private void cargarFechasDiario() {
-        List<Service> servicios = serviciosRepo.findAll();
+        List<ServiceHeader> servicios = serviciosRepo.findAll();
         List<Expense> expenses = egresosRepo.findAll();
 
         Set<LocalDate> fechasUnicas = new HashSet<>();
@@ -151,7 +151,7 @@ public class CajaController implements Initializable {
 
     // ======= Métodos SEMANALES =======
     private void cargarSemanasSemanal() {
-        List<Service> servicios = serviciosRepo.findAll();
+        List<ServiceHeader> servicios = serviciosRepo.findAll();
         List<Expense> expenses = egresosRepo.findAll();
 
         Set<LocalDate> fechasUnicas = new HashSet<>();
@@ -185,14 +185,14 @@ public class CajaController implements Initializable {
     }
 
     private void mostrarResumenSemanal(LocalDate desde, LocalDate hasta) {
-        List<Service> serviciosRango = serviciosRepo.findAll().stream()
+        List<ServiceHeader> serviciosRango = serviciosRepo.findAll().stream()
                 .filter(s -> !s.getDate().isBefore(desde) && !s.getDate().isAfter(hasta))
                 .collect(Collectors.toList());
         List<Expense> egresosRangos = egresosRepo.findAll().stream()
                 .filter(e -> !e.getDate().isBefore(desde) && !e.getDate().isAfter(hasta))
                 .collect(Collectors.toList());
 
-        //double totalIngresos = serviciosRango.stream().mapToDouble(Service::getPrice).sum();
+        //double totalIngresos = serviciosRango.stream().mapToDouble(ServiceHeader::getPrice).sum();
         double totalEgresos = egresosRangos.stream().mapToDouble(Expense::getAmount).sum();
 
         lblSemana.setText("Semana: " + desde.format(DATE_FORMATTER) + " al " + hasta.format(DATE_FORMATTER));

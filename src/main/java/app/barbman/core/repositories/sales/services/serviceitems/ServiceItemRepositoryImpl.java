@@ -1,6 +1,6 @@
-package app.barbman.core.repositories.services.serviceitems;
+package app.barbman.core.repositories.sales.services.serviceitems;
 
-import app.barbman.core.model.services.ServiceItem;
+import app.barbman.core.model.sales.services.ServiceItem;
 import app.barbman.core.repositories.DbBootstrap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,8 +20,8 @@ public class ServiceItemRepositoryImpl implements ServiceItemRepository {
     private static final String PREFIX = "[SERVICE-ITEMS-REPO]";
 
     private static final String SELECT_BASE = """
-        SELECT id, service_id, service_type_id, price
-        FROM service_items
+        SELECT id, service_header_id, service_definition_id, quantity, unit_price, item_total
+        FROM service_item
         """;
 
     @Override
@@ -62,22 +62,24 @@ public class ServiceItemRepositoryImpl implements ServiceItemRepository {
     }
 
     @Override
-    public List<ServiceItem> findByServiceId(int serviceId) {
+    public List<ServiceItem> findByServiceId(int serviceHeaderId) {
         List<ServiceItem> list = new ArrayList<>();
-        String sql = SELECT_BASE + " WHERE service_id = ?";
+        String sql = SELECT_BASE + " WHERE service_header_id = ?";
 
         try (Connection db = DbBootstrap.connect();
              PreparedStatement ps = db.prepareStatement(sql)) {
 
-            ps.setInt(1, serviceId);
+            ps.setInt(1, serviceHeaderId);
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) list.add(mapRow(rs));
 
-            logger.debug("{} Loaded {} items for ServiceID={}.", PREFIX, list.size(), serviceId);
+            logger.debug("{} Loaded {} items for ServiceHeaderID={}.",
+                    PREFIX, list.size(), serviceHeaderId);
 
         } catch (Exception e) {
-            logger.error("{} Failed to fetch items for ServiceID {}: {}", PREFIX, serviceId, e.getMessage());
+            logger.error("{} Failed to fetch items for ServiceHeaderID {}: {}",
+                    PREFIX, serviceHeaderId, e.getMessage());
         }
 
         return list;
@@ -96,23 +98,27 @@ public class ServiceItemRepositoryImpl implements ServiceItemRepository {
     public void save(ServiceItem item, Connection conn) throws SQLException {
 
         String sql = """
-            INSERT INTO service_items (service_id, service_type_id, price)
-            VALUES (?, ?, ?)
+            INSERT INTO service_item
+            (service_header_id, service_definition_id, quantity, unit_price, item_total)
+            VALUES (?, ?, ?, ?, ?)
         """;
 
         try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            ps.setInt(1, item.getServiceId());
-            ps.setInt(2, item.getServiceTypeId());
-            ps.setDouble(3, item.getPrice());
+            ps.setInt(1, item.getServiceHeaderId());
+            ps.setInt(2, item.getServiceDefinitionId());
+            ps.setInt(3, item.getQuantity());
+            ps.setDouble(4, item.getUnitPrice());
+            ps.setDouble(5, item.getItemTotal());
+
             ps.executeUpdate();
 
             try (ResultSet keys = ps.getGeneratedKeys()) {
                 if (keys.next()) item.setId(keys.getInt(1));
             }
 
-            logger.info("{} Inserted ServiceItem ID={} (ServiceID={}) [shared]",
-                    PREFIX, item.getId(), item.getServiceId());
+            logger.info("{} Inserted ServiceItem ID={} (ServiceHeaderID={}) [shared]",
+                    PREFIX, item.getId(), item.getServiceHeaderId());
         }
     }
 
@@ -128,17 +134,21 @@ public class ServiceItemRepositoryImpl implements ServiceItemRepository {
 
     @Override
     public void update(ServiceItem item, Connection conn) throws SQLException {
+
         String sql = """
-            UPDATE service_items
-            SET service_id = ?, service_type_id = ?, price = ?
+            UPDATE service_item
+            SET service_header_id = ?, service_definition_id = ?, quantity = ?, unit_price = ?, item_total = ?
             WHERE id = ?
         """;
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, item.getServiceId());
-            ps.setInt(2, item.getServiceTypeId());
-            ps.setDouble(3, item.getPrice());
-            ps.setInt(4, item.getId());
+
+            ps.setInt(1, item.getServiceHeaderId());
+            ps.setInt(2, item.getServiceDefinitionId());
+            ps.setInt(3, item.getQuantity());
+            ps.setDouble(4, item.getUnitPrice());
+            ps.setDouble(5, item.getItemTotal());
+            ps.setInt(6, item.getId());
 
             ps.executeUpdate();
 
@@ -157,7 +167,8 @@ public class ServiceItemRepositoryImpl implements ServiceItemRepository {
 
     @Override
     public void delete(Integer id, Connection conn) throws SQLException {
-        String sql = "DELETE FROM service_items WHERE id = ?";
+
+        String sql = "DELETE FROM service_item WHERE id = ?";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, id);
@@ -170,9 +181,11 @@ public class ServiceItemRepositoryImpl implements ServiceItemRepository {
     private ServiceItem mapRow(ResultSet rs) throws SQLException {
         return new ServiceItem(
                 rs.getInt("id"),
-                rs.getInt("service_id"),
-                rs.getInt("service_type_id"),
-                rs.getDouble("price")
+                rs.getInt("service_header_id"),
+                rs.getInt("service_definition_id"),
+                rs.getInt("quantity"),
+                rs.getDouble("unit_price"),
+                rs.getDouble("item_total")
         );
     }
 }

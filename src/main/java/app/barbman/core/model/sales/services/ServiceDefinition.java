@@ -1,4 +1,4 @@
-package app.barbman.core.model.services;
+package app.barbman.core.model.sales.services;
 
 import java.util.Objects;
 

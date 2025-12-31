@@ -1,6 +1,6 @@
 package app.barbman.core.service.services;
 
-import app.barbman.core.repositories.services.service.ServiceRepository;
+import app.barbman.core.repositories.sales.services.serviceheader.ServiceHeaderRepository;
 
 import java.time.LocalDate;
 
@@ -11,11 +11,11 @@ import java.time.LocalDate;
 public class ServicesService {
 
     // Repo used to access persisted services data.
-    private final ServiceRepository serviceRepository;
+    private final ServiceHeaderRepository serviceHeaderRepository;
 
     // Constructor injection
-    public ServicesService(ServiceRepository serviceRepository) {
-        this.serviceRepository = serviceRepository;
+    public ServicesService(ServiceHeaderRepository serviceHeaderRepository) {
+        this.serviceHeaderRepository = serviceHeaderRepository;
     }
 
     /**
@@ -35,6 +35,6 @@ public class ServicesService {
      * @return total production amount
      */
     public double getProductionByUserAndDateRange(int userId, LocalDate from, LocalDate to) {
-        return serviceRepository.sumServiceTotalsByUserAndDateRange(userId, from, to);
+        return serviceHeaderRepository.sumServiceTotalsByUserAndDateRange(userId, from, to);
     }
 }

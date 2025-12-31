@@ -119,8 +119,8 @@ public class DbBootstrap {
 
             // SERVICE HEADER
             // Header for services performed by users on specific dates
-            // We use user_id as a snapshot of who performed the service, and
-            // date to track when it was done. Total is the sum of all service items.
+            // We use user_id as a snapshot of who performed the serviceheader, and
+            // date to track when it was done. Total is the sum of all serviceheader items.
             // Those columns are kept for calculating production per user/date.
             stmt.execute("""
                         CREATE TABLE IF NOT EXISTS service_header (
@@ -134,15 +134,15 @@ public class DbBootstrap {
                         );
                     """);
             // SERVICE ITEM
-            // Links legacy to specific service definitions (items) with individual pricing
-            // This allows for multiple items per service record
+            // Links legacy to specific serviceheader definitions (items) with individual pricing
+            // This allows for multiple items per serviceheader record
             stmt.execute("""
                         CREATE TABLE IF NOT EXISTS service_item (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
                             service_header_id INTEGER NOT NULL,
                             service_definition_id INTEGER NOT NULL,
                             quantity INTEGER NOT NULL DEFAULT 1 CHECK (quantity > 0),
-                            unit_price REAL NOT NULL,               -- snapshot of the price at the time of service
+                            unit_price REAL NOT NULL,               -- snapshot of the price at the time of serviceHeader
                             item_total REAL NOT NULL DEFAULT 0
                             FOREIGN KEY (service_header_id) REFERENCES service_header(id),
                             FOREIGN KEY (service_definition_id) REFERENCES service_definition(id)
@@ -177,7 +177,7 @@ public class DbBootstrap {
                         );
                     """);
 
-            // PRODUCT ITEMS
+            // PRODUCT SALE ITEMS
             // Links individual products to product sales with quantity and pricing details
             // Allows multiple products per sale record
             stmt.execute("""
@@ -222,10 +222,10 @@ public class DbBootstrap {
                             date TEXT NOT NULL CHECK (date = date(date)),
                             type TEXT NOT NULL CHECK (
                                 type IN (
-                                    'supply', 'service', 'purchase', 'tax', 'other', 'salary', 'advance'
+                                    'supply', 'serviceHeader', 'purchase', 'tax', 'other', 'salary', 'advance'
 
                                     -- 'supply'    -> supplies and products (e.g., restocking inventory)
-                                    -- 'service'   -> cleaning, rent, electricity, etc.
+                                    -- 'serviceHeader'   -> cleaning, rent, electricity, etc.
                                     -- 'purchase'  -> furniture, tools, decoration
                                     -- 'tax'       -> taxes
                                     -- 'other'     -> irregular expenses, delivery, miscellaneous

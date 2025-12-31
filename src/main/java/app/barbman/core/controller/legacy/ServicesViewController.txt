@@ -2,20 +2,20 @@ package app.barbman.core.controller.legacy;
 
 import app.barbman.core.dto.history.ServiceHistoryDTO;
 import app.barbman.core.model.*;
-import app.barbman.core.model.services.Service;
-import app.barbman.core.model.services.ServiceDefinition;
-import app.barbman.core.model.services.ServiceItem;
+import app.barbman.core.model.sales.services.ServiceHeader;
+import app.barbman.core.model.sales.services.ServiceDefinition;
+import app.barbman.core.model.sales.services.ServiceItem;
 import app.barbman.core.repositories.paymentmethod.PaymentMethodRepositoryImpl;;
 import app.barbman.core.repositories.users.UsersRepositoryImpl;
-import app.barbman.core.service.paymentmethods.PaymentMethodsService;
-import app.barbman.core.service.services.ServiceDefinitionsService;
-import app.barbman.core.service.users.UsersService;
+import app.barbman.core.serviceHeader.paymentmethods.PaymentMethodsService;
+import app.barbman.core.serviceHeader.services.ServiceDefinitionsService;
+import app.barbman.core.serviceHeader.users.UsersService;
 import app.barbman.core.util.AlertUtil;
 import app.barbman.core.util.NumberFormatterUtil;
 import app.barbman.core.util.SessionManager;
 import app.barbman.core.repositories.users.UsersRepository;
-import app.barbman.core.repositories.services.servicedefinition.ServiceDefinitionRepositoryImpl;
-import app.barbman.core.service.sales.ServicesService;
+import app.barbman.core.repositories.sales.services.servicedefinition.ServiceDefinitionRepositoryImpl;
+import app.barbman.core.serviceHeader.sales.ServicesService;
 import app.barbman.core.util.TextFormatterUtil;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -142,7 +142,7 @@ public class ServicesViewController implements Initializable {
         itemsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         servicesTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
-        // Double-click to delete service from history table
+        // Double-click to delete serviceHeader from history table
         servicesTable.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2 && !servicesTable.getSelectionModel().isEmpty()) {
                 ServiceHistoryDTO selected = servicesTable.getSelectionModel().getSelectedItem();
@@ -183,8 +183,8 @@ public class ServicesViewController implements Initializable {
     }
 
     /**
-     * Confirms and deletes a service from history after validating user permissions.
-     * Admins can delete any service, Users can only delete legacy from the current day.
+     * Confirms and deletes a serviceHeader from history after validating user permissions.
+     * Admins can delete any serviceHeader, Users can only delete legacy from the current day.
      * @param dto ServiceHistoryDTO to delete
      */
     private void confirmAndDelete(ServiceHistoryDTO dto) {
@@ -249,7 +249,7 @@ public class ServicesViewController implements Initializable {
                             logger.info("{} Service deleted by {} -> ID={}", PREFIX, activeUser.getName(), dto.getId());
                         } catch (Exception e) {
                             AlertUtil.showError("Error al eliminar el servicio:\n" + e.getMessage());
-                            logger.error("{} Error deleting service: {}", PREFIX, e.getMessage());
+                            logger.error("{} Error deleting serviceHeader: {}", PREFIX, e.getMessage());
                         }
                     }
                 });
@@ -311,7 +311,7 @@ public class ServicesViewController implements Initializable {
                 priceField.positionCaret(formatted.length());
             }
         });
-        if (!serviceComboBox.getItems().isEmpty()) { // Select first service by default
+        if (!serviceComboBox.getItems().isEmpty()) { // Select first serviceHeader by default
             serviceComboBox.getSelectionModel().select(0);
         }
     }
@@ -382,7 +382,7 @@ public class ServicesViewController implements Initializable {
         }
     }
 
-    /** Shows a confirmation dialog before saving the service. */
+    /** Shows a confirmation dialog before saving the serviceHeader. */
     private void confirmAndSaveService() {
         Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
         confirmAlert.setTitle("Confirmar registro");
@@ -431,7 +431,7 @@ public class ServicesViewController implements Initializable {
         try {
             double price = Double.parseDouble(priceStr);
 
-            Service service = new Service(
+            Service serviceHeader = new Service(
                     user.getId(),
                     LocalDate.now(),
                     paymentMethod.getId(),
@@ -439,7 +439,7 @@ public class ServicesViewController implements Initializable {
                     notes
             );
 
-            ServiceHistoryDTO dto = new ServiceHistoryDTO(service);
+            ServiceHistoryDTO dto = new ServiceHistoryDTO(serviceHeader);
             dto.addItem(new ServiceItem(0, serviceDefinition.getId(), price));
 
             servicesService.saveServiceWithItems(dto);
@@ -453,7 +453,7 @@ public class ServicesViewController implements Initializable {
             logger.error("{} Error parsing price: {}", PREFIX, e.getMessage());
         } catch (Exception e) {
             AlertUtil.showError("Error al guardar el servicio:\n" + e.getMessage());
-            logger.error("{} Error saving service: {}", PREFIX, e.getMessage());
+            logger.error("{} Error saving serviceHeader: {}", PREFIX, e.getMessage());
         }
     }
 

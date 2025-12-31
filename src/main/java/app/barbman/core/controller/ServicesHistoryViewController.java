@@ -189,7 +189,7 @@ public class ServicesHistoryViewController implements Initializable {
     }
 
     private void startNewServiceFlow() {
-        logger.info("{} Starting new service creation flow...", PREFIX);
+        logger.info("{} Starting new serviceheader creation flow...", PREFIX);
 
         User active = SessionManager.getActiveUser();
         if (active == null) {
@@ -210,7 +210,7 @@ public class ServicesHistoryViewController implements Initializable {
                 "/app/barbman/core/view/embed-view/sale-create-view.fxml"
         );
 
-        logger.info("{} Redirected to service-create-view.", PREFIX);
+        logger.info("{} Redirected to serviceheader-create-view.", PREFIX);
     }
 
 

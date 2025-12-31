@@ -3,11 +3,10 @@ package app.barbman.core.controller.salary;
 import app.barbman.core.dto.SalaryDTO;
 import app.barbman.core.repositories.expense.ExpenseRepository;
 import app.barbman.core.repositories.expense.ExpenseRepositoryImpl;
-import app.barbman.core.repositories.services.service.ServiceRepository;
-import app.barbman.core.repositories.services.service.ServiceRepositoryImpl;
+import app.barbman.core.repositories.sales.services.serviceheader.ServiceHeaderRepository;
+import app.barbman.core.repositories.sales.services.serviceheader.ServiceHeaderRepositoryImpl;
 import app.barbman.core.repositories.salaries.SalariesRepository;
 import app.barbman.core.repositories.salaries.SalariesRepositoryImpl;
-import app.barbman.core.service.salaries.SalariesService;
 import app.barbman.core.util.NumberFormatterUtil;
 import app.barbman.core.util.WindowManager;
 import javafx.beans.property.SimpleStringProperty;
@@ -20,7 +19,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.net.URL;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.ResourceBundle;
 
 /**
@@ -48,11 +46,11 @@ public class SueldosController implements Initializable {
 
     // Repositorios
     private final SalariesRepository sueldoRepo = new SalariesRepositoryImpl();
-    private final ServiceRepository serviceRepository = new ServiceRepositoryImpl();
+    private final ServiceHeaderRepository serviceHeaderRepository = new ServiceHeaderRepositoryImpl();
     private final ExpenseRepository expenseRepository = new ExpenseRepositoryImpl();
 
     // Servicio de lógica de salaries
-    //private final SalariesService salariesService = new SalariesService(sueldoRepo, serviceRepository, expenseRepository);
+    //private final SalariesService salariesService = new SalariesService(sueldoRepo, serviceHeaderRepository, expenseRepository);
 
     /**
      * Metodo principal de inicialización de la vista.

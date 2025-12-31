@@ -61,7 +61,7 @@ public class ExpensesViewController implements Initializable {
 
         displayExpenses();
 
-        expenseTypeBox.setItems(FXCollections.observableArrayList("supply", "service", "purchase", "tax", "other", "salary", "advance"));
+        expenseTypeBox.setItems(FXCollections.observableArrayList("supply", "serviceheader", "purchase", "tax", "other", "salary", "advance"));
         saveButton.setOnAction(event -> saveExpense());
 
         // Double-click to delete
@@ -128,7 +128,7 @@ public class ExpensesViewController implements Initializable {
 
     private void loadExpenseTypes() {
         List<String> expenseTypes = List.of(
-                "supply", "service", "purchase", "tax", "other", "salary", "advance"
+                "supply", "serviceheader", "purchase", "tax", "other", "salary", "advance"
         );
 
         expenseTypeBox.setItems(FXCollections.observableArrayList(expenseTypes));
@@ -231,7 +231,7 @@ public class ExpensesViewController implements Initializable {
         if ("admin".equalsIgnoreCase(role)) {
             canDelete = true;
         } else if ("user".equalsIgnoreCase(role)) {
-            // service.getDate() is already LocalDate
+            // serviceheader.getDate() is already LocalDate
             LocalDate serviceDate = expense.getDate();
             LocalDate today = LocalDate.now();
             canDelete = serviceDate.isEqual(today);
