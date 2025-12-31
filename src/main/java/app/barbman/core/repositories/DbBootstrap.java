@@ -327,6 +327,82 @@ public class DbBootstrap {
                     );
                     """);
 
+            // BUDGETS
+            stmt.execute("""
+                    CREATE TABLE IF NOT EXISTS budgets (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        
+                        -- Inicio del período presupuestario (ej: 2025-01-01)
+                        start_date TEXT NOT NULL,
+                        
+                        -- Fin del período presupuestario (ej: 2025-01-31)
+                        end_date TEXT NOT NULL,
+                        
+                        -- Estado del presupuesto
+                        -- draft: en edición
+                        -- active: en uso
+                        -- closed: cerrado (solo lectura)
+                        status TEXT NOT NULL CHECK (status IN ('draft', 'active', 'closed')),
+                        
+                        -- Fecha de creación del presupuesto
+                        created_at TEXT NOT NULL DEFAULT (datetime('now'))
+                    );
+                    """);
+
+            // BUDGET ITEMS
+            stmt.execute("""
+                    CREATE TABLE IF NOT EXISTS budget_items (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        
+                        -- Presupuesto al que pertenece este item
+                        budget_id INTEGER NOT NULL,
+                        
+                        -- Nombre del gasto esperado (ej: Luz, Insumos, Alquiler)
+                        name TEXT NOT NULL,
+                        
+                        -- Monto estimado para este gasto
+                        estimated_amount INTEGER NOT NULL CHECK (estimated_amount >= 0),
+                        
+                        -- Tipo de gasto
+                        -- fixed: gasto fijo
+                        -- variable: gasto variable
+                        type TEXT NOT NULL CHECK (type IN ('fixed', 'variable')),
+                        
+                        -- Categoría lógica del gasto (ej: utilities, supplies, rent)
+                        category TEXT NOT NULL,
+                        
+                        FOREIGN KEY (budget_id) REFERENCES budgets(id)
+                            ON DELETE CASCADE
+                    );
+                    """);
+
+            // BUDGET EXPENSE MATCHES
+            stmt.execute("""
+                    CREATE TABLE IF NOT EXISTS budget_expense_matches (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        
+                        -- Item del presupuesto afectado
+                        budget_item_id INTEGER NOT NULL,
+                        
+                        -- Egreso real aplicado
+                        expense_id INTEGER NOT NULL,
+                        
+                        -- Monto del egreso que se aplica a este item
+                        -- Permite cuotas y pagos parciales
+                        amount_applied INTEGER NOT NULL CHECK (amount_applied > 0),
+                        
+                        FOREIGN KEY (budget_item_id) REFERENCES budget_items(id)
+                            ON DELETE CASCADE,
+                            
+                        FOREIGN KEY (expense_id) REFERENCES expenses(id)
+                            ON DELETE CASCADE,
+                            
+                        -- Evita duplicar el mismo expense aplicado dos veces al mismo item
+                        UNIQUE (budget_item_id, expense_id)
+                    );
+                    """);
+
+
             logger.info("[DB] Database tables created successfully.");
         } catch (SQLException e) {
             logger.error("[DB] Error creating database tables: {}", e.getMessage());
