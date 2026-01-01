@@ -1,4 +1,4 @@
-package app.barbman.core.repositories.advance;
+package app.barbman.core.repositories.payments.advance;
 
 import app.barbman.core.model.salaries.Advance;
 import app.barbman.core.repositories.GenericRepository;

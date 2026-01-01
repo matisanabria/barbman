@@ -66,7 +66,7 @@ public class SaleRepositoryImpl implements SaleRepository {
         try (Connection conn = DbBootstrap.connect()) {
             save(sale, conn);
         } catch (Exception e) {
-            logger.error("{} Failed to save sale: {}", PREFIX, e.getMessage());
+            logger.error("{} Failed to save salecart: {}", PREFIX, e.getMessage());
         }
     }
 
@@ -102,7 +102,7 @@ public class SaleRepositoryImpl implements SaleRepository {
         try (Connection conn = DbBootstrap.connect()) {
             update(sale, conn);
         } catch (Exception e) {
-            logger.error("{} Failed to update sale ID {}: {}",
+            logger.error("{} Failed to update salecart ID {}: {}",
                     PREFIX, sale.getId(), e.getMessage());
         }
     }
@@ -137,7 +137,7 @@ public class SaleRepositoryImpl implements SaleRepository {
         try (Connection conn = DbBootstrap.connect()) {
             delete(id, conn);
         } catch (Exception e) {
-            logger.error("{} Failed to delete sale ID {}: {}", PREFIX, id, e.getMessage());
+            logger.error("{} Failed to delete salecart ID {}: {}", PREFIX, id, e.getMessage());
         }
     }
 

@@ -3,12 +3,12 @@
     <Appenders>
 
         <!-- Consola con colores -->
-        <Console name="Console" target="SYSTEM_OUT">
+        <Console displayName="Console" target="SYSTEM_OUT">
             <PatternLayout pattern="%style{%d{HH:mm:ss}}{cyan} [%t] %highlight{%-5level} %style{%c{1}}{blue} - %msg%n" />
         </Console>
 
         <!-- Log de archivo con rotación diaria y backups -->
-        <RollingFile name="RollingFileLogger"
+        <RollingFile displayName="RollingFileLogger"
                      fileName="logs/barbman.log"
                      filePattern="logs/barbman-%d{yyyy-MM-dd}.log.gz">
 

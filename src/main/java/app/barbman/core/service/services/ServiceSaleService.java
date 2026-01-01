@@ -1,7 +1,7 @@
 package app.barbman.core.service.services;
 
-import app.barbman.core.dto.sale.CartItemDTO;
-import app.barbman.core.dto.sale.CheckoutDTO;
+import app.barbman.core.dto.salecart.SaleCartItemDTO;
+import app.barbman.core.dto.salecart.SaleCartDTO;
 import app.barbman.core.model.sales.services.ServiceHeader;
 import app.barbman.core.model.sales.services.ServiceItem;
 import app.barbman.core.repositories.sales.services.serviceheader.ServiceHeaderRepository;
@@ -36,21 +36,21 @@ public class ServiceSaleService {
     }
 
     /**
-     * Registers the sale of services.
+     * Registers the salecart of services.
      *
      * @param dto          checkout context
-     * @param serviceItems list of CartItemDTO with type SERVICE
+     * @param serviceItems list of SaleCartItemDTO with type SERVICE
      * @param conn         shared database connection
      */
-    public void registerServiceSale(CheckoutDTO dto,
-                                    List<CartItemDTO> serviceItems,
+    public void registerServiceSale(SaleCartDTO dto,
+                                    List<SaleCartItemDTO> serviceItems,
                                     Connection conn) throws SQLException {
 
         logger.info("[SERVICE-SALE] Starting registration... items={}", serviceItems.size());
 
         // 1. Calculate subtotal only for services
         double subtotalServicios = serviceItems.stream()
-                .mapToDouble(i -> i.getPrice() * i.getQuantity())
+                .mapToDouble(i -> i.getUnitPrice() * i.getQuantity())
                 .sum();
 
         logger.debug("[SERVICE-SALE] Subtotal (services) = {}", subtotalServicios);
@@ -69,13 +69,13 @@ public class ServiceSaleService {
         logger.info("[SERVICE-SALE] Header saved (ServiceID={})", serviceHeader.getId());
 
         // 3. Insert rows for each unit
-        for (CartItemDTO item : serviceItems) {
+        for (SaleCartItemDTO item : serviceItems) {
             for (int i = 0; i < item.getQuantity(); i++) {
 
                 ServiceItem si = new ServiceItem(
                         serviceHeader.getId(),
-                        item.getDefinitionId(),  // fk to service_definitions
-                        item.getPrice()
+                        item.getReferenceId(),  // fk to service_definitions
+                        item.getUnitPrice()
                 );
 
                 serviceItemRepository.save(si);

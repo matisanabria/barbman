@@ -1,6 +1,7 @@
 package app.barbman.core.controller;
 
-import app.barbman.core.dto.sale.CheckoutDTO;
+import app.barbman.core.dto.salecart.SaleCartDTO;
+import app.barbman.core.dto.salecart.SaleCartItemDTO;
 import app.barbman.core.model.User;
 import app.barbman.core.model.sales.products.Product;
 import app.barbman.core.model.sales.services.ServiceDefinition;
@@ -14,7 +15,6 @@ import app.barbman.core.util.NumberFormatterUtil;
 import app.barbman.core.util.SessionManager;
 import app.barbman.core.util.TextFormatterUtil;
 import app.barbman.core.util.WindowManager;
-import app.barbman.core.dto.sale.CartItemDTO;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
@@ -47,7 +47,7 @@ public class SaleCreateViewController implements Initializable {
     private final ProductService productService =
             new ProductService(new ProductRepositoryImpl());
 
-    private CheckoutDTO dto;
+    private SaleCartDTO dto;
 
     // ====================================================================================
     //                                    INITIALIZE
@@ -73,7 +73,7 @@ public class SaleCreateViewController implements Initializable {
         }
 
         // DTO moderno
-        dto = new CheckoutDTO(user.getId());
+        dto = new SaleCartDTO(user.getId());
     }
 
     // ====================================================================================
@@ -231,46 +231,46 @@ public class SaleCreateViewController implements Initializable {
     //                                        CART
     // ====================================================================================
 
-    /** Refreshes the sale UI to reflect the current state of the DTO. */
+    /** Refreshes the salecart UI to reflect the current state of the DTO. */
     private void refreshCart() {
         cartContainer.getChildren().clear();
 
-        for (CartItemDTO item : dto.getCartItems()) {
+        for (SaleCartItemDTO item : dto.getCartItems()) {
             cartContainer.getChildren().add(buildCartRow(item));
         }
 
         totalLabel.setText(NumberFormatterUtil.format(dto.getTotal()) + " Gs");
     }
 
-    /** Builds a sale row UI component for a given sale item. */
-    private HBox buildCartRow(CartItemDTO item) {
+    /** Builds a salecart row UI component for a given salecart item. */
+    private HBox buildCartRow(SaleCartItemDTO item) {
         HBox row = new HBox(20);
-        row.getStyleClass().add("sale-row");
+        row.getStyleClass().add("salecart-row");
         row.setPadding(new Insets(8, 12, 8, 12));
 
-        Label name = new Label(TextFormatterUtil.capitalizeFirstLetter(item.getName()));
+        Label name = new Label(TextFormatterUtil.capitalizeFirstLetter(item.getDisplayName()));
         name.setPrefWidth(150);
-        name.getStyleClass().add("sale-row-name");
+        name.getStyleClass().add("salecart-row-name");
 
-        Label price = new Label(NumberFormatterUtil.format(item.getPrice()));
+        Label price = new Label(NumberFormatterUtil.format(item.getUnitPrice()));
         price.setPrefWidth(80);
-        price.getStyleClass().add("sale-row-price");
+        price.getStyleClass().add("salecart-row-price");
 
         Label qty = new Label("x" + item.getQuantity());
         qty.setPrefWidth(40);
-        qty.getStyleClass().add("sale-row-qty");
+        qty.getStyleClass().add("salecart-row-qty");
 
         // remover only 1 item
         Button removeOne = new Button("-");
-        removeOne.getStyleClass().add("sale-row-remove");
+        removeOne.getStyleClass().add("salecart-row-remove");
         removeOne.setOnAction(e -> {
             dto.removeSingleUnit(item);
             refreshCart();
         });
 
-        // removes completely the item from the sale
+        // removes completely the item from the salecart
         Button removeAll = new Button("✕");
-        removeAll.getStyleClass().add("sale-row-remove");
+        removeAll.getStyleClass().add("salecart-row-remove");
         removeAll.setOnAction(e -> {
             dto.removeItem(item);
             refreshCart();

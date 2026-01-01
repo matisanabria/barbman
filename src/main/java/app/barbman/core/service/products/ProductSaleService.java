@@ -1,7 +1,7 @@
 package app.barbman.core.service.products;
 
-import app.barbman.core.dto.sale.CartItemDTO;
-import app.barbman.core.dto.sale.CheckoutDTO;
+import app.barbman.core.dto.salecart.SaleCartItemDTO;
+import app.barbman.core.dto.salecart.SaleCartDTO;
 import app.barbman.core.model.sales.products.Product;
 import app.barbman.core.model.sales.products.ProductHeader;
 import app.barbman.core.model.sales.products.ProductSaleItem;
@@ -16,7 +16,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * Handles the process of registering a product sale.
+ * Handles the process of registering a product salecart.
  *
  * This serviceheader does NOT manage its own DB connections. All actions occur inside
  * the transaction created in CheckoutService to ensure atomicity for mixed checkouts
@@ -45,20 +45,20 @@ public class ProductSaleService {
     }
 
     /**
-     * Registers a product sale using a shared transaction.
+     * Registers a product salecart using a shared transaction.
      *
      * @param dto           The checkout header data (date, client, payment method, etc.)
      * @param productItems  Items of type PRODUCT extracted from the DTO
      * @param conn          Shared transaction connection
      */
-    public void registerProductSale(CheckoutDTO dto,
-                                    List<CartItemDTO> productItems,
+    public void registerProductSale(SaleCartDTO dto,
+                                    List<SaleCartItemDTO> productItems,
                                     Connection conn) throws SQLException {
 
-        logger.info("[PRODUCT-SALE] Starting product sale... items={}", productItems.size());
+        logger.info("[PRODUCT-SALE] Starting product salecart... items={}", productItems.size());
 
         // ======================
-        // 1. Create sale header
+        // 1. Create salecart header
         // ======================
         double subtotalProductos = calculateSubtotal(productItems);
 
@@ -73,14 +73,14 @@ public class ProductSaleService {
         logger.info("[PRODUCT-SALE] Created ProductHeader ID={}", sale.getId());
 
         // ======================
-        // 2. Insert sale items
+        // 2. Insert salecart items
         // ======================
-        for (CartItemDTO item : productItems) {
+        for (SaleCartItemDTO item : productItems) {
 
-            Product product = productRepository.findById(item.getDefinitionId());
+            Product product = productRepository.findById(item.getReferenceId());
 
             if (product == null) {
-                throw new SQLException("Product not found: ID=" + item.getDefinitionId());
+                throw new SQLException("Product not found: ID=" + item.getReferenceId());
             }
 
             // Insert item row
@@ -88,7 +88,7 @@ public class ProductSaleService {
                     sale.getId(),
                     product.getId(),
                     item.getQuantity(),
-                    item.getPrice()
+                    item.getUnitPrice()
             );
 
             saleItemRepository.save(psi);
@@ -112,15 +112,15 @@ public class ProductSaleService {
         // ======================
         // 4. Reserve space for movement registration
         // ======================
-        // movementService.registerIncome(sale.getId(), subtotalProductos, dto.getPaymentMethod(), conn);
+        // movementService.registerIncome(salecart.getId(), subtotalProductos, dto.getPaymentMethod(), conn);
 
-        logger.info("[PRODUCT-SALE] Product sale completed successfully.");
+        logger.info("[PRODUCT-SALE] Product salecart completed successfully.");
     }
 
 
-    private double calculateSubtotal(List<CartItemDTO> items) {
+    private double calculateSubtotal(List<SaleCartItemDTO> items) {
         return items.stream()
-                .mapToDouble(i -> i.getPrice() * i.getQuantity())
+                .mapToDouble(i -> i.getUnitPrice() * i.getQuantity())
                 .sum();
     }
 }

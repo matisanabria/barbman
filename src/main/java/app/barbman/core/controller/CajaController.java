@@ -125,10 +125,10 @@ public class CajaController implements Initializable {
         List<User> users = barberoRepo.findAll();
         for (User b : users) {
             double produccion = serviciosRepo.getProduccionSemanalPorBarbero(b.getId(), fecha, fecha);
-            Label lbl = new Label("- " + b.getName() + ": " + NumberFormatterUtil.format(produccion) + " Gs");
+            Label lbl = new Label("- " + b.getDisplayName() + ": " + NumberFormatterUtil.format(produccion) + " Gs");
             lbl.getStyleClass().add("caja-label");
             boxProduccionBarberosDiaria.getChildren().add(lbl);
-            logger.debug("Producción para barbero {} el {}: {}", b.getName(), fecha, produccion);
+            logger.debug("Producción para barbero {} el {}: {}", b.getDisplayName(), fecha, produccion);
         }
         if (users.isEmpty()) {
             Label lbl = new Label("No hay users registrados.");
@@ -192,7 +192,7 @@ public class CajaController implements Initializable {
                 .filter(e -> !e.getDate().isBefore(desde) && !e.getDate().isAfter(hasta))
                 .collect(Collectors.toList());
 
-        //double totalIngresos = serviciosRango.stream().mapToDouble(ServiceHeader::getPrice).sum();
+        //double totalIngresos = serviciosRango.stream().mapToDouble(ServiceHeader::getUnitPrice).sum();
         double totalEgresos = egresosRangos.stream().mapToDouble(Expense::getAmount).sum();
 
         lblSemana.setText("Semana: " + desde.format(DATE_FORMATTER) + " al " + hasta.format(DATE_FORMATTER));

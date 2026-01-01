@@ -3,7 +3,7 @@ package app.barbman.core.model.sales.products;
 import java.util.Objects;
 
 /**
- * Represents an inventory product available for sale.
+ * Represents an inventory product available for salecart.
  * Products are used by the checkout system when registering product sales.
  */
 public class Product {

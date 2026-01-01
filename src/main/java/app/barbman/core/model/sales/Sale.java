@@ -5,7 +5,7 @@ import java.util.Objects;
 
 /**
  * Represents a sales transaction header.
- * A sale groups services and/or products into a single
+ * A salecart groups services and/or products into a single
  * cash operation with a final total amount.
  */
 public class Sale {

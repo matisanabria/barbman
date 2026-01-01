@@ -8,8 +8,8 @@ import app.barbman.core.repositories.users.UsersRepository;
 import app.barbman.core.repositories.users.UsersRepositoryImpl;
 import app.barbman.core.repositories.expense.ExpenseRepository;;
 import app.barbman.core.repositories.sales.services.serviceheader.ServiceHeaderRepository;
-import app.barbman.core.repositories.salaries.SalariesRepository;
-import app.barbman.core.repositories.salaries.SalariesRepositoryImpl;
+import app.barbman.core.repositories.payments.salaries.SalariesRepository;
+import app.barbman.core.repositories.payments.salaries.SalariesRepositoryImpl;
 import app.barbman.core.util.NumberFormatterUtil;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -137,7 +137,7 @@ public class ConfirmSalaryController implements Initializable {
             //salariesService.pagarSueldo(salary, formaPago, bonus);
 
             //logger.info("{} Salary registered successfully -> User: {}, Amount: {}, PaymentMethod: {}",
-                    //PREFIX ,user.getName(), salary.getAmountPaid(), formaPago);
+                    //PREFIX ,user.getDisplayName(), salary.getAmountPaid(), formaPago);
 
         } catch (Exception e) {
             logger.error("{} Error registering salary: {}", PREFIX, e.getMessage(), e);

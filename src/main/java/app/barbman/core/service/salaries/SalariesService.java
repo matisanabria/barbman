@@ -4,7 +4,7 @@ import app.barbman.core.dto.SalaryDTO;
 import app.barbman.core.model.Expense;
 import app.barbman.core.model.salaries.Salary;
 import app.barbman.core.model.User;
-import app.barbman.core.repositories.salaries.SalariesRepository;
+import app.barbman.core.repositories.payments.salaries.SalariesRepository;
 import app.barbman.core.service.advances.AdvancesService;
 import app.barbman.core.service.expenses.ExpensesService;
 import app.barbman.core.service.services.ServicesService;
@@ -171,7 +171,7 @@ public class SalariesService {
 
     /** Checks if the user already has a registered salary in the given week. */
     public boolean isPaid(int userId, LocalDate weekStart) {
-        boolean result = salariesRepository.findByBarberoAndFecha(userId, weekStart) != null;
+        boolean result = salariesRepository.findByUserAndDateWithinPeriod(userId, weekStart) != null;
         logger.debug("{} Checking if user is paid -> user={}, weekStart={}, result={}", PREFIX, userId, weekStart, result);
         return result;
     }
@@ -195,7 +195,7 @@ public class SalariesService {
 
             boolean alreadyPaid = isPaid(userId, start);
             int salaryId = alreadyPaid
-                    ? salariesRepository.findByBarberoAndFecha(userId, start).getId()
+                    ? salariesRepository.findByUserAndDateWithinPeriod(userId, start).getId()
                     : 0;
 
             SalaryDTO dto = new SalaryDTO();

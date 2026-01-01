@@ -14,7 +14,7 @@ public class UsersRepositoryImpl implements UsersRepository {
     private static final Logger logger = LogManager.getLogger(UsersRepositoryImpl.class);
 
     private static final String SELECT_BASE = """
-        SELECT id, name, role, pin, payment_type, param_1, param_2
+        SELECT id, displayName, role, pin, payment_type, param_1, param_2
         FROM users
         """;
     public static final String PREFIX = "[USERS-REPO]";
@@ -55,7 +55,7 @@ public class UsersRepositoryImpl implements UsersRepository {
     @Override
     public void save(User user) {
         String sql = """
-            INSERT INTO users (name, role, pin, payment_type, param_1, param_2)
+            INSERT INTO users (displayName, role, pin, payment_type, param_1, param_2)
             VALUES (?, ?, ?, ?, ?, ?)
             """;
         try (Connection db = DbBootstrap.connect();
@@ -83,7 +83,7 @@ public class UsersRepositoryImpl implements UsersRepository {
     public void update(User user){
         String sql = """
             UPDATE users
-            SET name = ?, role = ?, pin = ?, payment_type = ?, param_1 = ?, param_2 = ?
+            SET displayName = ?, role = ?, pin = ?, payment_type = ?, param_1 = ?, param_2 = ?
             WHERE id = ?
             """;
         try (Connection db = DbBootstrap.connect();
@@ -145,7 +145,7 @@ public class UsersRepositoryImpl implements UsersRepository {
     private User mapRow(ResultSet rs) throws SQLException {
         return new User(
                 rs.getInt("id"),
-                rs.getString("name"),
+                rs.getString("displayName"),
                 rs.getString("role"),
                 rs.getString("pin"),
                 rs.getInt("payment_type"),

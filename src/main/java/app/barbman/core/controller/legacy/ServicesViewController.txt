@@ -305,8 +305,8 @@ public class ServicesViewController implements Initializable {
         logger.info("{} {} defined legacy loaded into ComboBox.", PREFIX, services.size());
         serviceComboBox.getSelectionModel().selectedItemProperty().addListener((obs, old, selected) -> {
             if (selected != null) {
-                double price = selected.getBasePrice(); // asegúrate de que ServiceDefinition tiene getPrice()
-                String formatted = NumberFormatterUtil.format(price);
+                double unitPrice = selected.getBasePrice(); // asegúrate de que ServiceDefinition tiene getPrice()
+                String formatted = NumberFormatterUtil.format(unitPrice);
                 priceField.setText(formatted);
                 priceField.positionCaret(formatted.length());
             }
@@ -316,7 +316,7 @@ public class ServicesViewController implements Initializable {
         }
     }
 
-    /** Returns a FontIcon based on the payment method name. */
+    /** Returns a FontIcon based on the payment method displayName. */
     private FontIcon getPaymentIcon(String methodName) {
         switch (methodName.toLowerCase()) {
             case "cash": return new FontIcon("fas-money-bill");
@@ -348,7 +348,7 @@ public class ServicesViewController implements Initializable {
             btn.setToggleGroup(paymentGroup);
             btn.getStyleClass().add("payment-toggle");
 
-            // Choose style based on method name
+            // Choose style based on method displayName
             switch (method.getName().toLowerCase()) {
                 case "cash", "efectivo" -> {
                     btn.getStyleClass().add("payment-cash");
@@ -429,7 +429,7 @@ public class ServicesViewController implements Initializable {
         }
 
         try {
-            double price = Double.parseDouble(priceStr);
+            double unitPrice = Double.parseDouble(priceStr);
 
             Service serviceHeader = new Service(
                     user.getId(),
@@ -440,7 +440,7 @@ public class ServicesViewController implements Initializable {
             );
 
             ServiceHistoryDTO dto = new ServiceHistoryDTO(serviceHeader);
-            dto.addItem(new ServiceItem(0, serviceDefinition.getId(), price));
+            dto.addItem(new ServiceItem(0, serviceDefinition.getId(), unitPrice));
 
             servicesService.saveServiceWithItems(dto);
 
@@ -450,7 +450,7 @@ public class ServicesViewController implements Initializable {
 
         } catch (NumberFormatException e) {
             AlertUtil.showError("El campo 'Precio' debe ser numérico.");
-            logger.error("{} Error parsing price: {}", PREFIX, e.getMessage());
+            logger.error("{} Error parsing unitPrice: {}", PREFIX, e.getMessage());
         } catch (Exception e) {
             AlertUtil.showError("Error al guardar el servicio:\n" + e.getMessage());
             logger.error("{} Error saving serviceHeader: {}", PREFIX, e.getMessage());

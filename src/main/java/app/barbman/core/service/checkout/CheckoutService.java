@@ -1,7 +1,7 @@
 package app.barbman.core.service.checkout;
 
-import app.barbman.core.dto.sale.CartItemDTO;
-import app.barbman.core.dto.sale.CheckoutDTO;
+import app.barbman.core.dto.salecart.SaleCartItemDTO;
+import app.barbman.core.dto.salecart.SaleCartDTO;
 import app.barbman.core.repositories.DbBootstrap;
 import app.barbman.core.service.products.ProductSaleService;
 import app.barbman.core.service.services.ServiceSaleService;
@@ -40,15 +40,15 @@ public class CheckoutService {
      * Processes an entire checkout (services + products).
      * Delegates to the appropriate services using a shared DB transaction.
      */
-    public void processCheckout(CheckoutDTO dto) {
+    public void processCheckout(SaleCartDTO dto) {
 
         // Separate SERVICE and PRODUCT items
-        List<CartItemDTO> serviceItems = dto.getCartItems().stream()
-                .filter(i -> i.getType() == CartItemDTO.ItemType.SERVICE)
+        List<SaleCartItemDTO> serviceItems = dto.getCartItems().stream()
+                .filter(i -> i.getType() == SaleCartItemDTO.ItemType.SERVICE)
                 .collect(Collectors.toList());
 
-        List<CartItemDTO> productItems = dto.getCartItems().stream()
-                .filter(i -> i.getType() == CartItemDTO.ItemType.PRODUCT)
+        List<SaleCartItemDTO> productItems = dto.getCartItems().stream()
+                .filter(i -> i.getType() == SaleCartItemDTO.ItemType.PRODUCT)
                 .collect(Collectors.toList());
 
         logger.info("[CHECKOUT] Starting checkout - services={}, products={}",

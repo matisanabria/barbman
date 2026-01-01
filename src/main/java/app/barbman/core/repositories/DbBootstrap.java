@@ -97,7 +97,7 @@ public class DbBootstrap {
             stmt.execute("""
                         CREATE TABLE IF NOT EXISTS users (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            name TEXT NOT NULL,
+                            displayName TEXT NOT NULL,
                             role TEXT NOT NULL,
                             pin TEXT NOT NULL UNIQUE CHECK(length(pin) = 4 AND pin GLOB '[0-9][0-9][0-9][0-9]'),
                             payment_type INTEGER NOT NULL DEFAULT 0,
@@ -111,7 +111,7 @@ public class DbBootstrap {
             stmt.execute("""
                         CREATE TABLE IF NOT EXISTS service_definition (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            name TEXT NOT NULL UNIQUE,
+                            displayName TEXT NOT NULL UNIQUE,
                             base_price REAL NOT NULL,
                             available INTEGER NOT NULL DEFAULT 1 CHECK (available IN (0,1))
                         );
@@ -142,7 +142,7 @@ public class DbBootstrap {
                             service_header_id INTEGER NOT NULL,
                             service_definition_id INTEGER NOT NULL,
                             quantity INTEGER NOT NULL DEFAULT 1 CHECK (quantity > 0),
-                            unit_price REAL NOT NULL,               -- snapshot of the price at the time of serviceHeader
+                            unit_price REAL NOT NULL,               -- snapshot of the unitPrice at the time of serviceHeader
                             item_total REAL NOT NULL DEFAULT 0
                             FOREIGN KEY (service_header_id) REFERENCES service_header(id),
                             FOREIGN KEY (service_definition_id) REFERENCES service_definition(id)
@@ -154,9 +154,9 @@ public class DbBootstrap {
             stmt.execute("""
                         CREATE TABLE IF NOT EXISTS products (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            name TEXT NOT NULL UNIQUE,
+                            displayName TEXT NOT NULL UNIQUE,
                             cost_price REAL NOT NULL,      -- cost from supplier
-                            unit_price REAL NOT NULL,      -- selling price
+                            unit_price REAL NOT NULL,      -- selling unitPrice
                             stock INTEGER NOT NULL DEFAULT 0,
                             category TEXT,                 -- optional, can be NULL
                             brand TEXT,                    -- optional, can be NULL
@@ -179,7 +179,7 @@ public class DbBootstrap {
 
             // PRODUCT SALE ITEMS
             // Links individual products to product sales with quantity and pricing details
-            // Allows multiple products per sale record
+            // Allows multiple products per salecart record
             stmt.execute("""
                         CREATE TABLE IF NOT EXISTS product_sale_items (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -222,10 +222,10 @@ public class DbBootstrap {
                             date TEXT NOT NULL CHECK (date = date(date)),
                             type TEXT NOT NULL CHECK (
                                 type IN (
-                                    'supply', 'serviceHeader', 'purchase', 'tax', 'other', 'salary', 'advance'
+                                    'supply', 'service', 'purchase', 'tax', 'other', 'salary', 'advance'
 
                                     -- 'supply'    -> supplies and products (e.g., restocking inventory)
-                                    -- 'serviceHeader'   -> cleaning, rent, electricity, etc.
+                                    -- 'service'   -> cleaning, rent, electricity, etc.
                                     -- 'purchase'  -> furniture, tools, decoration
                                     -- 'tax'       -> taxes
                                     -- 'other'     -> irregular expenses, delivery, miscellaneous
@@ -283,7 +283,7 @@ public class DbBootstrap {
             stmt.execute("""
                          CREATE TABLE IF NOT EXISTS payment_methods (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            name TEXT NOT NULL UNIQUE   -- ej: cash, transfer, qr, card
+                            displayName TEXT NOT NULL UNIQUE   -- ej: cash, transfer, qr, card
                          );
                      """);
             // CASHBOX
@@ -318,7 +318,7 @@ public class DbBootstrap {
             stmt.execute("""
                     CREATE TABLE IF NOT EXISTS clients (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        name TEXT NOT NULL,          -- requerido
+                        displayName TEXT NOT NULL,          -- requerido
                         document TEXT,               -- RUC (opcional)
                         phone TEXT NOT NULL,         -- requerido
                         email TEXT,                  -- opcional
@@ -358,7 +358,7 @@ public class DbBootstrap {
                         budget_id INTEGER NOT NULL,
                         
                         -- Nombre del gasto esperado (ej: Luz, Insumos, Alquiler)
-                        name TEXT NOT NULL,
+                        displayName TEXT NOT NULL,
                         
                         -- Monto estimado para este gasto
                         estimated_amount INTEGER NOT NULL CHECK (estimated_amount >= 0),
@@ -436,7 +436,7 @@ public class DbBootstrap {
             logger.info("[DB] Backup created: {}", target.toString());
 
             // Only keep the 7 most recent backups
-            File[] backups = backupFolder.listFiles((dir, name) -> name.endsWith(".db"));
+            File[] backups = backupFolder.listFiles((dir, displayName) -> displayName.endsWith(".db"));
             if (backups != null && backups.length > 7) {
                 Arrays.stream(backups)
                         .sorted(Comparator.comparingLong(File::lastModified).reversed())

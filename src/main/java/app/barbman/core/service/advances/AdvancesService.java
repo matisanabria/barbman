@@ -2,8 +2,8 @@ package app.barbman.core.service.advances;
 
 import app.barbman.core.model.salaries.Advance;
 import app.barbman.core.model.Expense;
-import app.barbman.core.repositories.advance.AdvanceRepository;
-import app.barbman.core.repositories.advance.AdvanceRepositoryImpl;
+import app.barbman.core.repositories.payments.advance.AdvanceRepository;
+import app.barbman.core.repositories.payments.advance.AdvanceRepositoryImpl;
 import app.barbman.core.repositories.expense.ExpenseRepository;
 import app.barbman.core.repositories.expense.ExpenseRepositoryImpl;
 import app.barbman.core.service.expenses.ExpensesService;

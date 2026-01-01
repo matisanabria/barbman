@@ -1,7 +1,7 @@
 package app.barbman.core.model.sales.products;
 
 /**
- * Represents the header for products sold within a sale.
+ * Represents the header for products sold within a salecart.
  * Links to sales table for unified sales tracking.
  */
 public class ProductHeader {

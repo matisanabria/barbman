@@ -19,7 +19,7 @@ public class ProductRepositoryImpl implements ProductRepository {
     private static final String PREFIX = "[PRODUCT-REPO]";
 
     private static final String SELECT_BASE = """
-        SELECT id, name, cost_price, unit_price, stock, category, brand, image_path, notes
+        SELECT id, displayName, cost_price, unit_price, stock, category, brand, image_path, notes
         FROM products
         """;
 
@@ -43,19 +43,19 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
-    public Product findByName(String name) {
-        String sql = SELECT_BASE + " WHERE name = ?";
+    public Product findByName(String displayName) {
+        String sql = SELECT_BASE + " WHERE displayName = ?";
 
         try (Connection db = DbBootstrap.connect();
              PreparedStatement ps = db.prepareStatement(sql)) {
 
-            ps.setString(1, name);
+            ps.setString(1, displayName);
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) return mapRow(rs);
 
         } catch (Exception e) {
-            logger.error("{} Failed to fetch product '{}': {}", PREFIX, name, e.getMessage());
+            logger.error("{} Failed to fetch product '{}': {}", PREFIX, displayName, e.getMessage());
         }
 
         return null;
@@ -104,7 +104,7 @@ public class ProductRepositoryImpl implements ProductRepository {
     public void save(Product p) {
         String sql = """
             INSERT INTO products
-            (name, cost_price, unit_price, stock, category, brand, image_path, notes)
+            (displayName, cost_price, unit_price, stock, category, brand, image_path, notes)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """;
 
@@ -136,7 +136,7 @@ public class ProductRepositoryImpl implements ProductRepository {
     public void update(Product p) {
         String sql = """
             UPDATE products
-            SET name = ?, cost_price = ?, unit_price = ?, stock = ?,
+            SET displayName = ?, cost_price = ?, unit_price = ?, stock = ?,
                 category = ?, brand = ?, image_path = ?, notes = ?
             WHERE id = ?
             """;
@@ -183,7 +183,7 @@ public class ProductRepositoryImpl implements ProductRepository {
     private Product mapRow(ResultSet rs) throws SQLException {
         return new Product(
                 rs.getInt("id"),
-                rs.getString("name"),
+                rs.getString("displayName"),
                 rs.getDouble("cost_price"),
                 rs.getDouble("unit_price"),
                 rs.getInt("stock"),

@@ -20,7 +20,7 @@ public class ServiceDefinitionRepositoryImpl implements ServiceDefinitionReposit
 
     /** Base SELECT clause reused across queries */
     private static final String SELECT_BASE = """
-        SELECT id, name, base_price, available
+        SELECT id, displayName, base_price, available
         FROM service_definitions
         """;
 
@@ -89,7 +89,7 @@ public class ServiceDefinitionRepositoryImpl implements ServiceDefinitionReposit
     @Override
     public void save(ServiceDefinition service) {
         String sql = """
-            INSERT INTO service_definitions (name, base_price, available)
+            INSERT INTO service_definitions (displayName, base_price, available)
             VALUES (?, ?, ?)
             """;
 
@@ -117,7 +117,7 @@ public class ServiceDefinitionRepositoryImpl implements ServiceDefinitionReposit
     public void update(ServiceDefinition service) {
         String sql = """
             UPDATE service_definitions
-            SET name = ?, base_price = ?, available = ?
+            SET displayName = ?, base_price = ?, available = ?
             WHERE id = ?
             """;
 
@@ -159,7 +159,7 @@ public class ServiceDefinitionRepositoryImpl implements ServiceDefinitionReposit
     private ServiceDefinition mapRow(ResultSet rs) throws SQLException {
         return new ServiceDefinition(
                 rs.getInt("id"),
-                rs.getString("name"),
+                rs.getString("displayName"),
                 rs.getDouble("base_price"),
                 rs.getInt("available") == 1
         );

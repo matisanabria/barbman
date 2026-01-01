@@ -37,7 +37,7 @@ public class ProductHeaderRepositoryImpl implements ProductHeaderRepository {
             }
 
         } catch (Exception e) {
-            logger.error("{} Error fetching product sale ID {}: {}", PREFIX, id, e.getMessage());
+            logger.error("{} Error fetching product salecart ID {}: {}", PREFIX, id, e.getMessage());
         }
 
         return null;
@@ -64,7 +64,7 @@ public class ProductHeaderRepositoryImpl implements ProductHeaderRepository {
         return list;
     }
 
-    /** Saves a product sale using a shared connection. */
+    /** Saves a product salecart using a shared connection. */
     @Override
     public void save(ProductHeader header, Connection conn) throws SQLException {
 
@@ -129,7 +129,7 @@ public class ProductHeaderRepositoryImpl implements ProductHeaderRepository {
         try (Connection conn = DbBootstrap.connect()) {
             save(header, conn);
         } catch (Exception e) {
-            logger.error("{} Failed to save product sale: {}", PREFIX, e.getMessage());
+            logger.error("{} Failed to save product salecart: {}", PREFIX, e.getMessage());
         }
     }
 
@@ -138,7 +138,7 @@ public class ProductHeaderRepositoryImpl implements ProductHeaderRepository {
         try (Connection conn = DbBootstrap.connect()) {
             update(header, conn);
         } catch (Exception e) {
-            logger.error("{} Failed to update product sale ID {}: {}",
+            logger.error("{} Failed to update product salecart ID {}: {}",
                     PREFIX, header.getId(), e.getMessage());
         }
     }
@@ -148,7 +148,7 @@ public class ProductHeaderRepositoryImpl implements ProductHeaderRepository {
         try (Connection conn = DbBootstrap.connect()) {
             delete(id, conn);
         } catch (Exception e) {
-            logger.error("{} Failed to delete product sale ID {}: {}", PREFIX, id, e.getMessage());
+            logger.error("{} Failed to delete product salecart ID {}: {}", PREFIX, id, e.getMessage());
         }
     }
 

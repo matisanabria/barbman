@@ -1,6 +1,6 @@
 package app.barbman.core.controller;
 
-import app.barbman.core.dto.sale.CheckoutDTO;
+import app.barbman.core.dto.salecart.SaleCartDTO;
 import app.barbman.core.dto.history.ServiceHistoryDTO;
 import app.barbman.core.model.User;
 import app.barbman.core.repositories.users.UsersRepositoryImpl;
@@ -198,7 +198,7 @@ public class ServicesHistoryViewController implements Initializable {
         }
 
         // 🔥 Crear el nuevo carrito vacío
-        CheckoutDTO cartDTO = new CheckoutDTO(active.getId());
+        SaleCartDTO cartDTO = new SaleCartDTO(active.getId());
 
         // Guardarlo en sesión
         SessionManager.setCurrentCartDTO(cartDTO);

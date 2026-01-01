@@ -14,7 +14,7 @@ public class Expense {
     /**
      * Expenses types:
      * 'supply': supplies and products (e.g., restocking inventory)
-     * 'serviceheader': cleaning, rent, electricity, etc.
+     * 'service': cleaning, rent, electricity, etc.
      * 'purchase': furniture, tools, decoration
      * 'tax': taxes, fees, licenses
      * 'other': irregular expenses, delivery, miscellaneous

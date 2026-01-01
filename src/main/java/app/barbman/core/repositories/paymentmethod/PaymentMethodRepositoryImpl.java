@@ -15,7 +15,7 @@ public class PaymentMethodRepositoryImpl implements PaymentMethodRepository{
     private static final String PREFIX = "[PAYMENTMETHOD-REPO]";
 
     private static final String SELECT_BASE = """
-        SELECT id, name
+        SELECT id, displayName
         FROM payment_methods
         """;
 
@@ -58,22 +58,22 @@ public class PaymentMethodRepositoryImpl implements PaymentMethodRepository{
     }
 
     @Override
-    public PaymentMethod findByName(String name) {
-        String sql = SELECT_BASE + " WHERE name = ?";
+    public PaymentMethod findByName(String displayName) {
+        String sql = SELECT_BASE + " WHERE displayName = ?";
         try (Connection db = DbBootstrap.connect();
              PreparedStatement ps = db.prepareStatement(sql)) {
 
-            ps.setString(1, name);
+            ps.setString(1, displayName);
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    logger.debug("{} Payment method found with name={}", PREFIX, name);
+                    logger.debug("{} Payment method found with displayName={}", PREFIX, displayName);
                     return mapRow(rs);
                 }
             }
 
         } catch (Exception e) {
-            logger.warn("{} Error fetching payment method by name '{}': {}", PREFIX, name, e.getMessage());
+            logger.warn("{} Error fetching payment method by displayName '{}': {}", PREFIX, displayName, e.getMessage());
         }
         return null;
     }
@@ -81,7 +81,7 @@ public class PaymentMethodRepositoryImpl implements PaymentMethodRepository{
     private PaymentMethod mapRow(ResultSet rs) throws SQLException {
         return new PaymentMethod(
                 rs.getInt("id"),
-                rs.getString("name")
+                rs.getString("displayName")
         );
     }
 }

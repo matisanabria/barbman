@@ -15,7 +15,7 @@ public class ClientRepositoryImpl implements ClientRepository {
     private static final String PREFIX = "[CLIENT-REPO]";
 
     private static final String SELECT_BASE = """
-        SELECT id, name, document, phone, email, notes, active
+        SELECT id, displayName, document, phone, email, notes, active
         FROM clients
         """;
 
@@ -60,7 +60,7 @@ public class ClientRepositoryImpl implements ClientRepository {
     @Override
     public void save(Client client) {
         String sql = """
-            INSERT INTO clients (name, document, phone, email, notes, active)
+            INSERT INTO clients (displayName, document, phone, email, notes, active)
             VALUES (?, ?, ?, ?, ?, ?)
             """;
 
@@ -91,7 +91,7 @@ public class ClientRepositoryImpl implements ClientRepository {
     public void update(Client client) {
         String sql = """
             UPDATE clients
-            SET name=?, document=?, phone=?, email=?, notes=?, active=?
+            SET displayName=?, document=?, phone=?, email=?, notes=?, active=?
             WHERE id=?
             """;
 
@@ -134,7 +134,7 @@ public class ClientRepositoryImpl implements ClientRepository {
     private Client mapRow(ResultSet rs) throws SQLException {
         return new Client(
                 rs.getInt("id"),
-                rs.getString("name"),
+                rs.getString("displayName"),
                 rs.getString("document"),
                 rs.getString("phone"),
                 rs.getString("email"),

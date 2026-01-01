@@ -1,9 +1,9 @@
 package app.barbman.core.model.sales.products;
 
 /**
- * Represents a single line item inside a product sale.
+ * Represents a single line item inside a product salecart.
  *
- * Each ProductSaleItem links a specific product to a sale, storing
+ * Each ProductSaleItem links a specific product to a salecart, storing
  * the quantity sold and the final unit price applied at the moment
  * of checkout. This allows historical pricing and supports sales with
  * multiple products or variable product pricing.
