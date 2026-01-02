@@ -1,6 +1,6 @@
 package app.barbman.core.controller.legacy;
 
-import app.barbman.core.dto.history.ServiceHistoryDTO;
+import app.barbman.core.dto.history.SaleHistoryDTO;
 import app.barbman.core.model.*;
 import app.barbman.core.model.sales.services.ServiceHeader;
 import app.barbman.core.model.sales.services.ServiceDefinition;

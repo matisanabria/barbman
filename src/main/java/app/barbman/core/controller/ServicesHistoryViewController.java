@@ -1,7 +1,7 @@
 package app.barbman.core.controller;
 
 import app.barbman.core.dto.salecart.SaleCartDTO;
-import app.barbman.core.dto.history.ServiceHistoryDTO;
+import app.barbman.core.dto.history.SaleHistoryDTO;
 import app.barbman.core.model.human.User;
 import app.barbman.core.repositories.users.UsersRepositoryImpl;
 import app.barbman.core.service.users.UsersService;
@@ -30,13 +30,13 @@ public class ServicesHistoryViewController implements Initializable {
     private static final Logger logger = LogManager.getLogger(ServicesHistoryViewController.class);
     private static final String PREFIX = "[SERV-HISTORY]";
 
-    @FXML private TableView<ServiceHistoryDTO> servicesTable;
-    @FXML private TableColumn<ServiceHistoryDTO, String> colDate;
-    @FXML private TableColumn<ServiceHistoryDTO, String> colUser;
-    @FXML private TableColumn<ServiceHistoryDTO, String> colServiceType;
-    @FXML private TableColumn<ServiceHistoryDTO, String> colPaymentMethod;
-    @FXML private TableColumn<ServiceHistoryDTO, String> colPrice;
-    @FXML private TableColumn<ServiceHistoryDTO, String> colNotes;
+    @FXML private TableView<SaleHistoryDTO> servicesTable;
+    @FXML private TableColumn<SaleHistoryDTO, String> colDate;
+    @FXML private TableColumn<SaleHistoryDTO, String> colUser;
+    @FXML private TableColumn<SaleHistoryDTO, String> colServiceType;
+    @FXML private TableColumn<SaleHistoryDTO, String> colPaymentMethod;
+    @FXML private TableColumn<SaleHistoryDTO, String> colPrice;
+    @FXML private TableColumn<SaleHistoryDTO, String> colNotes;
 
     @FXML private Button createServiceButton;
 
@@ -86,7 +86,7 @@ public class ServicesHistoryViewController implements Initializable {
     }
 
     private void loadServicesHistory() {
-        List<ServiceHistoryDTO> services = servicesService.getServiceHistory();
+        List<SaleHistoryDTO> services = servicesService.getServiceHistory();
         servicesTable.setItems(FXCollections.observableArrayList(services));
     }
 
@@ -124,7 +124,7 @@ public class ServicesHistoryViewController implements Initializable {
     // DELETE
     // =========================================================================
 
-    private void confirmAndDelete(ServiceHistoryDTO dto) {
+    private void confirmAndDelete(SaleHistoryDTO dto) {
         if (dto == null) return;
 
         User activeUser = SessionManager.getActiveUser();
@@ -161,7 +161,7 @@ public class ServicesHistoryViewController implements Initializable {
         });
     }
 
-    private void confirmFinalDelete(ServiceHistoryDTO dto) {
+    private void confirmFinalDelete(SaleHistoryDTO dto) {
         Alert alert2 = new Alert(Alert.AlertType.CONFIRMATION);
         alert2.setTitle("Confirmación final");
         alert2.setHeaderText("Esta acción no se puede deshacer.");

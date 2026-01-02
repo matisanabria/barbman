@@ -54,7 +54,7 @@ public class SalariesService {
     public void paySalary(User user, Salary salary, int paymentMethodId, double bonus) {
         if (salary == null) throw new IllegalArgumentException("Salary is null");
 
-        // Prevent duplicate weekly payment
+        // Prevent duplicate payment
         if (isPaid(salary.getUserId(), LocalDate.now())){
             throw new IllegalStateException("This user already has a salary registered for this week.");
         }
