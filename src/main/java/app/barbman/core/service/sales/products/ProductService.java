@@ -1,4 +1,4 @@
-package app.barbman.core.service.products;
+package app.barbman.core.service.sales.products;
 
 import app.barbman.core.model.sales.products.Product;
 import app.barbman.core.repositories.sales.products.product.ProductRepository;

@@ -64,9 +64,14 @@ public class SaleCartItemDTO {
 
     @Override
     public boolean equals(Object o) {
+        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         SaleCartItemDTO that = (SaleCartItemDTO) o;
-        return referenceId == that.referenceId && Double.compare(unitPrice, that.unitPrice) == 0 && quantity == that.quantity && type == that.type && Objects.equals(displayName, that.displayName);
+
+        return referenceId == that.referenceId
+                && Double.compare(unitPrice, that.unitPrice) == 0
+                && type == that.type;
     }
 
     @Override

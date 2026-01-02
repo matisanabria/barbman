@@ -1,4 +1,4 @@
-package app.barbman.core.service.services;
+package app.barbman.core.service.sales.services;
 
 import app.barbman.core.model.sales.services.ServiceDefinition;
 import app.barbman.core.repositories.sales.services.servicedefinition.ServiceDefinitionRepository;
