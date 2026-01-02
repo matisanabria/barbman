@@ -21,4 +21,6 @@ module app.barbman.core {
     opens app.barbman.core.model.salaries to javafx.base;
     opens app.barbman.core.dto.salecart to javafx.base;
     opens app.barbman.core.dto.history to javafx.base;
+    opens app.barbman.core.model.time to javafx.base;
+    opens app.barbman.core.model.human to javafx.base;
 }

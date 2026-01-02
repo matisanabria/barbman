@@ -1,6 +1,6 @@
 package app.barbman.core.controller;
 
-import app.barbman.core.model.User;
+import app.barbman.core.model.human.User;
 import app.barbman.core.util.SessionManager;
 import app.barbman.core.util.WindowManager;
 import javafx.fxml.FXML;

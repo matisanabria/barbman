@@ -101,6 +101,8 @@ public class DbBootstrap {
                             role TEXT NOT NULL,
                             pin TEXT NOT NULL UNIQUE CHECK(length(pin) = 4 AND pin GLOB '[0-9][0-9][0-9][0-9]'),
                             payment_type INTEGER NOT NULL DEFAULT 0,
+                            pay_frequency TEXT NOT NULL DEFAULT 'WEEKLY'
+                                        CHECK (pay_frequency IN ('DAILY', 'WEEKLY', 'BIWEEKLY', 'MONTHLY')),
                             param_1 REAL,
                             param_2 REAL
                         );

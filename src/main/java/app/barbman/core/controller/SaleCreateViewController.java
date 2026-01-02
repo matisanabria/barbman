@@ -2,7 +2,7 @@ package app.barbman.core.controller;
 
 import app.barbman.core.dto.salecart.SaleCartDTO;
 import app.barbman.core.dto.salecart.SaleCartItemDTO;
-import app.barbman.core.model.User;
+import app.barbman.core.model.human.User;
 import app.barbman.core.model.sales.products.Product;
 import app.barbman.core.model.sales.services.ServiceDefinition;
 import app.barbman.core.repositories.sales.products.product.ProductRepositoryImpl;

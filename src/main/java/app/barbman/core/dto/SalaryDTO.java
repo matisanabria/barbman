@@ -1,28 +1,24 @@
 package app.barbman.core.dto;
 
+import java.time.LocalDate;
+
 /**
- * DTO para guardar información que se muestra en la vista de salaries
+ * DTO for saving and transferring salary information.
  */
 public class SalaryDTO {
     private int userId;
     private String username;
-    private double totalProduction;
-    private double amountPaid;
-    private boolean paymentStatus; // true if exists salary paid in that week
-    private int salaryId;   // si ya existe un sueldo, se usa este id, si no = -1
 
-    public SalaryDTO() {
-    }
+    private LocalDate periodStart;
+    private LocalDate periodEnd;
 
-    public SalaryDTO(int userId, String username, double produccionSemanal,
-                     double amountPaid, boolean paymentStatus, int salaryId) {
-        this.userId = userId;
-        this.username = username;
-        this.totalProduction = produccionSemanal;
-        this.amountPaid = amountPaid;
-        this.paymentStatus = paymentStatus;
-        this.salaryId = salaryId;
-    }
+    private double production;
+    private double advances;
+    private double calculatedAmount;
+    private double finalAmount;
+
+    private boolean paid;
+    private Integer salaryId; // null if not yet paid
 
     public int getUserId() {
         return userId;
@@ -40,35 +36,69 @@ public class SalaryDTO {
         this.username = username;
     }
 
-    public double getTotalProduction() {
-        return totalProduction;
+    public LocalDate getPeriodStart() {
+        return periodStart;
     }
 
-    public void setTotalProduction(double totalProduction) {
-        this.totalProduction = totalProduction;
+    public void setPeriodStart(LocalDate periodStart) {
+        this.periodStart = periodStart;
     }
 
-    public double getAmountPaid() {
-        return amountPaid;
+    public LocalDate getPeriodEnd() {
+        return periodEnd;
     }
 
-    public void setAmountPaid(double amountPaid) {
-        this.amountPaid = amountPaid;
+    public void setPeriodEnd(LocalDate periodEnd) {
+        this.periodEnd = periodEnd;
     }
 
-    public boolean isPaymentStatus() {
-        return paymentStatus;
+    public double getProduction() {
+        return production;
     }
 
-    public void setPaymentStatus(boolean paymentStatus) {
-        this.paymentStatus = paymentStatus;
+    public void setProduction(double production) {
+        this.production = production;
     }
 
-    public int getSalaryId() {
+    public double getAdvances() {
+        return advances;
+    }
+
+    public void setAdvances(double advances) {
+        this.advances = advances;
+    }
+
+    public double getCalculatedAmount() {
+        return calculatedAmount;
+    }
+
+    public void setCalculatedAmount(double calculatedAmount) {
+        this.calculatedAmount = calculatedAmount;
+    }
+
+    public double getFinalAmount() {
+        return finalAmount;
+    }
+
+    public void setFinalAmount(double finalAmount) {
+        this.finalAmount = finalAmount;
+    }
+
+    public boolean isPaid() {
+        return paid;
+    }
+
+    public void setPaid(boolean paid) {
+        this.paid = paid;
+    }
+
+    public Integer getSalaryId() {
         return salaryId;
     }
 
-    public void setSalaryId(int salaryId) {
+    public void setSalaryId(Integer salaryId) {
         this.salaryId = salaryId;
     }
+
+
 }

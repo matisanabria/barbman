@@ -1,9 +1,9 @@
 package app.barbman.core.controller;
 
 import app.barbman.core.model.*;
+import app.barbman.core.model.human.User;
 import app.barbman.core.repositories.expense.ExpenseRepository;
 import app.barbman.core.repositories.expense.ExpenseRepositoryImpl;
-import app.barbman.core.repositories.paymentmethod.PaymentMethodRepository;
 import app.barbman.core.repositories.paymentmethod.PaymentMethodRepositoryImpl;
 import app.barbman.core.service.expenses.ExpensesService;
 import app.barbman.core.service.paymentmethods.PaymentMethodsService;

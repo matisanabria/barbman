@@ -1,7 +1,7 @@
 package app.barbman.core.controller.salary;
 
 import app.barbman.core.dto.SalaryDTO;
-import app.barbman.core.model.User;
+import app.barbman.core.model.human.User;
 import app.barbman.core.repositories.expense.ExpenseRepositoryImpl;
 import app.barbman.core.repositories.sales.services.serviceheader.ServiceHeaderRepositoryImpl;
 import app.barbman.core.repositories.users.UsersRepository;

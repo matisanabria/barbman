@@ -1,6 +1,6 @@
 package app.barbman.core.service.pin;
 
-import app.barbman.core.model.User;
+import app.barbman.core.model.human.User;
 import app.barbman.core.repositories.users.UsersRepositoryImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

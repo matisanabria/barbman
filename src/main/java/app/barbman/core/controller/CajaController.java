@@ -2,7 +2,7 @@ package app.barbman.core.controller;
 
 import app.barbman.core.model.Expense;
 import app.barbman.core.model.sales.services.ServiceHeader;
-import app.barbman.core.model.User;
+import app.barbman.core.model.human.User;
 import app.barbman.core.repositories.expense.ExpenseRepositoryImpl;
 import app.barbman.core.repositories.sales.services.serviceheader.ServiceHeaderRepositoryImpl;
 import app.barbman.core.repositories.users.UsersRepository;

@@ -3,18 +3,18 @@ package app.barbman.core.service.salaries;
 import app.barbman.core.dto.SalaryDTO;
 import app.barbman.core.model.Expense;
 import app.barbman.core.model.salaries.Salary;
-import app.barbman.core.model.User;
+import app.barbman.core.model.human.User;
+import app.barbman.core.model.time.DateRange;
 import app.barbman.core.repositories.payments.salaries.SalariesRepository;
-import app.barbman.core.service.advances.AdvancesService;
+import app.barbman.core.service.salaries.advances.AdvancesService;
 import app.barbman.core.service.expenses.ExpensesService;
+import app.barbman.core.service.salaries.period.SalaryPeriodResolver;
+import app.barbman.core.service.sales.services.ServiceHeaderService;
 import app.barbman.core.service.users.UsersService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Handles salary calculations, payments, and weekly salary DTO generation.
@@ -26,35 +26,36 @@ public class SalariesService {
     private final SalariesRepository salariesRepository;
     private final ExpensesService expensesService;
     private final AdvancesService advancesService;
-    private final UsersService usersService;
-    private final ServicesService servicesService;
+    private final ServiceHeaderService servicesHeaderService;
+    private final SalaryPeriodResolver salaryPeriodResolver;
 
     public SalariesService(
             SalariesRepository repo,
             ExpensesService expensesService,
             AdvancesService advancesService,
-            UsersService usersService
-            ServicesService servicesService
+            ServiceHeaderService servicesHeaderService,
+            SalaryPeriodResolver salaryPeriodResolver
     ) {
         this.salariesRepository = repo;
         this.expensesService = expensesService;
         this.advancesService = advancesService;
-        this.usersService = usersService;
-        this.servicesService = servicesService;
+        this.servicesHeaderService = servicesHeaderService;
+        this.salaryPeriodResolver = salaryPeriodResolver;
     }
+
 
     /**
      * Registers a salary payment and links it with its corresponding expense record.
      *
-     * @param salary           Salary to be paid (must include userId, week range, and calculated amount)
-     * @param paymentMethodId  Payment method ID (links to payment_methods table)
-     * @param bonus            Optional bonus amount to add to the payment
+     * @param salary          Salary to be paid (must include userId, week range, and calculated amount)
+     * @param paymentMethodId Payment method ID (links to payment_methods table)
+     * @param bonus           Optional bonus amount to add to the payment
      */
     public void paySalary(User user, Salary salary, int paymentMethodId, double bonus) {
         if (salary == null) throw new IllegalArgumentException("Salary is null");
 
         // Prevent duplicate weekly payment
-        if (isPaid(salary.getUserId(), salary.getWeekStartDate())) {
+        if (isPaid(salary.getUserId(), LocalDate.now())){
             throw new IllegalStateException("This user already has a salary registered for this week.");
         }
 
@@ -78,88 +79,110 @@ public class SalariesService {
     }
 
     /**
-     * Calculates a user's weekly salary based on payment type and deductions.
+     * Calculates a user's salary for the current date range (Defined on User's configuration).
      */
-    public Salary calculateSalary(User user, double bonus) {
-        if (user == null || user.getId() <= 0) {
-            throw new IllegalArgumentException("Invalid user.");
+    public Salary calculateSalary(User user, LocalDate referenceDate, double bonus) {
+        if (user == null) {
+            throw new IllegalArgumentException("User is null");
         }
 
-        int type = user.getPaymentType();
-        double param1 = user.getParam1();
-        double param2 = user.getParam2();
+        DateRange range =
+                salaryPeriodResolver.resolve(user, referenceDate);
 
-        // Get current week range (Mon–Sat)
-        LocalDate[] week = getCurrentWeekRange();
-        LocalDate weekStart = week[0];
-        LocalDate weekEnd = week[1];
+        double production =
+                servicesHeaderService.getProductionByUserAndDateRange(
+                        user.getId(),
+                        range.getStart(),
+                        range.getEnd()
+                );
 
-        // Calculate production and total advances
-        double production = servicesService.getWeeklyProductionByBarber(user.getId(), weekStart, weekEnd);
-        double advances = advancesService.getTotalByUserAndRange(user.getId(), weekStart, weekEnd);
+        double advances =
+                advancesService.getTotalByUserAndRange(
+                        user.getId(),
+                        range.getStart(),
+                        range.getEnd()
+                );
 
-        logger.info("{} Calculating salary -> user={}, type={}, p1={}, p2={}, bonus={}",
-                PREFIX, user.getId(), type, param1, param2, bonus);
+        double calculated =
+                calculateByPaymentType(
+                        user.getPaymentType(),
+                        production,
+                        user.getParam1(),
+                        user.getParam2()
+                );
 
-        // Calculate base amount according to payment type
-        double calculatedAmount = switch (type) {
-            case 0 -> 0.0; // unpaid
-            case 1 -> calculateProductionSalary(production, param1);
-            case 2 -> calculateBasePlusPercent(production, param1, param2);
-            case 3 -> param1;
-            case 4 -> calculateMinThresholdOrPercentage(production, param1, param2);
-            default -> throw new IllegalStateException("Undefined payment type");
-        };
+        double finalAmount = calculated + bonus - advances;
 
-        // Final amount after bonus and advance deductions
-        double finalAmount = calculatedAmount + bonus - advances;
-
-        // Handle negative results (when advances > calculated salary)
         if (finalAmount < 0) {
-            double pendingDebt = Math.abs(finalAmount);
-            logger.warn("{} Negative salary detected -> user={}, adjustedAmount={}, debt={}",
-                    PREFIX, user.getId(), finalAmount, pendingDebt);
-
+            double debt = Math.abs(finalAmount);
             finalAmount = 0;
-            LocalDate nextMonday = weekEnd.plusDays(2);
-
-            // Automatically register an advance for the pending debt
-            advancesService.saveAdvance(user.getId(), pendingDebt, 0);
-            logger.info("{} Auto-generated advance registered -> user={}, amount={}, nextDate={}",
-                    PREFIX, user.getId(), pendingDebt, nextMonday);
+            advancesService.saveAdvance(user.getId(), debt, 0);
         }
 
         return new Salary(
-                user.getId(), weekStart, weekEnd, production, finalAmount, type,
-                null, // payDate → assigned on payment
-                0,    // paymentMethodId → assigned later
-                0     // expenseId → assigned on payment
+                user.getId(),
+                range.getStart(),
+                range.getEnd(),
+                production,
+                finalAmount,
+                user.getPaymentType(),
+                null,
+                0,
+                0
         );
     }
 
-    /** Returns the current week range (Monday → Saturday). */
-    private LocalDate[] getCurrentWeekRange() {
-        LocalDate today = LocalDate.now();
-        LocalDate monday = today.with(DayOfWeek.MONDAY);
-        LocalDate saturday = today.with(DayOfWeek.SATURDAY);
-        return new LocalDate[]{monday, saturday};
+    /**
+     * Calculates salary based on payment type.
+     */
+    private double calculateByPaymentType(
+            int paymentType,
+            double production,
+            double param1,
+            double param2
+    ) {
+        return switch (paymentType) {
+
+            case 0 -> 0.0;
+            // Manual payment → the amount will be entered manually at pay time
+
+            case 1 -> calculateProductionSalary(production, param1);
+
+            case 2 -> calculateBasePlusPercent(production, param1, param2);
+
+            case 3 -> param1;
+            // Fixed amount (weekly / monthly / whatever the period is)
+
+            case 4 -> calculateMinThresholdOrPercentage(production, param1, param2);
+
+            default -> throw new IllegalStateException(
+                    "Invalid payment type: " + paymentType
+            );
+        };
     }
 
-    /** Calculates salary based on production percentage. */
+
+    /**
+     * Calculates salary based on production percentage.
+     */
     private double calculateProductionSalary(double production, double percentage) {
         double result = production * percentage;
         logger.debug("{} Production-based salary -> prod={}, percent={}, result={}", PREFIX, production, percentage, result);
         return result;
     }
 
-    /** Calculates salary as base + production percentage. */
+    /**
+     * Calculates salary as base + production percentage.
+     */
     private double calculateBasePlusPercent(double production, double baseSalary, double percentage) {
         double result = baseSalary + (production * percentage);
         logger.debug("{} Base+percent salary -> prod={}, base={}, percent={}, result={}", PREFIX, production, baseSalary, percentage, result);
         return result;
     }
 
-    /** Calculates salary with guaranteed minimum threshold. */
+    /**
+     * Calculates salary with guaranteed minimum threshold.
+     */
     private double calculateMinThresholdOrPercentage(double production, double minThreshold, double percentage) {
         double calculated = production * percentage;
         double result = Math.max(minThreshold, calculated);
@@ -168,47 +191,61 @@ public class SalariesService {
         return result;
     }
 
-    /** Checks if the user already has a registered salary in the given week. */
-    public boolean isPaid(int userId, LocalDate weekStart) {
-        boolean result = salariesRepository.findByUserAndDateWithinPeriod(userId, weekStart) != null;
-        logger.debug("{} Checking if user is paid -> user={}, weekStart={}, result={}", PREFIX, userId, weekStart, result);
-        return result;
-    }
-
     /**
-     * Generates a list of SalaryDTOs for the given weekly period.
-     * Used in the SalariesView for UI display.
+     * Checks if the user already has a registered salary in the given date range
      */
-    public List<SalaryDTO> generateWeeklySalaryDTOs(LocalDate start, LocalDate end) {
-        List<SalaryDTO> result = new ArrayList<>();
-        List<User> users = usersService.getAllUsers();
-
-        for (User user : users) {
-            int userId = user.getId();
-            String name = user.getName();
-
-            double production = servicesService.getWeeklyProductionByBarber(userId, start, end);
-            Salary tempSalary = calculateSalary(user, 0);
-            double advances = advancesService.getTotalByUserAndRange(userId, start, end);
-            double netAmount = tempSalary.getAmountPaid() - advances;
-
-            boolean alreadyPaid = isPaid(userId, start);
-            int salaryId = alreadyPaid
-                    ? salariesRepository.findByUserAndDateWithinPeriod(userId, start).getId()
-                    : 0;
-
-            SalaryDTO dto = new SalaryDTO();
-            dto.setUserId(userId);
-            dto.setUsername(name);
-            dto.setTotalProduction(production);
-            dto.setAmountPaid(netAmount);
-            dto.setPaymentStatus(alreadyPaid);
-            dto.setSalaryId(salaryId);
-
-            result.add(dto);
-        }
-
-        logger.info("{} Generated {} weekly salary DTOs ({} → {})", PREFIX, result.size(), start, end);
-        return result;
+    public boolean isPaid(int userId, LocalDate referenceDate) {
+        return salariesRepository
+                .findByUserAndDateWithinPeriod(userId, referenceDate) != null;
     }
+
+    public SalaryDTO buildSalaryDTO(User user, LocalDate referenceDate) {
+
+        DateRange range = salaryPeriodResolver.resolve(user, referenceDate);
+
+        double production =
+                servicesHeaderService.getProductionByUserAndDateRange(
+                        user.getId(),
+                        range.getStart(),
+                        range.getEnd()
+                );
+
+        double advances =
+                advancesService.getTotalByUserAndRange(
+                        user.getId(),
+                        range.getStart(),
+                        range.getEnd()
+                );
+
+        double calculated =
+                calculateByPaymentType(
+                        user.getPaymentType(),
+                        production,
+                        user.getParam1(),
+                        user.getParam2()
+                );
+
+        double finalAmount = Math.max(0, calculated - advances);
+
+        Salary existingSalary =
+                salariesRepository.findByUserAndDateWithinPeriod(
+                        user.getId(),
+                        referenceDate
+                );
+
+        SalaryDTO dto = new SalaryDTO();
+        dto.setUserId(user.getId());
+        dto.setUsername(user.getName());
+        dto.setPeriodStart(range.getStart());
+        dto.setPeriodEnd(range.getEnd());
+        dto.setProduction(production);
+        dto.setAdvances(advances);
+        dto.setCalculatedAmount(calculated);
+        dto.setFinalAmount(finalAmount);
+        dto.setPaid(existingSalary != null);
+        dto.setSalaryId(existingSalary != null ? existingSalary.getId() : null);
+
+        return dto;
+    }
+
 }

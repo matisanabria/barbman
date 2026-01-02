@@ -1,7 +1,7 @@
 package app.barbman.core.util;
 
 import app.barbman.core.dto.salecart.SaleCartDTO;
-import app.barbman.core.model.User;
+import app.barbman.core.model.human.User;
 import javafx.scene.layout.BorderPane;
 
 import java.util.Locale;

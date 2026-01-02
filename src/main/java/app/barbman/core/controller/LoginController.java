@@ -1,6 +1,6 @@
 package app.barbman.core.controller;
 
-import app.barbman.core.model.User;
+import app.barbman.core.model.human.User;
 import app.barbman.core.repositories.users.UsersRepository;
 import app.barbman.core.repositories.users.UsersRepositoryImpl;
 import app.barbman.core.util.PhraseLoaderUtil;
@@ -10,7 +10,6 @@ import javafx.animation.*;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.image.ImageView;

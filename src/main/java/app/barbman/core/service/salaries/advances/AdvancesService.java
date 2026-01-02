@@ -1,4 +1,4 @@
-package app.barbman.core.service.advances;
+package app.barbman.core.service.salaries.advances;
 
 import app.barbman.core.model.salaries.Advance;
 import app.barbman.core.model.Expense;

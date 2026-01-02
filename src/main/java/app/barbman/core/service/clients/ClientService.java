@@ -1,6 +1,6 @@
 package app.barbman.core.service.clients;
 
-import app.barbman.core.model.Client;
+import app.barbman.core.model.human.Client;
 import app.barbman.core.repositories.client.ClientRepository;
 import app.barbman.core.util.RucValidator;
 import app.barbman.core.util.SessionManager;

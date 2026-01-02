@@ -1,6 +1,6 @@
 package app.barbman.core.repositories.users;
 
-import app.barbman.core.model.User;
+import app.barbman.core.model.human.User;
 import app.barbman.core.repositories.DbBootstrap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,9 +14,12 @@ public class UsersRepositoryImpl implements UsersRepository {
     private static final Logger logger = LogManager.getLogger(UsersRepositoryImpl.class);
 
     private static final String SELECT_BASE = """
-        SELECT id, displayName, role, pin, payment_type, param_1, param_2
+        SELECT id, displayName, role, pin,
+               payment_type, pay_frequency,
+               param_1, param_2
         FROM users
         """;
+
     public static final String PREFIX = "[USERS-REPO]";
 
     @Override
@@ -55,9 +58,14 @@ public class UsersRepositoryImpl implements UsersRepository {
     @Override
     public void save(User user) {
         String sql = """
-            INSERT INTO users (displayName, role, pin, payment_type, param_1, param_2)
-            VALUES (?, ?, ?, ?, ?, ?)
+            INSERT INTO users (
+                displayName, role, pin,
+                payment_type, pay_frequency,
+                param_1, param_2
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?)
             """;
+
         try (Connection db = DbBootstrap.connect();
              PreparedStatement ps = db.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
@@ -65,8 +73,9 @@ public class UsersRepositoryImpl implements UsersRepository {
             ps.setString(2, user.getRole());
             ps.setString(3, user.getPin());
             ps.setInt(4, user.getPaymentType());
-            ps.setDouble(5, user.getParam1());
-            ps.setDouble(6, user.getParam2());
+            ps.setString(5, user.getPayFrequency().name());
+            ps.setDouble(6, user.getParam1());
+            ps.setDouble(7, user.getParam2());
             ps.executeUpdate();
 
             try (ResultSet keys = ps.getGeneratedKeys()) {
@@ -83,7 +92,9 @@ public class UsersRepositoryImpl implements UsersRepository {
     public void update(User user){
         String sql = """
             UPDATE users
-            SET displayName = ?, role = ?, pin = ?, payment_type = ?, param_1 = ?, param_2 = ?
+            SET displayName = ?, role = ?, pin = ?,
+                payment_type = ?, pay_frequency = ?,
+                param_1 = ?, param_2 = ?
             WHERE id = ?
             """;
         try (Connection db = DbBootstrap.connect();
@@ -93,9 +104,10 @@ public class UsersRepositoryImpl implements UsersRepository {
             ps.setString(2, user.getRole());
             ps.setString(3, user.getPin());
             ps.setInt(4, user.getPaymentType());
-            ps.setDouble(5, user.getParam1());
-            ps.setDouble(6, user.getParam2());
-            ps.setInt(7, user.getId());
+            ps.setString(5, user.getPayFrequency().name());
+            ps.setDouble(6, user.getParam1());
+            ps.setDouble(7, user.getParam2());
+            ps.setInt(8, user.getId());
 
             ps.executeUpdate();
         } catch (Exception e) {
@@ -149,6 +161,7 @@ public class UsersRepositoryImpl implements UsersRepository {
                 rs.getString("role"),
                 rs.getString("pin"),
                 rs.getInt("payment_type"),
+                User.PayFrequency.valueOf(rs.getString("pay_frequency")), // 👈
                 rs.getDouble("param_1"),
                 rs.getDouble("param_2")
         );

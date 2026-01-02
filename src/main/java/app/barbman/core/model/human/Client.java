@@ -1,4 +1,4 @@
-package app.barbman.core.model;
+package app.barbman.core.model.human;
 
 import java.util.Objects;
 

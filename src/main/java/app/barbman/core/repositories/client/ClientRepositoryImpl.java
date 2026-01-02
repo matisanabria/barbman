@@ -1,6 +1,6 @@
 package app.barbman.core.repositories.client;
 
-import app.barbman.core.model.Client;
+import app.barbman.core.model.human.Client;
 import app.barbman.core.repositories.DbBootstrap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
