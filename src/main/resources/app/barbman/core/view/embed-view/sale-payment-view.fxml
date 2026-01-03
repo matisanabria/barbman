@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
+<BorderPane xmlns="http://javafx.com/javafx/17.0.12"
+            xmlns:fx="http://javafx.com/fxml/1">
+
+    <!-- =====================
+         TOP - TITLE
+         ===================== -->
+    <top>
+        <HBox alignment="CENTER" prefHeight="56">
+            <children>
+                <Label text="Pago"
+                       styleClass="services-title"/>
+            </children>
+        </HBox>
+    </top>
+
+    <!-- =====================
+         CENTER - CLIENT & NOTE
+         ===================== -->
+    <center>
+        <VBox spacing="16"
+              fillWidth="true">
+            <padding>
+                <Insets top="16" right="16" bottom="16" left="16"/>
+            </padding>
+
+            <!-- Cliente -->
+            <HBox spacing="8" alignment="CENTER_LEFT">
+                <ComboBox fx:id="clientComboBox"
+                          editable="true"
+                          minWidth="220"
+                          prefWidth="Infinity"
+                          HBox.hgrow="ALWAYS">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value="Ninguno"/>
+                        </FXCollections>
+                    </items>
+                </ComboBox>
+
+                <Button fx:id="addClientButton"
+                        text="+"
+                        prefWidth="36"/>
+            </HBox>
+
+
+            <!-- Nota -->
+            <VBox spacing="6">
+                <Label text="Nota (opcional)"/>
+                <TextArea fx:id="noteArea"
+                          prefRowCount="3"/>
+            </VBox>
+
+            <!-- Resumen -->
+            <VBox spacing="6" VBox.vgrow="ALWAYS">
+                <Label text="Resumen"/>
+
+                <ScrollPane fitToWidth="true"
+                            VBox.vgrow="ALWAYS">
+                    <content>
+                        <VBox fx:id="summaryContainer"
+                              spacing="8"
+                              fillWidth="true"/>
+                    </content>
+                </ScrollPane>
+            </VBox>
+
+        </VBox>
+    </center>
+
+    <!-- =====================
+         RIGHT - PAYMENT
+         ===================== -->
+    <right>
+        <VBox spacing="16"
+              prefWidth="360"
+              BorderPane.alignment="CENTER">
+            <padding>
+                <Insets top="16" right="16" bottom="16" left="16"/>
+            </padding>
+
+            <!-- Total -->
+            <VBox spacing="4">
+                <Label text="Total a pagar:"/>
+                <Label fx:id="totalLabel"
+                       text="0 Gs"/>
+            </VBox>
+
+            <!-- Metodo de pago -->
+            <VBox spacing="8">
+                <Label text="Método de pago"/>
+
+                <GridPane hgap="8" vgap="8">
+                    <children>
+                        <ToggleButton fx:id="cashToggle"
+                                      text="Efectivo"
+                                      GridPane.rowIndex="0"
+                                      GridPane.columnIndex="0"/>
+
+                        <ToggleButton fx:id="transferToggle"
+                                      text="Transferencia"
+                                      GridPane.rowIndex="0"
+                                      GridPane.columnIndex="1"/>
+
+                        <ToggleButton fx:id="posToggle"
+                                      text="POS"
+                                      GridPane.rowIndex="1"
+                                      GridPane.columnIndex="0"/>
+
+                        <ToggleButton fx:id="qrToggle"
+                                      text="QR"
+                                      GridPane.rowIndex="1"
+                                      GridPane.columnIndex="1"/>
+                    </children>
+                </GridPane>
+            </VBox>
+
+            <!-- Monto recibido -->
+            <VBox spacing="6">
+                <Label text="Monto recibido"/>
+                <TextField fx:id="receivedAmountField"
+                           disable="true"/>
+            </VBox>
+
+            <!-- Vuelto -->
+            <VBox spacing="4">
+                <Label text="Vuelto:"/>
+                <Label fx:id="changeLabel"
+                       text="0 Gs"/>
+            </VBox>
+
+            <!-- Actions -->
+            <HBox spacing="10">
+                <Button fx:id="cancelButton"
+                        text="Cancelar"
+                        maxWidth="Infinity"
+                        HBox.hgrow="ALWAYS"/>
+
+                <Button fx:id="confirmButton"
+                        text="Confirmar"
+                        maxWidth="Infinity"
+                        HBox.hgrow="ALWAYS"/>
+            </HBox>
+
+        </VBox>
+    </right>
+
+</BorderPane>
