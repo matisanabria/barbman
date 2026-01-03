@@ -40,7 +40,7 @@ public class SidebarController {
         logger.info("{} Initializing sidebar", PREFIX);
 
         register(btnIncome,
-                "/app/barbman/core/view/embed-view/services-history-view.fxml");
+                "/app/barbman/core/view/embed-view/services-create-view.fxml");
 
         register(btnExpenses,
                 "/app/barbman/core/view/embed-view/expenses-view.fxml");
@@ -55,8 +55,10 @@ public class SidebarController {
                 "/app/barbman/core/view/embed-view/settings-view.fxml");
 
         if (btnIncome != null) {
-            group.selectToggle(btnIncome);
-            btnIncome.fire();
+            btnIncome.setSelected(true);
+
+            // ✅ Cargar vista inicial manualmente
+            load("/app/barbman/core/view/embed-view/sale-create-view.fxml");
         }
     }
 

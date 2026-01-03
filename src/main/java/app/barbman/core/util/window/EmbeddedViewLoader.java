@@ -12,6 +12,9 @@ import java.net.URL;
 public class EmbeddedViewLoader {
     private static final Logger logger = LogManager.getLogger(EmbeddedViewLoader.class);
 
+    private static final String BASE_CSS =
+            "/app/barbman/core/style/views/view-base.css";
+
     private EmbeddedViewLoader() {}
 
     // ============================================================
@@ -38,9 +41,7 @@ public class EmbeddedViewLoader {
 
         } catch (Exception e) {
             logger.error("[EMBED] Failed to load view: {}", fxmlPath, e);
-            AlertUtil.showError(
-                    "No se pudo cargar la vista:\n" + fxmlPath
-            );
+            // SIN ALERTS
         }
     }
 
@@ -58,6 +59,17 @@ public class EmbeddedViewLoader {
         }
     }
 
+    private static void injectBaseCss(Parent view) {
+        URL baseCss = EmbeddedViewLoader.class.getResource(BASE_CSS);
+
+        if (baseCss != null) {
+            view.getStylesheets().add(baseCss.toExternalForm());
+            logger.info("[CSS] Base loaded");
+        } else {
+            logger.error("[CSS] Base CSS NOT FOUND: {}", BASE_CSS);
+        }
+    }
+
     private static void injectCssIfExists(Parent view, String fxmlPath) {
         String cssPath = guessCssPath(fxmlPath);
         URL cssUrl = EmbeddedViewLoader.class.getResource(cssPath);
@@ -66,10 +78,7 @@ public class EmbeddedViewLoader {
             view.getStylesheets().add(cssUrl.toExternalForm());
             logger.info("[EMBED-CSS] Loaded: {}", cssPath);
         } else {
-            logger.warn("[EMBED-CSS] Not found: {}", cssPath);
-            AlertUtil.showWarning(
-                    "No se encontró el CSS para la vista:\n" + cssPath
-            );
+            logger.debug("[EMBED-CSS] CSS not found (ignored): {}", cssPath);
         }
     }
 

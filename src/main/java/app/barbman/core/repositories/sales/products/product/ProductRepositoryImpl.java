@@ -180,6 +180,30 @@ public class ProductRepositoryImpl implements ProductRepository {
         }
     }
 
+    @Override
+    public void decreaseStock(int productId, int quantity, Connection conn) throws SQLException {
+
+        String sql = """
+        UPDATE products
+        SET stock = stock - ?
+        WHERE id = ? AND stock >= ?
+    """;
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, quantity);
+            ps.setInt(2, productId);
+            ps.setInt(3, quantity);
+
+            int affected = ps.executeUpdate();
+
+            if (affected == 0) {
+                throw new SQLException(
+                        "Insufficient stock for product ID " + productId
+                );
+            }
+        }
+    }
+
     private Product mapRow(ResultSet rs) throws SQLException {
         return new Product(
                 rs.getInt("id"),

@@ -187,6 +187,12 @@
                     <exclude>**/*.png</exclude>
                 </excludes>
             </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </resource>
         </resources>
     </build>
 

@@ -9,6 +9,7 @@ import app.barbman.core.repositories.DbBootstrap;
 import app.barbman.core.repositories.sales.SaleRepository;
 import app.barbman.core.service.sales.products.ProductHeaderService;
 import app.barbman.core.service.sales.products.ProductItemService;
+import app.barbman.core.service.sales.products.ProductStockService;
 import app.barbman.core.service.sales.services.ServiceHeaderService;
 import app.barbman.core.service.sales.services.ServiceItemService;
 
@@ -35,6 +36,8 @@ public class SaleFlowService {
     private final ServiceItemService serviceItemService;
     private final ProductHeaderService productHeaderService;
     private final ProductItemService productItemService;
+    private final ProductStockService productStockService =
+            new ProductStockService();
 
     public SaleFlowService(
             SaleRepository saleRepository,
@@ -128,6 +131,7 @@ public class SaleFlowService {
                     cart,
                     conn
             );
+            productStockService.decreaseStockFromCart(cart, conn);
 
             // 4. Commit
             conn.commit();

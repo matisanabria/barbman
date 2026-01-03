@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17.0.12"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="app.barbman.core.controller.sales.SaleResultViewController"
+            style="-fx-background-color: #232323;">
+
+    <!-- =====================
+         TOP - TITLE
+         ===================== -->
+    <top>
+        <VBox alignment="CENTER"
+              spacing="6"
+              prefHeight="80"
+              style="-fx-background-color: #232323;">
+            <children>
+                <Label text="Venta registrada"
+                       style="
+                           -fx-text-fill: #FFFFFF;
+                           -fx-font-size: 22px;
+                           -fx-font-weight: bold;
+                           -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+                       "/>
+
+                <Label fx:id="subtitleLabel"
+                       text="Detalle de la operación"
+                       style="
+                           -fx-text-fill: #CCCCCC;
+                           -fx-font-size: 13px;
+                       "/>
+            </children>
+        </VBox>
+    </top>
+
+    <!-- =====================
+         CENTER - DETAILS
+         ===================== -->
+    <center>
+        <ScrollPane fitToWidth="true"
+                    style="-fx-background: #232323;">
+            <content>
+                <VBox spacing="20"
+                      fillWidth="true"
+                      style="-fx-background-color: #232323;">
+                    <padding>
+                        <Insets top="16" right="24" bottom="16" left="24"/>
+                    </padding>
+
+                    <!-- CLIENT INFO -->
+                    <VBox spacing="6">
+                        <Label text="Cliente"
+                               style="
+                                   -fx-text-fill: #CCCCCC;
+                                   -fx-font-size: 13px;
+                               "/>
+
+                        <GridPane hgap="12" vgap="6">
+                            <children>
+                                <Label text="Nombre:"
+                                       style="
+                                           -fx-text-fill: #CCCCCC;
+                                           -fx-font-size: 13px;
+                                       "
+                                       GridPane.rowIndex="0"
+                                       GridPane.columnIndex="0"/>
+
+                                <Label fx:id="clientNameLabel"
+                                       text="-"
+                                       style="
+                                           -fx-text-fill: #F0C667;
+                                           -fx-font-weight: bold;
+                                       "
+                                       GridPane.rowIndex="0"
+                                       GridPane.columnIndex="1"/>
+
+                                <Label text="RUC / CI:"
+                                       style="
+                                           -fx-text-fill: #CCCCCC;
+                                           -fx-font-size: 13px;
+                                       "
+                                       GridPane.rowIndex="1"
+                                       GridPane.columnIndex="0"/>
+
+                                <Label fx:id="clientDocLabel"
+                                       text="-"
+                                       style="
+                                           -fx-text-fill: #F0C667;
+                                           -fx-font-weight: bold;
+                                       "
+                                       GridPane.rowIndex="1"
+                                       GridPane.columnIndex="1"/>
+                            </children>
+                        </GridPane>
+                    </VBox>
+
+                    <Separator/>
+
+                    <!-- SALE ITEMS -->
+                    <VBox spacing="8">
+                        <Label text="Detalle de la venta"
+                               style="
+                                   -fx-text-fill: #CCCCCC;
+                                   -fx-font-size: 13px;
+                               "/>
+
+                        <!-- Header -->
+                        <HBox spacing="24">
+                            <Label text="Item"
+                                   prefWidth="220"
+                                   style="-fx-text-fill: #CCCCCC;"/>
+                            <Label text="Cantidad"
+                                   prefWidth="80"
+                                   style="-fx-text-fill: #CCCCCC;"/>
+                            <Label text="Precio"
+                                   prefWidth="100"
+                                   style="-fx-text-fill: #CCCCCC;"/>
+                            <Label text="Subtotal"
+                                   prefWidth="100"
+                                   style="-fx-text-fill: #CCCCCC;"/>
+                        </HBox>
+
+                        <!-- Items -->
+                        <VBox fx:id="itemsContainer"
+                              spacing="6"
+                              fillWidth="true"/>
+                    </VBox>
+
+                    <Separator/>
+
+                    <!-- TOTAL -->
+                    <VBox spacing="6"
+                          alignment="CENTER_RIGHT">
+                        <Label text="Total"
+                               style="
+                                   -fx-text-fill: #CCCCCC;
+                                   -fx-font-size: 13px;
+                               "/>
+
+                        <Label fx:id="totalLabel"
+                               text="0 Gs"
+                               style="
+                                   -fx-text-fill: #F0C667;
+                                   -fx-font-size: 20px;
+                                   -fx-font-weight: bold;
+                               "/>
+                    </VBox>
+
+                    <!-- PAYMENT METHOD -->
+                    <VBox spacing="4">
+                        <Label text="Método de pago"
+                               style="
+                                   -fx-text-fill: #CCCCCC;
+                                   -fx-font-size: 13px;
+                               "/>
+
+                        <Label fx:id="paymentMethodLabel"
+                               text="-"
+                               style="
+                                   -fx-text-fill: #F0C667;
+                                   -fx-font-weight: bold;
+                               "/>
+                    </VBox>
+
+                </VBox>
+            </content>
+        </ScrollPane>
+    </center>
+
+    <!-- =====================
+         BOTTOM - ACTIONS
+         ===================== -->
+    <bottom>
+        <HBox spacing="12"
+              alignment="CENTER_RIGHT"
+              style="-fx-background-color: #232323;">
+            <padding>
+                <Insets top="12" right="16" bottom="16" left="16"/>
+            </padding>
+
+            <!-- Borrar venta -->
+            <Button fx:id="deleteSaleButton"
+                    text="Borrar venta"
+                    style="
+                        -fx-background-color: #3A3A3A;
+                        -fx-background-radius: 12;
+                        -fx-text-fill: #FFFFFF;
+                    "/>
+
+            <!-- Cerrar / volver -->
+            <Button fx:id="closeButton"
+                    text="Cerrar"
+                    style="
+                        -fx-background-color: #F0C667;
+                        -fx-background-radius: 12;
+                        -fx-text-fill: #232323;
+                        -fx-font-weight: bold;
+                    "/>
+        </HBox>
+    </bottom>
+
+</BorderPane>
