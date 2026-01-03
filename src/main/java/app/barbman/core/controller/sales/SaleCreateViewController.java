@@ -14,10 +14,13 @@ import app.barbman.core.service.users.UsersService;
 import app.barbman.core.util.NumberFormatterUtil;
 import app.barbman.core.util.SessionManager;
 import app.barbman.core.util.TextFormatterUtil;
+import app.barbman.core.util.window.EmbeddedViewLoader;
+import app.barbman.core.util.window.WindowManager;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.apache.logging.log4j.LogManager;
@@ -40,6 +43,7 @@ public class SaleCreateViewController implements Initializable {
     @FXML private Button confirmButton;
     @FXML private ToggleButton servicesToggle;
     @FXML private ToggleButton productsToggle;
+    @FXML private BorderPane rootPane;
 
     // =========================
     // STATE
@@ -136,8 +140,14 @@ public class SaleCreateViewController implements Initializable {
             }
 
             SessionManager.setCurrentCartDTO(cart);
-            logger.info("[SALE] Proceeding to payment with {} items",
-                    cart.getCartItems().size());
+
+            EmbeddedViewLoader.load(
+                    SessionManager.getMainBorderPane(),
+                    EmbeddedViewLoader.Position.CENTER,
+                    "/app/barbman/core/view/embed-view/sale-payment-view.fxml"
+            );
+
+            logger.info("[SALE] Navigating to payment screen");
         });
     }
 

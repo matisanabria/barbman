@@ -94,7 +94,7 @@ public class SaleFlowService {
     // ==========
     // PERSISTENCE
     // ==========
-    public void completeSale(SaleCartDTO cart) {
+    public Sale completeSale(SaleCartDTO cart) {
 
         try (Connection conn = DbBootstrap.connect()) {
             conn.setAutoCommit(false);
@@ -107,7 +107,7 @@ public class SaleFlowService {
                     cart.getDate(),
                     cart.getTotal()
             );
-            saleRepository.save(sale, conn);
+            saleRepository.save(sale, conn); // set Id
 
             // 2. Services
             ServiceHeader serviceHeader =
@@ -136,6 +136,7 @@ public class SaleFlowService {
 
             // 5. Clear cart
             cart.getCartItems().clear();
+            return sale;
 
         } catch (Exception e) {
             logger.error("{} Sale failed, rolling back: {}", PREFIX, e.getMessage(), e);

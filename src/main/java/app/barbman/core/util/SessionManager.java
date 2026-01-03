@@ -2,6 +2,7 @@ package app.barbman.core.util;
 
 import app.barbman.core.dto.salecart.SaleCartDTO;
 import app.barbman.core.model.human.User;
+import app.barbman.core.model.sales.Sale;
 import javafx.scene.layout.BorderPane;
 
 import java.util.Locale;
@@ -15,6 +16,9 @@ public class SessionManager {
 
     /** Temporal storage for the ServiceDTO being created/edited */
     private static SaleCartDTO currentServiceDTO;
+
+    /** Temporal storage for the Sale for showing the receipt after payment */
+    private static Sale lastSale;
 
     /** Region code for validation rules (default PY) */
     private static String regionCode = "PY";  // Default Paraguay
@@ -73,6 +77,21 @@ public class SessionManager {
 
     public static void clearCurrentCartDTO() {
         currentServiceDTO = null;
+    }
+
+    /**
+     * LAST SALE METHODS
+     */
+    public static void setLastSale(Sale sale) {
+        lastSale = sale;
+    }
+
+    public static Sale getLastSale() {
+        return lastSale;
+    }
+
+    public static void clearLastSale() {
+        lastSale = null;
     }
 
     /**

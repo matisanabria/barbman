@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17.0.12"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="app.barbman.core.controller.sales.SaleResultViewController">
+
+    <!-- =====================
+         TOP - TITLE
+         ===================== -->
+    <top>
+        <VBox alignment="CENTER" spacing="6" prefHeight="80">
+            <children>
+                <Label text="Venta registrada"
+                       styleClass="services-title"/>
+
+                <Label fx:id="subtitleLabel"
+                       text="Detalle de la operación"
+                       opacity="0.7"/>
+            </children>
+        </VBox>
+    </top>
+
+    <!-- =====================
+         CENTER - DETAILS
+         ===================== -->
+    <center>
+        <ScrollPane fitToWidth="true">
+            <content>
+                <VBox spacing="20"
+                      fillWidth="true">
+                    <padding>
+                        <Insets top="16" right="24" bottom="16" left="24"/>
+                    </padding>
+
+                    <!-- CLIENT INFO -->
+                    <VBox spacing="6">
+                        <Label text="Cliente"/>
+
+                        <GridPane hgap="12" vgap="6">
+                            <children>
+                                <Label text="Nombre:"
+                                       GridPane.rowIndex="0"
+                                       GridPane.columnIndex="0"/>
+
+                                <Label fx:id="clientNameLabel"
+                                       text="-"
+                                       GridPane.rowIndex="0"
+                                       GridPane.columnIndex="1"/>
+
+                                <Label text="RUC / CI:"
+                                       GridPane.rowIndex="1"
+                                       GridPane.columnIndex="0"/>
+
+                                <Label fx:id="clientDocLabel"
+                                       text="-"
+                                       GridPane.rowIndex="1"
+                                       GridPane.columnIndex="1"/>
+                            </children>
+                        </GridPane>
+                    </VBox>
+
+                    <Separator/>
+
+                    <!-- SALE ITEMS -->
+                    <VBox spacing="8">
+                        <Label text="Detalle de la venta"/>
+
+                        <!-- Header -->
+                        <HBox spacing="24">
+                            <Label text="Item" prefWidth="220"/>
+                            <Label text="Cantidad" prefWidth="80"/>
+                            <Label text="Precio" prefWidth="100"/>
+                            <Label text="Subtotal" prefWidth="100"/>
+                        </HBox>
+
+                        <!-- Items -->
+                        <VBox fx:id="itemsContainer"
+                              spacing="6"
+                              fillWidth="true"/>
+                    </VBox>
+
+                    <Separator/>
+
+                    <!-- TOTAL -->
+                    <VBox spacing="6" alignment="CENTER_RIGHT">
+                        <Label text="Total"/>
+                        <Label fx:id="totalLabel"
+                               text="0 Gs"/>
+                    </VBox>
+
+                    <!-- PAYMENT METHOD -->
+                    <VBox spacing="4">
+                        <Label text="Método de pago"/>
+                        <Label fx:id="paymentMethodLabel"
+                               text="-"/>
+                    </VBox>
+
+                </VBox>
+            </content>
+        </ScrollPane>
+    </center>
+
+    <!-- =====================
+         BOTTOM - ACTIONS
+         ===================== -->
+    <bottom>
+        <HBox spacing="12"
+              alignment="CENTER_RIGHT">
+            <padding>
+                <Insets top="12" right="16" bottom="16" left="16"/>
+            </padding>
+
+            <!-- Borrar venta -->
+            <Button fx:id="deleteSaleButton"
+                    text="Borrar venta"
+            />
+
+            <!-- Cerrar / volver -->
+            <Button fx:id="closeButton"
+                    text="Cerrar"
+            />
+        </HBox>
+    </bottom>
+
+</BorderPane>
