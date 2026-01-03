@@ -5,11 +5,9 @@ import app.barbman.core.repositories.expense.ExpenseRepository;
 import app.barbman.core.repositories.expense.ExpenseRepositoryImpl;
 import app.barbman.core.repositories.sales.services.serviceheader.ServiceHeaderRepository;
 import app.barbman.core.repositories.sales.services.serviceheader.ServiceHeaderRepositoryImpl;
-import app.barbman.core.repositories.payments.salaries.SalariesRepository;
-import app.barbman.core.repositories.payments.salaries.SalariesRepositoryImpl;
-import app.barbman.core.util.NumberFormatterUtil;
+import app.barbman.core.repositories.salaries.salaries.SalariesRepository;
+import app.barbman.core.repositories.salaries.salaries.SalariesRepositoryImpl;
 import app.barbman.core.util.WindowManager;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -92,20 +90,6 @@ public class SueldosController implements Initializable {
         //logger.info("[SUELDO-VIEW] Se generaron {} registros temporales para mostrar en la tabla", lista.size());
 
         // Configurar columnas
-        colBarbero.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getUsername()));
-        colProduccion.setCellValueFactory(cellData -> {
-            double prod = cellData.getValue().getTotalProduction();
-            return new SimpleStringProperty(NumberFormatterUtil.format(prod) +  " Gs");
-        });
-
-        colMonto.setCellValueFactory(cellData -> {
-            double monto = cellData.getValue().getAmountPaid();
-            return new SimpleStringProperty(NumberFormatterUtil.format(monto) +  " Gs");
-        });
-        colEstado.setCellValueFactory(cellData -> {
-            String estado = cellData.getValue().isPaymentStatus() ? "Pagado" : "Pendiente";
-            return new SimpleStringProperty(estado);
-        });
 
         // Columna con botón para pagar sueldo
         colAccion.setCellFactory(col -> new TableCell<>() {
@@ -137,11 +121,6 @@ public class SueldosController implements Initializable {
                     setGraphic(null);
                 } else {
                     SalaryDTO dto = getTableView().getItems().get(getIndex());
-                    if (dto.isPaymentStatus()) {
-                        setGraphic(new Label("✔ Pagado"));
-                    } else {
-                        setGraphic(btnPagar);
-                    }
                 }
             }
         });

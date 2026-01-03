@@ -2,8 +2,8 @@ package app.barbman.core.service.salaries.advances;
 
 import app.barbman.core.model.salaries.Advance;
 import app.barbman.core.model.Expense;
-import app.barbman.core.repositories.payments.advance.AdvanceRepository;
-import app.barbman.core.repositories.payments.advance.AdvanceRepositoryImpl;
+import app.barbman.core.repositories.salaries.advance.AdvanceRepository;
+import app.barbman.core.repositories.salaries.advance.AdvanceRepositoryImpl;
 import app.barbman.core.repositories.expense.ExpenseRepository;
 import app.barbman.core.repositories.expense.ExpenseRepositoryImpl;
 import app.barbman.core.service.expenses.ExpensesService;
@@ -35,15 +35,14 @@ public class AdvancesService {
      * @param amount Amount of the advance
      * @param paymentMethodId Payment method used (cash, transfer, etc.)
      */
-    public void saveAdvance(int userId, double amount, int paymentMethodId) {
+    public void saveAdvance(int userId, double amount, int paymentMethodId, String description) {
         LocalDate date = LocalDate.now();
-        String description = String.format("Adelanto | user_id: %d | fecha %s", userId, date);
 
         // Register the expense
         Expense expense = expenseService.registerAdvanceExpense(userId, amount, paymentMethodId);
 
         // Link advance to the expense
-        Advance advance = new Advance(userId, amount, date, paymentMethodId, expense.getId());
+        Advance advance = new Advance(userId, amount, date, paymentMethodId, expense.getId(), description);
         advanceRepo.save(advance);
 
         logger.info("{} Advance registered -> user={}, amount={}, method={}, expenseID={}",

@@ -1,4 +1,4 @@
-package app.barbman.core.repositories.payments.advance;
+package app.barbman.core.repositories.salaries.advance;
 
 import app.barbman.core.model.salaries.Advance;
 import app.barbman.core.repositories.DbBootstrap;

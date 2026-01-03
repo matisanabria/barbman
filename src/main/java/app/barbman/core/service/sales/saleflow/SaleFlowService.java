@@ -164,5 +164,36 @@ public class SaleFlowService {
             throw new RuntimeException("Sale could not be completed", e);
         }
     }
+//
+//    public void deleteSale(int saleId) {
+//
+//        try (Connection conn = DbBootstrap.connect()) {
+//            conn.setAutoCommit(false);
+//
+//            // 1.Services
+//            serviceItemService.deleteBySaleId(saleId, conn);
+//            serviceHeaderService.deleteBySaleId(saleId, conn);
+//
+//            // 2. Products
+//            productItemService.deleteBySaleId(saleId, conn);
+//            productHeaderService.deleteBySaleId(saleId, conn);
+//
+//            // 3. Stock rollback (si aplica)
+//            productStockService.restoreStockBySaleId(saleId, conn);
+//
+//            // 4. Salary / production impact (opcional ahora)
+//            salaryService.onSaleDeleted(saleId, conn);
+//
+//            // 5. Finally sale
+//            saleRepository.delete(saleId, conn);
+//
+//            conn.commit();
+//            logger.info("{} Sale fully deleted -> saleId={}", PREFIX, saleId);
+//
+//        } catch (Exception e) {
+//            logger.error("{} Error deleting sale {}, rolling back", PREFIX, saleId, e);
+//            throw new RuntimeException("Failed to delete sale", e);
+//        }
+//    }
 
 }

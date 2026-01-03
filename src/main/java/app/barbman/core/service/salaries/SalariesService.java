@@ -5,19 +5,18 @@ import app.barbman.core.model.Expense;
 import app.barbman.core.model.salaries.Salary;
 import app.barbman.core.model.human.User;
 import app.barbman.core.model.time.DateRange;
-import app.barbman.core.repositories.payments.salaries.SalariesRepository;
+import app.barbman.core.repositories.salaries.salaries.SalariesRepository;
 import app.barbman.core.service.salaries.advances.AdvancesService;
 import app.barbman.core.service.expenses.ExpensesService;
 import app.barbman.core.service.salaries.period.SalaryPeriodResolver;
 import app.barbman.core.service.sales.services.ServiceHeaderService;
-import app.barbman.core.service.users.UsersService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.time.LocalDate;
 
 /**
- * Handles salary calculations, payments, and weekly salary DTO generation.
+ * Handles salary calculations, salaries, and weekly salary DTO generation.
  */
 public class SalariesService {
     private static final Logger logger = LogManager.getLogger(SalariesService.class);
@@ -113,10 +112,16 @@ public class SalariesService {
 
         double finalAmount = calculated + bonus - advances;
 
+        String description = String.format(
+                "Deuda salarial pendiente del período %s - %s",
+                range.getStart(),
+                range.getEnd()
+        );
+
         if (finalAmount < 0) {
             double debt = Math.abs(finalAmount);
             finalAmount = 0;
-            advancesService.saveAdvance(user.getId(), debt, 0);
+            advancesService.saveAdvance(user.getId(), debt, 0, description);
         }
 
         return new Salary(

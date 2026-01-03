@@ -1,31 +1,24 @@
 package app.barbman.core.dto.history;
 
 import java.time.LocalDate;
+import java.util.Objects;
+
+/**
+ * DTO that represents sales history on a table. It don't contain details of the sale.
+ */
 
 public class SaleHistoryDTO {
-    private LocalDate date;
-
     private int saleId;
 
-    private String userName;      // Kevin, Rubio
-    private String clientName;    // puede ser null
+    private LocalDate date;
+    private String userName;
+    private String clientName;
 
-    private String type;          // SERVICE | PRODUCT
-    private String itemName;      // Corte, Shampoo, etc.
+    private double total;
+    private String paymentMethod;
 
-    private int quantity;
-    private double unitPrice;
-    private double itemTotal;
-
-    private double saleTotal;
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
+    // opcional
+    private boolean paid;
 
     public int getSaleId() {
         return saleId;
@@ -33,6 +26,14 @@ public class SaleHistoryDTO {
 
     public void setSaleId(int saleId) {
         this.saleId = saleId;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
     }
 
     public String getUserName() {
@@ -51,51 +52,52 @@ public class SaleHistoryDTO {
         this.clientName = clientName;
     }
 
-    public String getType() {
-        return type;
+    public double getTotal() {
+        return total;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setTotal(double total) {
+        this.total = total;
     }
 
-    public String getItemName() {
-        return itemName;
+    public String getPaymentMethod() {
+        return paymentMethod;
     }
 
-    public void setItemName(String itemName) {
-        this.itemName = itemName;
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
     }
 
-    public int getQuantity() {
-        return quantity;
+    public boolean isPaid() {
+        return paid;
     }
 
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
+    public void setPaid(boolean paid) {
+        this.paid = paid;
     }
 
-    public double getUnitPrice() {
-        return unitPrice;
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        SaleHistoryDTO that = (SaleHistoryDTO) o;
+        return saleId == that.saleId && Double.compare(total, that.total) == 0 && paid == that.paid && Objects.equals(date, that.date) && Objects.equals(userName, that.userName) && Objects.equals(clientName, that.clientName) && Objects.equals(paymentMethod, that.paymentMethod);
     }
 
-    public void setUnitPrice(double unitPrice) {
-        this.unitPrice = unitPrice;
+    @Override
+    public int hashCode() {
+        return Objects.hash(saleId, date, userName, clientName, total, paymentMethod, paid);
     }
 
-    public double getItemTotal() {
-        return itemTotal;
-    }
-
-    public void setItemTotal(double itemTotal) {
-        this.itemTotal = itemTotal;
-    }
-
-    public double getSaleTotal() {
-        return saleTotal;
-    }
-
-    public void setSaleTotal(double saleTotal) {
-        this.saleTotal = saleTotal;
+    @Override
+    public String toString() {
+        return "SaleHistoryDTO{" +
+                "saleId=" + saleId +
+                ", date=" + date +
+                ", userName='" + userName + '\'' +
+                ", clientName='" + clientName + '\'' +
+                ", total=" + total +
+                ", paymentMethod='" + paymentMethod + '\'' +
+                ", paid=" + paid +
+                '}';
     }
 }

@@ -145,7 +145,7 @@ public class DbBootstrap {
                             service_definition_id INTEGER NOT NULL,
                             quantity INTEGER NOT NULL DEFAULT 1 CHECK (quantity > 0),
                             unit_price REAL NOT NULL,               -- snapshot of the unitPrice at the time of serviceHeader
-                            item_total REAL NOT NULL DEFAULT 0
+                            item_total REAL NOT NULL DEFAULT 0,
                             FOREIGN KEY (service_header_id) REFERENCES service_header(id),
                             FOREIGN KEY (service_definition_id) REFERENCES service_definition(id)
                         );
@@ -215,7 +215,7 @@ public class DbBootstrap {
             // EXPENSES
             // Records various types of expenses with descriptions, amounts, dates, and payment methods
             // Expense types are constrained to a predefined set of categories
-            // Categories salary and advance are used for employee payments and only registered by admins
+            // Categories salary and advance are used for employee salaries and only registered by admins
             stmt.execute("""
                         CREATE TABLE IF NOT EXISTS expenses (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -241,7 +241,7 @@ public class DbBootstrap {
                     """);
 
             // SALARIES
-            // Records salary payments of users. Each salary entry links to an expense record for traceability.
+            // Records salary salaries of users. Each salary entry links to an expense record for traceability.
             // Includes production totals, payment amounts, payment methods, and pay date.
             stmt.execute("""
                         CREATE TABLE IF NOT EXISTS salaries (

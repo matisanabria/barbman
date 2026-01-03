@@ -1,5 +1,7 @@
 package app.barbman.core.repositories.sales;
 
+import app.barbman.core.dto.history.SaleDetailDTO;
+import app.barbman.core.dto.history.SaleHistoryDTO;
 import app.barbman.core.model.sales.Sale;
 import app.barbman.core.repositories.DbBootstrap;
 import org.apache.logging.log4j.LogManager;
@@ -171,4 +173,101 @@ public class SaleRepositoryImpl implements SaleRepository {
                 rs.getDouble("total")
         );
     }
+
+    // ====
+    // Methods for sales history
+    // ====
+
+    @Override
+    public List<SaleHistoryDTO> findSalesHistory(LocalDate from, LocalDate to) {
+
+        String sql = """
+        SELECT
+            s.id            AS sale_id,
+            s.date          AS date,
+            u.displayName   AS user_name,
+            c.displayName   AS client_name,
+            s.total         AS total,
+            pm.displayName  AS payment_method
+        FROM sales s
+        JOIN users u ON u.id = s.user_id
+        LEFT JOIN clients c ON c.id = s.client_id
+        JOIN payment_methods pm ON pm.id = s.payment_method_id
+        WHERE s.date BETWEEN ? AND ?
+        ORDER BY s.date DESC, s.id DESC
+    """;
+
+        List<SaleHistoryDTO> list = new ArrayList<>();
+
+        try (Connection db = DbBootstrap.connect();
+             PreparedStatement ps = db.prepareStatement(sql)) {
+
+            ps.setString(1, from.toString());
+            ps.setString(2, to.toString());
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    SaleHistoryDTO dto = new SaleHistoryDTO();
+                    dto.setSaleId(rs.getInt("sale_id"));
+                    dto.setDate(LocalDate.parse(rs.getString("date")));
+                    dto.setUserName(rs.getString("user_name"));
+                    dto.setClientName(rs.getString("client_name"));
+                    dto.setTotal(rs.getDouble("total"));
+                    dto.setPaymentMethod(rs.getString("payment_method"));
+                    dto.setPaid(true); // venta = siempre pagada
+
+                    list.add(dto);
+                }
+            }
+
+        } catch (Exception e) {
+            logger.error("{} Error loading sales history: {}", PREFIX, e.getMessage());
+        }
+
+        return list;
+    }
+
+    @Override
+    public SaleDetailDTO findSaleHeaderDetail(int saleId) {
+
+        String sql = """
+        SELECT
+            s.id            AS sale_id,
+            s.date          AS date,
+            u.displayName   AS user_name,
+            c.displayName   AS client_name,
+            pm.displayName  AS payment_method,
+            s.total         AS total
+        FROM sales s
+        JOIN users u ON u.id = s.user_id
+        LEFT JOIN clients c ON c.id = s.client_id
+        JOIN payment_methods pm ON pm.id = s.payment_method_id
+        WHERE s.id = ?
+    """;
+
+        try (Connection db = DbBootstrap.connect();
+             PreparedStatement ps = db.prepareStatement(sql)) {
+
+            ps.setInt(1, saleId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    SaleDetailDTO dto = new SaleDetailDTO();
+                    dto.setSaleId(rs.getInt("sale_id"));
+                    dto.setDate(LocalDate.parse(rs.getString("date")));
+                    dto.setUserName(rs.getString("user_name"));
+                    dto.setClientName(rs.getString("client_name"));
+                    dto.setPaymentMethod(rs.getString("payment_method"));
+                    dto.setTotal(rs.getDouble("total"));
+                    return dto;
+                }
+            }
+
+        } catch (Exception e) {
+            logger.error("{} Error loading sale detail {}: {}", PREFIX, saleId, e.getMessage());
+        }
+
+        return null;
+    }
+
 }

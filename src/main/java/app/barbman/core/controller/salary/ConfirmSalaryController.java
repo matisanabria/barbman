@@ -8,8 +8,8 @@ import app.barbman.core.repositories.users.UsersRepository;
 import app.barbman.core.repositories.users.UsersRepositoryImpl;
 import app.barbman.core.repositories.expense.ExpenseRepository;;
 import app.barbman.core.repositories.sales.services.serviceheader.ServiceHeaderRepository;
-import app.barbman.core.repositories.payments.salaries.SalariesRepository;
-import app.barbman.core.repositories.payments.salaries.SalariesRepositoryImpl;
+import app.barbman.core.repositories.salaries.salaries.SalariesRepository;
+import app.barbman.core.repositories.salaries.salaries.SalariesRepositoryImpl;
 import app.barbman.core.util.NumberFormatterUtil;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -90,9 +90,9 @@ public class ConfirmSalaryController implements Initializable {
 
         //double adelantos = expenseRepository.getTotalAdelantos(dto.getUserId(), lunes, sabado);
 
-        lblProduction.setText("Producción: " + NumberFormatterUtil.format(dto.getTotalProduction()) + " Gs");
+        //lblProduction.setText("Producción: " + NumberFormatterUtil.format(dto.getTotalProduction()) + " Gs");
         //lblSalaryAdvance.setText("Adelantos: " + NumberFormatterUtil.format(adelantos) + " Gs");
-        lblFinalAmount.setText("Salary final: " + NumberFormatterUtil.format(dto.getAmountPaid()) + " Gs");
+        //lblFinalAmount.setText("Salary final: " + NumberFormatterUtil.format(dto.getAmountPaid()) + " Gs");
 
         if (user != null && user.getPaymentType() == 0) {
             manualMontoBox.setVisible(true);
