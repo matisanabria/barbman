@@ -5,7 +5,8 @@ import app.barbman.core.repositories.users.UsersRepository;
 import app.barbman.core.repositories.users.UsersRepositoryImpl;
 import app.barbman.core.util.PhraseLoaderUtil;
 import app.barbman.core.util.SessionManager;
-import app.barbman.core.util.WindowManager;
+import app.barbman.core.util.window.WindowManager;
+import app.barbman.core.util.window.WindowRequest;
 import javafx.animation.*;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -196,10 +197,20 @@ public class LoginController implements Initializable {
         User session = usersRepo.findByPin(PIN);
 
         if (session != null && session.getPin().equals(PIN)) {
-            logger.info("{} Valid PIN. Starting session for user '{}'.", PREFIX, session.getName());
+            logger.info("{} Valid PIN. Starting session for user '{}'.",
+                    PREFIX, session.getName());
+
             SessionManager.startSession(session);
-            Stage stage = (Stage) pinField.getScene().getWindow();
-            WindowManager.switchWindow(stage, "/app/barbman/core/view/main-view.fxml");
+
+            Stage currentStage = (Stage) pinField.getScene().getWindow();
+
+            WindowManager.switchWindow(
+                    currentStage,
+                    WindowRequest.builder()
+                            .fxml("/app/barbman/core/view/main-view.fxml")
+                            .build()
+            );
+
         } else {
             logger.warn("{} Invalid PIN entered: {}", PREFIX, PIN);
             wrongPin();

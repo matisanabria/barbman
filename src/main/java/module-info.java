@@ -23,4 +23,5 @@ module app.barbman.core {
     opens app.barbman.core.dto.history to javafx.base;
     opens app.barbman.core.model.time to javafx.base;
     opens app.barbman.core.model.human to javafx.base;
+    opens app.barbman.core.controller.sales to javafx.fxml;
 }

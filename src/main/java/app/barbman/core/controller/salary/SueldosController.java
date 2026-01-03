@@ -7,7 +7,7 @@ import app.barbman.core.repositories.sales.services.serviceheader.ServiceHeaderR
 import app.barbman.core.repositories.sales.services.serviceheader.ServiceHeaderRepositoryImpl;
 import app.barbman.core.repositories.salaries.salaries.SalariesRepository;
 import app.barbman.core.repositories.salaries.salaries.SalariesRepositoryImpl;
-import app.barbman.core.util.WindowManager;
+import app.barbman.core.util.window.WindowManager;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -71,11 +71,11 @@ public class SueldosController implements Initializable {
         btnRegistrarAdelanto.setOnAction(e -> {
             logger.info("[SUELDO-VIEW] Abriendo ventana para registrar adelanto...");
             Stage currentStage = (Stage) sueldosTable.getScene().getWindow();
-            WindowManager.openWindow(
-                    "/app/barbman/core/view/adelantos-view.fxml",
-                    "Registrar Adelanto",
-                    currentStage
-            );
+            //WindowManager.openWindow(
+            //        "/app/barbman/core/view/adelantos-view.fxml",
+            //        "Registrar Adelanto",
+            //        currentStage
+            //);
             logger.info("[SUELDO-VIEW] Ventana de adelantos abierta.");
         });
 
@@ -101,16 +101,12 @@ public class SueldosController implements Initializable {
                     Stage currentStage = (Stage) sueldosTable.getScene().getWindow();
 
                     // abrir ventana y obtener controller
-                    ConfirmSalaryController controller =
-                            WindowManager.openWindowWithController(
-                                    "/app/barbman/core/view/confirm-salary-view.fxml",
-                                    "Pagar Salary",
-                                    currentStage
-                            );
+                    //ConfirmSalaryController controller =
+                        //TODO WindowManager.openWindow(
 
                     // pasar el DTO al controller
-                    controller.setSueldoDTO(dto);
-                    controller.setParentController(SueldosController.this);
+                    //controller.setSueldoDTO(dto);
+                    //controller.setParentController(SueldosController.this);
                 });
             }
 

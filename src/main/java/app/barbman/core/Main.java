@@ -2,16 +2,13 @@ package app.barbman.core;
 
 import app.barbman.core.repositories.DbBootstrap;
 import app.barbman.core.util.ErrorWindowUtil;
-import app.barbman.core.util.WindowManager;
+import app.barbman.core.util.window.WindowManager;
+import app.barbman.core.util.window.WindowRequest;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.geometry.Pos;
-import javafx.scene.control.Alert;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.controlsfx.control.Notifications;
 
 import java.io.IOException;
 
@@ -21,7 +18,12 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        WindowManager.openWindow("/app/barbman/core/view/login-view.fxml", null, "/app/barbman/core/style/login.css");
+        WindowManager.open(
+                WindowRequest.builder()
+                        .fxml("/app/barbman/core/view/login-view.fxml")
+                        .css("/app/barbman/core/style/login.css")
+                        .build()
+        );
         Platform.runLater(() -> {
         });
     }
@@ -35,13 +37,14 @@ public class Main extends Application {
 
         Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
             Logger logger = LogManager.getLogger(Main.class);
-            logger.error("[FATAL] Uncaught exception in thread {}:", thread.getName(), throwable);
+            logger.error("[FATAL] Uncaught exception in thread {}", thread.getName(), throwable);
 
             Platform.runLater(() -> {
-                ErrorWindowUtil.showFatalError(
-                        throwable.getMessage() != null
-                                ? throwable.getMessage()
-                                : "Unknown critical error."
+                WindowManager.showExclusive(
+                        WindowRequest.builder()
+                                .fxml("/app/barbman/core/view/error-view.fxml")
+                                .title("Error crítico")
+                                .build()
                 );
             });
         });

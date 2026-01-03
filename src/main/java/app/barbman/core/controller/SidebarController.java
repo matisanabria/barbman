@@ -1,8 +1,10 @@
 package app.barbman.core.controller;
 
+import app.barbman.core.util.window.EmbeddedViewLoader;
 import javafx.fxml.FXML;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.BorderPane;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -11,7 +13,7 @@ public class SidebarController {
     private static final Logger logger = LogManager.getLogger(SidebarController.class);
     private static final String PREFIX = "[SIDEBAR]";
 
-    private MainViewController mainController;
+    private BorderPane targetPane;
 
     @FXML private ToggleButton btnIncome;
     @FXML private ToggleButton btnExpenses;
@@ -19,50 +21,68 @@ public class SidebarController {
     @FXML private ToggleButton btnCash;
     @FXML private ToggleButton btnSettings;
 
-    private final ToggleGroup sidebarGroup = new ToggleGroup();
+    private final ToggleGroup group = new ToggleGroup();
 
-    public void setMainController(MainViewController mainController) {
-        this.mainController = mainController;
+    // ============================================================
+    // ======================= BINDING ============================
+    // ============================================================
+
+    public void bind(BorderPane borderPane) {
+        this.targetPane = borderPane;
     }
+
+    // ============================================================
+    // ====================== INITIALIZE ==========================
+    // ============================================================
 
     @FXML
     private void initialize() {
-        logger.info("{} Sidebar initialized.", PREFIX);
+        logger.info("{} Initializing sidebar", PREFIX);
 
-        // --- Exclusive selection ---
-        if (btnIncome != null) btnIncome.setToggleGroup(sidebarGroup);
-        if (btnExpenses != null) btnExpenses.setToggleGroup(sidebarGroup);
-        if (btnSalaries != null) btnSalaries.setToggleGroup(sidebarGroup);
-        if (btnCash != null) btnCash.setToggleGroup(sidebarGroup);
-        if (btnSettings != null) btnSettings.setToggleGroup(sidebarGroup);
+        register(btnIncome,
+                "/app/barbman/core/view/embed-view/services-history-view.fxml");
 
-        // --- Actions ---
-        if (btnIncome != null)
-            btnIncome.setOnAction(e -> loadView("/app/barbman/core/view/embed-view/services-history-view.fxml", "Ingresos"));
+        register(btnExpenses,
+                "/app/barbman/core/view/embed-view/expenses-view.fxml");
 
-        if (btnExpenses != null)
-            btnExpenses.setOnAction(e -> loadView("/app/barbman/core/view/embed-view/expenses-view.fxml", "Egresos"));
+        register(btnSalaries,
+                "/app/barbman/core/view/embed-view/sueldos-view.fxml");
 
-        if (btnSalaries != null)
-            btnSalaries.setOnAction(e -> loadView("/app/barbman/core/view/embed-view/sueldos-view.fxml", "Sueldos"));
+        register(btnCash,
+                "/app/barbman/core/view/embed-view/caja-view.fxml");
 
-        if (btnCash != null)
-            btnCash.setOnAction(e -> loadView("/app/barbman/core/view/embed-view/caja-view.fxml", "Caja"));
+        register(btnSettings,
+                "/app/barbman/core/view/embed-view/settings-view.fxml");
 
-        if (btnSettings != null)
-            btnSettings.setOnAction(e -> loadView("/app/barbman/core/view/embed-view/settings-view.fxml", "Configuración"));
-
-        // Opcional: marcar botón inicial
-        if (btnIncome != null) sidebarGroup.selectToggle(btnIncome);
+        if (btnIncome != null) {
+            group.selectToggle(btnIncome);
+            btnIncome.fire();
+        }
     }
 
+    // ============================================================
+    // ======================= INTERNAL ===========================
+    // ============================================================
 
-    private void loadView(String path, String name) {
-        if (mainController != null) {
-            mainController.loadCenterView(path);
-            logger.info("{} Vista '{}' cargada -> {}", PREFIX, name, path);
-        } else {
-            logger.warn("{} Main controller no asignado aún, no se pudo cambiar la vista.", PREFIX);
+    private void register(ToggleButton button, String viewPath) {
+        if (button == null) return;
+
+        button.setToggleGroup(group);
+        button.setOnAction(e -> load(viewPath));
+    }
+
+    private void load(String fxmlPath) {
+        if (targetPane == null) {
+            logger.warn("{} No target pane bound", PREFIX);
+            return;
         }
+
+        EmbeddedViewLoader.load(
+                targetPane,
+                EmbeddedViewLoader.Position.CENTER,
+                fxmlPath
+        );
+
+        logger.info("{} Loaded view: {}", PREFIX, fxmlPath);
     }
 }

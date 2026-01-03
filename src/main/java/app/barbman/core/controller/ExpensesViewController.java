@@ -61,7 +61,7 @@ public class ExpensesViewController implements Initializable {
 
         displayExpenses();
 
-        expenseTypeBox.setItems(FXCollections.observableArrayList("supply", "serviceheader", "purchase", "tax", "other", "salary", "advance"));
+        expenseTypeBox.setItems(FXCollections.observableArrayList("supply", "service", "purchase", "tax", "other", "salary", "advance")); // FIXME: Duplicated code
         saveButton.setOnAction(event -> saveExpense());
 
         // Double-click to delete
@@ -128,7 +128,7 @@ public class ExpensesViewController implements Initializable {
 
     private void loadExpenseTypes() {
         List<String> expenseTypes = List.of(
-                "supply", "serviceheader", "purchase", "tax", "other", "salary", "advance"
+                "supply", "service", "purchase", "tax", "other", "salary", "advance" // FIXME: Duplicated code
         );
 
         expenseTypeBox.setItems(FXCollections.observableArrayList(expenseTypes));

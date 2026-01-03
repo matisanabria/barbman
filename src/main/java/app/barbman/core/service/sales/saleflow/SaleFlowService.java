@@ -50,71 +50,49 @@ public class SaleFlowService {
         this.productItemService = productItemService;
     }
 
-    private SaleCartDTO currentSale;
-
-    // ==========
-    // FRONTEND
-    // ==========
-    /**
-     * Starts a new sale flow.
-     * Only user and date are required at this stage.
-     */
-    public void startSale(int userId) {
-        this.currentSale = new SaleCartDTO(userId);
-        this.currentSale.setDate(LocalDate.now());
-    }
-
-    /**
-     * Cancels the current sale flow.
-     */
-    public void cancelSale() {
-        this.currentSale = null;
-    }
-
-    /**
-     * Returns true if there is an active sale.
-     */
-    public boolean hasActiveSale() {
-        return currentSale != null;
-    }
-
-    /**
-     * Returns the current sale cart.
-     * Throws if no sale is active if there's a programming error.
-     */
-    public SaleCartDTO getCurrentSale() {
-        if (currentSale == null) {
-            throw new IllegalStateException("No active sale.");
-        }
-        return currentSale;
-    }
-
     //
     // CART OPERATIONS
     //
-    public void addService(int serviceDefinitionId, String name, double price) {
-        getCurrentSale().addService(serviceDefinitionId, name, price); // Delegates to SaleCartDTO
+    public void addService(
+            SaleCartDTO cart,
+            int serviceDefinitionId,
+            String name,
+            double price
+    ) {
+        cart.addService(serviceDefinitionId, name, price);
     }
 
-    public void addProduct(int productId, String name, double price) {
-        getCurrentSale().addProduct(productId, name, price); // getCurrentSale() is the SaleCartDTO instance
+    public void addProduct(
+            SaleCartDTO cart,
+            int productId,
+            String name,
+            double price
+    ) {
+        cart.addProduct(productId, name, price);
     }
 
-    public void removeSingleUnitFromCart(SaleCartItemDTO cartItem) {
-        getCurrentSale().removeSingleUnit((app.barbman.core.dto.salecart.SaleCartItemDTO) cartItem);
+    public void removeSingleUnit(
+            SaleCartDTO cart,
+            SaleCartItemDTO item
+    ) {
+        cart.removeSingleUnit(item);
     }
 
-    public void removeItemFromCart(SaleCartItemDTO cartItem) {
-        getCurrentSale().removeItem((app.barbman.core.dto.salecart.SaleCartItemDTO) cartItem);
+    public void removeItem(
+            SaleCartDTO cart,
+            SaleCartItemDTO item
+    ) {
+        cart.removeItem(item);
     }
 
-    public double getCurrentTotal() {
-        return getCurrentSale().getTotal();
+    public double calculateTotal(SaleCartDTO cart) {
+        return cart.getTotal();
     }
+
 
 
     // ==========
-    // BACKEND
+    // PERSISTENCE
     // ==========
     public void completeSale(SaleCartDTO cart) {
 

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17.0.12"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="app.barbman.core.controller.sales.SaleCreateViewController">
+
+    <top>
+        <HBox alignment="CENTER" prefHeight="56">
+            <children>
+                <Label text="Registrar venta"
+                       styleClass="services-title"/>
+            </children>
+        </HBox>
+    </top>
+    <right>
+        <VBox spacing="12"
+              BorderPane.alignment="CENTER"
+              prefWidth="420">
+            <padding>
+                <Insets top="16" right="16" bottom="16" left="16"/>
+            </padding>
+
+            <!-- Header -->
+            <HBox spacing="24">
+                <Label text="Item"/>
+                <Label text="Precio"/>
+                <Label text="Cantidad"/>
+            </HBox>
+
+            <!-- Cart list -->
+            <ScrollPane fitToWidth="true"
+                        VBox.vgrow="ALWAYS">
+                <content>
+                    <VBox fx:id="cartContainer"
+                          spacing="10"
+                          fillWidth="true"/>
+                </content>
+            </ScrollPane>
+
+            <!-- Total -->
+            <HBox alignment="CENTER_RIGHT" spacing="6">
+                <Label text="Total:"/>
+                <Label fx:id="totalLabel" text="0 Gs"/>
+            </HBox>
+
+            <!-- Confirm -->
+            <Button fx:id="confirmButton"
+                    text="Confirmar"
+                    maxWidth="Infinity"/>
+        </VBox>
+    </right>
+    <center>
+        <VBox spacing="12" fillWidth="true">
+
+            <!-- TOGGLES -->
+            <HBox alignment="CENTER" spacing="10">
+                <children>
+                    <ToggleButton fx:id="servicesToggle"
+                                  text="Servicios"
+                                  selected="true"/>
+
+                    <ToggleButton fx:id="productsToggle"
+                                  text="Productos"/>
+                </children>
+            </HBox>
+
+            <!-- LISTA DE ITEMS -->
+            <ScrollPane fitToWidth="true">
+                <content>
+                    <VBox fx:id="servicesListContainer"
+                          spacing="12"
+                          fillWidth="true"/>
+                </content>
+            </ScrollPane>
+
+        </VBox>
+    </center>
+
+</BorderPane>

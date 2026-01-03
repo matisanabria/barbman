@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Repository implementation for the `service_definitions` table.
+ * Repository implementation for the `service_definition` table.
  * Provides CRUD operations and filtered queries.
  */
 public class ServiceDefinitionRepositoryImpl implements ServiceDefinitionRepository {
@@ -21,7 +21,7 @@ public class ServiceDefinitionRepositoryImpl implements ServiceDefinitionReposit
     /** Base SELECT clause reused across queries */
     private static final String SELECT_BASE = """
         SELECT id, displayName, base_price, available
-        FROM service_definitions
+        FROM service_definition
         """;
 
     @Override
@@ -89,7 +89,7 @@ public class ServiceDefinitionRepositoryImpl implements ServiceDefinitionReposit
     @Override
     public void save(ServiceDefinition service) {
         String sql = """
-            INSERT INTO service_definitions (displayName, base_price, available)
+            INSERT INTO service_definition (displayName, base_price, available)
             VALUES (?, ?, ?)
             """;
 
@@ -116,7 +116,7 @@ public class ServiceDefinitionRepositoryImpl implements ServiceDefinitionReposit
     @Override
     public void update(ServiceDefinition service) {
         String sql = """
-            UPDATE service_definitions
+            UPDATE service_definition
             SET displayName = ?, base_price = ?, available = ?
             WHERE id = ?
             """;
@@ -140,7 +140,7 @@ public class ServiceDefinitionRepositoryImpl implements ServiceDefinitionReposit
 
     @Override
     public void delete(Integer id) {
-        String sql = "DELETE FROM service_definitions WHERE id = ?";
+        String sql = "DELETE FROM service_definition WHERE id = ?";
 
         try (Connection db = DbBootstrap.connect();
              PreparedStatement ps = db.prepareStatement(sql)) {
