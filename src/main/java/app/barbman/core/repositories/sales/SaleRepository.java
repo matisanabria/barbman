@@ -18,4 +18,5 @@ public interface SaleRepository extends GenericRepository<Sale, Integer> {
 
     List<SaleHistoryDTO> findSalesHistory(LocalDate from, LocalDate to);
     SaleDetailDTO findSaleHeaderDetail(int saleId);
+    double sumTotalByPaymentMethodAndPeriod(int paymentMethodId, LocalDate start, LocalDate end);
 }

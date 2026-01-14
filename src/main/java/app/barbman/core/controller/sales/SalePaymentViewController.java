@@ -3,6 +3,14 @@ package app.barbman.core.controller.sales;
 import app.barbman.core.dto.salecart.SaleCartDTO;
 import app.barbman.core.dto.salecart.SaleCartItemDTO;
 import app.barbman.core.model.sales.Sale;
+import app.barbman.core.repositories.cashbox.closure.CashboxClosureRepository;
+import app.barbman.core.repositories.cashbox.closure.CashboxClosureRepositoryImpl;
+import app.barbman.core.repositories.cashbox.movement.CashboxMovementRepository;
+import app.barbman.core.repositories.cashbox.movement.CashboxMovementRepositoryImpl;
+import app.barbman.core.repositories.cashbox.opening.CashboxOpeningRepository;
+import app.barbman.core.repositories.cashbox.opening.CashboxOpeningRepositoryImpl;
+import app.barbman.core.repositories.expense.ExpenseRepository;
+import app.barbman.core.repositories.expense.ExpenseRepositoryImpl;
 import app.barbman.core.repositories.sales.SaleRepository;
 import app.barbman.core.repositories.sales.SaleRepositoryImpl;
 import app.barbman.core.repositories.sales.products.productheader.ProductHeaderRepository;
@@ -13,6 +21,9 @@ import app.barbman.core.repositories.sales.services.serviceheader.ServiceHeaderR
 import app.barbman.core.repositories.sales.services.serviceheader.ServiceHeaderRepositoryImpl;
 import app.barbman.core.repositories.sales.services.serviceitems.ServiceItemRepository;
 import app.barbman.core.repositories.sales.services.serviceitems.ServiceItemRepositoryImpl;
+import app.barbman.core.service.cashbox.CashboxService;
+import app.barbman.core.service.expenses.ExpensesService;
+import app.barbman.core.service.sales.SalesService;
 import app.barbman.core.service.sales.products.ProductHeaderService;
 import app.barbman.core.service.sales.products.ProductItemService;
 import app.barbman.core.service.sales.saleflow.SaleFlowService;
@@ -69,13 +80,16 @@ public class SalePaymentViewController implements Initializable {
     private final ProductSaleItemRepository productSaleItemRepository = new ProductSaleItemRepositoryImpl();
     private final ProductItemService productItemService = new ProductItemService(productSaleItemRepository);
 
+    private final CashboxMovementRepository cashboxMovementRepository = new CashboxMovementRepositoryImpl();
+
     private final SaleFlowService saleFlowService =
             new SaleFlowService(
             saleRepository,
             serviceHeaderService,
             serviceItemService,
             productHeaderService,
-            productItemService
+            productItemService,
+            cashboxMovementRepository
             );
 
     // =========================

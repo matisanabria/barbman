@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface ExpenseRepository extends GenericRepository<Expense, Integer> {
     List<Expense> searchByDateRange(LocalDate startDate, LocalDate endDate);
+    double sumTotalByPaymentMethodAndPeriod(int paymentMethodId, LocalDate start, LocalDate end);
 }

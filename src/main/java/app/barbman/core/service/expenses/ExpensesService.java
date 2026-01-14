@@ -1,12 +1,16 @@
 package app.barbman.core.service.expenses;
 
 import app.barbman.core.model.Expense;
+import app.barbman.core.model.cashbox.CashboxMovement;
+import app.barbman.core.repositories.cashbox.movement.CashboxMovementRepository;
 import app.barbman.core.repositories.expense.ExpenseRepository;
 import app.barbman.core.repositories.expense.ExpenseRepositoryImpl;
+import app.barbman.core.service.cashbox.CashboxService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -19,10 +23,16 @@ public class ExpensesService {
     private static final String PREFIX = "[EXPENSES-SERVICE]";
 
     private final ExpenseRepository expenseRepo;
+    private final CashboxMovementRepository movementRepo;
 
-    public ExpensesService(ExpenseRepository expenseRepo) {
+    public ExpensesService(
+            ExpenseRepository expenseRepo,
+            CashboxMovementRepository movementRepo
+    ) {
         this.expenseRepo = expenseRepo;
+        this.movementRepo = movementRepo;
     }
+
 
     /**
      * Registers a general expense record.
@@ -32,7 +42,7 @@ public class ExpensesService {
      * @param description Optional description (max length: 500)
      * @param paymentMethodId Payment method ID (cash, transfer, etc.)
      */
-    public void registerExpense(String type, double amount, String description, int paymentMethodId) {
+    public void registerExpense(String type, double amount, String description, int paymentMethodId, int userId) {
         if (type == null || type.isBlank()) {
             throw new IllegalArgumentException("Expense type must not be empty.");
         }
@@ -47,6 +57,18 @@ public class ExpensesService {
 
         Expense expense = new Expense(description, amount, today, type, paymentMethodId);
         expenseRepo.save(expense);
+
+        movementRepo.save(new CashboxMovement(
+                "EXPENSE",
+                "OUT",
+                amount,
+                paymentMethodId,
+                "EXPENSE",
+                expense.getId(),
+                "Expense registered",
+                userId,
+                LocalDateTime.now()
+        ));
 
         logger.info("{} Expense registered -> type={}, amount={}, method={}, date={}, expenseID={}",
                 PREFIX, type, amount, paymentMethodId, today, expense.getId());
@@ -70,6 +92,18 @@ public class ExpensesService {
         logger.info("{} Advance expense created -> user={}, amount={}, method={}, expenseID={}",
                 PREFIX, userId, amount, paymentMethodId, expense.getId());
 
+        movementRepo.save(new CashboxMovement(
+                "EXPENSE",
+                "OUT",
+                amount,
+                paymentMethodId,
+                "EXPENSE",
+                expense.getId(),
+                "Advance registered",
+                userId,
+                LocalDateTime.now()
+        ));
+
         return expense;
     }
 
@@ -90,6 +124,18 @@ public class ExpensesService {
 
         Expense expense = new Expense(description, amount, date, "salary", paymentMethodId);
         expenseRepo.save(expense);
+
+        movementRepo.save(new CashboxMovement(
+                "EXPENSE",
+                "OUT",
+                amount,
+                paymentMethodId,
+                "EXPENSE",
+                expense.getId(),
+                "Salary registered",
+                userId,
+                LocalDateTime.now()
+        ));
 
         logger.info("{} Salary expense created -> user={}, amount={}, method={}, expenseID={}",
                 PREFIX, userId, amount, paymentMethodId, expense.getId());
@@ -130,5 +176,20 @@ public class ExpensesService {
             logger.error("{} Error deleting expense ID {}: {}", PREFIX, expenseId, e.getMessage());
             throw new RuntimeException("Error deleting expense ID " + expenseId, e);
         }
+    }
+
+    /**
+     * Returns total expenses amount for a specific payment method
+     * within a given date range.
+     */
+    public double getTotalForPaymentMethodInPeriod(
+            int paymentMethodId,
+            LocalDate start,
+            LocalDate end
+    ) {
+        return expenseRepo
+                .sumTotalByPaymentMethodAndPeriod(
+                        paymentMethodId, start, end
+                );
     }
 }

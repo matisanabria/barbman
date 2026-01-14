@@ -228,6 +228,49 @@ public class SaleRepositoryImpl implements SaleRepository {
     }
 
     @Override
+    public double sumTotalByPaymentMethodAndPeriod(
+            int paymentMethodId,
+            LocalDate start,
+            LocalDate end
+    ) {
+
+        String sql = """
+        SELECT COALESCE(SUM(total), 0)
+        FROM sales
+        WHERE payment_method_id = ?
+          AND date BETWEEN ? AND ?
+        """;
+
+        try (Connection db = DbBootstrap.connect();
+             PreparedStatement ps = db.prepareStatement(sql)) {
+
+            ps.setInt(1, paymentMethodId);
+            ps.setString(2, start.toString());
+            ps.setString(3, end.toString());
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    double total = rs.getDouble(1);
+                    logger.debug(
+                            "{} SUM sales [pm={}, {} -> {}] = {}",
+                            PREFIX, paymentMethodId, start, end, total
+                    );
+                    return total;
+                }
+            }
+
+        } catch (Exception e) {
+            logger.error(
+                    "{} Error summing sales for pm={} between {} and {}: {}",
+                    PREFIX, paymentMethodId, start, end, e.getMessage()
+            );
+        }
+
+        return 0;
+    }
+
+
+    @Override
     public SaleDetailDTO findSaleHeaderDetail(int saleId) {
 
         String sql = """

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="420" prefWidth="480" styleClass="locked-root" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+
+    <VBox alignment="CENTER" prefHeight="420" prefWidth="480" spacing="20" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
+
+        <padding>
+            <Insets bottom="30" left="30" right="30" top="30" />
+        </padding>
+
+        <Label alignment="CENTER" prefWidth="400" styleClass="locked-title" text="CASHBOX LOCKED" />
+
+        <Label alignment="CENTER" prefWidth="400" styleClass="locked-text" text="The cashbox is not opened for the current period." wrapText="true" />
+
+        <Label alignment="CENTER" prefWidth="400" styleClass="locked-text-muted" text="An administrator must open the cashbox to continue." wrapText="true" />
+
+        <Separator prefWidth="360" />
+
+        <Label alignment="CENTER" styleClass="locked-status" text="Status: ❌ NOT OPENED" />
+
+        <Button prefHeight="44" prefWidth="180" styleClass="locked-btn-logout" text="LOGOUT" />
+
+    </VBox>
+</AnchorPane>

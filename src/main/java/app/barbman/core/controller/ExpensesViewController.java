@@ -2,6 +2,8 @@ package app.barbman.core.controller;
 
 import app.barbman.core.model.*;
 import app.barbman.core.model.human.User;
+import app.barbman.core.repositories.cashbox.movement.CashboxMovementRepository;
+import app.barbman.core.repositories.cashbox.movement.CashboxMovementRepositoryImpl;
 import app.barbman.core.repositories.expense.ExpenseRepository;
 import app.barbman.core.repositories.expense.ExpenseRepositoryImpl;
 import app.barbman.core.repositories.paymentmethod.PaymentMethodRepositoryImpl;
@@ -49,7 +51,8 @@ public class ExpensesViewController implements Initializable {
     @FXML private HBox paymentButtonsBox; // This will be initialized via FXML
     private final PaymentMethodsService paymentMethodsService = new PaymentMethodsService(new PaymentMethodRepositoryImpl());
     private final ExpenseRepository expenseRepo = new ExpenseRepositoryImpl();
-    private final ExpensesService expenseService = new ExpensesService(expenseRepo);
+    private final CashboxMovementRepository movementRepo = new CashboxMovementRepositoryImpl();
+    private final ExpensesService expenseService = new ExpensesService(expenseRepo, movementRepo);
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -207,7 +210,8 @@ public class ExpensesViewController implements Initializable {
                     type,
                     amount,
                     desc,
-                    payment.getId()
+                    payment.getId(),
+                    SessionManager.getActiveUser().getId()
             );
 
             logger.info("{} Expense added -> Type: {}, Amount: {}, Payment: {}, Desc: {}",

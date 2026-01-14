@@ -1,0 +1,25 @@
+/* ROOTS */
+.cashbox-root {}
+.locked-root {}
+
+/* TITLES */
+.cashbox-title {}
+.cashbox-subtitle {}
+.locked-title {}
+
+/* TEXT */
+.cashbox-label {}
+.cashbox-hint {}
+.cashbox-footer {}
+.locked-text {}
+.locked-text-muted {}
+.locked-status {}
+
+/* INPUTS */
+.cashbox-input {}
+.cashbox-textarea {}
+
+/* BUTTONS */
+.cashbox-btn-primary {}
+.cashbox-btn-secondary {}
+.locked-btn-logout {}

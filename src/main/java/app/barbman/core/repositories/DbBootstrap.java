@@ -288,32 +288,60 @@ public class DbBootstrap {
                             displayName TEXT NOT NULL UNIQUE   -- ej: cash, transfer, qr, card
                          );
                      """);
-            // CASHBOX
-            // Records daily cashbox openings and closings with unique date constraint
-            // Only one cashbox record per day is allowed
+            // CASHBOX OPENINGS
+            // Initial declaration of money in the cashbox at the start of a period (week)
             stmt.execute("""
-                    CREATE TABLE IF NOT EXISTS cashbox (
+                    CREATE TABLE IF NOT EXISTS cashbox_openings (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        date TEXT NOT NULL UNIQUE,
-                        opening_balance REAL NOT NULL DEFAULT 0,
-                        closing_balance REAL NOT NULL DEFAULT 0
+                        period_start_date TEXT NOT NULL,-- lunes de la semana contable (YYYY-MM-DD)
+                        opened_at TEXT NOT NULL DEFAULT (datetime('now')), -- cuándo se hizo la apertura realmente
+                        opened_by_user_id INTEGER NOT NULL,
+                        cash_amount REAL NOT NULL CHECK (cash_amount >= 0),
+                        bank_amount REAL NOT NULL CHECK (bank_amount >= 0),  -- banco incluye transferencias + POS  
+                        notes TEXT,
+                        UNIQUE (period_start_date),             -- solo una apertura por semana
+                        FOREIGN KEY (opened_by_user_id) REFERENCES users(id)
                     );
                     """);
+            // CASHBOX CLOSURES
+            // Final declaration of money in the cashbox at the end of a period (week)
+            stmt.execute("""
+                    CREATE TABLE IF NOT EXISTS cashbox_closures (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        period_start_date TEXT NOT NULL,
+                        period_end_date TEXT NOT NULL,                   -- normalmente domingo
+                        closed_at TEXT NOT NULL DEFAULT (datetime('now')),
+                        closed_by_user_id INTEGER NOT NULL,
+                        expected_cash REAL NOT NULL,
+                        expected_bank REAL NOT NULL,
+                        expected_total REAL NOT NULL,
+                        notes TEXT,
+                        UNIQUE (period_start_date),
+                        FOREIGN KEY (closed_by_user_id) REFERENCES users(id)
+                    );
+                    
+                    """);
+
             // CASHBOX MOVEMENTS
-            // Records individual cashbox movements (income/expense) linked to a specific day's cashbox
-            // and the user who registered the movement. It's used like a cash register log.
+            // Records individual cashbox movements (income/expense) linked to a specific day
+            // Each movement records type, direction, amount, payment method, reference, user, and timestamps
             stmt.execute("""
                     CREATE TABLE IF NOT EXISTS cashbox_movements (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        cashbox_id INTEGER NOT NULL,       -- referencia al día correspondiente
-                        type TEXT NOT NULL,                -- 'INCOME' o 'EXPENSE'
-                        amount REAL NOT NULL,
-                        description TEXT,
-                        user_id INTEGER,                   -- quién registró el movimiento
-                        created_at TEXT NOT NULL DEFAULT (datetime('now')),
-                        FOREIGN KEY (cashbox_id) REFERENCES cashbox(id),
-                        FOREIGN KEY (user_id) REFERENCES users(id)
-                    );
+                          id INTEGER PRIMARY KEY AUTOINCREMENT,
+                          movement_type TEXT NOT NULL,           -- 'SALE', 'EXPENSE', 'OPENING', 'CLOSURE', 'ADJUSTMENT'
+                          direction TEXT NOT NULL,               -- 'IN' o 'OUT' (entra o sale dinero)
+                          amount REAL NOT NULL CHECK (amount > 0),
+                          payment_method_id INTEGER,             -- efectivo / transferencia / card / qr
+                          reference_type TEXT,                   -- 'SALE', 'EXPENSE', 'CASHBOX_OPENING', etc.
+                          reference_id INTEGER,                  -- id de la venta, egreso, apertura, etc.
+                          description TEXT,
+                          user_id INTEGER,
+                          occurred_at TEXT NOT NULL,             -- fecha lógica del movimiento (no siempre now)
+                          created_at TEXT NOT NULL DEFAULT (datetime('now')),
+                          FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id),
+                          FOREIGN KEY (user_id) REFERENCES users(id)
+                      );
+                    
                     """);
             // CLIENTS
             // Stores client information for appointments and marketing purposes

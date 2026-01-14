@@ -2,11 +2,14 @@ package app.barbman.core.service.sales.saleflow;
 
 import app.barbman.core.dto.salecart.SaleCartDTO;
 import app.barbman.core.dto.salecart.SaleCartItemDTO;
+import app.barbman.core.model.cashbox.CashboxMovement;
 import app.barbman.core.model.sales.Sale;
 import app.barbman.core.model.sales.products.ProductHeader;
 import app.barbman.core.model.sales.services.ServiceHeader;
 import app.barbman.core.repositories.DbBootstrap;
+import app.barbman.core.repositories.cashbox.movement.CashboxMovementRepository;
 import app.barbman.core.repositories.sales.SaleRepository;
+import app.barbman.core.service.cashbox.CashboxService;
 import app.barbman.core.service.sales.products.ProductHeaderService;
 import app.barbman.core.service.sales.products.ProductItemService;
 import app.barbman.core.service.sales.products.ProductStockService;
@@ -18,6 +21,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.sql.Connection;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * This service is a "Sales Flow Orchestrator".
@@ -38,19 +42,22 @@ public class SaleFlowService {
     private final ProductItemService productItemService;
     private final ProductStockService productStockService =
             new ProductStockService();
+    private final CashboxMovementRepository cashboxMovementRepository;
 
     public SaleFlowService(
             SaleRepository saleRepository,
             ServiceHeaderService serviceHeaderService,
             ServiceItemService serviceItemService,
             ProductHeaderService productHeaderService,
-            ProductItemService productItemService
+            ProductItemService productItemService,
+            CashboxMovementRepository cashboxMovementRepository
     ) {
         this.saleRepository = saleRepository;
         this.serviceHeaderService = serviceHeaderService;
         this.serviceItemService = serviceItemService;
         this.productHeaderService = productHeaderService;
         this.productItemService = productItemService;
+        this.cashboxMovementRepository = cashboxMovementRepository;
     }
 
     //
@@ -91,7 +98,6 @@ public class SaleFlowService {
     public double calculateTotal(SaleCartDTO cart) {
         return cart.getTotal();
     }
-
 
 
     // ==========
@@ -138,7 +144,20 @@ public class SaleFlowService {
             logger.info("{} Sale completed successfully (saleId={})",
                     PREFIX, sale.getId());
 
-            // 5. Clear cart
+            // 5. Cashbox movement (LEDGER)
+            cashboxMovementRepository.save(new CashboxMovement(
+                    "SALE",
+                    "IN",
+                    sale.getTotal(),
+                    sale.getPaymentMethodId(),
+                    "SALE",
+                    sale.getId(),
+                    "Sale registered",
+                    sale.getUserId(),
+                    LocalDateTime.now()
+            ));
+
+            // 6. Clear cart
             cart.getCartItems().clear();
             return sale;
 
@@ -147,36 +166,4 @@ public class SaleFlowService {
             throw new RuntimeException("Sale could not be completed", e);
         }
     }
-//
-//    public void deleteSale(int saleId) {
-//
-//        try (Connection conn = DbBootstrap.connect()) {
-//            conn.setAutoCommit(false);
-//
-//            // 1.Services
-//            serviceItemService.deleteBySaleId(saleId, conn);
-//            serviceHeaderService.deleteBySaleId(saleId, conn);
-//
-//            // 2. Products
-//            productItemService.deleteBySaleId(saleId, conn);
-//            productHeaderService.deleteBySaleId(saleId, conn);
-//
-//            // 3. Stock rollback (si aplica)
-//            productStockService.restoreStockBySaleId(saleId, conn);
-//
-//            // 4. Salary / production impact (opcional ahora)
-//            salaryService.onSaleDeleted(saleId, conn);
-//
-//            // 5. Finally sale
-//            saleRepository.delete(saleId, conn);
-//
-//            conn.commit();
-//            logger.info("{} Sale fully deleted -> saleId={}", PREFIX, saleId);
-//
-//        } catch (Exception e) {
-//            logger.error("{} Error deleting sale {}, rolling back", PREFIX, saleId, e);
-//            throw new RuntimeException("Failed to delete sale", e);
-//        }
-//    }
-
 }
