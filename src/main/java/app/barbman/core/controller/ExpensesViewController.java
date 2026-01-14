@@ -51,8 +51,7 @@ public class ExpensesViewController implements Initializable {
     @FXML private HBox paymentButtonsBox; // This will be initialized via FXML
     private final PaymentMethodsService paymentMethodsService = new PaymentMethodsService(new PaymentMethodRepositoryImpl());
     private final ExpenseRepository expenseRepo = new ExpenseRepositoryImpl();
-    private final CashboxMovementRepository movementRepo = new CashboxMovementRepositoryImpl();
-    private final ExpensesService expenseService = new ExpensesService(expenseRepo, movementRepo);
+    private final ExpensesService expenseService = new ExpensesService(expenseRepo);
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {

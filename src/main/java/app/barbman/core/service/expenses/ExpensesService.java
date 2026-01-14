@@ -3,6 +3,7 @@ package app.barbman.core.service.expenses;
 import app.barbman.core.model.Expense;
 import app.barbman.core.model.cashbox.CashboxMovement;
 import app.barbman.core.repositories.cashbox.movement.CashboxMovementRepository;
+import app.barbman.core.repositories.cashbox.movement.CashboxMovementRepositoryImpl;
 import app.barbman.core.repositories.expense.ExpenseRepository;
 import app.barbman.core.repositories.expense.ExpenseRepositoryImpl;
 import app.barbman.core.service.cashbox.CashboxService;
@@ -23,14 +24,12 @@ public class ExpensesService {
     private static final String PREFIX = "[EXPENSES-SERVICE]";
 
     private final ExpenseRepository expenseRepo;
-    private final CashboxMovementRepository movementRepo;
+    private final CashboxMovementRepository movementRepo = new CashboxMovementRepositoryImpl();
 
     public ExpensesService(
-            ExpenseRepository expenseRepo,
-            CashboxMovementRepository movementRepo
+            ExpenseRepository expenseRepo
     ) {
         this.expenseRepo = expenseRepo;
-        this.movementRepo = movementRepo;
     }
 
 
