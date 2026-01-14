@@ -168,7 +168,7 @@ public class CashboxService {
 
         closureRepo.save(closure);
 
-        logger.info("{} Cashbox closed for period {} (expected={}, diff={})",
+        logger.info("{} Cashbox closed for period {} (expected={})",
                 PREFIX, periodStart, expectedTotal);
 
         return closure;
