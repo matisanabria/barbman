@@ -7,7 +7,15 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="420" prefWidth="480" styleClass="locked-root" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane
+        prefHeight="420"
+        prefWidth="480"
+        styleClass="locked-root"
+        xmlns="http://javafx.com/javafx/23.0.1"
+        xmlns:fx="http://javafx.com/fxml/1"
+        fx:id="anchorPane"
+        fx:controller="app.barbman.core.controller.cashbox.CashboxLockedController">
+
 
     <VBox alignment="CENTER" prefHeight="420" prefWidth="480" spacing="20" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
 
@@ -25,7 +33,7 @@
 
         <Label alignment="CENTER" styleClass="locked-status" text="Status: ❌ NOT OPENED" />
 
-        <Button prefHeight="44" prefWidth="180" styleClass="locked-btn-logout" text="LOGOUT" />
+        <Button prefHeight="44" prefWidth="180" styleClass="locked-btn-logout" text="LOGOUT" onAction="#onLogout"/>
 
     </VBox>
 </AnchorPane>

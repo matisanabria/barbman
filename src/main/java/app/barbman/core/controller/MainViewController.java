@@ -1,10 +1,15 @@
 package app.barbman.core.controller;
 
 import app.barbman.core.model.human.User;
+import app.barbman.core.repositories.cashbox.closure.CashboxClosureRepositoryImpl;
+import app.barbman.core.repositories.cashbox.movement.CashboxMovementRepositoryImpl;
+import app.barbman.core.repositories.cashbox.opening.CashboxOpeningRepositoryImpl;
+import app.barbman.core.service.cashbox.CashboxService;
 import app.barbman.core.util.SessionManager;
 import app.barbman.core.util.window.EmbeddedViewLoader;
 import app.barbman.core.util.window.WindowManager;
 import app.barbman.core.util.window.WindowRequest;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -22,14 +27,29 @@ public class MainViewController {
     @FXML private BorderPane borderPane;
     @FXML private Button logoutButton;
 
+    private final CashboxService cashboxService =
+            new CashboxService(
+                    new CashboxOpeningRepositoryImpl(),
+                    new CashboxClosureRepositoryImpl(),
+                    new CashboxMovementRepositoryImpl()
+            );
+
     @FXML
     public void initialize() {
         logger.info("{} Initializing main view", PREFIX);
 
+        User user = SessionManager.getActiveUser();
+        if (user == null) return;
+
         loadSidebarForUser();
         SessionManager.setMainBorderPane(borderPane);
 
-        // Vista inicial
+        if (!cashboxService.isCurrentPeriodOpened()) {
+            Platform.runLater(() -> redirectToCashboxGate(user));
+            return; // if cashbox is not opened, do not load default view
+        }
+
+        // Cashbox is opened, load default view
         EmbeddedViewLoader.load(
                 borderPane,
                 EmbeddedViewLoader.Position.CENTER,
@@ -38,6 +58,7 @@ public class MainViewController {
 
         logoutButton.setOnAction(e -> logout());
     }
+
 
     // ============================================================
     // ======================= SIDEBAR ============================
@@ -86,6 +107,27 @@ public class MainViewController {
                 WindowRequest.builder()
                         .fxml("/app/barbman/core/view/login-view.fxml")
                         .css("/app/barbman/core/style/login.css")
+                        .build()
+        );
+    }
+
+    /**
+     * Redirects the user to the cashbox gate view based on their role.
+     */
+    private void redirectToCashboxGate(User user) {
+
+        String fxml =
+                "admin".equals(user.getRole())
+                        ? "/app/barbman/core/view/cashbox/cashbox-opening-view.fxml"
+                        : "/app/barbman/core/view/cashbox/cashbox-locked-view.fxml";
+
+        Stage currentStage = (Stage) borderPane.getScene().getWindow();
+
+        WindowManager.showExclusive(
+                WindowRequest.builder()
+                        .fxml(fxml)
+                        .resizable(false)
+                        .css("/app/barbman/core/style/cashbox.css")
                         .build()
         );
     }

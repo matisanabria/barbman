@@ -9,21 +9,27 @@ public class AlertUtil {
 
     /**
      * Shows an error alert with given message.
+     *
      * @param msg Message to show
+     * @param s
      */
-    public static void showError(String msg) { show(msg, Alert.AlertType.ERROR); }
+    public static void showError(String msg, String s) { show(msg, Alert.AlertType.ERROR); }
 
     /**
      * Shows an information alert with given message.
+     *
      * @param msg Message to show
+     * @param s
      */
-    public static void showInfo(String msg){ show(msg, Alert.AlertType.INFORMATION); }
+    public static void showInfo(String msg, String s){ show(msg, Alert.AlertType.INFORMATION); }
 
     /**
      * Shows an warning alert with given message.
-     * @param msg Message to show
+     *
+     * @param msg     Message to show
+     * @param message
      */
-    public static void showWarning(String msg) { show(msg, Alert.AlertType.WARNING); }
+    public static void showWarning(String msg, String message) { show(msg, Alert.AlertType.WARNING); }
 
     /**
      * Shows an alert of given type with given message.

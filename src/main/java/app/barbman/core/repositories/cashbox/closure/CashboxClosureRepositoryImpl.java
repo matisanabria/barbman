@@ -143,6 +143,25 @@ public class CashboxClosureRepositoryImpl implements CashboxClosureRepository {
         throw new UnsupportedOperationException("Cashbox closures must not be deleted.");
     }
 
+    @Override
+    public CashboxClosure findLast() {
+        String sql = SELECT_BASE + " ORDER BY closed_at DESC LIMIT 1";
+
+        try (Connection db = DbBootstrap.connect();
+             PreparedStatement ps = db.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                return mapRow(rs);
+            }
+
+        } catch (Exception e) {
+            logger.warn("{} Error fetching last cashbox closure: {}", PREFIX, e.getMessage());
+        }
+
+        return null;
+    }
+
     private CashboxClosure mapRow(ResultSet rs) throws SQLException {
         return new CashboxClosure(
                 rs.getInt("id"),

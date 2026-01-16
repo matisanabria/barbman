@@ -174,6 +174,10 @@ public class CashboxService {
         return closure;
     }
 
+    public CashboxClosure getLastClosure() {
+        return closureRepo.findLast();
+    }
+
     // ============================================================
     // CALCULATIONS
     // ============================================================

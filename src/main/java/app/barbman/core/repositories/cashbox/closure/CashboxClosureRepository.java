@@ -11,4 +11,5 @@ public interface CashboxClosureRepository
     CashboxClosure findByPeriodStart(LocalDate periodStartDate);
 
     boolean existsForPeriod(LocalDate periodStartDate);
+    CashboxClosure findLast();
 }

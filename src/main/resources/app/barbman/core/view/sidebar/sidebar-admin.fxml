@@ -41,8 +41,7 @@
             <!-- INGRESOS (HABILITADO) -->
             <ToggleButton fx:id="btnIncome"
                           text="Ingresos"
-                          styleClass="sidebar-btn"
-                          disable="false">
+                          styleClass="sidebar-btn">
                 <graphic>
                     <FontIcon iconLiteral="fas-arrow-up" iconSize="18"/>
                 </graphic>
@@ -51,8 +50,7 @@
             <!-- EGRESOS -->
             <ToggleButton fx:id="btnExpenses"
                           text="Egresos"
-                          styleClass="sidebar-btn"
-                          disable="true">
+                          styleClass="sidebar-btn">
                 <graphic>
                     <FontIcon iconLiteral="fas-arrow-down" iconSize="18"/>
                 </graphic>
@@ -61,8 +59,7 @@
             <!-- SUELDOS -->
             <ToggleButton fx:id="btnSalaries"
                           text="Sueldos"
-                          styleClass="sidebar-btn"
-                          disable="true">
+                          styleClass="sidebar-btn">
                 <graphic>
                     <FontIcon iconLiteral="far-money-bill-alt" iconSize="18"/>
                 </graphic>
@@ -71,8 +68,7 @@
             <!-- CAJA -->
             <ToggleButton fx:id="btnCash"
                           text="Caja"
-                          styleClass="sidebar-btn"
-                          disable="true">
+                          styleClass="sidebar-btn">
                 <graphic>
                     <FontIcon iconLiteral="fas-cash-register" iconSize="18"/>
                 </graphic>
@@ -81,8 +77,7 @@
             <!-- CONFIG -->
             <ToggleButton fx:id="btnSettings"
                           text="Configuración"
-                          styleClass="sidebar-btn"
-                          disable="true">
+                          styleClass="sidebar-btn">
                 <graphic>
                     <FontIcon iconLiteral="fas-cog" iconSize="18"/>
                 </graphic>

@@ -124,8 +124,8 @@ public class WindowManager {
         } catch (Exception e) {
             logger.error("[WINDOW] Failed to open window: {}", request.getFxmlPath(), e);
             AlertUtil.showError(
-                    "No se pudo abrir la ventana:\n" + request.getFxmlPath()
-            );
+                    "No se pudo abrir la ventana:\n" + request.getFxmlPath(),
+                    "An unexpected error occurred while opening the cashbox.");
             return null;
         }
     }
@@ -145,8 +145,7 @@ public class WindowManager {
             } else {
                 logger.warn("[CSS] NOT FOUND: {}", css);
                 AlertUtil.showWarning(
-                        "No se pudo cargar el archivo CSS:\n" + css
-                );
+                        "No se pudo cargar el archivo CSS:\n" + css, "No se encontró el recurso.");
             }
         }
     }
