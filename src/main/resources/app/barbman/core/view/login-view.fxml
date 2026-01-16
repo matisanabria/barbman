@@ -44,7 +44,7 @@
             </children>
         </AnchorPane>
 
-        <!-- Left panel (login form) -->
+        <!-- Right panel (login form) -->
         <AnchorPane prefWidth="360.0" styleClass="login-right">
             <children>
                 <VBox alignment="CENTER" spacing="18.0" layoutX="80.0" layoutY="100.0" prefWidth="200.0">
