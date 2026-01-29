@@ -3,15 +3,16 @@ package app.barbman.core.util.window;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Describes how a JavaFX window should be opened.
  * This class is declarative: it contains no JavaFX logic.
+ *
+ * Instances must be created using the Builder.
  */
 public class WindowRequest {
+
     // ============================================================
     // ======================== FIELDS ============================
     // ============================================================
@@ -23,6 +24,7 @@ public class WindowRequest {
     private final boolean resizable;
     private final List<String> cssPaths;
     private final boolean returnController;
+    private final String iconPath;
 
     // ============================================================
     // ===================== CONSTRUCTOR ==========================
@@ -36,6 +38,7 @@ public class WindowRequest {
         this.resizable = builder.resizable;
         this.cssPaths = List.copyOf(builder.cssPaths);
         this.returnController = builder.returnController;
+        this.iconPath = builder.iconPath;
     }
 
     // ============================================================
@@ -70,6 +73,10 @@ public class WindowRequest {
         return returnController;
     }
 
+    public String getIconPath() {
+        return iconPath;
+    }
+
     // ============================================================
     // ======================== BUILDER ===========================
     // ============================================================
@@ -87,6 +94,7 @@ public class WindowRequest {
         private boolean resizable = false;
         private final List<String> cssPaths = new ArrayList<>();
         private boolean returnController = false;
+        private String iconPath;
 
         /**
          * Required: FXML path for the window.
@@ -152,6 +160,14 @@ public class WindowRequest {
         }
 
         /**
+         * Optional window icon (PNG recommended).
+         */
+        public Builder icon(String iconPath) {
+            this.iconPath = iconPath;
+            return this;
+        }
+
+        /**
          * Indicates whether the controller should be returned.
          */
         public Builder returnController(boolean returnController) {
@@ -183,6 +199,7 @@ public class WindowRequest {
                 ", resizable=" + resizable +
                 ", cssPaths=" + cssPaths +
                 ", returnController=" + returnController +
+                ", iconPath='" + iconPath + '\'' +
                 '}';
     }
 }

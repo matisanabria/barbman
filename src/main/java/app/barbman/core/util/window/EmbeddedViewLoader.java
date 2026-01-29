@@ -1,6 +1,5 @@
 package app.barbman.core.util.window;
 
-import app.barbman.core.util.AlertUtil;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.layout.BorderPane;
@@ -8,23 +7,47 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.net.URL;
+import java.util.List;
 
-public class EmbeddedViewLoader {
+/**
+ * Utility class responsible for loading and embedding FXML views
+ * into a BorderPane at a given position.
+ *
+ * This loader is intentionally "dumb":
+ * - It does NOT assume base styles
+ * - It does NOT guess CSS paths
+ * - It does NOT apply implicit conventions
+ *
+ * All styling decisions must be explicit and intentional.
+ */
+public final class EmbeddedViewLoader {
+
     private static final Logger logger = LogManager.getLogger(EmbeddedViewLoader.class);
 
-    private static final String BASE_CSS =
-            "/app/barbman/core/style/views/view-base.css";
-
-    private EmbeddedViewLoader() {}
+    private EmbeddedViewLoader() {
+        // Utility class
+    }
 
     // ============================================================
     // ======================= PUBLIC API =========================
     // ============================================================
 
+    /**
+     * Loads an FXML view and embeds it into the given BorderPane
+     * at the specified position.
+     *
+     * Optionally applies one or more CSS files to the embedded view.
+     *
+     * @param container the BorderPane where the view will be embedded
+     * @param position  the target position inside the BorderPane
+     * @param fxmlPath  absolute classpath to the FXML file
+     * @param cssPaths  optional list of absolute classpath CSS files
+     */
     public static void load(
             BorderPane container,
             Position position,
-            String fxmlPath
+            String fxmlPath,
+            String... cssPaths
     ) {
         try {
             FXMLLoader loader = new FXMLLoader(
@@ -34,14 +57,22 @@ public class EmbeddedViewLoader {
 
             Parent view = loader.load();
 
-            injectCssIfExists(view, fxmlPath);
+            applyCss(view, cssPaths);
             place(container, position, view);
 
-            logger.info("[EMBED] Loaded {} into {}", fxmlPath, position);
+            logger.info(
+                    "[EMBED] Loaded view '{}' into position {}",
+                    fxmlPath,
+                    position
+            );
 
         } catch (Exception e) {
-            logger.error("[EMBED] Failed to load view: {}", fxmlPath, e);
-            // SIN ALERTS
+            logger.error(
+                    "[EMBED] Failed to load embedded view: {}",
+                    fxmlPath,
+                    e
+            );
+            // No alerts here by design
         }
     }
 
@@ -49,8 +80,23 @@ public class EmbeddedViewLoader {
     // ======================= INTERNAL ===========================
     // ============================================================
 
-    private static void place(BorderPane pane, Position pos, Parent view) {
-        switch (pos) {
+    /**
+     * Places the given view into the BorderPane at the requested position.
+     *
+     * This method replaces any existing node in that position.
+     *
+     * @param pane     target BorderPane
+     * @param position desired placement position
+     * @param view     loaded FXML root node
+     */
+    private static void place(
+            BorderPane pane,
+            Position position,
+            Parent view
+    ) {
+        // This is necessary to ensure only one view exists per region
+        // otherwise old embedded views may remain attached to the scene graph
+        switch (position) {
             case CENTER -> pane.setCenter(view);
             case LEFT -> pane.setLeft(view);
             case RIGHT -> pane.setRight(view);
@@ -59,40 +105,50 @@ public class EmbeddedViewLoader {
         }
     }
 
-    private static void injectBaseCss(Parent view) {
-        URL baseCss = EmbeddedViewLoader.class.getResource(BASE_CSS);
+    /**
+     * Applies the given CSS files to the embedded view.
+     *
+     * CSS paths must be absolute classpath locations.
+     * Missing CSS files are ignored but logged.
+     *
+     * @param view     the embedded root node
+     * @param cssPaths optional list of CSS paths
+     */
+    private static void applyCss(
+            Parent view,
+            String... cssPaths
+    ) {
+        if (cssPaths == null || cssPaths.length == 0) {
+            // No styles requested, this is valid
+            logger.debug("[EMBED-CSS] No CSS injected");
+            return;
+        }
 
-        if (baseCss != null) {
-            view.getStylesheets().add(baseCss.toExternalForm());
-            logger.info("[CSS] Base loaded");
-        } else {
-            logger.error("[CSS] Base CSS NOT FOUND: {}", BASE_CSS);
+        for (String cssPath : cssPaths) {
+            URL cssUrl = EmbeddedViewLoader.class.getResource(cssPath);
+
+            if (cssUrl != null) {
+                view.getStylesheets().add(cssUrl.toExternalForm());
+                logger.info("[EMBED-CSS] Applied CSS: {}", cssPath);
+            } else {
+                // We do not fail hard on missing CSS
+                // because embedded views must remain functional without styles
+                logger.warn(
+                        "[EMBED-CSS] CSS not found, ignored: {}",
+                        cssPath
+                );
+            }
         }
     }
 
-    private static void injectCssIfExists(Parent view, String fxmlPath) {
-        String cssPath = guessCssPath(fxmlPath);
-        URL cssUrl = EmbeddedViewLoader.class.getResource(cssPath);
-
-        if (cssUrl != null) {
-            view.getStylesheets().add(cssUrl.toExternalForm());
-            logger.info("[EMBED-CSS] Loaded: {}", cssPath);
-        } else {
-            logger.debug("[EMBED-CSS] CSS not found (ignored): {}", cssPath);
-        }
-    }
-
-    private static String guessCssPath(String fxmlPath) {
-        String file = fxmlPath.substring(fxmlPath.lastIndexOf('/') + 1);
-        String name = file.replace(".fxml", "");
-        return "/app/barbman/core/style/views/" + name + ".css";
-    }
-
-    // ============================================================
-    // ======================= ENUM ===============================
-    // ============================================================
-
+    /**
+     * Valid embedding positions inside a BorderPane.
+     */
     public enum Position {
-        CENTER, LEFT, RIGHT, TOP, BOTTOM
+        CENTER,
+        LEFT,
+        RIGHT,
+        TOP,
+        BOTTOM
     }
 }

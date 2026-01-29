@@ -8,6 +8,7 @@ import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import javafx.scene.image.Image;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -18,7 +19,7 @@ import java.util.ResourceBundle;
 
 /**
  * Centralized window navigation manager.
- * Handles opening, switching, modal windows and exclusive views.
+ * Handles opening, switching, modal windows and exclusive embed-views.
  *
  * FXML controls layout.
  * CSS is optional and explicit.
@@ -91,6 +92,7 @@ public class WindowManager {
 
             Stage stage = new Stage();
             stage.setScene(scene);
+            applyIcon(stage, request);
 
             // Title
             if (request.getTitle() != null && !request.getTitle().isBlank()) {
@@ -154,6 +156,37 @@ public class WindowManager {
     // ======================= UTILITIES ==========================
     // ============================================================
 
+    /**
+     * Applies a window icon if provided in the WindowRequest.
+     * The icon is optional and silently ignored if not found.
+     *
+     * @param stage  target Stage
+     * @param request window configuration
+     */
+    private static void applyIcon(Stage stage, WindowRequest request) {
+        if (request.getIconPath() == null || request.getIconPath().isBlank()) {
+            logger.debug("[ICON] No icon specified for window");
+            return;
+        }
+
+        try {
+            URL iconUrl = WindowManager.class.getResource(request.getIconPath());
+            if (iconUrl == null) {
+                logger.warn("[ICON] Icon not found: {}", request.getIconPath());
+                return;
+            }
+
+            Image icon = new Image(iconUrl.toExternalForm());
+            stage.getIcons().add(icon);
+
+            logger.info("[ICON] Loaded: {}", request.getIconPath());
+
+        } catch (Exception e) {
+            logger.error("[ICON] Failed to load icon: {}", request.getIconPath(), e);
+        }
+    }
+
+
     private static void closeAllWindows() {
         List<Window> windows = new ArrayList<>(Window.getWindows());
         for (Window w : windows) {
@@ -191,6 +224,7 @@ public class WindowManager {
                 return;
             }
 
+            // Font size here is irrelevant; JavaFX registers the font globally
             Font font = Font.loadFont(stream, 14);
 
             if (font != null) {
