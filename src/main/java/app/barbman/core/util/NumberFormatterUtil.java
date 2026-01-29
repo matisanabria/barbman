@@ -1,6 +1,7 @@
 package app.barbman.core.util;
 
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -45,25 +46,42 @@ public class NumberFormatterUtil {
      * Aplica formato automático a un TextField para que
      * siempre muestre separadores de miles al escribir.
      */
-    public static void applyToTextField(TextField textField) {
-        textField.textProperty().addListener((obs, oldValue, newValue) -> {
-            if (newValue == null || newValue.isBlank()) {
-                return;
+    public static TextFormatter<String> applyToTextField(TextField field) {
+
+        TextFormatter<String> formatter = new TextFormatter<>(change -> {
+
+            String newText = change.getControlNewText();
+
+            if (newText.isBlank()) {
+                return change;
             }
-            // Deja solo los dígitos
-            String digits = newValue.replaceAll("[^\\d]", "");
+
+            String digits = newText.replaceAll("\\D", "");
             if (digits.isEmpty()) {
-                textField.setText("");
-                return;
+                change.setText("");
+                change.setRange(0, change.getControlText().length());
+                return change;
             }
+
             try {
-                long valor = Long.parseLong(digits);
-                String formateado = format(valor);
-                textField.setText(formateado);
-                textField.positionCaret(formateado.length()); // cursor al final
+                long value = Long.parseLong(digits);
+                String formatted = format(value);
+
+                change.setText(formatted);
+                change.setRange(0, change.getControlText().length());
+                change.setCaretPosition(formatted.length());
+                change.setAnchor(formatted.length());
+
+                return change;
+
             } catch (NumberFormatException e) {
-                logger.warn("[NumberFormatterUtil] Valor no numérico: {}", newValue);
+                return null;
             }
         });
+
+        field.setTextFormatter(formatter);
+        return formatter;
     }
+
+
 }

@@ -1,0 +1,135 @@
+/* ==========================================================
+   SALE CREATE VIEW
+   ========================================================== */
+
+/* ==========================
+   ROOT
+   ========================== */
+.sale-root {
+    -fx-background-color: #2F2F2F;
+}
+
+/* ==========================
+   TOP BAR
+   ========================== */
+.sale-topbar {
+    -fx-background-color: #232323;
+}
+
+.sale-title {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+/* ==========================
+   CENTER AREA
+   ========================== */
+.sale-center {
+    -fx-background-color: transparent;
+}
+
+/* ==========================
+   TOGGLE (PILL STYLE)
+   ========================== */
+.sale-toggle-group {
+    -fx-background-color: #1F1F1F;
+    -fx-background-radius: 999;
+    -fx-padding: 4;
+}
+
+.sale-toggle {
+    -fx-background-color: transparent;
+    -fx-background-radius: 999;
+    -fx-text-fill: #CCCCCC;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-padding: 6 20;
+    -fx-cursor: hand;
+
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.sale-toggle:hover {
+    -fx-text-fill: #FFFFFF;
+}
+
+.sale-toggle:selected {
+    -fx-background-color: #F0C667;
+    -fx-text-fill: #232323;
+}
+
+/* ==========================
+   SCROLL
+   ========================== */
+.sale-scroll {
+    -fx-background-color: transparent;
+}
+
+.sale-scroll .viewport {
+    -fx-background-color: transparent;
+}
+
+/* ==========================
+   CART (RIGHT PANEL)
+   ========================== */
+.sale-cart {
+    -fx-background-color: #232323;
+}
+
+/* Header */
+.sale-cart-header {
+    -fx-padding: 0 0 8 0;
+}
+
+.sale-cart-header-text {
+    -fx-text-fill: #CCCCCC;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+}
+
+/* ==========================
+   CART ITEMS (rows injected dynamically)
+   ========================== */
+.sale-cart-row {
+    -fx-background-color: #2A2A2A;
+    -fx-background-radius: 10;
+    -fx-padding: 8 10;
+}
+
+/* ==========================
+   TOTAL
+   ========================== */
+.sale-total-row {
+    -fx-padding: 10 0 0 0;
+}
+
+.sale-total-label {
+    -fx-text-fill: #CCCCCC;
+    -fx-font-size: 13px;
+}
+
+.sale-total-value {
+    -fx-text-fill: #F0C667;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+/* ==========================
+   CONFIRM BUTTON
+   ========================== */
+.sale-confirm-btn {
+    -fx-background-color: #F0C667;
+    -fx-background-radius: 12;
+    -fx-text-fill: #232323;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.sale-confirm-btn:hover {
+    -fx-opacity: 0.9;
+}

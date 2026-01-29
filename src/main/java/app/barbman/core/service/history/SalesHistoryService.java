@@ -14,7 +14,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 /**
- * Handles sales history retrieval for table views and detailed popups.
+ * Handles sales history retrieval for table embed-views and detailed popups.
  * This service is READ-ONLY.
  */
 

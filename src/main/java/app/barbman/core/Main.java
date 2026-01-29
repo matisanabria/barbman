@@ -22,6 +22,7 @@ public class Main extends Application {
                 WindowRequest.builder()
                         .fxml("/app/barbman/core/view/login-view.fxml")
                         .css("/app/barbman/core/style/login.css")
+                        .icon("/app/barbman/core/icons/icon-for-javafx.png")
                         .build()
         );
         Platform.runLater(() -> {
@@ -42,8 +43,9 @@ public class Main extends Application {
             Platform.runLater(() -> {
                 WindowManager.showExclusive(
                         WindowRequest.builder()
-                                .fxml("/app/barbman/core/view/error-view.fxml")
+                                .fxml("/app/barbman/core/view/fatal-error-view.fxml")
                                 .title("Error crítico")
+                                .icon("/app/barbman/core/icons/icon-for-javafx.png")
                                 .build()
                 );
             });

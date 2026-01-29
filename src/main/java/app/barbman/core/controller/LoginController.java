@@ -208,6 +208,7 @@ public class LoginController implements Initializable {
                     currentStage,
                     WindowRequest.builder()
                             .fxml("/app/barbman/core/view/main-view.fxml")
+                            .icon("/app/barbman/core/icons/icon-for-javafx.png")
                             .build()
             );
 

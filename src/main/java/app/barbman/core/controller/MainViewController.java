@@ -107,6 +107,7 @@ public class MainViewController {
                 WindowRequest.builder()
                         .fxml("/app/barbman/core/view/login-view.fxml")
                         .css("/app/barbman/core/style/login.css")
+                        .icon("/app/barbman/core/icons/icon-for-javafx.png")
                         .build()
         );
     }
@@ -128,6 +129,7 @@ public class MainViewController {
                         .fxml(fxml)
                         .resizable(false)
                         .css("/app/barbman/core/style/cashbox.css")
+                        .icon("/app/barbman/core/icons/icon-for-javafx.png")
                         .build()
         );
     }
