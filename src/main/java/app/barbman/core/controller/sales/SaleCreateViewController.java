@@ -44,6 +44,7 @@ public class SaleCreateViewController implements Initializable {
     @FXML private ToggleButton servicesToggle;
     @FXML private ToggleButton productsToggle;
     @FXML private BorderPane rootPane;
+    @FXML private Label saleCreateTitle;
 
     // =========================
     // STATE
@@ -76,6 +77,11 @@ public class SaleCreateViewController implements Initializable {
         loadServices();
         refreshCart();
         setupConfirmButton();
+
+        Tooltip.install(
+                saleCreateTitle,
+                new Tooltip("Easter egg")
+        );
     }
 
     private void setupToggle() {
@@ -205,6 +211,10 @@ public class SaleCreateViewController implements Initializable {
 
             refreshCart();
         });
+        Tooltip.install(
+                add,
+                new Tooltip("Agregar ítem al carrito")
+        );
 
         card.getChildren().addAll(name, priceField, add);
         return card;
@@ -227,7 +237,7 @@ public class SaleCreateViewController implements Initializable {
         Label price = new Label(
                 NumberFormatterUtil.format(p.getUnitPrice())
         );
-        price.getStyleClass().add("svc-card-price");
+        price.getStyleClass().add("svc-card-price-static");
         price.setPrefWidth(80);
 
         // Stock
@@ -256,6 +266,10 @@ public class SaleCreateViewController implements Initializable {
 
             refreshCart();
         });
+        Tooltip.install(
+                add,
+                new Tooltip("Agregar ítem al carrito")
+        );
 
         card.getChildren().addAll(name, price, stock, add);
         return card;
@@ -293,14 +307,22 @@ public class SaleCreateViewController implements Initializable {
             cart.removeSingleUnit(item);
             refreshCart();
         });
+        Tooltip.install(
+                removeOne,
+                new Tooltip("Quitar un ítem")
+        );
 
         // Quitar todos
-        Button removeAll = new Button("✕");
-        removeAll.getStyleClass().add("salecart-row-remove");
+        Button removeAll = new Button("X");
+        removeAll.getStyleClass().add("salecart-row-remove-all");
         removeAll.setOnAction(e -> {
             cart.removeItem(item);
             refreshCart();
         });
+        Tooltip.install(
+                removeAll,
+                new Tooltip("Quitar todos los ítems")
+        );
 
         row.getChildren().addAll(
                 name, price, qty, removeOne, removeAll

@@ -133,3 +133,177 @@
 .sale-confirm-btn:hover {
     -fx-opacity: 0.9;
 }
+
+/* ==========================================================
+   SERVICES / PRODUCTS LIST (CARDS)
+   ========================================================== */
+
+/* Container spacing (VBox that holds cards) */
+.sale-center > .scroll-pane .content > VBox {
+    -fx-spacing: 10; /* vertical space between cards */
+}
+
+/* ==========================================================
+   CARD BASE
+   ========================================================== */
+.svc-card {
+    -fx-background-color: #2A2A2A;
+    -fx-background-radius: 14;
+    -fx-padding: 10 14;
+    -fx-alignment: CENTER_LEFT;
+
+    /* subtle shadow */
+    -fx-effect: dropshadow(
+            gaussian,
+            rgba(0, 0, 0, 0.35),
+            10,
+            0.2,
+            0,
+            2
+    );
+}
+
+/* Hover feedback */
+.svc-card:hover {
+    -fx-background-color: #323232;
+}
+
+/* ==========================================================
+   CARD CONTENT
+   ========================================================== */
+
+/* Name (service / product name) */
+.svc-card-name {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+/* Price field / label */
+.svc-card-price {
+    -fx-background-color: #232323;
+    -fx-background-radius: 10;
+
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 14px;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+
+    -fx-padding: 6 10;
+}
+/* Precio de PRODUCTO (no editable) */
+.svc-card-price-static {
+    -fx-background-color: transparent;
+    -fx-text-fill: #F0C667;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+
+    -fx-padding: 0;
+}
+
+/* Stock label (products only) */
+.svc-card-stock {
+    -fx-text-fill: #AAAAAA;
+    -fx-font-size: 12px;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+/* ==========================================================
+   ADD BUTTON
+   ========================================================== */
+.svc-card-add {
+    -fx-background-color: #F0C667;
+    -fx-background-radius: 10;
+
+    -fx-text-fill: #232323;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+
+    -fx-padding: 6 14;
+    -fx-cursor: hand;
+}
+
+.svc-card-add:hover {
+    -fx-opacity: 0.9;
+}
+
+.svc-card-add:pressed {
+    -fx-opacity: 0.8;
+}
+
+/* ==========================================================
+   DISABLED / NO STOCK STATE (optional but ready)
+   ========================================================== */
+.svc-card-disabled {
+    -fx-opacity: 0.5;
+}
+
+/* ==========================================================
+   CART ROWS
+   ========================================================== */
+.salecart-row {
+    -fx-background-color: #2A2A2A;
+    -fx-background-radius: 10;
+    -fx-padding: 8 10;
+    -fx-alignment: CENTER_LEFT;
+}
+
+/* Hover feedback */
+.salecart-row:hover {
+    -fx-background-color: #303030;
+}
+
+/* Item name */
+.salecart-row-name {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+/* Unit price */
+.salecart-row-price {
+    -fx-text-fill: #CCCCCC;
+    -fx-font-size: 13px;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+/* Quantity */
+.salecart-row-qty {
+    -fx-text-fill: #AAAAAA;
+    -fx-font-size: 13px;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+/* Remove buttons (- / ✕) */
+.salecart-row-remove {
+    -fx-background-color: transparent;
+    -fx-text-fill: #F0C667;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.salecart-row-remove:hover {
+    -fx-background-color: rgba(255, 225, 107, 0.15);
+    -fx-text-fill: #FFD97A;
+}
+
+.salecart-row-remove-all {
+    -fx-background-color: transparent;
+    -fx-text-fill: #FF6B6B;
+
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+
+    -fx-padding: 2 8;
+    -fx-cursor: hand;
+}
+
+.salecart-row-remove-all:hover {
+    -fx-background-color: rgba(255, 107, 107, 0.15);
+    -fx-background-radius: 8;
+}

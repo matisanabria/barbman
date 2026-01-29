@@ -39,26 +39,44 @@ public class SidebarController {
     private void initialize() {
         logger.info("{} Initializing sidebar", PREFIX);
 
-        register(btnIncome,
-                "/app/barbman/core/view/embed-view/sale-create-view.fxml");
+        register(
+                btnIncome,
+                "/app/barbman/core/view/embed-view/sale-create-view.fxml",
+                "/app/barbman/core/style/embed-views/sales-view.css"
+        );
 
-        register(btnExpenses,
-                "/app/barbman/core/view/embed-view/expenses-view.fxml");
+        register(
+                btnExpenses,
+                "/app/barbman/core/view/embed-view/expenses-view.fxml",
+                "/app/barbman/core/style/embed-views/expenses-view.css"
+        );
 
-        register(btnSalaries,
-                "/app/barbman/core/view/embed-view/sueldos-view.fxml");
+        register(
+                btnSalaries,
+                "/app/barbman/core/view/embed-view/sueldos-view.fxml",
+                "/app/barbman/core/style/embed-views/sueldos-view.css"
+        );
 
-        register(btnCash,
-                "/app/barbman/core/view/embed-view/caja-view.fxml");
+        register(
+                btnCash,
+                "/app/barbman/core/view/embed-view/caja-view.fxml",
+                "/app/barbman/core/style/embed-views/caja-view.css"
+        );
 
-        register(btnSettings,
-                "/app/barbman/core/view/embed-view/settings-view.fxml");
+        register(
+                btnSettings,
+                "/app/barbman/core/view/embed-view/settings-view.fxml",
+                "/app/barbman/core/style/embed-views/settings-view.css"
+        );
 
         if (btnIncome != null) {
             btnIncome.setSelected(true);
 
             // Load initial view
-            load("/app/barbman/core/view/embed-view/sale-create-view.fxml");
+            load(
+                    "/app/barbman/core/view/embed-view/sale-create-view.fxml",
+                    "/app/barbman/core/style/embed-views/sales-view.css"
+            );
         }
     }
 
@@ -66,14 +84,21 @@ public class SidebarController {
     // ======================= INTERNAL ===========================
     // ============================================================
 
-    private void register(ToggleButton button, String viewPath) {
+    private void register(
+            ToggleButton button,
+            String fxmlPath,
+            String cssPath
+    ) {
         if (button == null) return;
 
         button.setToggleGroup(group);
-        button.setOnAction(e -> load(viewPath));
+        button.setOnAction(e -> load(fxmlPath, cssPath));
     }
 
-    private void load(String fxmlPath) {
+    private void load(
+            String fxmlPath,
+            String cssPath
+    ) {
         if (targetPane == null) {
             logger.warn("{} No target pane bound", PREFIX);
             return;
@@ -82,9 +107,15 @@ public class SidebarController {
         EmbeddedViewLoader.load(
                 targetPane,
                 EmbeddedViewLoader.Position.CENTER,
-                fxmlPath
+                fxmlPath,
+                cssPath
         );
 
-        logger.info("{} Loaded view: {}", PREFIX, fxmlPath);
+        logger.info(
+                "{} Loaded view: {} with css: {}",
+                PREFIX,
+                fxmlPath,
+                cssPath
+        );
     }
 }

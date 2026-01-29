@@ -17,7 +17,8 @@
               prefHeight="56"
               styleClass="sale-topbar">
             <Label text="Registrar venta"
-                   styleClass="sale-title"/>
+                   styleClass="sale-title"
+            fx:id="saleCreateTitle"/>
         </HBox>
     </top>
 

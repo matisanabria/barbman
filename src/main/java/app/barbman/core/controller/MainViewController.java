@@ -53,8 +53,10 @@ public class MainViewController {
         EmbeddedViewLoader.load(
                 borderPane,
                 EmbeddedViewLoader.Position.CENTER,
-                "/app/barbman/core/view/embed-view/sale-create-view.fxml"
+                "/app/barbman/core/view/embed-view/sale-create-view.fxml",
+                "/app/barbman/core/style/embed-views/sales-view.css"
         );
+
 
         logoutButton.setOnAction(e -> logout());
     }

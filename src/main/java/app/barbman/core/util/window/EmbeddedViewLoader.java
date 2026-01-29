@@ -7,18 +7,17 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.net.URL;
-import java.util.List;
 
 /**
  * Utility class responsible for loading and embedding FXML views
  * into a BorderPane at a given position.
  *
- * This loader is intentionally "dumb":
- * - It does NOT assume base styles
- * - It does NOT guess CSS paths
- * - It does NOT apply implicit conventions
+ * This loader is intentionally dumb:
+ * - No implicit CSS
+ * - No path guessing
+ * - No global assumptions
  *
- * All styling decisions must be explicit and intentional.
+ * Every decision must be explicit at call site.
  */
 public final class EmbeddedViewLoader {
 
@@ -33,13 +32,12 @@ public final class EmbeddedViewLoader {
     // ============================================================
 
     /**
-     * Loads an FXML view and embeds it into the given BorderPane
-     * at the specified position.
+     * Loads an FXML view and embeds it into the given BorderPane.
      *
-     * Optionally applies one or more CSS files to the embedded view.
+     * Optionally applies one or more CSS stylesheets to the embedded view root.
      *
      * @param container the BorderPane where the view will be embedded
-     * @param position  the target position inside the BorderPane
+     * @param position  target position inside the BorderPane
      * @param fxmlPath  absolute classpath to the FXML file
      * @param cssPaths  optional list of absolute classpath CSS files
      */
@@ -61,7 +59,7 @@ public final class EmbeddedViewLoader {
             place(container, position, view);
 
             logger.info(
-                    "[EMBED] Loaded view '{}' into position {}",
+                    "[EMBED] Loaded view '{}' into {}",
                     fxmlPath,
                     position
             );
@@ -83,7 +81,7 @@ public final class EmbeddedViewLoader {
     /**
      * Places the given view into the BorderPane at the requested position.
      *
-     * This method replaces any existing node in that position.
+     * This replaces any existing node in that region.
      *
      * @param pane     target BorderPane
      * @param position desired placement position
@@ -94,8 +92,8 @@ public final class EmbeddedViewLoader {
             Position position,
             Parent view
     ) {
-        // This is necessary to ensure only one view exists per region
-        // otherwise old embedded views may remain attached to the scene graph
+        // This is necessary to avoid multiple nodes
+        // being attached to the same BorderPane region
         switch (position) {
             case CENTER -> pane.setCenter(view);
             case LEFT -> pane.setLeft(view);
@@ -106,12 +104,11 @@ public final class EmbeddedViewLoader {
     }
 
     /**
-     * Applies the given CSS files to the embedded view.
+     * Applies the given CSS files to the embedded view root.
      *
-     * CSS paths must be absolute classpath locations.
      * Missing CSS files are ignored but logged.
      *
-     * @param view     the embedded root node
+     * @param view     embedded root node
      * @param cssPaths optional list of CSS paths
      */
     private static void applyCss(
@@ -119,8 +116,7 @@ public final class EmbeddedViewLoader {
             String... cssPaths
     ) {
         if (cssPaths == null || cssPaths.length == 0) {
-            // No styles requested, this is valid
-            logger.debug("[EMBED-CSS] No CSS injected");
+            logger.debug("[EMBED-CSS] No CSS requested");
             return;
         }
 
@@ -129,17 +125,16 @@ public final class EmbeddedViewLoader {
 
             if (cssUrl != null) {
                 view.getStylesheets().add(cssUrl.toExternalForm());
-                logger.info("[EMBED-CSS] Applied CSS: {}", cssPath);
+                logger.info("[EMBED-CSS] Applied: {}", cssPath);
             } else {
-                // We do not fail hard on missing CSS
-                // because embedded views must remain functional without styles
-                logger.warn(
-                        "[EMBED-CSS] CSS not found, ignored: {}",
-                        cssPath
-                );
+                logger.warn("[EMBED-CSS] Not found, ignored: {}", cssPath);
             }
         }
     }
+
+    // ============================================================
+    // ======================= ENUM ===============================
+    // ============================================================
 
     /**
      * Valid embedding positions inside a BorderPane.
