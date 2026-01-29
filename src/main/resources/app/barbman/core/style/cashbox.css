@@ -11,13 +11,13 @@
 /* TITLES */
 .cashbox-title {
     -fx-text-fill: #FFFFFF;
-    -fx-font-size: 22px;
+    -fx-font-size: 30px;
     -fx-font-weight: bold;
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 }
 .cashbox-subtitle {
     -fx-text-fill: #CCCCCC;
-    -fx-font-size: 13px;
+    -fx-font-size: 16px;
     -fx-font-weight: normal;
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 
@@ -32,7 +32,24 @@
 }
 
 /* TEXT */
-.cashbox-label {}
+.cashbox-label {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+
+    -fx-wrap-text: true;
+    -fx-alignment: center;
+}
+.cashbox-total {
+    -fx-text-fill: #eac564;
+    -fx-font-size: 16px;
+    -fx-font-weight: normal;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+
+    -fx-wrap-text: true;
+    -fx-alignment: center;
+}
 .cashbox-hint {
     -fx-text-fill: #CCCCCC;
     -fx-font-size: 13px;
@@ -87,13 +104,37 @@
     -fx-font-size: 16px;
     -fx-prompt-text-fill: #AAAAAA;
 }
+/* TEXTAREA */
+/* TextArea base */
 .cashbox-textarea {
     -fx-background-color: #232323;
     -fx-background-radius: 12;
-    -fx-text-fill: #fff;
-    -fx-font-size: 16px;
-    -fx-prompt-text-fill: #AAAAAA;
+    -fx-padding: 6;
 }
+
+/* CONTENIDO INTERNO */
+.cashbox-textarea .content {
+    -fx-background-color: #232323;
+    -fx-background-radius: 12;
+}
+
+/* TEXTO */
+.cashbox-textarea {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 16px;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+/* TEXTO INTERNO (importante) */
+.cashbox-textarea .content {
+    -fx-text-fill: #FFFFFF;
+}
+
+/* PROMPT */
+.cashbox-textarea .prompt-text {
+    -fx-fill: #AAAAAA;
+}
+
 
 /* BUTTONS */
 .cashbox-btn-primary {

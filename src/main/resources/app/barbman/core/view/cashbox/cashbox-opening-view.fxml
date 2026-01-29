@@ -3,97 +3,84 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="620" prefWidth="520" styleClass="cashbox-root" xmlns="http://javafx.com/javafx/17.0.12"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="app.barbman.core.controller.cashbox.CashboxOpeningController">
+<AnchorPane prefHeight="620" prefWidth="520" styleClass="cashbox-root" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.barbman.core.controller.cashbox.CashboxOpeningController">
 
-    <VBox alignment="TOP_CENTER" layoutX="0" layoutY="0" prefHeight="620" prefWidth="520" spacing="18"
-          AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
+    <VBox alignment="TOP_CENTER" layoutX="0" layoutY="0" prefHeight="620" prefWidth="520" spacing="18" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
         <padding>
-            <Insets bottom="30" left="30" right="30" top="30"/>
+            <Insets bottom="30" left="30" right="30" top="30" />
         </padding>
 
         <!-- TITLE -->
-        <Label alignment="CENTER" prefWidth="460" styleClass="cashbox-title" text="OPEN CASHBOX"/>
+        <Label alignment="CENTER" prefWidth="460" styleClass="cashbox-title" text="Open Cashbox">
+            <font>
+                <Font name="System Bold" size="12.0" />
+            </font>
+        </Label>
 
         <!-- PERIOD -->
-        <Label fx:id="periodLabel" alignment="CENTER" prefWidth="460" styleClass="cashbox-subtitle"
-               text="Period start: MONDAY 2026-01-13"/>
+        <Label fx:id="periodLabel" alignment="CENTER" prefWidth="460" styleClass="cashbox-subtitle" text="Period start: MONDAY 2026-01-13" />
 
-        <Separator prefWidth="460"/>
+        <Separator prefWidth="460" />
 
         <!-- CASH -->
         <VBox prefWidth="460" spacing="6">
-            <Label styleClass="cashbox-label" text="CASH AMOUNT"/>
-            <TextField fx:id="cashField" prefHeight="42" prefWidth="460" styleClass="cashbox-input" text="0.00"/>
-            <Label
-                    fx:id="previousCashLabel"
-                    prefWidth="460"
-                    alignment="CENTER_RIGHT"
-                    styleClass="cashbox-hint"
-                    text="Previous cash: 0.00"/>
+            <Label styleClass="cashbox-label" text="Cash amount" />
+            <TextField fx:id="cashField" prefHeight="42" prefWidth="460" styleClass="cashbox-input" />
+            <Label fx:id="previousCashLabel" alignment="CENTER_RIGHT" prefWidth="460" styleClass="cashbox-hint" text="Previous cash: 0" />
         </VBox>
 
         <!-- BANK -->
         <VBox prefWidth="460" spacing="6">
-            <Label styleClass="cashbox-label" text="BANK AMOUNT"/>
-            <TextField fx:id="bankField" prefHeight="42" prefWidth="460" styleClass="cashbox-input" text="0.00"/>
-            <Label styleClass="cashbox-hint" text="Transfers + Card + QR"/>
-            <Label
-                    fx:id="previousBankLabel"
-                    prefWidth="460"
-                    alignment="CENTER_RIGHT"
-                    styleClass="cashbox-hint"
-                    text="Previous bank: 0.00"/>
+            <Label styleClass="cashbox-label" text="Bank amount" />
+            <TextField fx:id="bankField" prefHeight="42" prefWidth="460" styleClass="cashbox-input" />
+            <Label styleClass="cashbox-hint" text="Transfers + Card + QR">
+                <font>
+                    <Font name="System Italic" size="12.0" />
+                </font>
+            </Label>
+            <Label fx:id="previousBankLabel" alignment="CENTER_RIGHT" prefWidth="460" styleClass="cashbox-hint" text="Previous bank: 0.00" />
         </VBox>
 
         <!-- NOTES -->
         <VBox prefWidth="460" spacing="6">
-            <Label styleClass="cashbox-label" text="NOTES (optional)"/>
-            <TextArea fx:id="notesArea" prefHeight="90" prefWidth="460" styleClass="cashbox-textarea" wrapText="true"/>
+            <Label styleClass="cashbox-label" text="Notes (optional)" />
+            <TextArea fx:id="notesArea" prefHeight="90" prefWidth="460" styleClass="cashbox-textarea" wrapText="true" />
         </VBox>
-
-        <!-- TOTAL OPENING -->
-        <VBox prefWidth="460" spacing="6">
-            <Label styleClass="cashbox-label" text="TOTAL OPENING"/>
-
-            <Label fx:id="totalOpeningLabel" alignment="CENTER_RIGHT" prefWidth="460" styleClass="cashbox-total"
-                   text="0.00"/>
-        </VBox>
+      <HBox prefHeight="100.0" prefWidth="200.0">
+         <children>
+               <Label alignment="CENTER" prefHeight="17.0" prefWidth="239.0" styleClass="cashbox-label" text="Total opening:" />
+   
+               <Label fx:id="totalOpeningLabel" prefHeight="17.0" prefWidth="191.0" styleClass="cashbox-total" text="0" />
+         </children>
+      </HBox>
 
         <!-- PREVIOUS TOTAL -->
         <VBox prefWidth="460" spacing="6">
             <VBox prefWidth="460" spacing="6">
-                <Label
-                        fx:id="previousTotalLabel"
-                        text="PREVIOUS CASHBOX TOTAL: 0.00"
-                        prefWidth="460"
-                        alignment="CENTER_RIGHT"
-                        styleClass="cashbox-hint"/>
+                <Label fx:id="previousTotalLabel" alignment="CENTER_RIGHT" prefWidth="460" styleClass="cashbox-hint" text="Previous cashbox total: 0" />
             </VBox>
         </VBox>
 
 
-        <Separator prefWidth="460"/>
+        <Separator prefWidth="460" />
 
         <!-- FOOTER INFO -->
         <VBox prefWidth="460" spacing="4">
             <VBox prefWidth="460" spacing="4">
-                <Label fx:id="openedByLabel" styleClass="cashbox-footer" text="Opened by: ADMIN USER"/>
+                <Label fx:id="openedByLabel" styleClass="cashbox-footer" text="Opened by: ADMIN USER" />
 
-                <Label fx:id="openedAtLabel" styleClass="cashbox-footer" text="Opened at: 08:02"/>
+                <Label fx:id="openedAtLabel" styleClass="cashbox-footer" text="Opened at: 08:02" />
             </VBox>
         </VBox>
 
         <!-- ACTIONS -->
         <HBox alignment="CENTER_RIGHT" prefWidth="460" spacing="16">
 
-            <Button onAction="#onCancel" prefHeight="40" prefWidth="120" styleClass="cashbox-btn-secondary"
-                    text="CANCEL"/>
+            <Button onAction="#onCancel" prefHeight="40" prefWidth="120" styleClass="cashbox-btn-secondary" text="Cancel" />
 
-            <Button onAction="#onOpenCashbox" prefHeight="40" prefWidth="180" styleClass="cashbox-btn-primary"
-                    text="OPEN CASHBOX"/>
+            <Button onAction="#onOpenCashbox" prefHeight="40" prefWidth="180" styleClass="cashbox-btn-primary" text="Open cashbox" />
         </HBox>
 
     </VBox>

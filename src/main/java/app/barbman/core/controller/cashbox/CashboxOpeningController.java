@@ -12,6 +12,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -82,18 +83,22 @@ public class CashboxOpeningController {
                     "Previous total: " + NumberFormatterUtil.format(last.getExpectedTotal())
             );
         } else {
-            previousCashLabel.setText("Previous cash: 0.00");
-            previousBankLabel.setText("Previous bank: 0.00");
-            previousTotalLabel.setText("Previous total: 0.00");
+            previousCashLabel.setText("Previous cash: 0");
+            previousBankLabel.setText("Previous bank: 0");
+            previousTotalLabel.setText("Previous total: 0");
         }
 
         // Listen to changes on fields to update total
-        NumberFormatterUtil.applyToTextField(cashField);
-        NumberFormatterUtil.applyToTextField(bankField);
+        TextFormatter<String> cashFormatter =
+                NumberFormatterUtil.applyToTextField(cashField);
+
+        TextFormatter<String> bankFormatter =
+                NumberFormatterUtil.applyToTextField(bankField);
 
         cashField.textProperty().addListener((obs, o, n) -> updateTotal());
         bankField.textProperty().addListener((obs, o, n) -> updateTotal());
 
+        updateTotal();
     }
 
     // ============================================================
@@ -123,10 +128,6 @@ public class CashboxOpeningController {
 
             logger.info("{} Cashbox opened successfully", PREFIX);
 
-            AlertUtil.showInfo(
-                    "Cashbox opened",
-                    "The cashbox was opened successfully.\nYou can now continue working."
-            );
 
             // volver al main como ventana exclusiva
             WindowManager.showExclusive(
@@ -185,7 +186,7 @@ public class CashboxOpeningController {
         double bank = parseAmount(bankField.getText());
 
         double total = cash + bank;
-        totalOpeningLabel.setText(NumberFormatterUtil.format(total));
+        totalOpeningLabel.setText(total!=0 ? NumberFormatterUtil.format(total) + " Gs": 0 + " Gs");
     }
 
 
