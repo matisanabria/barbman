@@ -188,12 +188,24 @@ public class SalePaymentViewController implements Initializable {
     private HBox buildSummaryRow(SaleCartItemDTO item) {
 
         Label name = new Label(item.getDisplayName());
+        name.getStyleClass().add("sale-payment-ticket-name");
+        name.setMaxWidth(Double.MAX_VALUE);
+        HBox.setHgrow(name, javafx.scene.layout.Priority.ALWAYS);
+
         Label qty = new Label("x" + item.getQuantity());
+        qty.getStyleClass().add("sale-payment-ticket-qty");
+        qty.setMinWidth(60);
+
         Label price = new Label(
                 NumberFormatterUtil.format(item.getItemTotal()) + " Gs"
         );
+        price.getStyleClass().add("sale-payment-ticket-price");
+        price.setMinWidth(100);
 
         HBox row = new HBox(12, name, qty, price);
+        row.getStyleClass().add("sale-payment-summary-row");
+        row.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+
         return row;
     }
 
@@ -270,7 +282,8 @@ public class SalePaymentViewController implements Initializable {
             EmbeddedViewLoader.load(
                     root,
                     EmbeddedViewLoader.Position.CENTER,
-                    "/app/barbman/core/view/embed-view/sale-create-view.fxml"
+                    "/app/barbman/core/view/embed-view/sale-create-view.fxml",
+                    "/app/barbman/core/style/embed-views/sales-view.css"
             );
         });
 

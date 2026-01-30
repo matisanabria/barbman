@@ -307,3 +307,184 @@
     -fx-background-color: rgba(255, 107, 107, 0.15);
     -fx-background-radius: 8;
 }
+/* ==========================================================
+   SALE PAYMENT VIEW
+   ========================================================== */
+
+/* Títulos de sección con más peso */
+.sale-payment-section-title {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+/* ComboBox cliente */
+.sale-payment-combo {
+    -fx-background-color: #2A2A2A;
+    -fx-background-radius: 10;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 15px;
+    -fx-pref-height: 40;
+    -fx-prompt-text-fill: #888888;
+}
+
+.sale-payment-combo .list-cell {
+    -fx-background-color: #2A2A2A;
+    -fx-text-fill: #FFFFFF;
+}
+
+.sale-payment-combo .list-cell:hover {
+    -fx-background-color: #3A3A3A;
+}
+
+/* Botón agregar cliente (+) */
+.sale-payment-add-client {
+    -fx-background-color: #3A3A3A;
+    -fx-background-radius: 12;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+    -fx-font-size: 18px;
+    -fx-cursor: hand;
+}
+
+.sale-payment-add-client:hover {
+    -fx-background-color: #454545;
+}
+
+/* TextArea nota */
+.sale-payment-textarea {
+    -fx-background-color: #2A2A2A;
+    -fx-background-radius: 10;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 14px;
+    -fx-prompt-text-fill: #666666;
+}
+
+.sale-payment-textarea .content {
+    -fx-background-color: #2A2A2A;
+}
+
+/* Labels secundarios */
+.sale-payment-label {
+    -fx-text-fill: #CCCCCC;
+    -fx-font-size: 13px;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+/* Labels de montos (total, vuelto) */
+.sale-payment-amount {
+    -fx-text-fill: #F0C667;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+/* Grid de métodos de pago */
+.sale-payment-grid {
+    -fx-background-color: transparent;
+}
+
+/* ToggleButtons de método de pago */
+.sale-payment-toggle {
+    -fx-background-color: #3A3A3A;
+    -fx-background-radius: 12;
+    -fx-text-fill: #CCCCCC;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+    -fx-min-width: 160;
+    -fx-pref-height: 40;
+}
+
+.sale-payment-toggle:hover {
+    -fx-background-color: #454545;
+}
+
+.sale-payment-toggle:selected {
+    -fx-background-color: #F0C667;
+    -fx-text-fill: #232323;
+}
+
+/* TextField monto recibido - HABILITADO */
+.sale-payment-field {
+    -fx-background-color: #2A2A2A;
+    -fx-background-radius: 10;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 14px;
+    -fx-prompt-text-fill: #888888;
+    -fx-border-color: #F0C667;      /* Borde amarillo cuando está activo */
+    -fx-border-width: 2;
+    -fx-border-radius: 10;
+}
+
+/* TextField monto recibido - DESHABILITADO */
+.sale-payment-field:disabled {
+    -fx-background-color: #1F1F1F;  /* Más oscuro */
+    -fx-text-fill: #666666;
+    -fx-border-color: transparent;   /* Sin borde */
+    -fx-opacity: 1;
+}
+
+/* Botón cancelar */
+.sale-payment-cancel {
+    -fx-background-color: #3A3A3A;
+    -fx-background-radius: 12;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-cursor: hand;
+}
+
+.sale-payment-cancel:hover {
+    -fx-background-color: #454545;
+}
+
+/* ==========================================================
+   RESUMEN TICKET STYLE
+   ========================================================== */
+
+/* Contenedor del ticket */
+.sale-payment-summary-ticket {
+    -fx-background-color: #1A1A1A;
+    -fx-background-radius: 12;
+    -fx-padding: 16;
+    -fx-border-color: #3A3A3A;
+    -fx-border-width: 1;
+    -fx-border-radius: 12;
+}
+
+/* Filas del ticket */
+.sale-payment-summary-row {
+    -fx-background-color: transparent;
+    -fx-padding: 8 0;
+    -fx-border-color: #2A2A2A;
+    -fx-border-width: 0 0 1 0;
+}
+
+.sale-payment-summary-row:last-child {
+    -fx-border-width: 0;
+}
+
+/* Nombre del item en ticket */
+.sale-payment-ticket-name {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+/* Cantidad en ticket */
+.sale-payment-ticket-qty {
+    -fx-text-fill: #AAAAAA;
+    -fx-font-size: 13px;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+/* Precio en ticket */
+.sale-payment-ticket-price {
+    -fx-text-fill: #F0C667;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}

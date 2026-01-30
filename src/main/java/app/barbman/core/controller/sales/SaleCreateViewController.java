@@ -150,7 +150,8 @@ public class SaleCreateViewController implements Initializable {
             EmbeddedViewLoader.load(
                     SessionManager.getMainBorderPane(),
                     EmbeddedViewLoader.Position.CENTER,
-                    "/app/barbman/core/view/embed-view/sale-payment-view.fxml"
+                    "/app/barbman/core/view/embed-view/sale-payment-view.fxml",
+                    "/app/barbman/core/style/embed-views/sales-view.css"
             );
 
             logger.info("[SALE] Navigating to payment screen");

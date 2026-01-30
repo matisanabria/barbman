@@ -7,89 +7,72 @@
 <BorderPane xmlns="http://javafx.com/javafx/17.0.12"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="app.barbman.core.controller.sales.SalePaymentViewController"
-            style="-fx-background-color: #232323;">
+            styleClass="sale-root">
 
-    <!-- =====================
-         TOP - TITLE
-         ===================== -->
+    <!-- TOP - TITLE -->
     <top>
         <HBox alignment="CENTER"
               prefHeight="56"
-              style="-fx-background-color: #232323;">
-            <children>
-                <Label text="Pago"
-                       style="
-                           -fx-text-fill: #FFFFFF;
-                           -fx-font-size: 22px;
-                           -fx-font-weight: bold;
-                           -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
-                       "/>
-            </children>
+              styleClass="sale-topbar">
+            <Label text="Pago"
+                   styleClass="sale-title"/>
         </HBox>
     </top>
 
-    <!-- =====================
-         CENTER - CLIENT & NOTE
-         ===================== -->
+    <!-- CENTER - CLIENT & NOTE -->
     <center>
-        <VBox spacing="16"
+        <VBox spacing="20"
               fillWidth="true"
-              style="-fx-background-color: #232323;">
+              styleClass="sale-center">
             <padding>
                 <Insets top="16" right="16" bottom="16" left="16"/>
             </padding>
 
             <!-- Cliente -->
-            <HBox spacing="8"
-                  alignment="CENTER_LEFT">
-                <ComboBox fx:id="clientComboBox"
-                          editable="true"
-                          minWidth="220"
-                          prefWidth="Infinity"
-                          HBox.hgrow="ALWAYS"/>
+            <VBox spacing="8">
+                <Label text="Cliente"
+                       styleClass="sale-payment-section-title"/>
 
-                <Button fx:id="addClientButton"
-                        text="+"
-                        prefWidth="36"
-                        style="
-                            -fx-background-color: #3A3A3A;
-                            -fx-background-radius: 12;
-                            -fx-text-fill: #FFFFFF;
-                            -fx-font-weight: bold;
-                        "/>
-            </HBox>
+                <HBox spacing="8"
+                      alignment="CENTER_LEFT">
+                    <ComboBox fx:id="clientComboBox"
+                              editable="true"
+                              prefWidth="400"
+                              styleClass="sale-payment-combo"
+                              HBox.hgrow="ALWAYS"/>
+
+                    <Button fx:id="addClientButton"
+                            text="+"
+                            prefWidth="40"
+                            prefHeight="40"
+                            styleClass="sale-payment-add-client"/>
+                </HBox>
+            </VBox>
 
             <!-- Nota -->
-            <VBox spacing="6">
+            <VBox spacing="8">
                 <Label text="Nota (opcional)"
-                       style="
-                           -fx-text-fill: #CCCCCC;
-                           -fx-font-size: 13px;
-                       "/>
+                       styleClass="sale-payment-section-title"/>
 
                 <TextArea fx:id="noteArea"
                           prefRowCount="3"
-                          style="
-                              -fx-background-color: #232323;
-                              -fx-text-fill: #FFFFFF;
-                          "/>
+                          promptText="Insertar nota"
+                          styleClass="sale-payment-textarea"/>
             </VBox>
 
             <!-- Resumen -->
-            <VBox spacing="6"
+            <VBox spacing="8"
                   VBox.vgrow="ALWAYS">
                 <Label text="Resumen"
-                       style="
-                           -fx-text-fill: #CCCCCC;
-                           -fx-font-size: 13px;
-                       "/>
+                       styleClass="sale-payment-section-title"/>
 
                 <ScrollPane fitToWidth="true"
                             VBox.vgrow="ALWAYS"
-                            style="-fx-background: #232323;">
+                            styleClass="sale-scroll">
                     <content>
                         <VBox fx:id="summaryContainer"
                               spacing="8"
+                              styleClass="sale-payment-summary-ticket"
                               fillWidth="true"/>
                     </content>
                 </ScrollPane>
@@ -98,14 +81,12 @@
         </VBox>
     </center>
 
-    <!-- =====================
-         RIGHT - PAYMENT
-         ===================== -->
+    <!-- RIGHT - PAYMENT -->
     <right>
         <VBox spacing="16"
               prefWidth="360"
               BorderPane.alignment="CENTER"
-              style="-fx-background-color: #232323;">
+              styleClass="sale-cart">
             <padding>
                 <Insets top="16" right="16" bottom="16" left="16"/>
             </padding>
@@ -113,66 +94,44 @@
             <!-- Total -->
             <VBox spacing="4">
                 <Label text="Total a pagar:"
-                       style="
-                           -fx-text-fill: #CCCCCC;
-                           -fx-font-size: 13px;
-                       "/>
+                       styleClass="sale-payment-label"/>
 
                 <Label fx:id="totalLabel"
                        text="0 Gs"
-                       style="
-                           -fx-text-fill: #F0C667;
-                           -fx-font-size: 20px;
-                           -fx-font-weight: bold;
-                       "/>
+                       styleClass="sale-payment-amount"/>
             </VBox>
 
             <!-- Metodo de pago -->
             <VBox spacing="8">
                 <Label text="Método de pago"
-                       style="
-                           -fx-text-fill: #CCCCCC;
-                           -fx-font-size: 13px;
-                       "/>
+                       styleClass="sale-payment-label"/>
 
-                <GridPane hgap="8" vgap="8">
+                <GridPane hgap="8" vgap="8"
+                          styleClass="sale-payment-grid">
                     <children>
                         <ToggleButton fx:id="cashToggle"
                                       text="Efectivo"
-                                      style="
-                  -fx-background-radius: 12;
-                  -fx-font-weight: bold;
-              "
+                                      styleClass="sale-payment-toggle"
                                       GridPane.rowIndex="0"
                                       GridPane.columnIndex="0"/>
 
                         <ToggleButton fx:id="transferToggle"
                                       text="Transferencia"
-                                      style="
-                  -fx-background-radius: 12;
-                  -fx-font-weight: bold;
-              "
+                                      styleClass="sale-payment-toggle"
                                       GridPane.rowIndex="0"
                                       GridPane.columnIndex="1"/>
 
                         <ToggleButton fx:id="posToggle"
                                       text="POS"
-                                      style="
-                  -fx-background-radius: 12;
-                  -fx-font-weight: bold;
-              "
+                                      styleClass="sale-payment-toggle"
                                       GridPane.rowIndex="1"
                                       GridPane.columnIndex="0"/>
 
                         <ToggleButton fx:id="qrToggle"
                                       text="QR"
-                                      style="
-                  -fx-background-radius: 12;
-                  -fx-font-weight: bold;
-              "
+                                      styleClass="sale-payment-toggle"
                                       GridPane.rowIndex="1"
                                       GridPane.columnIndex="1"/>
-
                     </children>
                 </GridPane>
             </VBox>
@@ -180,33 +139,21 @@
             <!-- Monto recibido -->
             <VBox spacing="6">
                 <Label text="Monto recibido"
-                       style="
-                           -fx-text-fill: #CCCCCC;
-                           -fx-font-size: 13px;
-                       "/>
+                       styleClass="sale-payment-label"/>
 
                 <TextField fx:id="receivedAmountField"
                            disable="true"
-                           style="
-                               -fx-background-color: #232323;
-                               -fx-text-fill: #FFFFFF;
-                           "/>
+                           styleClass="sale-payment-field"/>
             </VBox>
 
             <!-- Vuelto -->
             <VBox spacing="4">
                 <Label text="Vuelto:"
-                       style="
-                           -fx-text-fill: #CCCCCC;
-                           -fx-font-size: 13px;
-                       "/>
+                       styleClass="sale-payment-label"/>
 
                 <Label fx:id="changeLabel"
                        text="0 Gs"
-                       style="
-                           -fx-text-fill: #F0C667;
-                           -fx-font-weight: bold;
-                       "/>
+                       styleClass="sale-payment-amount"/>
             </VBox>
 
             <!-- Actions -->
@@ -215,23 +162,13 @@
                         text="Cancelar"
                         maxWidth="Infinity"
                         HBox.hgrow="ALWAYS"
-                        style="
-                            -fx-background-color: #3A3A3A;
-                            -fx-background-radius: 12;
-                            -fx-text-fill: #FFFFFF;
-                        "/>
+                        styleClass="sale-payment-cancel"/>
 
                 <Button fx:id="confirmButton"
                         text="Confirmar"
                         maxWidth="Infinity"
                         HBox.hgrow="ALWAYS"
-                        style="
-                            -fx-background-color: #F0C667;
-                            -fx-background-radius: 12;
-                            -fx-text-fill: #232323;
-                            -fx-font-size: 15px;
-                            -fx-font-weight: bold;
-                        "/>
+                        styleClass="sale-confirm-btn"/>
             </HBox>
 
         </VBox>
