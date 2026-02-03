@@ -1,78 +1,279 @@
-/* ===================================================
-   💸 Expenses View - Estilo de la vista de egresos
-   =================================================== */
+/* ==========================================================
+   EXPENSES VIEW - VERTICAL LAYOUT + DASHBOARD STYLE
+   ========================================================== */
 
-.scroll-pane {
+.expenses-root {
+    -fx-background-color: #2F2F2F;
+}
+
+/* ==========================
+   HEADER (FIXED)
+   ========================== */
+.expenses-header {
+    -fx-background-color: linear-gradient(to bottom, #232323, #2F2F2F);
+}
+
+.expenses-topbar {
     -fx-background-color: transparent;
 }
 
-.services-title {
-    -fx-text-fill: #FFFFFF;
-    -fx-font-size: 22px;
+.expenses-title {
+    -fx-text-fill: #F0C667;
+    -fx-font-size: 28px;
     -fx-font-weight: bold;
-    -fx-padding: 8 0 4 0;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 }
 
-/* Secciones principales */
-.services-section {
-    -fx-background-color: #2F2F2F;
-    -fx-background-radius: 14;
-    -fx-padding: 18 22 18 22;
-    -fx-spacing: 12;
-    -fx-effect: dropshadow(gaussian, #17171760, 12, 0.15, 0, 2);
-}
-
-.services-row {
-    -fx-spacing: 14;
-}
-
-/* Inputs */
-.services-combobox,
-.services-textfield {
+/* Stats bar */
+.expenses-stats {
     -fx-background-color: #232323;
-    -fx-background-radius: 10;
-    -fx-text-fill: #fff;
-    -fx-font-size: 15px;
-    -fx-padding: 6 10 6 10;
-    -fx-border-width: 0;
-    -fx-prompt-text-fill: #B0B0B0;
+    -fx-border-color: #3A3A3A;
+    -fx-border-width: 1 0 1 0;
 }
 
-/* Botones */
-.services-button {
-    -fx-background-color: #FFDC60;
+.stat-card {
+    -fx-spacing: 4;
+}
+
+.stat-label {
+    -fx-text-fill: #888888;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-letter-spacing: 1px;
+}
+
+.stat-value {
+    -fx-text-fill: #F0C667;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+/* ==========================
+   SCROLLABLE CONTENT
+   ========================== */
+.expenses-scroll {
+    -fx-background-color: transparent;
+}
+
+.expenses-scroll .viewport {
+    -fx-background-color: transparent;
+}
+
+.expenses-content {
+    -fx-background-color: #2F2F2F;
+}
+
+/* ==========================
+   SECTIONS (CARDS STYLE)
+   ========================== */
+.expenses-register-section,
+.expenses-table-section {
+    -fx-background-color: #232323;
+    -fx-background-radius: 14;
+    -fx-padding: 20;
+    -fx-border-color: #3A3A3A;
+    -fx-border-width: 1;
+    -fx-border-radius: 14;
+}
+
+.section-title {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-letter-spacing: 0.5px;
+}
+
+.field-label {
+    -fx-text-fill: #AAAAAA;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+}
+
+/* ==========================
+   FORM CONTROLS
+   ========================== */
+
+/* ComboBox */
+.expenses-combo {
+    -fx-background-color: #2A2A2A;
+    -fx-background-radius: 10;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 16px;
+    -fx-pref-height: 44;
+    -fx-border-color: #3A3A3A;
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+}
+
+.expenses-combo:focused {
+    -fx-border-color: #F0C667;
+    -fx-border-width: 2;
+}
+
+.expenses-combo .list-cell {
+    -fx-background-color: #2A2A2A;
+    -fx-text-fill: #FFFFFF;
+}
+
+.expenses-combo .list-cell:hover {
+    -fx-background-color: #3A3A3A;
+}
+
+/* Amount field - COMPACTO pero destacado */
+.expenses-amount-field-compact {
+    -fx-background-color: #2A2A2A;
+    -fx-background-radius: 10;
+    -fx-text-fill: #F0C667;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-pref-height: 44;
+    -fx-alignment: CENTER;
+    -fx-border-color: #3A3A3A;
+    -fx-border-width: 2;
+    -fx-border-radius: 10;
+}
+
+.expenses-amount-field-compact:focused {
+    -fx-border-color: #F0C667;
+    -fx-border-width: 3;
+}
+
+/* TextArea */
+.expenses-textarea {
+    -fx-background-color: #2A2A2A;
+    -fx-background-radius: 10;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 15px;
+    -fx-border-color: #3A3A3A;
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+}
+
+.expenses-textarea .content {
+    -fx-background-color: #2A2A2A;
+}
+
+.expenses-textarea:focused {
+    -fx-border-color: #F0C667;
+    -fx-border-width: 2;
+}
+
+/* ==========================
+   PAYMENT TOGGLES (COMPACTOS)
+   ========================== */
+.payment-icon-toggle-compact {
+    -fx-background-color: #2A2A2A;
+    -fx-background-radius: 10;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 24px;
+    -fx-pref-width: 60;
+    -fx-pref-height: 50;
+    -fx-cursor: hand;
+    -fx-border-color: #3A3A3A;
+    -fx-border-width: 2;
+    -fx-border-radius: 10;
+}
+
+.payment-icon-toggle-compact:hover {
+    -fx-background-color: #3A3A3A;
+    -fx-border-color: #F0C667;
+}
+
+.payment-icon-toggle-compact:selected {
+    -fx-background-color: #F0C667;
+    -fx-border-color: #F0C667;
+}
+/* Payment labels debajo de iconos */
+.payment-label {
+    -fx-text-fill: #AAAAAA;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-alignment: CENTER;
+}
+
+/* ==========================
+   SAVE BUTTON
+   ========================== */
+.expenses-save-btn {
+    -fx-background-color: #F0C667;
     -fx-background-radius: 12;
     -fx-text-fill: #232323;
-    -fx-font-size: 15px;
+    -fx-font-size: 16px;
     -fx-font-weight: bold;
-    -fx-effect: dropshadow(gaussian, #00000055, 8, 0.15, 0, 2);
+    -fx-pref-height: 50;
     -fx-cursor: hand;
 }
 
-.services-button:hover {
-    -fx-background-color: #FFE46B;
+.expenses-save-btn:hover {
+    -fx-background-color: #FFD97A;
 }
 
-/* Tabla */
-.services-table {
-    -fx-background-color: #232323;
-    -fx-control-inner-background: #232323;
-    -fx-text-fill: #FFF;
+.expenses-save-btn:pressed {
+    -fx-background-color: #D4AA4A;
+}
+
+/* ==========================
+   TABLE
+   ========================== */
+.table-count {
+    -fx-text-fill: #888888;
     -fx-font-size: 14px;
+}
+
+.expenses-table {
+    -fx-background-color: #2A2A2A;
     -fx-background-radius: 10;
+    -fx-border-color: #3A3A3A;
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
 }
 
-.services-table .column-header-background {
-    -fx-background-color: #2F2F2F;
+.expenses-table .column-header-background {
+    -fx-background-color: #1F1F1F;
+    -fx-background-radius: 10 10 0 0;
 }
 
-.services-table .table-row-cell:filled:selected {
+.expenses-table .column-header-background .filler {
+    -fx-background-color: #1F1F1F;
+}
+
+.expenses-table .column-header {
+    -fx-background-color: #1F1F1F;
+    -fx-text-fill: #AAAAAA;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-border-width: 0;
+}
+
+.expenses-table .table-row-cell {
+    -fx-background-color: #2A2A2A;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 15px;
+}
+
+.expenses-table .table-row-cell:hover {
+    -fx-background-color: #323232;
+}
+
+.expenses-table .table-row-cell:selected {
     -fx-background-color: #3A3A3A;
-    -fx-text-fill: #FFDC60;
 }
 
-/* Footer informativo */
-.footer-info {
-    -fx-text-fill: #999999;
-    -fx-font-size: 11px;
+.expenses-table .table-cell {
+    -fx-text-fill: #FFFFFF;
+    -fx-alignment: CENTER_LEFT;
+    -fx-border-width: 0;
+}
+
+/* ==========================
+   HINTS
+   ========================== */
+.hint-icon {
+    -fx-font-size: 16px;
+}
+
+.table-hint {
+    -fx-text-fill: #666666;
+    -fx-font-size: 13px;
+    -fx-font-style: italic;
 }

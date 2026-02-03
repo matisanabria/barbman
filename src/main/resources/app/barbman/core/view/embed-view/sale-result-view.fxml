@@ -7,162 +7,171 @@
 <BorderPane xmlns="http://javafx.com/javafx/17.0.12"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="app.barbman.core.controller.sales.SaleResultViewController"
-            style="-fx-background-color: #232323;">
+            styleClass="sale-root">
 
-    <!-- =====================
-         TOP - TITLE
-         ===================== -->
+    <!-- TOP - HEADER -->
     <top>
         <VBox alignment="CENTER"
-              spacing="6"
-              prefHeight="80"
-              style="-fx-background-color: #232323;">
-            <children>
-                <Label text="Venta registrada"
-                       style="
-                           -fx-text-fill: #FFFFFF;
-                           -fx-font-size: 22px;
-                           -fx-font-weight: bold;
-                           -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
-                       "/>
+              spacing="8"
+              styleClass="sale-result-header">
+            <padding>
+                <Insets top="20" bottom="20"/>
+            </padding>
 
-                <Label fx:id="subtitleLabel"
-                       text="Detalle de la operación"
-                       style="
-                           -fx-text-fill: #CCCCCC;
-                           -fx-font-size: 13px;
-                       "/>
-            </children>
+            <Label text="Comprobante de Venta"
+                   styleClass="sale-result-title"/>
+
+            <HBox spacing="16" alignment="CENTER">
+                <Label text="N°"
+                       styleClass="sale-result-subtitle"/>
+                <Label fx:id="saleNumberLabel"
+                       text="001"
+                       styleClass="sale-result-number"/>
+                <Label text="•"
+                       styleClass="sale-result-subtitle"/>
+                <Label fx:id="saleDateLabel"
+                       text="31/01/2026 - 14:30"
+                       styleClass="sale-result-subtitle"/>
+            </HBox>
         </VBox>
     </top>
 
-    <!-- =====================
-         CENTER - DETAILS
-         ===================== -->
+    <!-- CENTER - DETAILS -->
     <center>
         <ScrollPane fitToWidth="true"
-                    style="-fx-background: #232323;">
+                    styleClass="sale-scroll">
             <content>
-                <VBox spacing="20"
+                <VBox spacing="24"
                       fillWidth="true"
-                      style="-fx-background-color: #232323;">
+                      styleClass="sale-result-content">
                     <padding>
-                        <Insets top="16" right="24" bottom="16" left="24"/>
+                        <Insets top="20" right="40" bottom="20" left="40"/>
                     </padding>
 
-                    <!-- CLIENT INFO -->
-                    <VBox spacing="6">
-                        <Label text="Cliente"
-                               style="
-                                   -fx-text-fill: #CCCCCC;
-                                   -fx-font-size: 13px;
-                               "/>
+                    <!-- CLIENTE -->
+                    <VBox spacing="10"
+                          styleClass="sale-result-section">
+                        <Label text="CLIENTE"
+                               styleClass="sale-result-section-title"/>
 
-                        <GridPane hgap="12" vgap="6">
-                            <children>
-                                <Label text="Nombre:"
-                                       style="
-                                           -fx-text-fill: #CCCCCC;
-                                           -fx-font-size: 13px;
-                                       "
-                                       GridPane.rowIndex="0"
-                                       GridPane.columnIndex="0"/>
+                        <GridPane hgap="16" vgap="8"
+                                  styleClass="sale-result-grid">
+                            <Label text="Nombre:"
+                                   styleClass="sale-result-label"
+                                   GridPane.rowIndex="0"
+                                   GridPane.columnIndex="0"/>
 
-                                <Label fx:id="clientNameLabel"
-                                       text="-"
-                                       style="
-                                           -fx-text-fill: #F0C667;
-                                           -fx-font-weight: bold;
-                                       "
-                                       GridPane.rowIndex="0"
-                                       GridPane.columnIndex="1"/>
+                            <Label fx:id="clientNameLabel"
+                                   text="Cliente casual"
+                                   styleClass="sale-result-value"
+                                   GridPane.rowIndex="0"
+                                   GridPane.columnIndex="1"/>
 
-                                <Label text="RUC / CI:"
-                                       style="
-                                           -fx-text-fill: #CCCCCC;
-                                           -fx-font-size: 13px;
-                                       "
-                                       GridPane.rowIndex="1"
-                                       GridPane.columnIndex="0"/>
+                            <Label text="RUC / CI:"
+                                   styleClass="sale-result-label"
+                                   GridPane.rowIndex="1"
+                                   GridPane.columnIndex="0"/>
 
-                                <Label fx:id="clientDocLabel"
-                                       text="-"
-                                       style="
-                                           -fx-text-fill: #F0C667;
-                                           -fx-font-weight: bold;
-                                       "
-                                       GridPane.rowIndex="1"
-                                       GridPane.columnIndex="1"/>
-                            </children>
+                            <Label fx:id="clientDocLabel"
+                                   text="-"
+                                   styleClass="sale-result-value"
+                                   GridPane.rowIndex="1"
+                                   GridPane.columnIndex="1"/>
                         </GridPane>
                     </VBox>
 
-                    <Separator/>
+                    <!-- DETALLE -->
+                    <VBox spacing="12"
+                          styleClass="sale-result-section">
+                        <Label text="DETALLE DE LA VENTA"
+                               styleClass="sale-result-section-title"/>
 
-                    <!-- SALE ITEMS -->
-                    <VBox spacing="8">
-                        <Label text="Detalle de la venta"
-                               style="
-                                   -fx-text-fill: #CCCCCC;
-                                   -fx-font-size: 13px;
-                               "/>
-
-                        <!-- Header -->
-                        <HBox spacing="24">
-                            <Label text="Item"
-                                   prefWidth="220"
-                                   style="-fx-text-fill: #CCCCCC;"/>
-                            <Label text="Cantidad"
-                                   prefWidth="80"
-                                   style="-fx-text-fill: #CCCCCC;"/>
+                        <!-- Table header -->
+                        <HBox spacing="12"
+                              styleClass="sale-result-table-header"
+                              alignment="CENTER_LEFT">
+                            <Label text="Ítem"
+                                   styleClass="sale-result-th"
+                                   maxWidth="Infinity"
+                                   HBox.hgrow="ALWAYS"/>
+                            <Label text="Cant."
+                                   styleClass="sale-result-th"
+                                   prefWidth="60"
+                                   alignment="CENTER"/>
                             <Label text="Precio"
+                                   styleClass="sale-result-th"
                                    prefWidth="100"
-                                   style="-fx-text-fill: #CCCCCC;"/>
+                                   alignment="CENTER_RIGHT"/>
                             <Label text="Subtotal"
+                                   styleClass="sale-result-th"
                                    prefWidth="100"
-                                   style="-fx-text-fill: #CCCCCC;"/>
+                                   alignment="CENTER_RIGHT"/>
                         </HBox>
 
-                        <!-- Items -->
+                        <!-- Items container -->
                         <VBox fx:id="itemsContainer"
                               spacing="6"
+                              styleClass="sale-result-items"
                               fillWidth="true"/>
                     </VBox>
 
-                    <Separator/>
+                    <!-- TOTALES -->
+                    <VBox spacing="10"
+                          styleClass="sale-result-section">
+                        <Separator styleClass="sale-result-separator"/>
 
-                    <!-- TOTAL -->
-                    <VBox spacing="6"
-                          alignment="CENTER_RIGHT">
-                        <Label text="Total"
-                               style="
-                                   -fx-text-fill: #CCCCCC;
-                                   -fx-font-size: 13px;
-                               "/>
+                        <GridPane hgap="16" vgap="8"
+                                  styleClass="sale-result-totals">
 
-                        <Label fx:id="totalLabel"
-                               text="0 Gs"
-                               style="
-                                   -fx-text-fill: #F0C667;
-                                   -fx-font-size: 20px;
-                                   -fx-font-weight: bold;
-                               "/>
+                            <!-- Subtotal -->
+                            <Label text="Subtotal (gravado 10%):"
+                                   styleClass="sale-result-label"
+                                   GridPane.rowIndex="0"
+                                   GridPane.columnIndex="0"/>
+                            <Label fx:id="subtotalLabel"
+                                   text="0 Gs"
+                                   styleClass="sale-result-value"
+                                   GridPane.rowIndex="0"
+                                   GridPane.columnIndex="1"/>
+
+                            <!-- IVA -->
+                            <Label text="IVA (10%):"
+                                   styleClass="sale-result-label"
+                                   GridPane.rowIndex="1"
+                                   GridPane.columnIndex="0"/>
+                            <Label fx:id="ivaLabel"
+                                   text="0 Gs"
+                                   styleClass="sale-result-value"
+                                   GridPane.rowIndex="1"
+                                   GridPane.columnIndex="1"/>
+
+                            <!-- Total -->
+                            <Label text="TOTAL A PAGAR:"
+                                   styleClass="sale-result-total-label"
+                                   GridPane.rowIndex="2"
+                                   GridPane.columnIndex="0"/>
+                            <Label fx:id="totalLabel"
+                                   text="0 Gs"
+                                   styleClass="sale-result-total-value"
+                                   GridPane.rowIndex="2"
+                                   GridPane.columnIndex="1"/>
+                        </GridPane>
+
+                        <!-- Total en letras -->
+                        <Label fx:id="totalInWordsLabel"
+                               text="Cero guaraníes"
+                               styleClass="sale-result-words"
+                               wrapText="true"/>
                     </VBox>
 
-                    <!-- PAYMENT METHOD -->
-                    <VBox spacing="4">
-                        <Label text="Método de pago"
-                               style="
-                                   -fx-text-fill: #CCCCCC;
-                                   -fx-font-size: 13px;
-                               "/>
-
+                    <!-- MÉTODO DE PAGO -->
+                    <VBox spacing="8"
+                          styleClass="sale-result-section">
+                        <Label text="Método de pago:"
+                               styleClass="sale-result-label"/>
                         <Label fx:id="paymentMethodLabel"
-                               text="-"
-                               style="
-                                   -fx-text-fill: #F0C667;
-                                   -fx-font-weight: bold;
-                               "/>
+                               text="Efectivo"
+                               styleClass="sale-result-payment"/>
                     </VBox>
 
                 </VBox>
@@ -170,35 +179,20 @@
         </ScrollPane>
     </center>
 
-    <!-- =====================
-         BOTTOM - ACTIONS
-         ===================== -->
+    <!-- BOTTOM - ACTIONS -->
     <bottom>
         <HBox spacing="12"
-              alignment="CENTER_RIGHT"
-              style="-fx-background-color: #232323;">
+              alignment="CENTER"
+              styleClass="sale-result-footer">
             <padding>
-                <Insets top="12" right="16" bottom="16" left="16"/>
+                <Insets top="16" right="16" bottom="16" left="16"/>
             </padding>
 
-            <!-- Borrar venta -->
-            <Button fx:id="deleteSaleButton"
-                    text="Borrar venta"
-                    style="
-                        -fx-background-color: #3A3A3A;
-                        -fx-background-radius: 12;
-                        -fx-text-fill: #FFFFFF;
-                    "/>
-
-            <!-- Cerrar / volver -->
-            <Button fx:id="closeButton"
-                    text="Cerrar"
-                    style="
-                        -fx-background-color: #F0C667;
-                        -fx-background-radius: 12;
-                        -fx-text-fill: #232323;
-                        -fx-font-weight: bold;
-                    "/>
+            <Button fx:id="newSaleButton"
+                    text="Nueva venta"
+                    maxWidth="Infinity"
+                    HBox.hgrow="ALWAYS"
+                    styleClass="sale-confirm-btn"/>
         </HBox>
     </bottom>
 

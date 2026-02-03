@@ -28,17 +28,6 @@
             <center>
                 <StackPane fx:id="centerPane"/>
             </center>
-            <bottom>
-                <HBox alignment="BOTTOM_LEFT" spacing="10" BorderPane.alignment="CENTER" styleClass="main-bottom-bar">
-                    <children>
-                        <Button fx:id="logoutButton" prefWidth="32" prefHeight="32" styleClass="main-lock-btn">
-                            <graphic>
-                                <FontIcon iconLiteral="fas-lock" iconSize="18"/>
-                            </graphic>
-                        </Button>
-                    </children>
-                </HBox>
-            </bottom>
 
         </BorderPane>
     </children>

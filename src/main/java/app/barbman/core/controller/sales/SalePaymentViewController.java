@@ -3,14 +3,8 @@ package app.barbman.core.controller.sales;
 import app.barbman.core.dto.salecart.SaleCartDTO;
 import app.barbman.core.dto.salecart.SaleCartItemDTO;
 import app.barbman.core.model.sales.Sale;
-import app.barbman.core.repositories.cashbox.closure.CashboxClosureRepository;
-import app.barbman.core.repositories.cashbox.closure.CashboxClosureRepositoryImpl;
 import app.barbman.core.repositories.cashbox.movement.CashboxMovementRepository;
 import app.barbman.core.repositories.cashbox.movement.CashboxMovementRepositoryImpl;
-import app.barbman.core.repositories.cashbox.opening.CashboxOpeningRepository;
-import app.barbman.core.repositories.cashbox.opening.CashboxOpeningRepositoryImpl;
-import app.barbman.core.repositories.expense.ExpenseRepository;
-import app.barbman.core.repositories.expense.ExpenseRepositoryImpl;
 import app.barbman.core.repositories.sales.SaleRepository;
 import app.barbman.core.repositories.sales.SaleRepositoryImpl;
 import app.barbman.core.repositories.sales.products.productheader.ProductHeaderRepository;
@@ -21,9 +15,6 @@ import app.barbman.core.repositories.sales.services.serviceheader.ServiceHeaderR
 import app.barbman.core.repositories.sales.services.serviceheader.ServiceHeaderRepositoryImpl;
 import app.barbman.core.repositories.sales.services.serviceitems.ServiceItemRepository;
 import app.barbman.core.repositories.sales.services.serviceitems.ServiceItemRepositoryImpl;
-import app.barbman.core.service.cashbox.CashboxService;
-import app.barbman.core.service.expenses.ExpensesService;
-import app.barbman.core.service.sales.SalesService;
 import app.barbman.core.service.sales.products.ProductHeaderService;
 import app.barbman.core.service.sales.products.ProductItemService;
 import app.barbman.core.service.sales.saleflow.SaleFlowService;
@@ -64,7 +55,7 @@ public class SalePaymentViewController implements Initializable {
 
     @FXML private ToggleButton cashToggle;
     @FXML private ToggleButton transferToggle;
-    @FXML private ToggleButton posToggle;
+    @FXML private ToggleButton cardToggle;
     @FXML private ToggleButton qrToggle;
 
     @FXML private Button cancelButton;
@@ -140,7 +131,7 @@ public class SalePaymentViewController implements Initializable {
         ToggleGroup group = new ToggleGroup();
         cashToggle.setToggleGroup(group);
         transferToggle.setToggleGroup(group);
-        posToggle.setToggleGroup(group);
+        cardToggle.setToggleGroup(group);
         qrToggle.setToggleGroup(group);
 
         receivedAmountField.setDisable(true);
@@ -217,7 +208,7 @@ public class SalePaymentViewController implements Initializable {
         if (transferToggle.isSelected()) {
             return 1;
         }
-        if (posToggle.isSelected()) {
+        if (cardToggle.isSelected()) {
             return 2;
         }
         if (qrToggle.isSelected()) {
@@ -235,7 +226,7 @@ public class SalePaymentViewController implements Initializable {
         // 1. Método de pago seleccionado
         if (!cashToggle.isSelected()
                 && !transferToggle.isSelected()
-                && !posToggle.isSelected()
+                && !cardToggle.isSelected()
                 && !qrToggle.isSelected()) {
 
             new Alert(Alert.AlertType.ERROR,
@@ -309,7 +300,8 @@ public class SalePaymentViewController implements Initializable {
             EmbeddedViewLoader.load(
                     SessionManager.getMainBorderPane(),
                     EmbeddedViewLoader.Position.CENTER,
-                    "/app/barbman/core/view/embed-view/sale-result-view.fxml"
+                    "/app/barbman/core/view/embed-view/sale-result-view.fxml",
+                    "/app/barbman/core/style/embed-views/sales-view.css"
             );
         });
     }

@@ -4,67 +4,151 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane styleClass="sale-root" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.barbman.core.controller.sales.SaleCreateViewController">
+<BorderPane styleClass="sale-root"
+            xmlns="http://javafx.com/javafx/17.0.12"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="app.barbman.core.controller.sales.SaleCreateViewController">
 
     <!-- =====================
-         TOP - TITLE
+         TOP - TITLE & STATS
          ===================== -->
     <top>
-        <HBox alignment="CENTER" prefHeight="56" styleClass="sale-topbar">
-            <Label fx:id="saleCreateTitle" styleClass="sale-title" text="Registrar venta" />
-        </HBox>
+        <VBox styleClass="sale-header">
+            <!-- Title bar -->
+            <HBox alignment="CENTER"
+                  prefHeight="56"
+                  styleClass="sale-topbar">
+                <Label fx:id="saleCreateTitle"
+                       text="💰 Ventas"
+                       styleClass="sale-title"/>
+            </HBox>
+
+            <!-- Stats bar -->
+            <HBox spacing="20"
+                  alignment="CENTER"
+                  styleClass="sale-stats">
+                <padding>
+                    <Insets top="12" bottom="12"/>
+                </padding>
+
+                <VBox alignment="CENTER" styleClass="stat-card">
+                    <Label text="HOY" styleClass="stat-label"/>
+                    <Label fx:id="todayTotalLabel" text="0 Gs" styleClass="stat-value"/>
+                </VBox>
+
+                <Separator orientation="VERTICAL"/>
+
+                <VBox alignment="CENTER" styleClass="stat-card">
+                    <Label text="ESTA SEMANA" styleClass="stat-label"/>
+                    <Label fx:id="weekTotalLabel" text="0 Gs" styleClass="stat-value"/>
+                </VBox>
+
+                <Separator orientation="VERTICAL"/>
+
+                <VBox alignment="CENTER" styleClass="stat-card">
+                    <Label text="ESTE MES" styleClass="stat-label"/>
+                    <Label fx:id="monthTotalLabel" text="0 Gs" styleClass="stat-value"/>
+                </VBox>
+            </HBox>
+        </VBox>
     </top>
 
     <!-- =====================
-         RIGHT - CART
+         RIGHT - CART PANEL
          ===================== -->
     <right>
-        <VBox prefWidth="420" spacing="12" styleClass="sale-cart" BorderPane.alignment="CENTER">
+        <VBox prefWidth="400"
+              spacing="16"
+              styleClass="sale-cart-panel">
             <padding>
-                <Insets bottom="16" left="16" right="16" top="16" />
+                <Insets top="20" right="20" bottom="20" left="20"/>
             </padding>
 
-            <!-- Cart list -->
-            <ScrollPane fitToWidth="true" styleClass="sale-scroll" VBox.vgrow="ALWAYS">
-                <content>
-                    <VBox fx:id="cartContainer" fillWidth="true" spacing="10" />
-                </content>
-            </ScrollPane>
+            <!-- Cart header -->
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <Label text="🛒 CARRITO"
+                       styleClass="cart-title"/>
 
-            <!-- Total -->
-            <HBox alignment="CENTER_RIGHT" spacing="6" styleClass="sale-total-row">
-                <Label styleClass="sale-total-label" text="Total:" />
-                <Label fx:id="totalLabel" styleClass="sale-total-value" text="0 Gs" />
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <Label fx:id="cartItemsCount"
+                       text="0 ítems"
+                       styleClass="cart-count"/>
             </HBox>
 
-            <!-- Confirm -->
-            <Button fx:id="confirmButton" maxWidth="Infinity" styleClass="sale-confirm-btn" text="Confirmar" />
+            <!-- Cart items (scrollable) -->
+            <ScrollPane fitToWidth="true"
+                        VBox.vgrow="ALWAYS"
+                        styleClass="cart-scroll">
+                <VBox fx:id="cartContainer"
+                      fillWidth="true"
+                      spacing="10"
+                      styleClass="cart-items-container"/>
+            </ScrollPane>
+
+            <!-- Separator -->
+            <Separator styleClass="cart-separator"/>
+
+            <!-- Total -->
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <Label text="TOTAL:"
+                       styleClass="cart-total-label"/>
+
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <Label fx:id="totalLabel"
+                       text="0 Gs"
+                       styleClass="cart-total-value"/>
+            </HBox>
+
+            <!-- Confirm button -->
+            <Button fx:id="confirmButton"
+                    text="✅ CONFIRMAR VENTA"
+                    maxWidth="Infinity"
+                    styleClass="sale-confirm-btn"/>
         </VBox>
     </right>
 
     <!-- =====================
-         CENTER - ITEMS
+         CENTER - ITEMS GRID
          ===================== -->
     <center>
-        <VBox fillWidth="true" spacing="12" styleClass="sale-center">
+        <VBox fillWidth="true"
+              spacing="16"
+              styleClass="sale-center-panel"
+              VBox.vgrow="ALWAYS">
             <padding>
-                <Insets bottom="16" left="100" right="100" top="16" />
+                <Insets top="20" right="20" bottom="20" left="20"/>
             </padding>
 
-            <!-- TOGGLES -->
-            <HBox alignment="CENTER" spacing="10" styleClass="sale-toggle-group">
-                <ToggleButton fx:id="servicesToggle" selected="true" styleClass="sale-toggle" text="Servicios" />
+            <!-- Toggle selector -->
+            <HBox alignment="CENTER_LEFT" spacing="16">
+                <Label text="📋 SELECCIONAR"
+                       styleClass="center-title"/>
 
-                <ToggleButton fx:id="productsToggle" styleClass="sale-toggle" text="Productos" />
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <HBox spacing="0" styleClass="sale-toggle-group">
+                    <ToggleButton fx:id="servicesToggle"
+                                  selected="true"
+                                  styleClass="sale-toggle"
+                                  text="Servicios"/>
+
+                    <ToggleButton fx:id="productsToggle"
+                                  styleClass="sale-toggle"
+                                  text="Productos"/>
+                </HBox>
             </HBox>
 
-            <!-- LISTA DE ITEMS -->
-            <ScrollPane fitToWidth="true" styleClass="sale-scroll" VBox.vgrow="ALWAYS">
-                <content>
-                    <VBox fx:id="servicesListContainer" fillWidth="true" spacing="12" />
-                </content>
+            <!-- Items grid (scrollable, fills remaining space) -->
+            <ScrollPane fitToWidth="true"
+                        VBox.vgrow="ALWAYS"
+                        styleClass="items-scroll">
+                <VBox fx:id="servicesListContainer"
+                      fillWidth="true"
+                      spacing="12"
+                      styleClass="items-container"/>
             </ScrollPane>
-
         </VBox>
     </center>
 

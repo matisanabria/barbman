@@ -37,14 +37,28 @@ public class SaleCreateViewController implements Initializable {
     // =========================
     // FXML
     // =========================
-    @FXML private VBox servicesListContainer;
-    @FXML private VBox cartContainer;
-    @FXML private Label totalLabel;
-    @FXML private Button confirmButton;
-    @FXML private ToggleButton servicesToggle;
-    @FXML private ToggleButton productsToggle;
-    @FXML private BorderPane rootPane;
-    @FXML private Label saleCreateTitle;
+    @FXML
+    private VBox servicesListContainer;
+    @FXML
+    private VBox cartContainer;
+    @FXML
+    private Label totalLabel;
+    @FXML
+    private Button confirmButton;
+    @FXML
+    private ToggleButton servicesToggle;
+    @FXML
+    private ToggleButton productsToggle;
+    @FXML
+    private BorderPane rootPane;
+    @FXML
+    private Label saleCreateTitle;
+
+    @FXML private Label todayTotalLabel;
+    @FXML private Label weekTotalLabel;
+    @FXML private Label monthTotalLabel;
+    @FXML private Label cartItemsCount;
+
 
     // =========================
     // STATE
@@ -65,7 +79,6 @@ public class SaleCreateViewController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-
         User user = SessionManager.getActiveUser();
         if (user == null) {
             throw new IllegalStateException("No active user in session");
@@ -77,11 +90,9 @@ public class SaleCreateViewController implements Initializable {
         loadServices();
         refreshCart();
         setupConfirmButton();
+        updateStats(); // NUEVO
 
-        Tooltip.install(
-                saleCreateTitle,
-                new Tooltip("Easter egg")
-        );
+        Tooltip.install(saleCreateTitle, new Tooltip("Easter egg"));
     }
 
     private void setupToggle() {
@@ -136,6 +147,12 @@ public class SaleCreateViewController implements Initializable {
         totalLabel.setText(
                 NumberFormatterUtil.format(cart.getTotal()) + " Gs"
         );
+
+        // Actualizar contador de ítems
+        int itemCount = cart.getCartItems().stream()
+                .mapToInt(SaleCartItemDTO::getQuantity)
+                .sum();
+        cartItemsCount.setText(itemCount + " ítem" + (itemCount != 1 ? "s" : ""));
     }
     private void setupConfirmButton() {
         confirmButton.setOnAction(e -> {
@@ -330,6 +347,11 @@ public class SaleCreateViewController implements Initializable {
         );
         return row;
     }
-
+    private void updateStats() {
+        // TODO: Implementar stats reales
+        todayTotalLabel.setText("0 Gs");
+        weekTotalLabel.setText("0 Gs");
+        monthTotalLabel.setText("0 Gs");
+    }
 
 }

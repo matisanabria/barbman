@@ -23,6 +23,7 @@ public class User {
     private String name;
     private String role; // admin, user
     private String pin;
+    private String avatarPath; // NUEVO: nombre del archivo de avatar (ej: "admin.png", "default.png")
 
     private int paymentType;
     private PayFrequency payFrequency;
@@ -47,6 +48,7 @@ public class User {
         this.payFrequency = PayFrequency.WEEKLY; // default
         this.param1 = 0;
         this.param2 = 0;
+        this.avatarPath = "default.png"; // NUEVO: default avatar
     }
 
     // Full constructor (DB read)
@@ -58,7 +60,8 @@ public class User {
             int paymentType,
             PayFrequency payFrequency,
             double param1,
-            double param2
+            double param2,
+            String avatarPath // NUEVO
     ) {
         this.id = id;
         this.name = name;
@@ -68,13 +71,18 @@ public class User {
         this.payFrequency = payFrequency;
         this.param1 = param1;
         this.param2 = param2;
+        this.avatarPath = (avatarPath != null && !avatarPath.isEmpty()) ? avatarPath : "default.png"; // NUEVO
     }
 
+    /* =========================
+       GETTERS
+       ========================= */
 
     public int getId() { return id; }
     public String getName() { return name; }
     public String getRole() { return role; }
     public String getPin() { return pin; }
+    public String getAvatarPath() { return avatarPath; } // NUEVO
 
     public int getPaymentType() { return paymentType; }
     public PayFrequency getPayFrequency() { return payFrequency; }
@@ -82,6 +90,9 @@ public class User {
     public double getParam1() { return param1; }
     public double getParam2() { return param2; }
 
+    /* =========================
+       SETTERS
+       ========================= */
 
     public void setId(int id) { this.id = id; }
 
@@ -94,6 +105,10 @@ public class User {
             throw new IllegalArgumentException("PIN must have exactly 4 digits.");
         }
         this.pin = pin;
+    }
+
+    public void setAvatarPath(String avatarPath) { // NUEVO
+        this.avatarPath = (avatarPath != null && !avatarPath.isEmpty()) ? avatarPath : "default.png";
     }
 
     public void setPaymentType(int paymentType) {
@@ -128,5 +143,21 @@ public class User {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    /* =========================
+       TO STRING (útil para debug)
+       ========================= */
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", role='" + role + '\'' +
+                ", avatarPath='" + avatarPath + '\'' +
+                ", paymentType=" + paymentType +
+                ", payFrequency=" + payFrequency +
+                '}';
     }
 }

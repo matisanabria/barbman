@@ -1,163 +1,239 @@
-/* ROOTS */
+/* ==========================================================
+   CASHBOX OPENING - CLEAN STYLE (TEXTFIELD FIXED)
+   ========================================================== */
+
 .cashbox-root {
     -fx-background-color: #2F2F2F;
-    -fx-background-radius: 0;
 }
-.locked-root {
+
+/* ==========================
+   HEADER
+   ========================== */
+.cashbox-hero {
+    -fx-background-color: linear-gradient(to bottom, #232323, #2F2F2F);
+    -fx-border-color: #F0C667;
+    -fx-border-width: 0 0 2 0;
+}
+
+.cashbox-hero-title {
+    -fx-text-fill: #F0C667;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.cashbox-hero-subtitle {
+    -fx-text-fill: #CCCCCC;
+    -fx-font-size: 13px;
+    -fx-font-weight: normal;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.period-icon {
+    -fx-font-size: 14px;
+}
+
+/* ==========================
+   SCROLL & FORM
+   ========================== */
+.cashbox-scroll {
+    -fx-background-color: transparent;
+}
+
+.cashbox-scroll .viewport {
+    -fx-background-color: transparent;
+}
+
+.cashbox-form {
     -fx-background-color: #2F2F2F;
-    -fx-background-radius: 0;
 }
 
-/* TITLES */
-.cashbox-title {
-    -fx-text-fill: #FFFFFF;
-    -fx-font-size: 30px;
-    -fx-font-weight: bold;
-    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+/* ==========================
+   AMOUNT CARDS
+   ========================== */
+.amount-card {
+    -fx-background-color: #232323;
+    -fx-background-radius: 12;
+    -fx-padding: 14;
 }
-.cashbox-subtitle {
-    -fx-text-fill: #CCCCCC;
-    -fx-font-size: 16px;
-    -fx-font-weight: normal;
-    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 
-    -fx-wrap-text: true;
-    -fx-alignment: center;
+.card-icon {
+    -fx-font-size: 18px;
 }
-.locked-title {
+
+.card-title {
     -fx-text-fill: #FFFFFF;
-    -fx-font-size: 22px;
+    -fx-font-size: 14px;
     -fx-font-weight: bold;
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 }
 
-/* TEXT */
-.cashbox-label {
-    -fx-text-fill: #ffffff;
-    -fx-font-size: 16px;
+.card-hint {
+    -fx-text-fill: #AAAAAA;
+    -fx-font-size: 12px;
+    -fx-font-weight: normal;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.field-hint {
+    -fx-text-fill: #888888;
+    -fx-font-size: 11px;
+    -fx-font-style: italic;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+/* ==========================
+   AMOUNT INPUTS (TextField con inline styles)
+   ========================== */
+.amount-input {
+    -fx-pref-height: 52;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.amount-input:focused {
+    -fx-background-color: #3A3A3A;
+}
+
+/* ==========================
+   TOTAL PREVIEW
+   ========================== */
+.total-preview {
+    -fx-background-color: #232323;
+    -fx-background-radius: 12;
+}
+
+.total-label {
+    -fx-text-fill: #AAAAAA;
+    -fx-font-size: 11px;
     -fx-font-weight: bold;
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
-
-    -fx-wrap-text: true;
-    -fx-alignment: center;
+    -fx-letter-spacing: 1px;
 }
-.cashbox-total {
-    -fx-text-fill: #eac564;
+
+.total-value {
+    -fx-text-fill: #F0C667;
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.total-label-secondary {
+    -fx-text-fill: #888888;
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-letter-spacing: 1px;
+}
+
+.total-value-secondary {
+    -fx-text-fill: #CCCCCC;
+    -fx-font-size: 17px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.total-separator {
+    -fx-background-color: #3A3A3A;
+}
+
+/* ==========================
+   NOTES SECTION
+   ========================== */
+.notes-section {
+    -fx-background-color: #232323;
+    -fx-background-radius: 12;
+    -fx-padding: 14;
+}
+
+.notes-icon {
     -fx-font-size: 16px;
-    -fx-font-weight: normal;
-    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
-
-    -fx-wrap-text: true;
-    -fx-alignment: center;
-}
-.cashbox-hint {
-    -fx-text-fill: #CCCCCC;
-    -fx-font-size: 13px;
-    -fx-font-weight: normal;
-    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
-
-    -fx-wrap-text: true;
-    -fx-alignment: center;
-}
-.cashbox-footer {
-    -fx-text-fill: #CCCCCC;
-    -fx-font-size: 13px;
-    -fx-font-weight: normal;
-    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
-
-    -fx-wrap-text: true;
-    -fx-alignment: center;
-}
-.locked-text {
-    -fx-text-fill: #CCCCCC;
-    -fx-font-size: 13px;
-    -fx-font-weight: normal;
-    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
-
-    -fx-wrap-text: true;
-    -fx-alignment: center;
-}
-.locked-text-muted {
-    -fx-text-fill: #CCCCCC;
-    -fx-font-size: 13px;
-    -fx-font-weight: normal;
-    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
-
-    -fx-wrap-text: true;
-    -fx-alignment: center;
-}
-.locked-status {
-    -fx-text-fill: #CCCCCC;
-    -fx-font-size: 13px;
-    -fx-font-weight: normal;
-    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
-
-    -fx-wrap-text: true;
-    -fx-alignment: center;
 }
 
-/* INPUTS */
-.cashbox-input {
-    -fx-background-color: #232323;
-    -fx-background-radius: 12;
-    -fx-text-fill: #fff;
-    -fx-font-size: 16px;
-    -fx-prompt-text-fill: #AAAAAA;
-}
-/* TEXTAREA */
-/* TextArea base */
-.cashbox-textarea {
-    -fx-background-color: #232323;
-    -fx-background-radius: 12;
-    -fx-padding: 6;
-}
-
-/* CONTENIDO INTERNO */
-.cashbox-textarea .content {
-    -fx-background-color: #232323;
-    -fx-background-radius: 12;
-}
-
-/* TEXTO */
-.cashbox-textarea {
+.notes-title {
     -fx-text-fill: #FFFFFF;
-    -fx-font-size: 16px;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 }
 
-/* TEXTO INTERNO (importante) */
-.cashbox-textarea .content {
+TextArea.notes-textarea {
+    -fx-background-color: #2A2A2A;
+    -fx-background-radius: 12;
     -fx-text-fill: #FFFFFF;
+    -fx-font-size: 13px;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-prompt-text-fill: #666666;
 }
 
-/* PROMPT */
-.cashbox-textarea .prompt-text {
-    -fx-fill: #AAAAAA;
+TextArea.notes-textarea .content {
+    -fx-background-color: #2A2A2A;
 }
 
+TextArea.notes-textarea:focused {
+    -fx-background-color: #3A3A3A;
+}
 
-/* BUTTONS */
-.cashbox-btn-primary {
+TextArea.notes-textarea:focused .content {
+    -fx-background-color: #3A3A3A;
+}
+
+/* ==========================
+   FOOTER
+   ========================== */
+.cashbox-footer-section {
+    -fx-background-color: #232323;
+}
+
+.info-bar {
+    -fx-background-color: #232323;
+}
+
+.info-icon {
+    -fx-font-size: 12px;
+}
+
+.info-text {
+    -fx-text-fill: #CCCCCC;
+    -fx-font-size: 12px;
+    -fx-font-weight: normal;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+/* ==========================
+   ACTION BUTTONS
+   ========================== */
+.action-bar {
+    -fx-background-color: #232323;
+}
+
+.btn-cancel {
+    -fx-background-color: #3A3A3A;
+    -fx-background-radius: 12;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-pref-width: 110;
+    -fx-pref-height: 40;
+    -fx-cursor: hand;
+}
+
+.btn-cancel:hover {
+    -fx-background-color: #454545;
+}
+
+.btn-confirm {
     -fx-background-color: #F0C667;
     -fx-background-radius: 12;
     -fx-text-fill: #232323;
-    -fx-font-size: 16px;
+    -fx-font-size: 15px;
     -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-pref-width: 170;
+    -fx-pref-height: 40;
     -fx-cursor: hand;
 }
-.cashbox-btn-secondary {
-    -fx-background-color: rgba(251, 251, 251, 0.32);
-    -fx-background-radius: 12;
-    -fx-text-fill: #232323;
-    -fx-font-size: 16px;
-    -fx-font-weight: bold;
-    -fx-cursor: hand;
-}
-.locked-btn-logout {
-    -fx-background-color: rgba(251, 251, 251, 0.32);
-    -fx-background-radius: 12;
-    -fx-text-fill: #232323;
-    -fx-font-size: 16px;
-    -fx-font-weight: bold;
-    -fx-cursor: hand;
+
+.btn-confirm:hover {
+    -fx-background-color: #F0C667;
 }

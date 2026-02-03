@@ -69,6 +69,15 @@ public class DbBootstrap {
             createTables();  // This already throws on failure
             logger.info("[DB] New database created successfully.");
         }
+
+        // Initialize payment methods (always runs, only inserts if empty)
+        initializePaymentMethods();
+
+        // Migrate users table to add avatar_path column if needed
+        migrateUsersAvatarPath();
+
+        // Initialize avatars folder
+        initializeAvatarsFolder();
     }
 
     /**
@@ -521,4 +530,111 @@ public class DbBootstrap {
         return appFolder;
     }
 
+    /**
+     * Gets the avatars folder path
+     * @return File pointing to the avatars directory
+     */
+    public static File getAvatarsFolder() {
+        return new File(appFolder, "avatars");
+    }
+    public static void initializePaymentMethods() {
+        try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
+
+            var rs = stmt.executeQuery("SELECT COUNT(*) FROM payment_methods");
+            int count = rs.next() ? rs.getInt(1) : 0;
+
+            if (count > 0) {
+                logger.debug("[DB] Payment methods already initialized (count={})", count);
+                return;
+            }
+
+            logger.info("[DB] Initializing default payment methods...");
+
+            String insertSql = "INSERT INTO payment_methods (id, displayName) VALUES (?, ?)";
+            var ps = conn.prepareStatement(insertSql);
+
+            // Guardamos en inglés (keys)
+            String[] methods = {"cash", "transfer", "card", "qr"};
+
+            for (int i = 0; i < methods.length; i++) {
+                ps.setInt(1, i);
+                ps.setString(2, methods[i]);
+                ps.addBatch();
+            }
+
+            ps.executeBatch();
+            logger.info("[DB] Payment methods initialized: {}", String.join(", ", methods));
+
+        } catch (SQLException e) {
+            logger.error("[DB] Error initializing payment methods: {}", e.getMessage());
+            throw new RuntimeException("Failed to initialize payment methods", e);
+        }
+    }
+
+    /**
+     * Adds avatar_path column to users table if it doesn't exist
+     */
+    private static void migrateUsersAvatarPath() {
+        try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
+
+            // Check if column exists
+            var rs = stmt.executeQuery("PRAGMA table_info(users)");
+            boolean hasAvatarPath = false;
+
+            while (rs.next()) {
+                String colName = rs.getString("name");
+                if ("avatar_path".equals(colName)) {
+                    hasAvatarPath = true;
+                    break;
+                }
+            }
+
+            if (!hasAvatarPath) {
+                logger.info("[DB] Adding avatar_path column to users table...");
+                stmt.execute("ALTER TABLE users ADD COLUMN avatar_path TEXT DEFAULT 'default.png'");
+                logger.info("[DB] avatar_path column added successfully.");
+            } else {
+                logger.debug("[DB] avatar_path column already exists.");
+            }
+
+        } catch (SQLException e) {
+            logger.error("[DB] Error migrating avatar_path column: {}", e.getMessage());
+            throw new RuntimeException("Failed to add avatar_path column", e);
+        }
+    }
+    /**
+     * Creates the avatars folder and copies the default avatar if needed
+     */
+    private static void initializeAvatarsFolder() {
+        try {
+            // Create avatars folder
+            File avatarsFolder = new File(appFolder, "avatars");
+            if (!avatarsFolder.exists()) {
+                if (avatarsFolder.mkdirs()) {
+                    logger.info("[DB] Avatars folder created at: {}", avatarsFolder.getAbsolutePath());
+                } else {
+                    logger.warn("[DB] Failed to create avatars folder");
+                    return;
+                }
+            } else {
+                logger.debug("[DB] Avatars folder already exists at: {}", avatarsFolder.getAbsolutePath());
+            }
+
+            // Copy default avatar from resources if it doesn't exist
+            File defaultAvatarFile = new File(avatarsFolder, "default.png");
+            if (!defaultAvatarFile.exists()) {
+                try (var in = DbBootstrap.class.getResourceAsStream("/app/barbman/core/assets/avatars/default.png")) {
+                    if (in != null) {
+                        Files.copy(in, defaultAvatarFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                        logger.info("[DB] Default avatar copied to: {}", defaultAvatarFile.getAbsolutePath());
+                    } else {
+                        logger.warn("[DB] Default avatar resource not found in JAR");
+                    }
+                }
+            }
+
+        } catch (IOException e) {
+            logger.error("[DB] Error initializing avatars folder: {}", e.getMessage());
+        }
+    }
 }

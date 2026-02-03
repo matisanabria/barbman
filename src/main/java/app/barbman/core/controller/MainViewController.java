@@ -25,7 +25,7 @@ public class MainViewController {
     private static final String PREFIX = "[MAIN-VIEW]";
 
     @FXML private BorderPane borderPane;
-    @FXML private Button logoutButton;
+    private static MainViewController instance;
 
     private final CashboxService cashboxService =
             new CashboxService(
@@ -37,6 +37,8 @@ public class MainViewController {
     @FXML
     public void initialize() {
         logger.info("{} Initializing main view", PREFIX);
+
+        instance = this;
 
         User user = SessionManager.getActiveUser();
         if (user == null) return;
@@ -57,8 +59,6 @@ public class MainViewController {
                 "/app/barbman/core/style/embed-views/sales-view.css"
         );
 
-
-        logoutButton.setOnAction(e -> logout());
     }
 
 
@@ -97,7 +97,7 @@ public class MainViewController {
     // ======================== LOGOUT ============================
     // ============================================================
 
-    private void logout() {
+    public void logout() {
         logger.info("{} Logging out", PREFIX);
 
         SessionManager.endSession();
@@ -112,6 +112,13 @@ public class MainViewController {
                         .icon("/app/barbman/core/icons/icon-for-javafx.png")
                         .build()
         );
+    }
+
+    // MÉTODO ESTÁTICO para llamar desde Sidebar
+    public static void logoutFromSidebar() {
+        if (instance != null) {
+            instance.logout();
+        }
     }
 
     /**

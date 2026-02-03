@@ -11,6 +11,7 @@ module app.barbman.core {
     requires java.desktop;
     requires com.sun.jna.platform;
     requires com.sun.jna;
+    requires com.ibm.icu;
 
     opens app.barbman.core to javafx.fxml;
     opens app.barbman.core.controller to javafx.fxml;

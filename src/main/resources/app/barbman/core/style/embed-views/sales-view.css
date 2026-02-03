@@ -18,7 +18,7 @@
 
 .sale-title {
     -fx-text-fill: #FFFFFF;
-    -fx-font-size: 22px;
+    -fx-font-size: 26px;  /* antes 22px */
     -fx-font-weight: bold;
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 }
@@ -43,9 +43,9 @@
     -fx-background-color: transparent;
     -fx-background-radius: 999;
     -fx-text-fill: #CCCCCC;
-    -fx-font-size: 14px;
+    -fx-font-size: 16px;  /* antes 14px */
     -fx-font-weight: 600;
-    -fx-padding: 6 20;
+    -fx-padding: 8 22;  /* antes 6 20 */
     -fx-cursor: hand;
 
     -fx-focus-color: transparent;
@@ -87,7 +87,7 @@
 
 .sale-cart-header-text {
     -fx-text-fill: #CCCCCC;
-    -fx-font-size: 13px;
+    -fx-font-size: 15px;  /* antes 13px */
     -fx-font-weight: 600;
 }
 
@@ -97,7 +97,7 @@
 .sale-cart-row {
     -fx-background-color: #2A2A2A;
     -fx-background-radius: 10;
-    -fx-padding: 8 10;
+    -fx-padding: 10 12;  /* antes 8 10 */
 }
 
 /* ==========================
@@ -109,12 +109,12 @@
 
 .sale-total-label {
     -fx-text-fill: #CCCCCC;
-    -fx-font-size: 13px;
+    -fx-font-size: 15px;  /* antes 13px */
 }
 
 .sale-total-value {
     -fx-text-fill: #F0C667;
-    -fx-font-size: 20px;
+    -fx-font-size: 24px;  /* antes 20px */
     -fx-font-weight: bold;
 }
 
@@ -125,7 +125,7 @@
     -fx-background-color: #F0C667;
     -fx-background-radius: 12;
     -fx-text-fill: #232323;
-    -fx-font-size: 15px;
+    -fx-font-size: 17px;  /* antes 15px */
     -fx-font-weight: bold;
     -fx-cursor: hand;
 }
@@ -140,7 +140,7 @@
 
 /* Container spacing (VBox that holds cards) */
 .sale-center > .scroll-pane .content > VBox {
-    -fx-spacing: 10; /* vertical space between cards */
+    -fx-spacing: 10;
 }
 
 /* ==========================================================
@@ -149,10 +149,9 @@
 .svc-card {
     -fx-background-color: #2A2A2A;
     -fx-background-radius: 14;
-    -fx-padding: 10 14;
+    -fx-padding: 12 16;  /* antes 10 14 */
     -fx-alignment: CENTER_LEFT;
 
-    /* subtle shadow */
     -fx-effect: dropshadow(
             gaussian,
             rgba(0, 0, 0, 0.35),
@@ -163,7 +162,6 @@
     );
 }
 
-/* Hover feedback */
 .svc-card:hover {
     -fx-background-color: #323232;
 }
@@ -172,40 +170,34 @@
    CARD CONTENT
    ========================================================== */
 
-/* Name (service / product name) */
 .svc-card-name {
     -fx-text-fill: #FFFFFF;
-    -fx-font-size: 14px;
+    -fx-font-size: 16px;  /* antes 14px */
     -fx-font-weight: 600;
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 }
 
-/* Price field / label */
 .svc-card-price {
     -fx-background-color: #232323;
     -fx-background-radius: 10;
-
     -fx-text-fill: #FFFFFF;
-    -fx-font-size: 14px;
+    -fx-font-size: 16px;  /* antes 14px */
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
-
-    -fx-padding: 6 10;
+    -fx-padding: 8 12;  /* antes 6 10 */
 }
-/* Precio de PRODUCTO (no editable) */
+
 .svc-card-price-static {
     -fx-background-color: transparent;
     -fx-text-fill: #F0C667;
-    -fx-font-size: 14px;
+    -fx-font-size: 16px;  /* antes 14px */
     -fx-font-weight: 600;
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
-
     -fx-padding: 0;
 }
 
-/* Stock label (products only) */
 .svc-card-stock {
     -fx-text-fill: #AAAAAA;
-    -fx-font-size: 12px;
+    -fx-font-size: 14px;  /* antes 12px */
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 }
 
@@ -215,13 +207,11 @@
 .svc-card-add {
     -fx-background-color: #F0C667;
     -fx-background-radius: 10;
-
     -fx-text-fill: #232323;
-    -fx-font-size: 14px;
+    -fx-font-size: 16px;  /* antes 14px */
     -fx-font-weight: bold;
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
-
-    -fx-padding: 6 14;
+    -fx-padding: 8 16;  /* antes 6 14 */
     -fx-cursor: hand;
 }
 
@@ -234,7 +224,7 @@
 }
 
 /* ==========================================================
-   DISABLED / NO STOCK STATE (optional but ready)
+   DISABLED / NO STOCK STATE
    ========================================================== */
 .svc-card-disabled {
     -fx-opacity: 0.5;
@@ -246,42 +236,37 @@
 .salecart-row {
     -fx-background-color: #2A2A2A;
     -fx-background-radius: 10;
-    -fx-padding: 8 10;
+    -fx-padding: 10 12;  /* antes 8 10 */
     -fx-alignment: CENTER_LEFT;
 }
 
-/* Hover feedback */
 .salecart-row:hover {
     -fx-background-color: #303030;
 }
 
-/* Item name */
 .salecart-row-name {
     -fx-text-fill: #FFFFFF;
-    -fx-font-size: 13px;
+    -fx-font-size: 15px;  /* antes 13px */
     -fx-font-weight: 600;
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 }
 
-/* Unit price */
 .salecart-row-price {
     -fx-text-fill: #CCCCCC;
-    -fx-font-size: 13px;
+    -fx-font-size: 15px;  /* antes 13px */
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 }
 
-/* Quantity */
 .salecart-row-qty {
     -fx-text-fill: #AAAAAA;
-    -fx-font-size: 13px;
+    -fx-font-size: 15px;  /* antes 13px */
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 }
 
-/* Remove buttons (- / ✕) */
 .salecart-row-remove {
     -fx-background-color: transparent;
     -fx-text-fill: #F0C667;
-    -fx-font-size: 14px;
+    -fx-font-size: 16px;  /* antes 14px */
     -fx-font-weight: bold;
     -fx-cursor: hand;
 }
@@ -294,11 +279,9 @@
 .salecart-row-remove-all {
     -fx-background-color: transparent;
     -fx-text-fill: #FF6B6B;
-
-    -fx-font-size: 14px;
+    -fx-font-size: 16px;  /* antes 14px */
     -fx-font-weight: bold;
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
-
     -fx-padding: 2 8;
     -fx-cursor: hand;
 }
@@ -307,25 +290,24 @@
     -fx-background-color: rgba(255, 107, 107, 0.15);
     -fx-background-radius: 8;
 }
+
 /* ==========================================================
    SALE PAYMENT VIEW
    ========================================================== */
 
-/* Títulos de sección con más peso */
 .sale-payment-section-title {
     -fx-text-fill: #FFFFFF;
-    -fx-font-size: 16px;
+    -fx-font-size: 18px;  /* antes 16px */
     -fx-font-weight: bold;
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 }
 
-/* ComboBox cliente */
 .sale-payment-combo {
     -fx-background-color: #2A2A2A;
     -fx-background-radius: 10;
     -fx-text-fill: #FFFFFF;
-    -fx-font-size: 15px;
-    -fx-pref-height: 40;
+    -fx-font-size: 17px;  /* antes 15px */
+    -fx-pref-height: 42;  /* antes 40 */
     -fx-prompt-text-fill: #888888;
 }
 
@@ -338,13 +320,12 @@
     -fx-background-color: #3A3A3A;
 }
 
-/* Botón agregar cliente (+) */
 .sale-payment-add-client {
     -fx-background-color: #3A3A3A;
     -fx-background-radius: 12;
     -fx-text-fill: #FFFFFF;
     -fx-font-weight: bold;
-    -fx-font-size: 18px;
+    -fx-font-size: 20px;  /* antes 18px */
     -fx-cursor: hand;
 }
 
@@ -352,12 +333,11 @@
     -fx-background-color: #454545;
 }
 
-/* TextArea nota */
 .sale-payment-textarea {
     -fx-background-color: #2A2A2A;
     -fx-background-radius: 10;
     -fx-text-fill: #FFFFFF;
-    -fx-font-size: 14px;
+    -fx-font-size: 16px;  /* antes 14px */
     -fx-prompt-text-fill: #666666;
 }
 
@@ -365,36 +345,32 @@
     -fx-background-color: #2A2A2A;
 }
 
-/* Labels secundarios */
 .sale-payment-label {
     -fx-text-fill: #CCCCCC;
-    -fx-font-size: 13px;
+    -fx-font-size: 15px;  /* antes 13px */
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 }
 
-/* Labels de montos (total, vuelto) */
 .sale-payment-amount {
     -fx-text-fill: #F0C667;
-    -fx-font-size: 20px;
+    -fx-font-size: 24px;  /* antes 20px */
     -fx-font-weight: bold;
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 }
 
-/* Grid de métodos de pago */
 .sale-payment-grid {
     -fx-background-color: transparent;
 }
 
-/* ToggleButtons de método de pago */
 .sale-payment-toggle {
     -fx-background-color: #3A3A3A;
     -fx-background-radius: 12;
     -fx-text-fill: #CCCCCC;
     -fx-font-weight: bold;
-    -fx-font-size: 14px;
+    -fx-font-size: 16px;  /* antes 14px */
     -fx-cursor: hand;
     -fx-min-width: 160;
-    -fx-pref-height: 40;
+    -fx-pref-height: 44;  /* antes 40 */
 }
 
 .sale-payment-toggle:hover {
@@ -406,32 +382,29 @@
     -fx-text-fill: #232323;
 }
 
-/* TextField monto recibido - HABILITADO */
 .sale-payment-field {
     -fx-background-color: #2A2A2A;
     -fx-background-radius: 10;
     -fx-text-fill: #FFFFFF;
-    -fx-font-size: 14px;
+    -fx-font-size: 16px;  /* antes 14px */
     -fx-prompt-text-fill: #888888;
-    -fx-border-color: #F0C667;      /* Borde amarillo cuando está activo */
+    -fx-border-color: #F0C667;
     -fx-border-width: 2;
     -fx-border-radius: 10;
 }
 
-/* TextField monto recibido - DESHABILITADO */
 .sale-payment-field:disabled {
-    -fx-background-color: #1F1F1F;  /* Más oscuro */
+    -fx-background-color: #1F1F1F;
     -fx-text-fill: #666666;
-    -fx-border-color: transparent;   /* Sin borde */
+    -fx-border-color: transparent;
     -fx-opacity: 1;
 }
 
-/* Botón cancelar */
 .sale-payment-cancel {
     -fx-background-color: #3A3A3A;
     -fx-background-radius: 12;
     -fx-text-fill: #FFFFFF;
-    -fx-font-size: 14px;
+    -fx-font-size: 16px;  /* antes 14px */
     -fx-font-weight: 600;
     -fx-cursor: hand;
 }
@@ -444,20 +417,18 @@
    RESUMEN TICKET STYLE
    ========================================================== */
 
-/* Contenedor del ticket */
 .sale-payment-summary-ticket {
     -fx-background-color: #1A1A1A;
     -fx-background-radius: 12;
-    -fx-padding: 16;
+    -fx-padding: 18;  /* antes 16 */
     -fx-border-color: #3A3A3A;
     -fx-border-width: 1;
     -fx-border-radius: 12;
 }
 
-/* Filas del ticket */
 .sale-payment-summary-row {
     -fx-background-color: transparent;
-    -fx-padding: 8 0;
+    -fx-padding: 10 0;  /* antes 8 0 */
     -fx-border-color: #2A2A2A;
     -fx-border-width: 0 0 1 0;
 }
@@ -466,25 +437,321 @@
     -fx-border-width: 0;
 }
 
-/* Nombre del item en ticket */
 .sale-payment-ticket-name {
     -fx-text-fill: #FFFFFF;
-    -fx-font-size: 13px;
+    -fx-font-size: 15px;  /* antes 13px */
     -fx-font-weight: 600;
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 }
 
-/* Cantidad en ticket */
 .sale-payment-ticket-qty {
     -fx-text-fill: #AAAAAA;
-    -fx-font-size: 13px;
+    -fx-font-size: 15px;  /* antes 13px */
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 }
 
-/* Precio en ticket */
 .sale-payment-ticket-price {
     -fx-text-fill: #F0C667;
-    -fx-font-size: 13px;
+    -fx-font-size: 15px;  /* antes 13px */
     -fx-font-weight: bold;
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+/* ==========================================================
+   SALE RESULT VIEW - COMPROBANTE MODERNO
+   ========================================================== */
+
+.sale-result-header {
+    -fx-background-color: #1A1A1A;
+    -fx-border-color: #3A3A3A;
+    -fx-border-width: 0 0 2 0;
+}
+
+.sale-result-title {
+    -fx-text-fill: #F0C667;
+    -fx-font-size: 28px;  /* antes 24px */
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.sale-result-subtitle {
+    -fx-text-fill: #AAAAAA;
+    -fx-font-size: 15px;  /* antes 13px */
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.sale-result-number {
+    -fx-text-fill: #F0C667;
+    -fx-font-size: 16px;  /* antes 14px */
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.sale-result-content {
+    -fx-background-color: #232323;
+}
+
+.sale-result-section {
+    -fx-background-color: #1A1A1A;
+    -fx-background-radius: 12;
+    -fx-padding: 20;  /* antes 16 */
+    -fx-border-color: #2A2A2A;
+    -fx-border-width: 1;
+    -fx-border-radius: 12;
+}
+
+.sale-result-section-title {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 16px;  /* antes 14px */
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-letter-spacing: 0.5px;
+}
+
+.sale-result-grid {
+    -fx-background-color: transparent;
+}
+
+.sale-result-label {
+    -fx-text-fill: #AAAAAA;
+    -fx-font-size: 15px;  /* antes 13px */
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.sale-result-value {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 15px;  /* antes 13px */
+    -fx-font-weight: 600;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.sale-result-table-header {
+    -fx-background-color: #2A2A2A;
+    -fx-background-radius: 8;
+    -fx-padding: 10 12;  /* antes 8 12 */
+}
+
+.sale-result-th {
+    -fx-text-fill: #CCCCCC;
+    -fx-font-size: 14px;  /* antes 12px */
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.sale-result-items {
+    -fx-background-color: transparent;
+}
+
+.sale-result-item-row {
+    -fx-background-color: transparent;
+    -fx-padding: 10 12;  /* antes 8 12 */
+    -fx-border-color: #2A2A2A;
+    -fx-border-width: 0 0 1 0;
+}
+
+.sale-result-item-row:last-child {
+    -fx-border-width: 0;
+}
+
+.sale-result-item-name {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 15px;  /* antes 13px */
+    -fx-font-weight: 600;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.sale-result-item-qty {
+    -fx-text-fill: #AAAAAA;
+    -fx-font-size: 15px;  /* antes 13px */
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.sale-result-item-price {
+    -fx-text-fill: #CCCCCC;
+    -fx-font-size: 15px;  /* antes 13px */
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.sale-result-item-subtotal {
+    -fx-text-fill: #F0C667;
+    -fx-font-size: 15px;  /* antes 13px */
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.sale-result-separator {
+    -fx-background-color: #3A3A3A;
+}
+
+.sale-result-totals {
+    -fx-background-color: transparent;
+}
+
+.sale-result-total-label {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 17px;  /* antes 15px */
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.sale-result-total-value {
+    -fx-text-fill: #F0C667;
+    -fx-font-size: 26px;  /* antes 22px */
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.sale-result-words {
+    -fx-text-fill: #AAAAAA;
+    -fx-font-size: 15px;  /* antes 13px */
+    -fx-font-weight: bold;
+    -fx-font-style: normal;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-padding: 8 0 0 0;
+}
+
+.sale-result-payment {
+    -fx-text-fill: #F0C667;
+    -fx-font-size: 16px;  /* antes 14px */
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-background-color: #2A2A2A;
+    -fx-background-radius: 8;
+    -fx-padding: 10 14;  /* antes 8 12 */
+}
+
+.sale-result-footer {
+    -fx-background-color: #1A1A1A;
+    -fx-border-color: #3A3A3A;
+    -fx-border-width: 2 0 0 0;
+}
+
+/* ==========================================================
+   SALES DASHBOARD - HORIZONTAL LAYOUT
+   ========================================================== */
+
+/* Header */
+.sale-header {
+    -fx-background-color: linear-gradient(to bottom, #232323, #2F2F2F);
+}
+
+/* Stats bar */
+.sale-stats {
+    -fx-background-color: #232323;
+    -fx-border-color: #3A3A3A;
+    -fx-border-width: 1 0 1 0;
+}
+
+.stat-card {
+    -fx-spacing: 4;
+}
+
+.stat-label {
+    -fx-text-fill: #888888;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-letter-spacing: 1px;
+}
+
+.stat-value {
+    -fx-text-fill: #F0C667;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+/* ==========================
+   RIGHT CART PANEL
+   ========================== */
+.sale-cart-panel {
+    -fx-background-color: #232323;
+    -fx-border-color: #3A3A3A;
+    -fx-border-width: 0 0 0 1;
+}
+
+.cart-title {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-letter-spacing: 0.5px;
+}
+
+.cart-count {
+    -fx-text-fill: #888888;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+}
+
+.cart-scroll {
+    -fx-background-color: transparent;
+}
+
+.cart-scroll .viewport {
+    -fx-background-color: transparent;
+}
+
+.cart-items-container {
+    -fx-background-color: transparent;
+}
+
+.cart-separator {
+    -fx-background-color: #3A3A3A;
+}
+
+.cart-total-label {
+    -fx-text-fill: #AAAAAA;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+}
+
+.cart-total-value {
+    -fx-text-fill: #F0C667;
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+}
+
+/* ==========================
+   CENTER ITEMS PANEL
+   ========================== */
+.sale-center-panel {
+    -fx-background-color: #2F2F2F;
+}
+
+.center-title {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-letter-spacing: 0.5px;
+}
+
+.items-scroll {
+    -fx-background-color: transparent;
+}
+
+.items-scroll .viewport {
+    -fx-background-color: transparent;
+}
+
+.items-container {
+    -fx-background-color: transparent;
+}
+
+/* ==========================
+   CONFIRM BUTTON (actualizado)
+   ========================== */
+.sale-confirm-btn {
+    -fx-background-color: #F0C667;
+    -fx-background-radius: 12;
+    -fx-text-fill: #232323;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-pref-height: 56;
+}
+
+.sale-confirm-btn:hover {
+    -fx-background-color: #FFD97A;
+}
+
+.sale-confirm-btn:pressed {
+    -fx-background-color: #D4AA4A;
 }

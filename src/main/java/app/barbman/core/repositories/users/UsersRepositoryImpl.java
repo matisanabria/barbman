@@ -16,7 +16,7 @@ public class UsersRepositoryImpl implements UsersRepository {
     private static final String SELECT_BASE = """
         SELECT id, displayName, role, pin,
                payment_type, pay_frequency,
-               param_1, param_2
+               param_1, param_2, avatar_path
         FROM users
         """;
 
@@ -61,9 +61,9 @@ public class UsersRepositoryImpl implements UsersRepository {
             INSERT INTO users (
                 displayName, role, pin,
                 payment_type, pay_frequency,
-                param_1, param_2
+                param_1, param_2, avatar_path
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """;
 
         try (Connection db = DbBootstrap.connect();
@@ -76,6 +76,7 @@ public class UsersRepositoryImpl implements UsersRepository {
             ps.setString(5, user.getPayFrequency().name());
             ps.setDouble(6, user.getParam1());
             ps.setDouble(7, user.getParam2());
+            ps.setString(8, user.getAvatarPath()); // NUEVO
             ps.executeUpdate();
 
             try (ResultSet keys = ps.getGeneratedKeys()) {
@@ -94,7 +95,7 @@ public class UsersRepositoryImpl implements UsersRepository {
             UPDATE users
             SET displayName = ?, role = ?, pin = ?,
                 payment_type = ?, pay_frequency = ?,
-                param_1 = ?, param_2 = ?
+                param_1 = ?, param_2 = ?, avatar_path = ?
             WHERE id = ?
             """;
         try (Connection db = DbBootstrap.connect();
@@ -107,13 +108,13 @@ public class UsersRepositoryImpl implements UsersRepository {
             ps.setString(5, user.getPayFrequency().name());
             ps.setDouble(6, user.getParam1());
             ps.setDouble(7, user.getParam2());
-            ps.setInt(8, user.getId());
+            ps.setString(8, user.getAvatarPath()); // NUEVO
+            ps.setInt(9, user.getId());
 
             ps.executeUpdate();
         } catch (Exception e) {
             logger.warn("{} Error while updating user id {}: {}", PREFIX, user.getId(), e.getMessage());
         }
-
     }
 
     @Override
@@ -161,10 +162,10 @@ public class UsersRepositoryImpl implements UsersRepository {
                 rs.getString("role"),
                 rs.getString("pin"),
                 rs.getInt("payment_type"),
-                User.PayFrequency.valueOf(rs.getString("pay_frequency")), // 👈
+                User.PayFrequency.valueOf(rs.getString("pay_frequency")),
                 rs.getDouble("param_1"),
-                rs.getDouble("param_2")
+                rs.getDouble("param_2"),
+                rs.getString("avatar_path") // NUEVO
         );
     }
-
 }

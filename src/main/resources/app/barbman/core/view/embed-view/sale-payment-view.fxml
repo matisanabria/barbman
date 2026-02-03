@@ -121,8 +121,8 @@
                                       GridPane.rowIndex="0"
                                       GridPane.columnIndex="1"/>
 
-                        <ToggleButton fx:id="posToggle"
-                                      text="POS"
+                        <ToggleButton fx:id="cardToggle"
+                                      text="Tarjeta"
                                       styleClass="sale-payment-toggle"
                                       GridPane.rowIndex="1"
                                       GridPane.columnIndex="0"/>

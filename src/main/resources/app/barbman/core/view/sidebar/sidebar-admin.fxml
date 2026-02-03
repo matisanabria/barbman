@@ -7,84 +7,86 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.shape.Circle?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
 <VBox xmlns="http://javafx.com/javafx/17"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="app.barbman.core.controller.SidebarController"
       stylesheets="@../../style/sidebar.css"
-      spacing="8.0"
+      spacing="0"
       styleClass="sidebar"
-      prefWidth="250">
+      prefWidth="260">
 
-    <VBox spacing="10" styleClass="sidebar-main">
+    <!-- USER PROFILE SECTION -->
+    <VBox alignment="CENTER" spacing="16" styleClass="sidebar-profile">
+        <padding>
+            <Insets top="32" right="16" bottom="28" left="16"/>
+        </padding>
 
-        <!-- Usuario (solo avatar) -->
-        <HBox alignment="CENTER_LEFT" spacing="10" styleClass="sidebar-header">
-            <padding>
-                <Insets top="10" right="10" bottom="10" left="10"/>
-            </padding>
-
+        <!-- Avatar circular MÁS GRANDE -->
+        <VBox alignment="CENTER">
             <ImageView fx:id="userAvatar"
-                       fitWidth="40"
-                       fitHeight="40"
+                       fitWidth="100"
+                       fitHeight="100"
                        pickOnBounds="true"
-                       preserveRatio="true"/>
-        </HBox>
-
-        <!-- Separador -->
-        <Separator/>
-
-        <!-- Menú -->
-        <VBox spacing="5">
-
-            <!-- INGRESOS (HABILITADO) -->
-            <ToggleButton fx:id="btnIncome"
-                          text="Ingresos"
-                          styleClass="sidebar-btn">
-                <graphic>
-                    <FontIcon iconLiteral="fas-arrow-up" iconSize="18"/>
-                </graphic>
-            </ToggleButton>
-
-            <!-- EGRESOS -->
-            <ToggleButton fx:id="btnExpenses"
-                          text="Egresos"
-                          styleClass="sidebar-btn">
-                <graphic>
-                    <FontIcon iconLiteral="fas-arrow-down" iconSize="18"/>
-                </graphic>
-            </ToggleButton>
-
-            <!-- SUELDOS -->
-            <ToggleButton fx:id="btnSalaries"
-                          text="Sueldos"
-                          styleClass="sidebar-btn">
-                <graphic>
-                    <FontIcon iconLiteral="far-money-bill-alt" iconSize="18"/>
-                </graphic>
-            </ToggleButton>
-
-            <!-- CAJA -->
-            <ToggleButton fx:id="btnCash"
-                          text="Caja"
-                          styleClass="sidebar-btn">
-                <graphic>
-                    <FontIcon iconLiteral="fas-cash-register" iconSize="18"/>
-                </graphic>
-            </ToggleButton>
-
-            <!-- CONFIG -->
-            <ToggleButton fx:id="btnSettings"
-                          text="Configuración"
-                          styleClass="sidebar-btn">
-                <graphic>
-                    <FontIcon iconLiteral="fas-cog" iconSize="18"/>
-                </graphic>
-            </ToggleButton>
-
+                       preserveRatio="true"
+                       styleClass="avatar-image">
+                <clip>
+                    <Circle centerX="50" centerY="50" radius="50"/>
+                </clip>
+            </ImageView>
         </VBox>
 
+        <!-- User info -->
+        <VBox alignment="CENTER" spacing="6">
+            <Label fx:id="userNameLabel"
+                   text="Usuario"
+                   styleClass="user-name"/>
+            <Label fx:id="userRoleLabel"
+                   text="Admin"
+                   styleClass="user-role"/>
+        </VBox>
+    </VBox>
+
+    <!-- Separator -->
+    <Separator styleClass="sidebar-separator"/>
+
+    <!-- MENU BUTTONS (inyectados dinámicamente) -->
+    <VBox fx:id="menuContainer"
+          spacing="6"
+          styleClass="sidebar-menu"
+          VBox.vgrow="ALWAYS">
+        <padding>
+            <Insets top="12" right="12" bottom="12" left="12"/>
+        </padding>
+
+        <!-- Los botones se inyectan aquí dinámicamente según el rol -->
+    </VBox>
+
+    <!-- Spacer -->
+    <Region VBox.vgrow="ALWAYS"/>
+
+    <!-- FOOTER - LOGOUT -->
+    <VBox styleClass="sidebar-footer">
+        <padding>
+            <Insets top="12" right="12" bottom="16" left="12"/>
+        </padding>
+
+        <Separator styleClass="sidebar-separator"/>
+
+        <ToggleButton fx:id="btnLogout"
+                      text="Cerrar sesión"
+                      maxWidth="Infinity"
+                      styleClass="sidebar-btn-logout">
+            <graphic>
+                <FontIcon iconLiteral="fas-sign-out-alt" iconSize="16"/>
+            </graphic>
+            <padding>
+                <Insets top="12" right="16" bottom="12" left="16"/>
+            </padding>
+        </ToggleButton>
     </VBox>
 
 </VBox>

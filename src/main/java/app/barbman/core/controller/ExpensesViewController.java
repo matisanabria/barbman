@@ -2,8 +2,6 @@ package app.barbman.core.controller;
 
 import app.barbman.core.model.*;
 import app.barbman.core.model.human.User;
-import app.barbman.core.repositories.cashbox.movement.CashboxMovementRepository;
-import app.barbman.core.repositories.cashbox.movement.CashboxMovementRepositoryImpl;
 import app.barbman.core.repositories.expense.ExpenseRepository;
 import app.barbman.core.repositories.expense.ExpenseRepositoryImpl;
 import app.barbman.core.repositories.paymentmethod.PaymentMethodRepositoryImpl;
@@ -18,7 +16,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.scene.layout.HBox;
 import javafx.util.StringConverter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -43,12 +40,14 @@ public class ExpensesViewController implements Initializable {
 
     @FXML private ComboBox<String> expenseTypeBox;
     @FXML private TextField amountField;
-    @FXML private TextField descriptionField;
+    @FXML private TextArea descriptionField;
     @FXML private Button saveButton;
 
-    // Payment Method toggle buttons
+    // Payment toggles (ahora son ToggleButtons individuales en lugar de HBox dinámico)
+    @FXML private ToggleButton cashToggle;
+    @FXML private ToggleButton transferToggle;
+
     private final ToggleGroup paymentGroup = new ToggleGroup();
-    @FXML private HBox paymentButtonsBox; // This will be initialized via FXML
     private final PaymentMethodsService paymentMethodsService = new PaymentMethodsService(new PaymentMethodRepositoryImpl());
     private final ExpenseRepository expenseRepo = new ExpenseRepositoryImpl();
     private final ExpensesService expenseService = new ExpensesService(expenseRepo);
@@ -58,12 +57,10 @@ public class ExpensesViewController implements Initializable {
         logger.info("{} Initializing expenses view...", PREFIX);
 
         setupTable();
-        loadPaymentMethodButtons();
+        setupPaymentToggles();
         loadExpenseTypes();
-
         displayExpenses();
 
-        expenseTypeBox.setItems(FXCollections.observableArrayList("supply", "service", "purchase", "tax", "other", "salary", "advance")); // FIXME: Duplicated code
         saveButton.setOnAction(event -> saveExpense());
 
         // Double-click to delete
@@ -86,64 +83,47 @@ public class ExpensesViewController implements Initializable {
         expensesTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         colDate.setCellValueFactory(new PropertyValueFactory<>("date"));
-        colType.setCellValueFactory(new PropertyValueFactory<>("type"));
+        colType.setCellValueFactory(cd ->
+                new SimpleStringProperty(translateExpenseType(cd.getValue().getType())));
         colAmount.setCellValueFactory(cd ->
                 new SimpleStringProperty(NumberFormatterUtil.format(cd.getValue().getAmount()) + " Gs"));
         colPaymentMethod.setCellValueFactory(cd -> {
             PaymentMethod p = paymentMethodsService.getPaymentMethodById(cd.getValue().getPaymentMethodId());
             String name = (p != null && p.getName() != null)
-                    ? TextFormatterUtil.capitalizeFirstLetter(p.getName())
-                    : "Unknown";
+                    ? translatePaymentMethod(p.getName())
+                    : "Desconocido";
             return new SimpleStringProperty(name);
         });
         colDescription.setCellValueFactory(cd ->
                 new SimpleStringProperty(cd.getValue().getDescription()));
     }
 
-    private void loadPaymentMethodButtons() {
-        List<PaymentMethod> methods = paymentMethodsService.getAllPaymentMethods();
-        ToggleButton defaultButton = null;
+    private void setupPaymentToggles() {
+        cashToggle.setToggleGroup(paymentGroup);
+        transferToggle.setToggleGroup(paymentGroup);
 
-        for (PaymentMethod method : methods) {
-            ToggleButton btn = new ToggleButton(TextFormatterUtil.capitalizeFirstLetter(method.getName()));
-            btn.setUserData(method);
-            btn.setToggleGroup(paymentGroup);
-            btn.getStyleClass().add("payment-toggle");
-            paymentButtonsBox.getChildren().add(btn);
+        // Seleccionar efectivo por defecto
+        paymentGroup.selectToggle(cashToggle);
 
-            // Guardar referencia al botón de "cash" o, si no hay, al primero
-            if (defaultButton == null || "cash".equalsIgnoreCase(method.getName())) {
-                defaultButton = btn;
-            }
-        }
-
-        // Seleccionar el botón por defecto
-        if (defaultButton != null) {
-            paymentGroup.selectToggle(defaultButton);
-            logger.info("{} Default payment method selected -> {}", PREFIX,
-                    ((PaymentMethod) defaultButton.getUserData()).getName());
-        }
-
-        logger.info("{} Loaded {} payment method buttons.", PREFIX, methods.size());
+        logger.info("{} Payment toggles configured (cash + transfer only).", PREFIX);
     }
-
 
     private void loadExpenseTypes() {
         List<String> expenseTypes = List.of(
-                "supply", "service", "purchase", "tax", "other", "salary", "advance" // FIXME: Duplicated code
+                "supply", "service", "purchase", "tax", "other", "salary", "advance"
         );
 
         expenseTypeBox.setItems(FXCollections.observableArrayList(expenseTypes));
 
-        // The converter capitalizes the first letter for display but keeps the original value internally
+        // Converter para mostrar traducido pero guardar en inglés
         expenseTypeBox.setConverter(new StringConverter<>() {
             @Override
             public String toString(String type) {
-                return type != null ? TextFormatterUtil.capitalizeFirstLetter(type) : "";
+                return type != null ? translateExpenseType(type) : "";
             }
 
             @Override
-            public String fromString(String s) { // Not using this rn, but must be implemented
+            public String fromString(String s) {
                 return s != null ? s.toLowerCase() : "";
             }
         });
@@ -151,7 +131,7 @@ public class ExpensesViewController implements Initializable {
         // Set default value
         expenseTypeBox.setValue(expenseTypes.get(0));
 
-        logger.info("{} {} expense types loaded into ChoiceBox.", PREFIX, expenseTypes.size());
+        logger.info("{} {} expense types loaded.", PREFIX, expenseTypes.size());
     }
 
     private void displayExpenses() {
@@ -162,43 +142,44 @@ public class ExpensesViewController implements Initializable {
         logger.info("{} {} expenses loaded in table.", PREFIX, expenses.size());
     }
 
-    private PaymentMethod getSelectedPaymentMethod() {
+    private int getSelectedPaymentMethod() {
         Toggle selected = paymentGroup.getSelectedToggle();
+
         if (selected == null) {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Seleccionar método de pago");
-            alert.setHeaderText(null);
-            alert.setContentText("Por favor, selecciona un método de pago antes de guardar.");
-            alert.showAndWait();
-            return null;
+            showAlert("Selecciona un método de pago");
+            return -1;
         }
-        return (PaymentMethod) selected.getUserData();
+
+        if (selected == cashToggle) return 0;       // cash
+        if (selected == transferToggle) return 1;   // transfer (banco)
+
+        return -1;
     }
 
     private void saveExpense() {
         String type = expenseTypeBox.getValue();
-        String desc = TextFormatterUtil.capitalizeFirstLetter(descriptionField.getText().trim());
+        String desc = descriptionField.getText().trim();
         String amountStr = amountField.getText().replace(".", "").trim();
-        PaymentMethod payment = getSelectedPaymentMethod();
+        int paymentMethodId = getSelectedPaymentMethod();
 
         if (type == null || type.isEmpty()) {
-            showAlert("You must select an expense type.");
+            showAlert("Debes seleccionar un tipo de egreso.");
             logger.warn("{} Validation failed: type not selected.", PREFIX);
             return;
         }
         if (desc.isEmpty()) {
-            showAlert("The 'Description' field cannot be empty.");
+            showAlert("El campo 'Descripción' no puede estar vacío.");
             logger.warn("{} Validation failed: description empty.", PREFIX);
             return;
         }
         if (amountStr.isEmpty()) {
-            showAlert("The 'Amount' field cannot be empty.");
+            showAlert("El campo 'Monto' no puede estar vacío.");
             logger.warn("{} Validation failed: amount empty.", PREFIX);
             return;
         }
-        if (payment == null) {
-            showAlert("You must select a payment method.");
-            logger.warn("{} Validation failed: payment method empty.", PREFIX);
+        if (paymentMethodId == -1) {
+            showAlert("Debes seleccionar un método de pago.");
+            logger.warn("{} Validation failed: payment method not selected.", PREFIX);
             return;
         }
 
@@ -209,18 +190,18 @@ public class ExpensesViewController implements Initializable {
                     type,
                     amount,
                     desc,
-                    payment.getId(),
+                    paymentMethodId,
                     SessionManager.getActiveUser().getId()
             );
 
-            logger.info("{} Expense added -> Type: {}, Amount: {}, Payment: {}, Desc: {}",
-                    PREFIX, type, amount, payment.getName(), desc);
+            logger.info("{} Expense added -> Type: {}, Amount: {}, Payment ID: {}, Desc: {}",
+                    PREFIX, type, amount, paymentMethodId, desc);
 
             displayExpenses();
             clearFields();
 
         } catch (NumberFormatException e) {
-            showAlert("The 'Amount' field must contain a valid number.");
+            showAlert("El campo 'Monto' debe contener un número válido.");
             logger.error("{} Error parsing amount: {}", PREFIX, e.getMessage());
         }
     }
@@ -234,48 +215,43 @@ public class ExpensesViewController implements Initializable {
         if ("admin".equalsIgnoreCase(role)) {
             canDelete = true;
         } else if ("user".equalsIgnoreCase(role)) {
-            // serviceheader.getDate() is already LocalDate
-            LocalDate serviceDate = expense.getDate();
+            LocalDate expenseDate = expense.getDate();
             LocalDate today = LocalDate.now();
-            canDelete = serviceDate.isEqual(today);
+            canDelete = expenseDate.isEqual(today);
         }
 
         if (!canDelete) {
-            showAlert("You do not have permission to delete this expense.");
+            showAlert("No tienes permiso para eliminar este egreso.");
             logger.warn("{} User '{}' tried to delete expense ID {} but lacks permission.",
                     PREFIX, activeUser.getName(), expense.getId());
             return;
         }
 
-        // First alert: show expense info
+        // First confirmation
         Alert firstAlert = new Alert(Alert.AlertType.CONFIRMATION);
-        firstAlert.setTitle("Confirm Deletion");
-        firstAlert.setHeaderText("Do you want to delete this expense?");
+        firstAlert.setTitle("Confirmar eliminación");
+        firstAlert.setHeaderText("¿Quieres eliminar este egreso?");
         firstAlert.setContentText(
-                "Expense ID: " + expense.getId() +
-                        "\nType: " + TextFormatterUtil.capitalizeFirstLetter(expense.getType()) +
-                        "\nDescription: " + (expense.getDescription() != null ? expense.getDescription() : "") +
-                        "\nAmount: " + NumberFormatterUtil.format(expense.getAmount()) + " Gs" +
-                        "\nDate: " + expense.getDate()
+                "ID: " + expense.getId() +
+                        "\nTipo: " + translateExpenseType(expense.getType()) +
+                        "\nDescripción: " + (expense.getDescription() != null ? expense.getDescription() : "") +
+                        "\nMonto: " + NumberFormatterUtil.format(expense.getAmount()) + " Gs" +
+                        "\nFecha: " + expense.getDate()
         );
 
         firstAlert.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
-                // Second alert: final confirmation
+                // Second confirmation
                 Alert secondAlert = new Alert(Alert.AlertType.CONFIRMATION);
-                secondAlert.setTitle("Are you sure?");
-                secondAlert.setHeaderText("This action cannot be undone.");
-                secondAlert.setContentText("Do you really want to delete this expense?");
+                secondAlert.setTitle("¿Estás seguro?");
+                secondAlert.setHeaderText("Esta acción no se puede deshacer.");
+                secondAlert.setContentText("¿Realmente quieres eliminar este egreso?");
                 secondAlert.showAndWait().ifPresent(secondResponse -> {
                     if (secondResponse == ButtonType.OK) {
                         expenseService.deleteExpense(expense.getId());
                         displayExpenses();
                         logger.info("{} Expense deleted -> ID: {}, Type: {}, Amount: {}, Date: {}",
-                                PREFIX,
-                                expense.getId(),
-                                expense.getType(),
-                                expense.getAmount(),
-                                expense.getDate());
+                                PREFIX, expense.getId(), expense.getType(), expense.getAmount(), expense.getDate());
                     } else {
                         logger.info("{} Deletion cancelled at final confirmation -> Expense ID: {}",
                                 PREFIX, expense.getId());
@@ -291,14 +267,39 @@ public class ExpensesViewController implements Initializable {
         descriptionField.clear();
         amountField.clear();
         expenseTypeBox.getSelectionModel().selectFirst();
+        paymentGroup.selectToggle(cashToggle); // Reset a efectivo
     }
 
     private void showAlert(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Validation");
+        alert.setTitle("Validación");
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
     }
 
+    // Traducción de payment methods (hardcoded, después con i18n)
+    private String translatePaymentMethod(String key) {
+        return switch (key) {
+            case "cash" -> "Efectivo";
+            case "transfer" -> "Banco";
+            case "card" -> "Tarjeta";
+            case "qr" -> "QR";
+            default -> "Desconocido";
+        };
+    }
+
+    // Traducción de expense types (hardcoded, después con i18n)
+    private String translateExpenseType(String key) {
+        return switch (key) {
+            case "supply" -> "Insumos";
+            case "service" -> "Servicio";
+            case "purchase" -> "Compra";
+            case "tax" -> "Impuesto";
+            case "other" -> "Otro";
+            case "salary" -> "Sueldo";
+            case "advance" -> "Adelanto";
+            default -> TextFormatterUtil.capitalizeFirstLetter(key);
+        };
+    }
 }

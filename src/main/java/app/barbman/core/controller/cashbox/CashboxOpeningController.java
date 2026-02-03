@@ -74,18 +74,18 @@ public class CashboxOpeningController {
 
         if (last != null) {
             previousCashLabel.setText(
-                    "Previous cash: " + NumberFormatterUtil.format(last.getExpectedCash())
+                    "Efectivo en último cierre: " + NumberFormatterUtil.format(last.getExpectedCash()) + " Gs"
             );
             previousBankLabel.setText(
-                    "Previous bank: " + NumberFormatterUtil.format(last.getExpectedBank())
+                    "En el banco en último cierre: " + NumberFormatterUtil.format(last.getExpectedBank()) + " Gs"
             );
             previousTotalLabel.setText(
-                    "Previous total: " + NumberFormatterUtil.format(last.getExpectedTotal())
+                    "Total último cierre: " + NumberFormatterUtil.format(last.getExpectedTotal()) + " Gs"
             );
         } else {
-            previousCashLabel.setText("Previous cash: 0");
-            previousBankLabel.setText("Previous bank: 0");
-            previousTotalLabel.setText("Previous total: 0");
+            previousCashLabel.setText("Efectivo en último cierre: 0 Gs");
+            previousBankLabel.setText("En el banco en último cierre: 0 Gs");
+            previousTotalLabel.setText("Total último cierre: 0 Gs");
         }
 
         // Listen to changes on fields to update total

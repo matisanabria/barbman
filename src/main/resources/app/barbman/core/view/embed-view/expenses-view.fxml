@@ -1,90 +1,190 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<ScrollPane fitToWidth="true" pannable="true"
-            style="-fx-background-color: transparent;"
-            xmlns="http://javafx.com/javafx/17.0.12"
+<BorderPane xmlns="http://javafx.com/javafx/17.0.12"
             xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="app.barbman.core.controller.ExpensesViewController">
+            fx:controller="app.barbman.core.controller.ExpensesViewController"
+            styleClass="expenses-root">
 
-    <content>
-        <VBox alignment="CENTER" fillWidth="true" prefWidth="600.0" spacing="16" style="-fx-padding: 24;">
-            <children>
+    <!-- TOP - TITLE & STATS (FIXED) -->
+    <top>
+        <VBox styleClass="expenses-header">
+            <HBox alignment="CENTER"
+                  prefHeight="56"
+                  styleClass="expenses-topbar">
+                <Label text="💸 Egresos"
+                       styleClass="expenses-title"/>
+            </HBox>
 
-                <!-- ====================================== -->
-                <!-- Registro de Egreso -->
-                <!-- ====================================== -->
-                <Label text="Registrar egreso" styleClass="services-title"/>
+            <!-- Stats bar -->
+            <HBox spacing="20"
+                  alignment="CENTER"
+                  styleClass="expenses-stats">
+                <padding>
+                    <Insets top="12" bottom="12"/>
+                </padding>
 
-                <VBox spacing="12" styleClass="services-section">
-                    <children>
-
-                        <!-- Línea 1: tipo, monto -->
-                        <HBox alignment="CENTER" spacing="18" styleClass="services-row">
-                            <children>
-                                <ComboBox fx:id="expenseTypeBox" prefWidth="180.0" promptText="Tipo de egreso" styleClass="services-combobox"/>
-                                <TextField fx:id="amountField" prefWidth="120.0" promptText="Monto (Gs)" styleClass="services-textfield"/>
-                            </children>
-                        </HBox>
-
-                        <!-- Línea 2: descripción -->
-                        <HBox alignment="CENTER" spacing="18" styleClass="services-row">
-                            <children>
-                                <TextField fx:id="descriptionField" promptText="Descripción del egreso" prefWidth="300.0" styleClass="services-textfield"/>
-                            </children>
-                        </HBox>
-
-                        <!-- Línea 3: métodos de pago -->
-                        <VBox spacing="6" alignment="CENTER">
-                            <children>
-                                <Label text="Método de pago:" style="-fx-font-weight: bold;"/>
-                                <HBox fx:id="paymentButtonsBox" spacing="10" alignment="CENTER">
-                                    <!-- ToggleButtons se generan dinámicamente -->
-                                </HBox>
-                            </children>
-                        </VBox>
-
-                        <!-- Línea 4: botón de guardar -->
-                        <HBox alignment="CENTER_RIGHT" spacing="10" styleClass="services-row">
-                            <children>
-                                <Button fx:id="saveButton" text="💾 Guardar egreso" prefWidth="150.0" styleClass="services-button"/>
-                            </children>
-                        </HBox>
-                    </children>
+                <VBox alignment="CENTER" styleClass="stat-card">
+                    <Label text="HOY" styleClass="stat-label"/>
+                    <Label fx:id="todayTotalLabel" text="0 Gs" styleClass="stat-value"/>
                 </VBox>
 
-                <Separator/>
+                <Separator orientation="VERTICAL"/>
 
-                <!-- ====================================== -->
-                <!-- Historial de Egresos -->
-                <!-- ====================================== -->
-                <Label text="Historial de egresos" styleClass="services-title"/>
+                <VBox alignment="CENTER" styleClass="stat-card">
+                    <Label text="ESTA SEMANA" styleClass="stat-label"/>
+                    <Label fx:id="weekTotalLabel" text="0 Gs" styleClass="stat-value"/>
+                </VBox>
 
-                <TableView fx:id="expensesTable"
-                           prefHeight="320.0"
-                           prefWidth="580.0"
-                           styleClass="main-table services-table">
-                    <columns>
-                        <TableColumn fx:id="colDate" prefWidth="110" text="Fecha"/>
-                        <TableColumn fx:id="colType" prefWidth="100" text="Tipo"/>
-                        <TableColumn fx:id="colAmount" prefWidth="120" text="Monto"/>
-                        <TableColumn fx:id="colPaymentMethod" prefWidth="100" text="Pago"/>
-                        <TableColumn fx:id="colDescription" prefWidth="200" text="Descripción"/>
-                    </columns>
-                </TableView>
+                <Separator orientation="VERTICAL"/>
 
-                <!-- Pie informativo -->
-                <HBox alignment="CENTER_RIGHT" spacing="10" styleClass="services-row" style="-fx-padding: 8 0 0 0;">
-                    <children>
-                        <Label text="Doble clic para eliminar un egreso" style="-fx-font-size: 11px; -fx-text-fill: #999;"/>
-                        <FontIcon iconLiteral="fas-info-circle" iconSize="12" iconColor="#888"/>
-                    </children>
-                </HBox>
-
-            </children>
+                <VBox alignment="CENTER" styleClass="stat-card">
+                    <Label text="ESTE MES" styleClass="stat-label"/>
+                    <Label fx:id="monthTotalLabel" text="0 Gs" styleClass="stat-value"/>
+                </VBox>
+            </HBox>
         </VBox>
-    </content>
-</ScrollPane>
+    </top>
+
+    <!-- CENTER - SCROLLABLE CONTENT -->
+    <center>
+        <ScrollPane fitToWidth="true"
+                    styleClass="expenses-scroll">
+            <VBox spacing="24"
+                  styleClass="expenses-content">
+                <padding>
+                    <Insets top="24" right="40" bottom="24" left="40"/>
+                </padding>
+
+                <!-- ========== REGISTRO RÁPIDO (HORIZONTAL CARDS) ========== -->
+                <VBox spacing="16" styleClass="expenses-register-section">
+
+                    <Label text="⚡ REGISTRO RÁPIDO"
+                           styleClass="section-title"/>
+
+                    <!-- Primera fila: Tipo, Monto, Descripción -->
+                    <HBox spacing="16" fillHeight="true">
+
+                        <!-- Tipo -->
+                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                            <Label text="Tipo de egreso"
+                                   styleClass="field-label"/>
+                            <ComboBox fx:id="expenseTypeBox"
+                                      maxWidth="Infinity"
+                                      styleClass="expenses-combo"/>
+                        </VBox>
+
+                        <!-- Monto -->
+                        <VBox spacing="8" prefWidth="250">
+                            <Label text="Monto"
+                                   styleClass="field-label"/>
+                            <TextField fx:id="amountField"
+                                       promptText="0"
+                                       styleClass="expenses-amount-field-compact"/>
+                        </VBox>
+
+                    </HBox>
+
+                    <!-- Segunda fila: Descripción (full width) -->
+                    <VBox spacing="8">
+                        <Label text="Descripción"
+                               styleClass="field-label"/>
+                        <TextArea fx:id="descriptionField"
+                                  prefRowCount="2"
+                                  promptText="¿En qué se gastó?"
+                                  styleClass="expenses-textarea"/>
+                    </VBox>
+
+                    <!-- Tercera fila: Payment methods + Button -->
+                    <HBox spacing="20" alignment="CENTER_LEFT">
+
+                        <!-- Payment methods -->
+                        <VBox spacing="8">
+                            <Label text="Método de pago"
+                                   styleClass="field-label"/>
+
+                            <HBox spacing="16">
+                                <!-- Efectivo -->
+                                <VBox alignment="CENTER" spacing="6">
+                                    <ToggleButton fx:id="cashToggle"
+                                                  text="💵"
+                                                  styleClass="payment-icon-toggle-compact"/>
+                                    <Label text="Efectivo" styleClass="payment-label"/>
+                                </VBox>
+
+                                <!-- Banco (transferencia) -->
+                                <VBox alignment="CENTER" spacing="6">
+                                    <ToggleButton fx:id="transferToggle"
+                                                  text="🏦"
+                                                  styleClass="payment-icon-toggle-compact"/>
+                                    <Label text="Banco" styleClass="payment-label"/>
+                                </VBox>
+                            </HBox>
+                        </VBox>
+
+                        <!-- Spacer -->
+                        <Region HBox.hgrow="ALWAYS"/>
+
+                        <!-- Save button -->
+                        <Button fx:id="saveButton"
+                                text="💾 REGISTRAR EGRESO"
+                                prefWidth="220"
+                                styleClass="expenses-save-btn"/>
+                    </HBox>
+                </VBox>
+
+                <!-- ========== HISTORIAL (TABLA) ========== -->
+                <VBox spacing="16" styleClass="expenses-table-section">
+
+                    <!-- Table header -->
+                    <HBox alignment="CENTER_LEFT" spacing="12">
+                        <Label text="📋 HISTORIAL"
+                               styleClass="section-title"/>
+
+                        <Region HBox.hgrow="ALWAYS"/>
+
+                        <Label fx:id="totalExpensesLabel"
+                               text="0 egresos"
+                               styleClass="table-count"/>
+                    </HBox>
+
+                    <!-- Table -->
+                    <TableView fx:id="expensesTable"
+                               prefHeight="450"
+                               styleClass="expenses-table">
+                        <columns>
+                            <TableColumn fx:id="colDate"
+                                         prefWidth="110"
+                                         text="📅 Fecha"/>
+                            <TableColumn fx:id="colType"
+                                         prefWidth="100"
+                                         text="🏷️ Tipo"/>
+                            <TableColumn fx:id="colAmount"
+                                         prefWidth="130"
+                                         text="💰 Monto"/>
+                            <TableColumn fx:id="colPaymentMethod"
+                                         prefWidth="100"
+                                         text="💳 Pago"/>
+                            <TableColumn fx:id="colDescription"
+                                         prefWidth="300"
+                                         text="📝 Descripción"/>
+                        </columns>
+                    </TableView>
+
+                    <!-- Footer hint -->
+                    <HBox alignment="CENTER" spacing="8">
+                        <Label text="💡"
+                               styleClass="hint-icon"/>
+                        <Label text="Doble clic para eliminar | Solo administradores pueden eliminar egresos antiguos"
+                               styleClass="table-hint"/>
+                    </HBox>
+                </VBox>
+
+            </VBox>
+        </ScrollPane>
+    </center>
+
+</BorderPane>
