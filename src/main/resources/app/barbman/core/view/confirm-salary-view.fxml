@@ -1,57 +1,121 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="400.0" prefWidth="320.0"
-            xmlns="http://javafx.com/javafx/17"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="app.barbman.core.controller.salary.ConfirmSalaryController">
+<BorderPane xmlns="http://javafx.com/javafx/17.0.12"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="app.barbman.core.controller.salary.ConfirmSalaryController"
+            styleClass="confirm-salary-root"
+            prefWidth="450"
+            prefHeight="550">
 
-    <children>
-        <VBox alignment="CENTER" spacing="12.0"
-              layoutX="10.0" layoutY="10.0"
-              prefWidth="300.0"
-              prefHeight="500.0"
-              styleClass="adelanto-card">
-
-            <!-- Title -->
-            <Label text="Registrar Sueldo" styleClass="login-title"/>
-
-            <!-- Caja de resumen -->
-            <TitledPane text="Resumen semanal" expanded="true" collapsible="false" prefWidth="280.0">
-                <VBox spacing="6.0" style="-fx-padding: 8;">
-                    <Label fx:id="lblProduction" text="Producción: 0 Gs"/>
-                    <Label fx:id="lblSalaryAdvance" text="Adelantos: 0 Gs"/>
-                    <Label fx:id="lblFinalAmount" text="Sueldo final: 0 Gs" style="-fx-font-weight: bold;"/>
-                </VBox>
-            </TitledPane>
-
-            <!-- Manual amount (Default hidden) -->
-            <VBox spacing="2.0" fx:id="manualMontoBox" visible="false" managed="false">
-                <Label text="Monto manual" styleClass="form-label"/>
-                <TextField fx:id="manualAmountField" promptText="Ingrese amount manual" styleClass="services-textfield"/>
-            </VBox>
-
-            <!-- Bono -->
-            <VBox spacing="2.0">
-                <Label text="Bono adicional" styleClass="form-label"/>
-                <TextField fx:id="bonusField" promptText="Ingrese bono (opcional)" styleClass="services-textfield"/>
-            </VBox>
-
-            <!-- Forma de pago -->
-            <VBox spacing="2.0">
-                <Label text="Forma de pago" styleClass="form-label"/>
-                <ChoiceBox fx:id="paymentTypeChoiceBox" prefWidth="240.0" styleClass="services-choicebox"/>
-            </VBox>
-
-
-            <!-- Botones -->
-            <HBox spacing="10.0" alignment="CENTER">
-                <Button text="Pagar" fx:id="saveBtn" styleClass="login-button" onAction="#onPay"/>
-                <Button text="Cancelar" fx:id="cancelBtn" styleClass="cancel-button" onAction="#onCancel"/>
-            </HBox>
-
+    <!-- HEADER -->
+    <top>
+        <VBox styleClass="confirm-salary-header">
+            <padding>
+                <Insets top="20" right="24" bottom="20" left="24"/>
+            </padding>
+            <Label text="💰 Confirmar Pago de Sueldo" styleClass="confirm-salary-title"/>
         </VBox>
-    </children>
-</AnchorPane>
+    </top>
+
+    <!-- CONTENT -->
+    <center>
+        <ScrollPane fitToWidth="true" styleClass="confirm-salary-scroll">
+            <VBox spacing="20" styleClass="confirm-salary-content">
+                <padding>
+                    <Insets top="24" right="24" bottom="24" left="24"/>
+                </padding>
+
+                <!-- RESUMEN SECTION -->
+                <VBox spacing="12" styleClass="confirm-salary-section">
+                    <Label text="Resumen Semanal" styleClass="confirm-salary-section-title"/>
+
+                    <VBox spacing="8" styleClass="confirm-salary-summary-box">
+                        <padding>
+                            <Insets top="16" right="16" bottom="16" left="16"/>
+                        </padding>
+
+                        <HBox alignment="CENTER_LEFT" spacing="8">
+                            <Label text="📊" styleClass="confirm-salary-icon"/>
+                            <Label fx:id="lblProduction"
+                                   text="Producción: 0 Gs"
+                                   styleClass="confirm-salary-summary-label"/>
+                        </HBox>
+
+                        <Separator styleClass="confirm-salary-separator"/>
+
+                        <HBox alignment="CENTER_LEFT" spacing="8">
+                            <Label text="💸" styleClass="confirm-salary-icon"/>
+                            <Label fx:id="lblAdvances"
+                                   text="Adelantos: 0 Gs"
+                                   styleClass="confirm-salary-summary-label-negative"/>
+                        </HBox>
+
+                        <Separator styleClass="confirm-salary-separator"/>
+
+                        <HBox alignment="CENTER_LEFT" spacing="8">
+                            <Label text="💵" styleClass="confirm-salary-icon"/>
+                            <Label fx:id="lblFinalAmount"
+                                   text="Monto final: 0 Gs"
+                                   styleClass="confirm-salary-summary-total"/>
+                        </HBox>
+                    </VBox>
+                </VBox>
+
+                <!-- MANUAL AMOUNT (hidden by default) -->
+                <VBox fx:id="manualMontoBox" spacing="8" styleClass="confirm-salary-section">
+                    <Label text="Monto Manual" styleClass="confirm-salary-label"/>
+                    <TextField fx:id="manualAmountField"
+                               promptText="Ingrese el monto manual"
+                               styleClass="confirm-salary-field"/>
+                    <Label text="⚠️ Este empleado requiere monto manual"
+                           styleClass="confirm-salary-hint"/>
+                </VBox>
+
+                <!-- BONUS -->
+                <VBox spacing="8" styleClass="confirm-salary-section">
+                    <Label text="Bono Adicional (Opcional)" styleClass="confirm-salary-label"/>
+                    <TextField fx:id="bonusField"
+                               promptText="Ingrese bono adicional"
+                               styleClass="confirm-salary-field"/>
+                    <Label text="💡 El bono se sumará al monto final"
+                           styleClass="confirm-salary-hint"/>
+                </VBox>
+
+                <!-- PAYMENT METHOD -->
+                <VBox spacing="8" styleClass="confirm-salary-section">
+                    <Label text="Método de Pago" styleClass="confirm-salary-label"/>
+                    <ChoiceBox fx:id="paymentTypeChoiceBox"
+                               prefWidth="400"
+                               styleClass="confirm-salary-choice"/>
+                </VBox>
+
+            </VBox>
+        </ScrollPane>
+    </center>
+
+    <!-- FOOTER / BUTTONS -->
+    <bottom>
+        <HBox styleClass="confirm-salary-footer" spacing="12" alignment="CENTER_RIGHT">
+            <padding>
+                <Insets top="16" right="24" bottom="20" left="24"/>
+            </padding>
+
+            <Button fx:id="cancelBtn"
+                    text="Cancelar"
+                    onAction="#onCancel"
+                    styleClass="confirm-salary-btn-cancel"
+                    prefWidth="120"/>
+
+            <Button fx:id="saveBtn"
+                    text="💵 Pagar"
+                    onAction="#onPay"
+                    styleClass="confirm-salary-btn-pay"
+                    prefWidth="140"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>

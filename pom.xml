@@ -5,8 +5,7 @@
 
     <groupId>app.barbman</groupId>
     <artifactId>core</artifactId>
-    <version>1.2.0-BETA1-SNAPSHOT</version>
-    <displayName>barbman</displayName>
+    <version>1.2</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

@@ -1,0 +1,395 @@
+/* ==========================================================
+   SUELDOS VIEW - MODERN SALARY MANAGEMENT
+   ========================================================== */
+
+/* ==========================
+   ROOT
+   ========================== */
+.sueldos-root {
+    -fx-background-color: #2F2F2F;
+}
+
+/* ==========================
+   HEADER SECTION
+   ========================== */
+.sueldos-header {
+    -fx-background-color: linear-gradient(to bottom, #232323, #2A2A2A);
+    -fx-border-color: #3A3A3A;
+    -fx-border-width: 0 0 1 0;
+}
+
+.sueldos-title {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+/* ==========================
+   STAT CARDS
+   ========================== */
+.sueldos-stat-card {
+    -fx-background-color: #1F1F1F;
+    -fx-background-radius: 14;
+    -fx-border-color: #3A3A3A;
+    -fx-border-width: 1;
+    -fx-border-radius: 14;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 8, 0, 0, 2);
+}
+
+.sueldos-stat-card:hover {
+    -fx-background-color: #252525;
+    -fx-border-color: #454545;
+}
+
+.sueldos-stat-label {
+    -fx-text-fill: #888888;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-letter-spacing: 1.2px;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.sueldos-stat-value {
+    -fx-text-fill: #F0C667;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.sueldos-stat-value-accent {
+    -fx-text-fill: #FFB84D;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.sueldos-stat-value-success {
+    -fx-text-fill: #4ECB71;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+/* ==========================
+   CONTENT AREA
+   ========================== */
+.sueldos-content {
+    -fx-background-color: #2F2F2F;
+}
+
+.sueldos-filter-label {
+    -fx-text-fill: #AAAAAA;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.sueldos-periodo {
+    -fx-text-fill: #F0C667;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-background-color: #232323;
+    -fx-background-radius: 8;
+    -fx-padding: 6 12;
+}
+
+.sueldos-search {
+    -fx-background-color: #232323;
+    -fx-background-radius: 10;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 14px;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-padding: 10 14;
+    -fx-prompt-text-fill: #666666;
+    -fx-border-color: #3A3A3A;
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+}
+
+.sueldos-search:focused {
+    -fx-border-color: #F0C667;
+    -fx-background-color: #2A2A2A;
+}
+
+/* ==========================
+   TABLE
+   ========================== */
+.sueldos-table {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+/* Table header */
+.sueldos-table .column-header-background {
+    -fx-background-color: #1F1F1F;
+    -fx-border-color: #3A3A3A;
+    -fx-border-width: 0 0 2 0;
+}
+
+.sueldos-table .column-header {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.sueldos-table .column-header .label {
+    -fx-text-fill: #CCCCCC;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-alignment: center-left;
+    -fx-padding: 12 8;
+}
+
+/* Table rows */
+.sueldos-table .table-row-cell {
+    -fx-background-color: #232323;
+    -fx-border-color: #2A2A2A;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 8 0;
+}
+
+.sueldos-table .table-row-cell:odd {
+    -fx-background-color: #272727;
+}
+
+.sueldos-table .table-row-cell:hover {
+    -fx-background-color: #2F2F2F;
+    -fx-border-color: #F0C667;
+}
+
+.sueldos-table .table-row-cell:selected {
+    -fx-background-color: rgba(240, 198, 103, 0.15);
+    -fx-border-color: #F0C667;
+}
+
+/* Table cells */
+.sueldos-table .table-cell {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 14px;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-alignment: center-left;
+    -fx-padding: 12 8;
+    -fx-border-color: transparent;
+}
+
+/* Scrollbar */
+.sueldos-table .scroll-bar:vertical {
+    -fx-background-color: #1F1F1F;
+}
+
+.sueldos-table .scroll-bar:vertical .thumb {
+    -fx-background-color: #3A3A3A;
+    -fx-background-radius: 5;
+}
+
+.sueldos-table .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #4A4A4A;
+}
+
+/* ==========================
+   TABLE CELL CUSTOM STYLES
+   ========================== */
+
+/* Empleado cell */
+.sueldos-cell-empleado {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 15px;
+    -fx-font-weight: 600;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+/* Producción cell */
+.sueldos-cell-produccion {
+    -fx-text-fill: #AAAAAA;
+    -fx-font-size: 14px;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+/* Adelantos cell */
+.sueldos-cell-adelantos {
+    -fx-text-fill: #FF9B9B;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+/* Monto cell */
+.sueldos-cell-monto {
+    -fx-text-fill: #F0C667;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+/* ==========================
+   ESTADO BADGES
+   ========================== */
+.sueldos-badge {
+    -fx-background-radius: 8;
+    -fx-padding: 6 14;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-alignment: center;
+}
+
+.sueldos-badge-pendiente {
+    -fx-background-color: rgba(255, 180, 77, 0.2);
+    -fx-text-fill: #FFB84D;
+    -fx-border-color: #FFB84D;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+}
+
+.sueldos-badge-pagado {
+    -fx-background-color: rgba(78, 203, 113, 0.2);
+    -fx-text-fill: #4ECB71;
+    -fx-border-color: #4ECB71;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+}
+
+.sueldos-badge-parcial {
+    -fx-background-color: rgba(108, 156, 255, 0.2);
+    -fx-text-fill: #6C9CFF;
+    -fx-border-color: #6C9CFF;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+}
+
+/* ==========================
+   ACTION BUTTONS (dentro de la tabla)
+   ========================== */
+.sueldos-btn-pagar {
+    -fx-background-color: #F0C667;
+    -fx-background-radius: 8;
+    -fx-text-fill: #232323;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-padding: 8 16;
+    -fx-cursor: hand;
+}
+
+.sueldos-btn-pagar:hover {
+    -fx-background-color: #FFD97A;
+}
+
+.sueldos-btn-pagar:pressed {
+    -fx-background-color: #D4AA4A;
+}
+
+.sueldos-btn-pagar:disabled {
+    -fx-background-color: #3A3A3A;
+    -fx-text-fill: #666666;
+    -fx-opacity: 0.6;
+}
+
+.sueldos-btn-ver {
+    -fx-background-color: #3A3A3A;
+    -fx-background-radius: 8;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-padding: 8 16;
+    -fx-cursor: hand;
+}
+
+.sueldos-btn-ver:hover {
+    -fx-background-color: #454545;
+}
+
+/* ==========================
+   HEADER BUTTONS
+   ========================== */
+.sueldos-btn-adelanto {
+    -fx-background-color: #F0C667;
+    -fx-background-radius: 12;
+    -fx-text-fill: #232323;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-padding: 12 24;
+    -fx-cursor: hand;
+}
+
+.sueldos-btn-adelanto:hover {
+    -fx-background-color: #FFD97A;
+}
+
+/* ==========================
+   FOOTER SECTION
+   ========================== */
+.sueldos-footer {
+    -fx-background-color: #232323;
+    -fx-border-color: #3A3A3A;
+    -fx-border-width: 1 0 0 0;
+}
+
+.sueldos-btn-primary {
+    -fx-background-color: #F0C667;
+    -fx-background-radius: 12;
+    -fx-text-fill: #232323;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-padding: 12 28;
+    -fx-cursor: hand;
+}
+
+.sueldos-btn-primary:hover {
+    -fx-background-color: #FFD97A;
+}
+
+.sueldos-btn-secondary {
+    -fx-background-color: #3A3A3A;
+    -fx-background-radius: 12;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 15px;
+    -fx-font-weight: 600;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-padding: 12 28;
+    -fx-cursor: hand;
+}
+
+.sueldos-btn-secondary:hover {
+    -fx-background-color: #454545;
+}
+
+/* ==========================
+   EMPTY STATE
+   ========================== */
+.sueldos-empty {
+    -fx-padding: 60 20;
+}
+
+.sueldos-empty-icon {
+    -fx-font-size: 48px;
+}
+
+.sueldos-empty-text {
+    -fx-text-fill: #888888;
+    -fx-font-size: 16px;
+    -fx-font-weight: 600;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+/* ==========================
+   AVATAR (para la columna empleado)
+   ========================== */
+.sueldos-avatar {
+    -fx-background-color: #F0C667;
+    -fx-background-radius: 50%;
+    -fx-text-fill: #232323;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-alignment: center;
+    -fx-min-width: 36px;
+    -fx-min-height: 36px;
+    -fx-max-width: 36px;
+    -fx-max-height: 36px;
+}

@@ -19,6 +19,13 @@ public class Product {
     private String notes;
 
     // For creating new products
+    public Product(String name, double costPrice, double unitPrice, int stock) {
+        this.name = name;
+        this.costPrice = costPrice;
+        this.unitPrice = unitPrice;
+        this.stock = stock;
+    }
+    // For creating new products
     public Product(String name, double costPrice, double unitPrice, int stock,
                    String category, String brand, String imagePath, String notes) {
         this.name = name;
@@ -50,7 +57,6 @@ public class Product {
         this.brand = brand;
         this.notes = notes;
     }
-
 
     // Getters
     public int getId() { return id; }

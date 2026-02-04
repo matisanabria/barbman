@@ -69,4 +69,12 @@ public class ProductService {
         logger.info("{} Deleting product ID {}", PREFIX, id);
         productRepository.delete(id);
     }
+    public void softDelete(int id) {
+        Product product = productRepository.findById(id);
+        if (product != null) {
+            product.setStock(0);  // Set stock to 0
+            productRepository.update(product);
+            logger.info("{} Product soft deleted (stock set to 0) -> ID {}", PREFIX, id);
+        }
+    }
 }

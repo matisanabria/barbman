@@ -1,0 +1,317 @@
+/* ==========================================================
+   SETTINGS VIEW - NETFLIX STYLE TABS
+   ========================================================== */
+
+/* ROOT */
+.settings-root {
+    -fx-background-color: #1F1F1F;
+}
+
+/* HEADER */
+.settings-header {
+    -fx-background-color: #2F2F2F;
+    -fx-border-color: #3A3A3A;
+    -fx-border-width: 0 0 1 0;
+}
+
+.settings-title {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+/* ========================================= */
+/* TABPANE - NETFLIX STYLE */
+/* ========================================= */
+
+.settings-tabpane {
+    -fx-background-color: #1F1F1F;
+    -fx-border-color: transparent;
+}
+
+/* Tab header area */
+.settings-tabpane .tab-header-area {
+    -fx-padding: 0;
+    -fx-background-color: #232323;
+    -fx-border-color: #3A3A3A;
+    -fx-border-width: 0 0 2 0;
+}
+
+.settings-tabpane .tab-header-area .headers-region {
+    -fx-padding: 0;
+}
+
+.settings-tabpane .tab-header-area .tab-header-background {
+    -fx-background-color: #232323;
+}
+
+/* Individual tabs */
+.settings-tabpane .tab {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-border-color: transparent;
+    -fx-padding: 16 24;
+    -fx-cursor: hand;
+}
+
+.settings-tabpane .tab .tab-label {
+    -fx-text-fill: #AAAAAA;
+    -fx-font-size: 15px;
+    -fx-font-weight: 600;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+/* Tab hover */
+.settings-tabpane .tab:hover {
+    -fx-background-color: #2A2A2A;
+}
+
+/* Tab selected */
+.settings-tabpane .tab:selected {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent #F0C667 transparent;
+    -fx-border-width: 0 0 3 0;
+}
+
+.settings-tabpane .tab:selected .tab-label {
+    -fx-text-fill: #F0C667;
+}
+
+/* Tab content area */
+.settings-tabpane .tab-content-area {
+    -fx-background-color: #1F1F1F;
+    -fx-padding: 0;
+}
+
+/* ========================================= */
+/* TAB CONTENT */
+/* ========================================= */
+
+.settings-tab-content {
+    -fx-background-color: #1F1F1F;
+}
+
+.settings-section-title {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+/* ========================================= */
+/* BUTTONS */
+/* ========================================= */
+
+.settings-btn-add {
+    -fx-background-color: #F0C667;
+    -fx-background-radius: 8;
+    -fx-text-fill: #232323;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-padding: 10 20;
+    -fx-cursor: hand;
+}
+
+.settings-btn-add:hover {
+    -fx-background-color: #FFD97A;
+}
+
+.settings-btn-edit {
+    -fx-background-color: #4A90E2;
+    -fx-background-radius: 6;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 14px;
+    -fx-padding: 8 12;
+    -fx-cursor: hand;
+}
+
+.settings-btn-edit:hover {
+    -fx-background-color: #5CA0F2;
+}
+
+.settings-btn-delete {
+    -fx-background-color: #FF6B6B;
+    -fx-background-radius: 6;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 14px;
+    -fx-padding: 8 12;
+    -fx-cursor: hand;
+}
+
+.settings-btn-delete:hover {
+    -fx-background-color: #FF8787;
+}
+
+/* ========================================= */
+/* LIST */
+/* ========================================= */
+
+.settings-list {
+    -fx-background-color: #2F2F2F;
+    -fx-background-radius: 10;
+    -fx-padding: 20;
+    -fx-border-color: #3A3A3A;
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+}
+
+.settings-list-title {
+    -fx-text-fill: #AAAAAA;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+/* ========================================= */
+/* ITEMS */
+/* ========================================= */
+
+.settings-item {
+    -fx-background-color: #232323;
+    -fx-background-radius: 8;
+    -fx-padding: 14 16;
+    -fx-border-color: #3A3A3A;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+}
+
+.settings-item:hover {
+    -fx-background-color: #2A2A2A;
+    -fx-border-color: #F0C667;
+}
+
+.settings-item-name {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 15px;
+    -fx-font-weight: 600;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.settings-item-price {
+    -fx-text-fill: #4ECB71;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.settings-item-stock {
+    -fx-text-fill: #AAAAAA;
+    -fx-font-size: 13px;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.settings-item-status {
+    -fx-text-fill: #4ECB71;
+    -fx-font-size: 13px;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.settings-item-role {
+    -fx-text-fill: #F0C667;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-background-color: #3A3A3A;
+    -fx-background-radius: 4;
+    -fx-padding: 4 8;
+}
+
+.settings-item-info {
+    -fx-text-fill: #AAAAAA;
+    -fx-font-size: 13px;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+/* ========================================= */
+/* EMPTY STATE */
+/* ========================================= */
+
+.settings-empty-message {
+    -fx-text-fill: #666666;
+    -fx-font-size: 14px;
+    -fx-font-style: italic;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-padding: 20;
+    -fx-alignment: center;
+}
+
+/* ========================================= */
+/* FORM */
+/* ========================================= */
+
+.settings-form {
+    -fx-background-color: #232323;
+    -fx-background-radius: 10;
+    -fx-padding: 20;
+    -fx-border-color: #F0C667;
+    -fx-border-width: 2;
+    -fx-border-radius: 10;
+}
+
+.settings-form-title {
+    -fx-text-fill: #F0C667;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.settings-form-label {
+    -fx-text-fill: #AAAAAA;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.settings-form-field {
+    -fx-background-color: #2F2F2F;
+    -fx-background-radius: 6;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 14px;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-padding: 10 12;
+    -fx-border-color: #3A3A3A;
+    -fx-border-width: 1;
+    -fx-border-radius: 6;
+}
+
+.settings-form-field:focused {
+    -fx-border-color: #F0C667;
+    -fx-border-width: 2;
+}
+
+.settings-form-field .text {
+    -fx-fill: #FFFFFF;
+}
+
+.settings-form-btn-cancel {
+    -fx-background-color: #3A3A3A;
+    -fx-background-radius: 6;
+    -fx-text-fill: #AAAAAA;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-padding: 10 20;
+    -fx-cursor: hand;
+}
+
+.settings-form-btn-cancel:hover {
+    -fx-background-color: #4A4A4A;
+    -fx-text-fill: #FFFFFF;
+}
+
+.settings-form-btn-save {
+    -fx-background-color: #F0C667;
+    -fx-background-radius: 6;
+    -fx-text-fill: #232323;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-padding: 10 20;
+    -fx-cursor: hand;
+}
+
+.settings-form-btn-save:hover {
+    -fx-background-color: #FFD97A;
+}

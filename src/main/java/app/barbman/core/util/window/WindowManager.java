@@ -94,11 +94,11 @@ public class WindowManager {
             stage.setScene(scene);
             applyIcon(stage, request);
 
-            // Title
+            // Y luego cambiar el título por defecto:
             if (request.getTitle() != null && !request.getTitle().isBlank()) {
                 stage.setTitle(request.getTitle());
             } else {
-                stage.setTitle("Barbman");
+                stage.setTitle("Barbman v" + getAppVersion());
             }
 
             // Owner
@@ -239,5 +239,17 @@ public class WindowManager {
         }
     }
 
-
+    private static String getAppVersion() {
+        try {
+            var props = new java.util.Properties();
+            var stream = WindowManager.class.getResourceAsStream("/version.properties");
+            if (stream != null) {
+                props.load(stream);
+                return props.getProperty("version", "1.0.0");
+            }
+        } catch (Exception e) {
+            logger.warn("[VERSION] Could not load version.properties", e);
+        }
+        return "1.0.0"; // fallback
+    }
 }

@@ -1,0 +1,161 @@
+/* ==========================================================
+   ALERTS STYLING
+   ========================================================== */
+
+/* Dialog Pane */
+.alert-dialog {
+    -fx-background-color: #2F2F2F;
+}
+
+.alert-dialog > *.content {
+    -fx-background-color: #2F2F2F;
+    -fx-padding: 20;
+}
+
+/* Header (if used) */
+.alert-dialog > *.header-panel {
+    -fx-background-color: #232323;
+    -fx-padding: 16;
+}
+
+.alert-dialog > *.header-panel > *.label {
+    -fx-text-fill: #FFFFFF !important;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+/* Content Text - FORZAR BLANCO */
+.alert-dialog > *.content.label,
+.alert-dialog > *.content > .label,
+.alert-dialog .label {
+    -fx-text-fill: #FFFFFF !important;
+    -fx-font-size: 14px;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-wrap-text: true;
+}
+
+/* Button Bar */
+.alert-dialog > *.button-bar {
+    -fx-background-color: #2F2F2F;
+    -fx-padding: 16;
+}
+
+/* Buttons - Base */
+.alert-dialog .button,
+.alert-dialog > *.button-bar > *.container > .button {
+    -fx-background-color: #3A3A3A;
+    -fx-background-radius: 6;
+    -fx-text-fill: #FFFFFF !important;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-padding: 10 20;
+    -fx-cursor: hand;
+}
+
+.alert-dialog .button:hover {
+    -fx-background-color: #4A4A4A;
+}
+
+.alert-dialog .button:pressed {
+    -fx-background-color: #2A2A2A;
+}
+
+/* OK Button (primary) */
+.alert-dialog .button:default {
+    -fx-background-color: #F0C667 !important;
+    -fx-text-fill: #232323 !important;
+}
+
+.alert-dialog .button:default:hover {
+    -fx-background-color: #FFD97A !important;
+}
+
+.alert-dialog .button:default:pressed {
+    -fx-background-color: #D4AA4A !important;
+}
+
+/* Cancel Button */
+.alert-dialog .button:cancel-button {
+    -fx-background-color: #3A3A3A !important;
+    -fx-text-fill: #AAAAAA !important;
+}
+
+.alert-dialog .button:cancel-button:hover {
+    -fx-background-color: #4A4A4A !important;
+    -fx-text-fill: #FFFFFF !important;
+}
+
+/* Button text color override */
+.alert-dialog .button > .text {
+    -fx-fill: #FFFFFF;
+}
+
+.alert-dialog .button:default > .text {
+    -fx-fill: #232323;
+}
+
+.alert-dialog .button:cancel-button > .text {
+    -fx-fill: #AAAAAA;
+}
+
+.alert-dialog .button:cancel-button:hover > .text {
+    -fx-fill: #FFFFFF;
+}
+
+/* Error Alert - Red accent */
+.alert-dialog[type="ERROR"] .button:default {
+    -fx-background-color: #FF6B6B !important;
+    -fx-text-fill: #FFFFFF !important;
+}
+
+.alert-dialog[type="ERROR"] .button:default:hover {
+    -fx-background-color: #FF8787 !important;
+}
+
+.alert-dialog[type="ERROR"] .button:default > .text {
+    -fx-fill: #FFFFFF;
+}
+
+/* Warning Alert - Orange accent */
+.alert-dialog[type="WARNING"] .button:default {
+    -fx-background-color: #FFA726 !important;
+    -fx-text-fill: #232323 !important;
+}
+
+.alert-dialog[type="WARNING"] .button:default:hover {
+    -fx-background-color: #FFB74D !important;
+}
+
+.alert-dialog[type="WARNING"] .button:default > .text {
+    -fx-fill: #232323;
+}
+
+/* Info Alert - Blue accent */
+.alert-dialog[type="INFORMATION"] .button:default {
+    -fx-background-color: #4A90E2 !important;
+    -fx-text-fill: #FFFFFF !important;
+}
+
+.alert-dialog[type="INFORMATION"] .button:default:hover {
+    -fx-background-color: #5CA0F2 !important;
+}
+
+.alert-dialog[type="INFORMATION"] .button:default > .text {
+    -fx-fill: #FFFFFF;
+}
+
+/* Confirmation Alert - Gold accent (default) */
+.alert-dialog[type="CONFIRMATION"] .button:default {
+    -fx-background-color: #F0C667 !important;
+    -fx-text-fill: #232323 !important;
+}
+
+.alert-dialog[type="CONFIRMATION"] .button:default:hover {
+    -fx-background-color: #FFD97A !important;
+}
+
+.alert-dialog[type="CONFIRMATION"] .button:default > .text {
+    -fx-fill: #232323;
+}

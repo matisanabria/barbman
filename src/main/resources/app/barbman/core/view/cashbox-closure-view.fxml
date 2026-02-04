@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17.0.12"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="app.barbman.core.controller.cashbox.CashboxClosureController"
+            styleClass="closure-root"
+            prefWidth="500"
+            prefHeight="450">
+
+    <!-- HEADER -->
+    <top>
+        <VBox styleClass="closure-header">
+            <padding>
+                <Insets top="20" right="24" bottom="20" left="24"/>
+            </padding>
+            <Label text="🔒 Confirmar Cierre de Caja" styleClass="closure-title"/>
+            <Label text="Revisa los montos esperados antes de confirmar"
+                   styleClass="closure-subtitle"/>
+        </VBox>
+    </top>
+
+    <!-- CONTENT -->
+    <center>
+        <VBox spacing="20" styleClass="closure-content">
+            <padding>
+                <Insets top="24" right="24" bottom="24" left="24"/>
+            </padding>
+
+            <!-- PERÍODO -->
+            <VBox spacing="8">
+                <Label fx:id="periodLabel"
+                       text="Período: -- → --"
+                       styleClass="closure-period"/>
+            </VBox>
+
+            <Separator/>
+
+            <!-- MONTOS ESPERADOS -->
+            <VBox spacing="12" styleClass="closure-amounts">
+                <Label fx:id="cashLabel"
+                       text="💵 Efectivo esperado: 0 Gs"
+                       styleClass="closure-amount-label"/>
+
+                <Label fx:id="bankLabel"
+                       text="🏦 Banco esperado: 0 Gs"
+                       styleClass="closure-amount-label"/>
+
+                <Separator/>
+
+                <Label fx:id="totalLabel"
+                       text="💰 Total esperado: 0 Gs"
+                       styleClass="closure-total-label"/>
+            </VBox>
+
+            <Separator/>
+
+            <!-- NOTAS -->
+            <VBox spacing="8">
+                <Label text="📝 Notas (opcional)" styleClass="closure-label"/>
+                <TextArea fx:id="notesArea"
+                          promptText="Agrega observaciones sobre este cierre..."
+                          prefRowCount="4"
+                          wrapText="true"
+                          styleClass="closure-textarea"/>
+            </VBox>
+
+        </VBox>
+    </center>
+
+    <!-- FOOTER / BUTTONS -->
+    <bottom>
+        <HBox styleClass="closure-footer" spacing="12" alignment="CENTER_RIGHT">
+            <padding>
+                <Insets top="16" right="24" bottom="20" left="24"/>
+            </padding>
+
+            <Button text="Cancelar"
+                    onAction="#onCancel"
+                    styleClass="closure-btn-cancel"
+                    prefWidth="120"/>
+
+            <Button text="✓ Confirmar Cierre"
+                    onAction="#onConfirmClosure"
+                    styleClass="closure-btn-confirm"
+                    prefWidth="160"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>

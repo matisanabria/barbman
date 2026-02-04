@@ -95,7 +95,20 @@ public class CashboxMovementRepositoryImpl implements CashboxMovementRepository 
 
     @Override
     public void delete(Integer id) {
-        throw new UnsupportedOperationException("Cashbox movements must not be deleted.");
+        String sql = "DELETE FROM cashbox_movements WHERE id = ?";
+
+        try (Connection db = DbBootstrap.connect();
+             PreparedStatement ps = db.prepareStatement(sql)) {
+
+            ps.setInt(1, id);
+            ps.executeUpdate();
+
+            logger.info("{} Movement deleted (ID={})", PREFIX, id);
+
+        } catch (Exception e) {
+            logger.error("{} Failed to delete movement ID {}: {}", PREFIX, id, e.getMessage());
+            throw new RuntimeException("Error deleting cashbox movement", e);
+        }
     }
 
     @Override
@@ -154,8 +167,15 @@ public class CashboxMovementRepositoryImpl implements CashboxMovementRepository 
                 (Integer) rs.getObject("reference_id"),
                 rs.getString("description"),
                 (Integer) rs.getObject("user_id"),
-                LocalDateTime.parse(rs.getString("occurred_at")),
-                LocalDateTime.parse(rs.getString("created_at"))
+                parseDateTime(rs.getString("occurred_at")),  // ✅ ARREGLADO
+                parseDateTime(rs.getString("created_at"))     // ✅ ARREGLADO
         );
+    }
+
+    // Agregar este método helper
+    private LocalDateTime parseDateTime(String datetime) {
+        // SQLite guarda con espacio: "2026-02-03 18:22:30"
+        // Java espera con T: "2026-02-03T18:22:30"
+        return LocalDateTime.parse(datetime.replace(" ", "T"));
     }
 }

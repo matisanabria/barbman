@@ -22,12 +22,37 @@ public class UsersService {
     }
 
     /**
-     * Fetch all users from the repository.
+     * Create a new user.
+     * Validates that the user doesn't already have an ID.
+     */
+    public void create(User user) {
+        if (user == null) {
+            throw new IllegalArgumentException("User cannot be null");
+        }
+
+        if (user.getId() != 0) {
+            throw new IllegalArgumentException("Cannot create user with existing ID. Use update() instead.");
+        }
+
+        // Validate PIN uniqueness
+        User existingUser = usersRepository.findByPin(user.getPin());
+        if (existingUser != null) {
+            throw new IllegalArgumentException("PIN already exists. Please use a different PIN.");
+        }
+
+        usersRepository.save(user);
+        logger.info("{} User created -> {} (ID: {})", PREFIX, user.getName(), user.getId());
+    }
+
+    /**
+     * Fetch all active users (excluding deleted ones).
      */
     public List<User> getAllUsers() {
-        logger.info("{} Fetching all users...", PREFIX);
-        List<User> users = usersRepository.findAll();
-        logger.info("{} {} users loaded.", PREFIX, users.size());
+        logger.info("{} Fetching all active users...", PREFIX);
+        List<User> users = usersRepository.findAll().stream()
+                .filter(u -> !"deleted".equals(u.getRole()))
+                .collect(java.util.stream.Collectors.toList());
+        logger.info("{} {} active users loaded.", PREFIX, users.size());
         return users;
     }
 
@@ -56,5 +81,17 @@ public class UsersService {
     public void deleteUser(int id) {
         usersRepository.delete(id);
         logger.info("{} User deleted -> ID {}", PREFIX, id);
+    }
+    /**
+     * Soft delete a user by setting their role to "deleted".
+     * This removes them from active operations while preserving data integrity.
+     */
+    public void softDelete(int id) {
+        User user = usersRepository.findById(id);
+        if (user != null) {
+            user.setRole("deleted");
+            usersRepository.update(user);
+            logger.info("{} User soft deleted (role set to 'deleted') -> ID {}", PREFIX, id);
+        }
     }
 }

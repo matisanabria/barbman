@@ -57,7 +57,7 @@
          RIGHT - CART PANEL
          ===================== -->
     <right>
-        <VBox prefWidth="400"
+        <VBox prefWidth="450"
               spacing="16"
               styleClass="sale-cart-panel">
             <padding>

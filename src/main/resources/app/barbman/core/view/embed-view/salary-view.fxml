@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17.0.12"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="app.barbman.core.controller.salary.SalaryController"
+            styleClass="sueldos-root">
+
+    <!-- TOP - HEADER CON TÍTULO Y ESTADÍSTICAS -->
+    <top>
+        <VBox styleClass="sueldos-header">
+            <padding>
+                <Insets top="24" right="24" bottom="24" left="24"/>
+            </padding>
+
+            <!-- Título principal -->
+            <HBox alignment="CENTER_LEFT" spacing="16">
+                <Label text="💰 Sueldos Semanales" styleClass="sueldos-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button fx:id="btnRegistrarAdelanto"
+                        text="+ Registrar Adelanto"
+                        styleClass="sueldos-btn-adelanto"/>
+            </HBox>
+
+            <!-- Stats Cards -->
+            <HBox spacing="16" VBox.vgrow="NEVER">
+                <VBox.margin>
+                    <Insets top="20"/>
+                </VBox.margin>
+
+                <!-- Empleados activos -->
+                <VBox styleClass="sueldos-stat-card" spacing="6" HBox.hgrow="ALWAYS">
+                    <padding>
+                        <Insets top="16" right="16" bottom="16" left="16"/>
+                    </padding>
+                    <Label text="EMPLEADOS" styleClass="sueldos-stat-label"/>
+                    <Label fx:id="lblTotalEmpleados" text="0" styleClass="sueldos-stat-value"/>
+                </VBox>
+
+                <!-- Pendientes -->
+                <VBox styleClass="sueldos-stat-card" spacing="6" HBox.hgrow="ALWAYS">
+                    <padding>
+                        <Insets top="16" right="16" bottom="16" left="16"/>
+                    </padding>
+                    <Label text="PENDIENTES" styleClass="sueldos-stat-label"/>
+                    <Label fx:id="lblPendientes" text="0" styleClass="sueldos-stat-value-accent"/>
+                </VBox>
+
+                <!-- Pagados -->
+                <VBox styleClass="sueldos-stat-card" spacing="6" HBox.hgrow="ALWAYS">
+                    <padding>
+                        <Insets top="16" right="16" bottom="16" left="16"/>
+                    </padding>
+                    <Label text="PAGADOS" styleClass="sueldos-stat-label"/>
+                    <Label fx:id="lblPagados" text="0" styleClass="sueldos-stat-value-success"/>
+                </VBox>
+            </HBox>
+        </VBox>
+    </top>
+
+    <!-- CENTER - TABLA DE SUELDOS -->
+    <center>
+        <VBox styleClass="sueldos-content">
+            <padding>
+                <Insets top="0" right="24" bottom="24" left="24"/>
+            </padding>
+
+            <!-- Filtros y búsqueda (opcional) -->
+            <HBox spacing="12" alignment="CENTER_LEFT">
+                <VBox.margin>
+                    <Insets bottom="16"/>
+                </VBox.margin>
+
+                <Label text="Semana actual:" styleClass="sueldos-filter-label"/>
+                <Label fx:id="lblPeriodoActual" text="01/02/2026 - 07/02/2026" styleClass="sueldos-periodo"/>
+
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <!-- Búsqueda -->
+                <TextField fx:id="searchField"
+                           promptText="🔍 Buscar empleado..."
+                           styleClass="sueldos-search"
+                           prefWidth="250"/>
+            </HBox>
+
+            <!-- Tabla -->
+            <TableView fx:id="sueldosTable"
+                       styleClass="sueldos-table"
+                       VBox.vgrow="ALWAYS">
+                <columns>
+                    <!-- Avatar + Nombre -->
+                    <TableColumn fx:id="colBarbero"
+                                 prefWidth="200"
+                                 text="Empleado"
+                                 styleClass="sueldos-col-header"/>
+
+                    <!-- Producción -->
+                    <TableColumn fx:id="colProduccion"
+                                 prefWidth="150"
+                                 text="Producción"
+                                 styleClass="sueldos-col-header"/>
+
+                    <!-- Adelantos -->
+                    <TableColumn fx:id="colAdelantos"
+                                 prefWidth="130"
+                                 text="Adelantos"
+                                 styleClass="sueldos-col-header"/>
+
+                    <!-- Monto final -->
+                    <TableColumn fx:id="colMonto"
+                                 prefWidth="150"
+                                 text="Monto a Pagar"
+                                 styleClass="sueldos-col-header"/>
+
+                    <!-- Estado -->
+                    <TableColumn fx:id="colEstado"
+                                 prefWidth="120"
+                                 text="Estado"
+                                 styleClass="sueldos-col-header"/>
+
+                    <!-- Acciones -->
+                    <TableColumn fx:id="colAccion"
+                                 prefWidth="150"
+                                 text="Acciones"
+                                 styleClass="sueldos-col-header"/>
+                </columns>
+
+                <placeholder>
+                    <VBox alignment="CENTER" spacing="12" styleClass="sueldos-empty">
+                        <Label text="📋" styleClass="sueldos-empty-icon"/>
+                        <Label text="No hay sueldos registrados esta semana" styleClass="sueldos-empty-text"/>
+                    </VBox>
+                </placeholder>
+            </TableView>
+
+        </VBox>
+    </center>
+
+    <!-- BOTTOM - ACCIONES GENERALES (OPCIONAL) -->
+    <bottom>
+        <HBox styleClass="sueldos-footer" alignment="CENTER_RIGHT" spacing="12">
+            <padding>
+                <Insets top="16" right="24" bottom="16" left="24"/>
+            </padding>
+
+        </HBox>
+    </bottom>
+
+</BorderPane>

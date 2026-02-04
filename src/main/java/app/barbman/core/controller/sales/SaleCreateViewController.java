@@ -11,6 +11,7 @@ import app.barbman.core.repositories.users.UsersRepositoryImpl;
 import app.barbman.core.service.sales.products.ProductService;
 import app.barbman.core.service.sales.services.ServiceDefinitionsService;
 import app.barbman.core.service.users.UsersService;
+import app.barbman.core.util.AlertUtil;
 import app.barbman.core.util.NumberFormatterUtil;
 import app.barbman.core.util.SessionManager;
 import app.barbman.core.util.TextFormatterUtil;
@@ -123,18 +124,26 @@ public class SaleCreateViewController implements Initializable {
 
     private void loadServices() {
         var services = serviceDefinitionsService.getAll();
-        services.forEach(def ->
-                servicesListContainer.getChildren()
-                        .add(buildServiceCard(def))
-        );
+
+        // Filter: Only show available services
+        services.stream()
+                .filter(ServiceDefinition::isAvailable)  // Solo disponibles
+                .forEach(def ->
+                        servicesListContainer.getChildren()
+                                .add(buildServiceCard(def))
+                );
     }
 
     private void loadProducts() {
         var products = productService.getAll();
-        products.forEach(p ->
-                servicesListContainer.getChildren()
-                        .add(buildProductCard(p))
-        );
+
+        // Filter: Only show products with stock > 0
+        products.stream()
+                .filter(p -> p.getStock() > 0)  // Solo con stock
+                .forEach(p ->
+                        servicesListContainer.getChildren()
+                                .add(buildProductCard(p))
+                );
     }
 
     private void refreshCart() {
@@ -157,8 +166,7 @@ public class SaleCreateViewController implements Initializable {
     private void setupConfirmButton() {
         confirmButton.setOnAction(e -> {
             if (cart.getCartItems().isEmpty()) {
-                new Alert(Alert.AlertType.ERROR,
-                        "Debe agregar al menos un item").show();
+                AlertUtil.showError("Carrito Vacío", "Agrega al menos un ítem al carrito antes de continuar.");
                 return;
             }
 

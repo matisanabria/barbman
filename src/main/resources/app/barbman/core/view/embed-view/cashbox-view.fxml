@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/17.0.12"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="app.barbman.core.controller.CashboxController"
+            fitToWidth="true"
+            styleClass="caja-scrollpane">
+
+    <content>
+        <VBox spacing="24" styleClass="caja-root">
+            <padding>
+                <Insets top="24" right="24" bottom="24" left="24"/>
+            </padding>
+
+            <!-- HEADER CON BOTÓN CERRAR CAJA -->
+            <HBox alignment="CENTER_LEFT" spacing="16">
+                <Label text="💰 Caja" styleClass="caja-main-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="🔒 Cerrar Caja"
+                        onAction="#onCloseCashbox"
+                        styleClass="caja-btn-close"/>
+            </HBox>
+
+            <Separator/>
+
+            <!-- ========================================= -->
+            <!-- RESUMEN DIARIO -->
+            <!-- ========================================= -->
+            <VBox spacing="16" styleClass="caja-section">
+
+                <!-- Header -->
+                <HBox alignment="CENTER_LEFT" spacing="12">
+                    <Label text="📅 Resumen Diario" styleClass="caja-section-title"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <ChoiceBox fx:id="choiceFechas"
+                               prefWidth="150"
+                               styleClass="caja-choice"/>
+                </HBox>
+
+                <!-- Fecha -->
+                <Label fx:id="lblFechaDiaria"
+                       text="Fecha: --/--/----"
+                       styleClass="caja-period-label"/>
+
+                <!-- Cards de montos -->
+                <HBox spacing="16" alignment="CENTER_LEFT">
+
+                    <!-- EFECTIVO -->
+                    <VBox spacing="8" styleClass="caja-card" HBox.hgrow="ALWAYS">
+                        <Label text="💵 Efectivo" styleClass="caja-card-title"/>
+                        <Separator/>
+                        <Label fx:id="lblCashInDiaria" text="+ 0 Gs" styleClass="caja-amount-in"/>
+                        <Label fx:id="lblCashOutDiaria" text="- 0 Gs" styleClass="caja-amount-out"/>
+                        <Separator/>
+                        <Label fx:id="lblCashBalanceDiaria" text="= 0 Gs" styleClass="caja-balance"/>
+                    </VBox>
+
+                    <!-- BANCO -->
+                    <VBox spacing="8" styleClass="caja-card" HBox.hgrow="ALWAYS">
+                        <Label text="🏦 Banco" styleClass="caja-card-title"/>
+                        <Separator/>
+                        <Label fx:id="lblBankInDiaria" text="+ 0 Gs" styleClass="caja-amount-in"/>
+                        <Label fx:id="lblBankOutDiaria" text="- 0 Gs" styleClass="caja-amount-out"/>
+                        <Separator/>
+                        <Label fx:id="lblBankBalanceDiaria" text="= 0 Gs" styleClass="caja-balance"/>
+                    </VBox>
+
+                    <!-- TOTAL -->
+                    <VBox spacing="8" styleClass="caja-card caja-card-total" HBox.hgrow="ALWAYS">
+                        <Label text="💰 Total" styleClass="caja-card-title"/>
+                        <Separator/>
+                        <Label fx:id="lblTotalBalanceDiaria" text="0 Gs" styleClass="caja-total"/>
+                    </VBox>
+
+                </HBox>
+
+                <!-- Producción -->
+                <VBox spacing="8" styleClass="caja-production">
+                    <Label text="👤 Producción por empleado" styleClass="caja-production-title"/>
+                    <VBox fx:id="boxProduccionDiaria" spacing="4"/>
+                </VBox>
+
+            </VBox>
+
+            <Separator/>
+
+            <!-- ========================================= -->
+            <!-- RESUMEN SEMANAL -->
+            <!-- ========================================= -->
+            <VBox spacing="16" styleClass="caja-section">
+
+                <!-- Header -->
+                <HBox alignment="CENTER_LEFT" spacing="12">
+                    <Label text="📊 Resumen Semanal" styleClass="caja-section-title"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <ChoiceBox fx:id="choiceSemanas"
+                               prefWidth="270"
+                               styleClass="caja-choice"/>
+                </HBox>
+
+                <!-- Semana -->
+                <Label fx:id="lblSemana"
+                       text="Semana: --/-- → --/--"
+                       styleClass="caja-period-label"/>
+
+                <!-- Cards de montos -->
+                <HBox spacing="16" alignment="CENTER_LEFT">
+
+                    <!-- EFECTIVO -->
+                    <VBox spacing="8" styleClass="caja-card" HBox.hgrow="ALWAYS">
+                        <Label text="💵 Efectivo" styleClass="caja-card-title"/>
+                        <Separator/>
+                        <Label fx:id="lblCashInSemanal" text="+ 0 Gs" styleClass="caja-amount-in"/>
+                        <Label fx:id="lblCashOutSemanal" text="- 0 Gs" styleClass="caja-amount-out"/>
+                        <Separator/>
+                        <Label fx:id="lblCashBalanceSemanal" text="= 0 Gs" styleClass="caja-balance"/>
+                    </VBox>
+
+                    <!-- BANCO -->
+                    <VBox spacing="8" styleClass="caja-card" HBox.hgrow="ALWAYS">
+                        <Label text="🏦 Banco" styleClass="caja-card-title"/>
+                        <Separator/>
+                        <Label fx:id="lblBankInSemanal" text="+ 0 Gs" styleClass="caja-amount-in"/>
+                        <Label fx:id="lblBankOutSemanal" text="- 0 Gs" styleClass="caja-amount-out"/>
+                        <Separator/>
+                        <Label fx:id="lblBankBalanceSemanal" text="= 0 Gs" styleClass="caja-balance"/>
+                    </VBox>
+
+                    <!-- TOTAL -->
+                    <VBox spacing="8" styleClass="caja-card caja-card-total" HBox.hgrow="ALWAYS">
+                        <Label text="💰 Total" styleClass="caja-card-title"/>
+                        <Separator/>
+                        <Label fx:id="lblTotalBalanceSemanal" text="0 Gs" styleClass="caja-total"/>
+                    </VBox>
+
+                </HBox>
+
+                <!-- Producción -->
+                <VBox spacing="8" styleClass="caja-production">
+                    <Label text="👤 Producción por empleado" styleClass="caja-production-title"/>
+                    <VBox fx:id="boxProduccionSemanal" spacing="4"/>
+                </VBox>
+
+            </VBox>
+
+            <Separator/>
+
+            <!-- ========================================= -->
+            <!-- RESUMEN MENSUAL -->
+            <!-- ========================================= -->
+            <VBox spacing="16" styleClass="caja-section">
+
+                <!-- Header -->
+                <HBox alignment="CENTER_LEFT" spacing="12">
+                    <Label text="📈 Resumen Mensual" styleClass="caja-section-title"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <ChoiceBox fx:id="choiceMeses"
+                               prefWidth="180"
+                               styleClass="caja-choice"/>
+                </HBox>
+
+                <!-- Mes -->
+                <Label fx:id="lblMes"
+                       text="Mes: ----"
+                       styleClass="caja-period-label"/>
+
+                <!-- Cards de montos -->
+                <HBox spacing="16" alignment="CENTER_LEFT">
+
+                    <!-- EFECTIVO -->
+                    <VBox spacing="8" styleClass="caja-card" HBox.hgrow="ALWAYS">
+                        <Label text="💵 Efectivo" styleClass="caja-card-title"/>
+                        <Separator/>
+                        <Label fx:id="lblCashInMensual" text="+ 0 Gs" styleClass="caja-amount-in"/>
+                        <Label fx:id="lblCashOutMensual" text="- 0 Gs" styleClass="caja-amount-out"/>
+                        <Separator/>
+                        <Label fx:id="lblCashBalanceMensual" text="= 0 Gs" styleClass="caja-balance"/>
+                    </VBox>
+
+                    <!-- BANCO -->
+                    <VBox spacing="8" styleClass="caja-card" HBox.hgrow="ALWAYS">
+                        <Label text="🏦 Banco" styleClass="caja-card-title"/>
+                        <Separator/>
+                        <Label fx:id="lblBankInMensual" text="+ 0 Gs" styleClass="caja-amount-in"/>
+                        <Label fx:id="lblBankOutMensual" text="- 0 Gs" styleClass="caja-amount-out"/>
+                        <Separator/>
+                        <Label fx:id="lblBankBalanceMensual" text="= 0 Gs" styleClass="caja-balance"/>
+                    </VBox>
+
+                    <!-- TOTAL -->
+                    <VBox spacing="8" styleClass="caja-card caja-card-total" HBox.hgrow="ALWAYS">
+                        <Label text="💰 Total" styleClass="caja-card-title"/>
+                        <Separator/>
+                        <Label fx:id="lblTotalBalanceMensual" text="0 Gs" styleClass="caja-total"/>
+                    </VBox>
+
+                </HBox>
+
+                <!-- Producción -->
+                <VBox spacing="8" styleClass="caja-production">
+                    <Label text="👤 Producción por empleado" styleClass="caja-production-title"/>
+                    <VBox fx:id="boxProduccionMensual" spacing="4"/>
+                </VBox>
+
+            </VBox>
+
+        </VBox>
+    </content>
+
+</ScrollPane>

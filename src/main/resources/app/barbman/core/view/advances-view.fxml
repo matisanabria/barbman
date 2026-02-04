@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17.0.12"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="app.barbman.core.controller.salary.AdvancesController"
+            styleClass="advances-root"
+            prefWidth="450"
+            prefHeight="480">
+
+    <!-- HEADER -->
+    <top>
+        <VBox styleClass="advances-header">
+            <padding>
+                <Insets top="20" right="24" bottom="20" left="24"/>
+            </padding>
+            <Label text="💸 Registrar Adelanto" styleClass="advances-title"/>
+            <Label text="Registra un adelanto de sueldo para un empleado"
+                   styleClass="advances-subtitle"/>
+        </VBox>
+    </top>
+
+    <!-- CONTENT -->
+    <center>
+        <VBox spacing="20" styleClass="advances-content">
+            <padding>
+                <Insets top="24" right="24" bottom="24" left="24"/>
+            </padding>
+
+            <!-- EMPLEADO -->
+            <VBox spacing="8">
+                <Label text="Empleado" styleClass="advances-label"/>
+                <ComboBox fx:id="employeeComboBox"
+                          promptText="Selecciona un empleado"
+                          prefWidth="400"
+                          styleClass="advances-combo"/>
+                <Label text="💡 Selecciona el empleado que recibirá el adelanto"
+                       styleClass="advances-hint"/>
+            </VBox>
+
+            <!-- MONTO -->
+            <VBox spacing="8">
+                <Label text="Monto del Adelanto" styleClass="advances-label"/>
+                <TextField fx:id="amountField"
+                           promptText="Ingrese el monto"
+                           styleClass="advances-field"/>
+                <Label text="💰 Ingresa el monto sin puntos ni comas"
+                       styleClass="advances-hint"/>
+            </VBox>
+
+            <!-- MÉTODO DE PAGO -->
+            <VBox spacing="8">
+                <Label text="Método de Pago" styleClass="advances-label"/>
+                <ChoiceBox fx:id="paymentMethodChoice"
+                           prefWidth="400"
+                           styleClass="advances-choice"/>
+                <Label text="🏦 Selecciona cómo se entregó el adelanto"
+                       styleClass="advances-hint"/>
+            </VBox>
+
+            <!-- DESCRIPCIÓN (OPCIONAL) -->
+            <VBox spacing="8">
+                <Label text="Descripción (Opcional)" styleClass="advances-label"/>
+                <TextArea fx:id="descriptionArea"
+                          promptText="Agrega una nota o motivo del adelanto..."
+                          prefRowCount="3"
+                          wrapText="true"
+                          styleClass="advances-textarea"/>
+            </VBox>
+
+        </VBox>
+    </center>
+
+    <!-- FOOTER / BUTTONS -->
+    <bottom>
+        <HBox styleClass="advances-footer" spacing="12" alignment="CENTER_RIGHT">
+            <padding>
+                <Insets top="16" right="24" bottom="20" left="24"/>
+            </padding>
+
+            <Button fx:id="btnCancelar"
+                    text="Cancelar"
+                    onAction="#onCancel"
+                    styleClass="advances-btn-cancel"
+                    prefWidth="120"/>
+
+            <Button fx:id="btnGuardar"
+                    text="💸 Registrar"
+                    onAction="#onSave"
+                    styleClass="advances-btn-save"
+                    prefWidth="140"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>

@@ -74,4 +74,12 @@ public class ServiceDefinitionsService {
         serviceDefinitionRepository.delete(id);
         logger.info("{} ServiceHeader definition deleted -> ID {}", PREFIX, id);
     }
+    public void softDelete(int id) {
+        ServiceDefinition service = serviceDefinitionRepository.findById(id);
+        if (service != null) {
+            service.setAvailable(false);  // Soft delete
+            serviceDefinitionRepository.update(service);
+            logger.info("{} Service soft deleted (set unavailable) -> ID {}", PREFIX, id);
+        }
+    }
 }

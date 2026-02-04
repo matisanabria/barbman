@@ -59,10 +59,10 @@
                     <Insets top="24" right="40" bottom="24" left="40"/>
                 </padding>
 
-                <!-- ========== REGISTRO RÁPIDO (HORIZONTAL CARDS) ========== -->
+                <!-- ========== REGISTRO ========== -->
                 <VBox spacing="16" styleClass="expenses-register-section">
 
-                    <Label text="⚡ REGISTRO RÁPIDO"
+                    <Label text="⚡ REGISTRAR EGRESO"
                            styleClass="section-title"/>
 
                     <!-- Primera fila: Tipo, Monto, Descripción -->
@@ -130,7 +130,7 @@
 
                         <!-- Save button -->
                         <Button fx:id="saveButton"
-                                text="💾 REGISTRAR EGRESO"
+                                text="REGISTRAR EGRESO"
                                 prefWidth="220"
                                 styleClass="expenses-save-btn"/>
                     </HBox>
@@ -141,7 +141,7 @@
 
                     <!-- Table header -->
                     <HBox alignment="CENTER_LEFT" spacing="12">
-                        <Label text="📋 HISTORIAL"
+                        <Label text="HISTORIAL"
                                styleClass="section-title"/>
 
                         <Region HBox.hgrow="ALWAYS"/>
@@ -158,19 +158,19 @@
                         <columns>
                             <TableColumn fx:id="colDate"
                                          prefWidth="110"
-                                         text="📅 Fecha"/>
+                                         text="Fecha"/>
                             <TableColumn fx:id="colType"
                                          prefWidth="100"
-                                         text="🏷️ Tipo"/>
+                                         text="Tipo"/>
                             <TableColumn fx:id="colAmount"
                                          prefWidth="130"
-                                         text="💰 Monto"/>
+                                         text="Monto"/>
                             <TableColumn fx:id="colPaymentMethod"
                                          prefWidth="100"
-                                         text="💳 Pago"/>
+                                         text="Pago"/>
                             <TableColumn fx:id="colDescription"
                                          prefWidth="300"
-                                         text="📝 Descripción"/>
+                                         text="Descripción"/>
                         </columns>
                     </TableView>
 

@@ -3,6 +3,7 @@ package app.barbman.core.controller;
 import app.barbman.core.model.human.User;
 import app.barbman.core.repositories.users.UsersRepository;
 import app.barbman.core.repositories.users.UsersRepositoryImpl;
+import app.barbman.core.util.AlertUtil;
 import app.barbman.core.util.PhraseLoaderUtil;
 import app.barbman.core.util.SessionManager;
 import app.barbman.core.util.window.WindowManager;
@@ -196,7 +197,7 @@ public class LoginController implements Initializable {
         String PIN = pinField.getText();
         User session = usersRepo.findByPin(PIN);
 
-        if (session != null && session.getPin().equals(PIN)) {
+        if (session != null && session.getPin().equals(PIN) && !session.getRole().equals("deleted")) {
             logger.info("{} Valid PIN. Starting session for user '{}'.",
                     PREFIX, session.getName());
 
@@ -212,7 +213,11 @@ public class LoginController implements Initializable {
                             .build()
             );
 
-        } else {
+        }else if(session != null && session.getRole().equals("deleted")) {
+            logger.warn("{} Attempted login with deleted user PIN: {}", PREFIX, PIN);
+            AlertUtil.showWarning("Acceso Denegado", "El usuario asociado a este PIN ha sido deshabilitado.");
+        }
+        else {
             logger.warn("{} Invalid PIN entered: {}", PREFIX, PIN);
             wrongPin();
         }

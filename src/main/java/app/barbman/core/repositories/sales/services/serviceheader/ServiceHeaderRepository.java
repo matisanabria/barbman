@@ -15,4 +15,9 @@
         void save(ServiceHeader s, Connection conn) throws SQLException;
         void update(ServiceHeader s, Connection conn) throws SQLException;
         void delete(Integer id, Connection conn) throws SQLException;
+
+        /**
+         * Finds the service header for a given sale.
+         */
+        ServiceHeader findBySaleId(int saleId);
     }

@@ -21,22 +21,14 @@ public class ClientService {
     }
 
     /**
-     * Registers a new client after validating required fields and RUC rules (if region is PY).
+     * Registers a new client after validating required fields.
+     * Only name is required. Phone, email, document, and notes are optional.
      */
     public void registerClient(String name, String document, String phone, String email, String notes) {
 
-        // ------- Requisitos mínimos -------
-        if (name == null || name.isBlank())
+        // Only name is required
+        if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("Client name is required.");
-
-        if (phone == null || phone.isBlank())
-            throw new IllegalArgumentException("Client phone number is required.");
-
-        // ------- Validación de RUC según región -------
-        if (document != null && !document.isBlank() && SessionManager.isParaguay()) {
-            if (!RucValidator.isValidParaguayRuc(document)) {
-                throw new IllegalArgumentException("RUC inválido para Paraguay.");
-            }
         }
 
         Client c = new Client(name, document, phone, email, notes, true);
@@ -61,5 +53,13 @@ public class ClientService {
     public void delete(int id) {
         repo.delete(id);
         logger.info("{} Client deleted -> {}", PREFIX, id);
+    }
+    public void softDelete(int id) {
+        Client client = repo.findById(id);
+        if (client != null) {
+            client.setActive(false);  // Soft delete
+            repo.update(client);
+            logger.info("{} Client soft deleted (set inactive) -> ID {}", PREFIX, id);
+        }
     }
 }

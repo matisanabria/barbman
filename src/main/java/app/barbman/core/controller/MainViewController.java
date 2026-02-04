@@ -70,10 +70,7 @@ public class MainViewController {
         User user = SessionManager.getActiveUser();
         if (user == null) return;
 
-        String sidebarPath =
-                "admin".equals(user.getRole())
-                        ? "/app/barbman/core/view/sidebar/sidebar-admin.fxml"
-                        : "/app/barbman/core/view/sidebar/sidebar-user.fxml";
+        String sidebarPath = "/app/barbman/core/view/sidebar/sidebar-admin.fxml";
 
         try {
             FXMLLoader loader = new FXMLLoader(

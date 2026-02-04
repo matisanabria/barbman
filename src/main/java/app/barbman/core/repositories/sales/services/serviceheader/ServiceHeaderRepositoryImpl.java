@@ -195,6 +195,29 @@ public class ServiceHeaderRepositoryImpl implements ServiceHeaderRepository {
 
         return total;
     }
+    @Override
+    public ServiceHeader findBySaleId(int saleId) {
+        String sql = SELECT_BASE + " WHERE sale_id = ?";
+
+        try (Connection db = DbBootstrap.connect();
+             PreparedStatement ps = db.prepareStatement(sql)) {
+
+            ps.setInt(1, saleId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    logger.debug("{} Found service header for sale_id={}", PREFIX, saleId);
+                    return mapRow(rs);
+                }
+            }
+
+        } catch (Exception e) {
+            logger.error("{} Error fetching service header by sale_id {}: {}",
+                    PREFIX, saleId, e.getMessage());
+        }
+
+        return null;
+    }
 
     private ServiceHeader mapRow(ResultSet rs) throws SQLException {
 

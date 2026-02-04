@@ -1,0 +1,188 @@
+/* ==========================================================
+   SALE DETAIL MODAL
+   ========================================================== */
+
+/* ROOT */
+.sale-detail-root {
+    -fx-background-color: #2F2F2F;
+}
+
+/* HEADER */
+.sale-detail-header {
+    -fx-background-color: linear-gradient(to bottom, #232323, #2A2A2A);
+    -fx-border-color: #3A3A3A;
+    -fx-border-width: 0 0 2 0;
+}
+
+.sale-detail-title {
+    -fx-text-fill: #F0C667;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.sale-detail-subtitle {
+    -fx-text-fill: #AAAAAA;
+    -fx-font-size: 14px;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.sale-detail-number {
+    -fx-text-fill: #F0C667;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+/* SCROLL */
+.sale-detail-scroll {
+    -fx-background-color: #2F2F2F;
+}
+
+.sale-detail-scroll .viewport {
+    -fx-background-color: #2F2F2F;
+}
+
+/* CONTENT */
+.sale-detail-content {
+    -fx-background-color: #2F2F2F;
+}
+
+/* SECTIONS */
+.sale-detail-section {
+    -fx-background-color: #232323;
+    -fx-background-radius: 10;
+    -fx-padding: 16;
+    -fx-border-color: #3A3A3A;
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+}
+
+.sale-detail-section-title {
+    -fx-text-fill: #F0C667;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+/* GRID */
+.sale-detail-label {
+    -fx-text-fill: #AAAAAA;
+    -fx-font-size: 14px;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.sale-detail-value {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 14px;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+/* TABLE HEADER */
+.sale-detail-table-header {
+    -fx-background-color: #1F1F1F;
+    -fx-background-radius: 6;
+    -fx-padding: 8;
+}
+
+.sale-detail-th {
+    -fx-text-fill: #F0C667;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+/* ITEMS */
+.sale-detail-items {
+    -fx-background-color: transparent;
+}
+
+.sale-detail-item-row {
+    -fx-background-color: #1F1F1F;
+    -fx-background-radius: 6;
+    -fx-padding: 8;
+}
+
+.sale-detail-item-name {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 13px;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.sale-detail-item-qty,
+.sale-detail-item-price,
+.sale-detail-item-subtotal {
+    -fx-text-fill: #CCCCCC;
+    -fx-font-size: 13px;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+/* TOTALS */
+.sale-detail-totals {
+    -fx-padding: 8;
+}
+
+.sale-detail-total-label {
+    -fx-text-fill: #F0C667;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.sale-detail-total-value {
+    -fx-text-fill: #F0C667;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.sale-detail-words {
+    -fx-text-fill: #888888;
+    -fx-font-size: 12px;
+    -fx-font-style: italic;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+/* PAYMENT */
+.sale-detail-payment {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 15px;
+    -fx-font-weight: 600;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-background-color: #F0C667;
+    -fx-background-radius: 8;
+    -fx-padding: 8 16;
+    -fx-text-fill: #232323;
+}
+
+/* SEPARATOR */
+.sale-detail-separator .line {
+    -fx-border-color: #3A3A3A;
+    -fx-border-width: 1 0 0 0;
+}
+
+/* FOOTER */
+.sale-detail-footer {
+    -fx-background-color: #232323;
+    -fx-border-color: #3A3A3A;
+    -fx-border-width: 1 0 0 0;
+}
+
+.sale-detail-btn-close {
+    -fx-background-color: #F0C667;
+    -fx-background-radius: 10;
+    -fx-text-fill: #232323;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-padding: 12 24;
+    -fx-cursor: hand;
+}
+
+.sale-detail-btn-close:hover {
+    -fx-background-color: #FFD97A;
+}
+
+.sale-detail-btn-close:pressed {
+    -fx-background-color: #D4AA4A;
+}

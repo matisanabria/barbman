@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17.0.12"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="app.barbman.core.controller.SettingsController"
+            styleClass="settings-root">
+
+    <!-- TOP - HEADER -->
+    <top>
+        <VBox styleClass="settings-header">
+            <padding>
+                <Insets top="20" right="24" bottom="16" left="24"/>
+            </padding>
+            <Label text="Configuracion" styleClass="settings-title"/>
+        </VBox>
+    </top>
+
+    <!-- CENTER - TABS -->
+    <center>
+        <TabPane fx:id="settingsTabPane"
+                 tabClosingPolicy="UNAVAILABLE"
+                 styleClass="settings-tabpane">
+
+            <!-- ========================================= -->
+            <!-- TAB: PRODUCTOS -->
+            <!-- ========================================= -->
+            <Tab text="Productos">
+                <content>
+                    <ScrollPane fitToWidth="true"
+                                fitToHeight="true"
+                                styleClass="settings-scrollpane">
+                        <content>
+                            <VBox spacing="20" styleClass="settings-tab-content">
+                                <padding>
+                                    <Insets top="24" right="24" bottom="24" left="24"/>
+                                </padding>
+
+                                <!-- Header con boton -->
+                                <HBox alignment="CENTER_LEFT" spacing="16">
+                                    <Label text="Gestion de Productos" styleClass="settings-section-title"/>
+                                    <Region HBox.hgrow="ALWAYS"/>
+                                    <Button text="+ Agregar Producto"
+                                            styleClass="settings-btn-add"
+                                            onAction="#onAddProduct"/>
+                                </HBox>
+
+                                <!-- FORMULARIO DE PRODUCTO -->
+                                <VBox fx:id="productFormContainer"
+                                      spacing="16"
+                                      styleClass="settings-form"
+                                      visible="false"
+                                      managed="false">
+
+                                    <Label fx:id="productFormTitle"
+                                           text="Agregar Producto"
+                                           styleClass="settings-form-title"/>
+
+                                    <VBox spacing="8">
+                                        <Label text="Nombre:" styleClass="settings-form-label"/>
+                                        <TextField fx:id="productNameField"
+                                                   promptText="Ej: Gel para cabello"
+                                                   styleClass="settings-form-field"/>
+                                    </VBox>
+
+                                    <VBox spacing="8">
+                                        <Label text="Precio de Costo:" styleClass="settings-form-label"/>
+                                        <TextField fx:id="productCostField"
+                                                   promptText="Ej: 30000"
+                                                   styleClass="settings-form-field"/>
+                                    </VBox>
+
+                                    <VBox spacing="8">
+                                        <Label text="Precio de Venta:" styleClass="settings-form-label"/>
+                                        <TextField fx:id="productPriceField"
+                                                   promptText="Ej: 50000"
+                                                   styleClass="settings-form-field"/>
+                                    </VBox>
+
+                                    <VBox spacing="8">
+                                        <Label text="Stock:" styleClass="settings-form-label"/>
+                                        <TextField fx:id="productStockField"
+                                                   promptText="Ej: 10"
+                                                   styleClass="settings-form-field"/>
+                                    </VBox>
+
+                                    <HBox spacing="12" alignment="CENTER_RIGHT">
+                                        <Button text="Cancelar"
+                                                onAction="#onCancelProductForm"
+                                                styleClass="settings-form-btn-cancel"/>
+                                        <Button text="Guardar"
+                                                onAction="#onSaveProduct"
+                                                styleClass="settings-form-btn-save"/>
+                                    </HBox>
+                                </VBox>
+
+                                <!-- LISTA DE PRODUCTOS -->
+                                <VBox fx:id="productsListContainer"
+                                      spacing="12"
+                                      styleClass="settings-list">
+
+                                    <Label text="Productos registrados:"
+                                           styleClass="settings-list-title"/>
+
+                                    <Label fx:id="productsEmptyLabel"
+                                           text="No hay productos registrados"
+                                           styleClass="settings-empty-message"
+                                           visible="false"
+                                           managed="false"/>
+                                </VBox>
+
+                            </VBox>
+                        </content>
+                    </ScrollPane>
+                </content>
+            </Tab>
+
+            <!-- ========================================= -->
+            <!-- TAB: SERVICIOS -->
+            <!-- ========================================= -->
+            <Tab text="Servicios">
+                <content>
+                    <ScrollPane fitToWidth="true"
+                                fitToHeight="true"
+                                styleClass="settings-scrollpane">
+                        <content>
+                            <VBox spacing="20" styleClass="settings-tab-content">
+                                <padding>
+                                    <Insets top="24" right="24" bottom="24" left="24"/>
+                                </padding>
+
+                                <!-- Header con boton -->
+                                <HBox alignment="CENTER_LEFT" spacing="16">
+                                    <Label text="Gestion de Servicios" styleClass="settings-section-title"/>
+                                    <Region HBox.hgrow="ALWAYS"/>
+                                    <Button text="+ Agregar Servicio"
+                                            styleClass="settings-btn-add"
+                                            onAction="#onAddService"/>
+                                </HBox>
+
+                                <!-- Lista de servicios -->
+                                <VBox fx:id="servicesListContainer"
+                                      spacing="12"
+                                      styleClass="settings-list">
+
+                                    <Label text="Servicios registrados:"
+                                           styleClass="settings-list-title"/>
+
+                                    <Label fx:id="servicesEmptyLabel"
+                                           text="No hay servicios registrados"
+                                           styleClass="settings-empty-message"
+                                           visible="false"
+                                           managed="false"/>
+                                </VBox>
+
+                            </VBox>
+                        </content>
+                    </ScrollPane>
+                </content>
+            </Tab>
+
+            <!-- ========================================= -->
+            <!-- TAB: USUARIOS -->
+            <!-- ========================================= -->
+            <Tab text="Usuarios">
+                <content>
+                    <ScrollPane fitToWidth="true"
+                                fitToHeight="true"
+                                styleClass="settings-scrollpane">
+                        <content>
+                            <VBox spacing="20" styleClass="settings-tab-content">
+                                <padding>
+                                    <Insets top="24" right="24" bottom="24" left="24"/>
+                                </padding>
+
+                                <!-- Header con boton -->
+                                <HBox alignment="CENTER_LEFT" spacing="16">
+                                    <Label text="Gestion de Usuarios" styleClass="settings-section-title"/>
+                                    <Region HBox.hgrow="ALWAYS"/>
+                                    <Button text="+ Agregar Usuario"
+                                            styleClass="settings-btn-add"
+                                            onAction="#onAddUser"/>
+                                </HBox>
+
+                                <!-- Lista de usuarios -->
+                                <VBox fx:id="usersListContainer"
+                                      spacing="12"
+                                      styleClass="settings-list">
+
+                                    <Label text="Usuarios registrados:"
+                                           styleClass="settings-list-title"/>
+
+                                    <Label fx:id="usersEmptyLabel"
+                                           text="No hay usuarios registrados"
+                                           styleClass="settings-empty-message"
+                                           visible="false"
+                                           managed="false"/>
+                                </VBox>
+
+                            </VBox>
+                        </content>
+                    </ScrollPane>
+                </content>
+            </Tab>
+
+            <!-- ========================================= -->
+            <!-- TAB: CLIENTES -->
+            <!-- ========================================= -->
+            <Tab text="Clientes">
+                <content>
+                    <ScrollPane fitToWidth="true"
+                                fitToHeight="true"
+                                styleClass="settings-scrollpane">
+                        <content>
+                            <VBox spacing="20" styleClass="settings-tab-content">
+                                <padding>
+                                    <Insets top="24" right="24" bottom="24" left="24"/>
+                                </padding>
+
+                                <!-- Header con boton -->
+                                <HBox alignment="CENTER_LEFT" spacing="16">
+                                    <Label text="Gestion de Clientes" styleClass="settings-section-title"/>
+                                    <Region HBox.hgrow="ALWAYS"/>
+                                    <Button text="+ Agregar Cliente"
+                                            styleClass="settings-btn-add"
+                                            onAction="#onAddClient"/>
+                                </HBox>
+
+                                <!-- Lista de clientes -->
+                                <VBox fx:id="clientsListContainer"
+                                      spacing="12"
+                                      styleClass="settings-list">
+
+                                    <Label text="Clientes registrados:"
+                                           styleClass="settings-list-title"/>
+
+                                    <Label fx:id="clientsEmptyLabel"
+                                           text="No hay clientes registrados"
+                                           styleClass="settings-empty-message"
+                                           visible="false"
+                                           managed="false"/>
+                                </VBox>
+
+                            </VBox>
+                        </content>
+                    </ScrollPane>
+                </content>
+            </Tab>
+
+        </TabPane>
+    </center>
+
+</BorderPane>

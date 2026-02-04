@@ -1,0 +1,137 @@
+/* ==========================================================
+   CASHBOX CLOSURE MODAL
+   ========================================================== */
+
+/* ROOT */
+.closure-root {
+    -fx-background-color: #2F2F2F;
+}
+
+/* HEADER */
+.closure-header {
+    -fx-background-color: linear-gradient(to bottom, #232323, #2A2A2A);
+    -fx-border-color: #3A3A3A;
+    -fx-border-width: 0 0 1 0;
+}
+
+.closure-title {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.closure-subtitle {
+    -fx-text-fill: #AAAAAA;
+    -fx-font-size: 13px;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-padding: 4 0 0 0;
+}
+
+/* CONTENT */
+.closure-content {
+    -fx-background-color: #2F2F2F;
+}
+
+/* PERÍODO */
+.closure-period {
+    -fx-text-fill: #F0C667;
+    -fx-font-size: 16px;
+    -fx-font-weight: 600;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+/* AMOUNTS */
+.closure-amounts {
+    -fx-background-color: #232323;
+    -fx-background-radius: 10;
+    -fx-padding: 16;
+    -fx-border-color: #3A3A3A;
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+}
+
+.closure-amount-label {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 15px;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.closure-total-label {
+    -fx-text-fill: #F0C667;
+    -fx-font-size: 17px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+/* FORM */
+.closure-label {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.closure-textarea {
+    -fx-background-color: #232323;
+    -fx-background-radius: 10;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 14px;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-padding: 12 14;
+    -fx-prompt-text-fill: #666666;
+    -fx-border-color: #3A3A3A;
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+}
+
+.closure-textarea:focused {
+    -fx-border-color: #F0C667;
+    -fx-background-color: #2A2A2A;
+}
+
+.closure-textarea .content {
+    -fx-background-color: #232323;
+}
+
+/* FOOTER */
+.closure-footer {
+    -fx-background-color: #232323;
+    -fx-border-color: #3A3A3A;
+    -fx-border-width: 1 0 0 0;
+}
+
+/* BUTTONS */
+.closure-btn-cancel {
+    -fx-background-color: #3A3A3A;
+    -fx-background-radius: 10;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 15px;
+    -fx-font-weight: 600;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-padding: 12 24;
+    -fx-cursor: hand;
+}
+
+.closure-btn-cancel:hover {
+    -fx-background-color: #454545;
+}
+
+.closure-btn-confirm {
+    -fx-background-color: #F0C667;
+    -fx-background-radius: 10;
+    -fx-text-fill: #232323;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-padding: 12 24;
+    -fx-cursor: hand;
+}
+
+.closure-btn-confirm:hover {
+    -fx-background-color: #FFD97A;
+}
+
+.closure-btn-confirm:pressed {
+    -fx-background-color: #D4AA4A;
+}

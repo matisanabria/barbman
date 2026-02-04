@@ -160,6 +160,15 @@ public class SidebarController {
                 true // cargar al inicio
         );
 
+        // 👇 NUEVO - HISTORIAL
+        addMenuButton(
+                "Historial",
+                "fas-history",
+                "/app/barbman/core/view/sale-history-view.fxml",
+                "/app/barbman/core/style/embed-views/sale-history.css",
+                false
+        );
+
         addMenuButton(
                 "Egresos",
                 "fas-arrow-down",
@@ -171,16 +180,16 @@ public class SidebarController {
         addMenuButton(
                 "Sueldos",
                 "far-money-bill-alt",
-                "/app/barbman/core/view/embed-view/sueldos-view.fxml",
-                "/app/barbman/core/style/embed-views/sueldos-view.css",
+                "/app/barbman/core/view/embed-view/salary-view.fxml",
+                "/app/barbman/core/style/embed-views/salary-view.css",
                 false
         );
 
         addMenuButton(
                 "Caja",
                 "fas-cash-register",
-                "/app/barbman/core/view/embed-view/caja-view.fxml",
-                "/app/barbman/core/style/embed-views/caja-view.css",
+                "/app/barbman/core/view/embed-view/cashbox-view.fxml",
+                "/app/barbman/core/style/embed-views/cashbox-view.css",
                 false
         );
 
@@ -192,17 +201,26 @@ public class SidebarController {
                 false
         );
 
-        logger.info("{} Admin menu injected (5 buttons)", PREFIX);
+        logger.info("{} Admin menu injected (6 buttons)", PREFIX); // 👈 Cambiar de 5 a 6
     }
 
     private void injectUserMenu() {
-        // USER: solo Ventas, Egresos y Caja (sin Sueldos ni Configuración)
+        // USER: solo Ventas, Historial, Egresos y Caja (sin Sueldos ni Configuración)
         addMenuButton(
                 "Ventas",
                 "fas-cart-plus",
                 "/app/barbman/core/view/embed-view/sale-create-view.fxml",
                 "/app/barbman/core/style/embed-views/sales-view.css",
                 true // cargar al inicio
+        );
+
+        // 👇 NUEVO - HISTORIAL
+        addMenuButton(
+                "Historial",
+                "fas-history",
+                "/app/barbman/core/view/sale-history-view.fxml",
+                "/app/barbman/core/style/embed-views/sale-history.css",
+                false
         );
 
         addMenuButton(
@@ -216,12 +234,12 @@ public class SidebarController {
         addMenuButton(
                 "Caja",
                 "fas-cash-register",
-                "/app/barbman/core/view/embed-view/caja-view.fxml",
-                "/app/barbman/core/style/embed-views/caja-view.css",
+                "/app/barbman/core/view/embed-view/cashbox-view.fxml",
+                "/app/barbman/core/style/embed-views/cashbox-view.css",
                 false
         );
 
-        logger.info("{} User menu injected (3 buttons)", PREFIX);
+        logger.info("{} User menu injected (4 buttons)", PREFIX); // 👈 Cambiar de 3 a 4
     }
 
     private void addMenuButton(

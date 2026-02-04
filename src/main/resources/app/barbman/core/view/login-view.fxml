@@ -24,7 +24,7 @@
                         <ImageView fx:id="logoImageView" fitWidth="160.0" fitHeight="160.0"
                                    preserveRatio="true" opacity="0.0">
                             <image>
-                                <Image url="@../icons/icon-for-javafx.png"/>
+                                <Image url="@../icons/ob.png"/>
                             </image>
                         </ImageView>
                     </children>

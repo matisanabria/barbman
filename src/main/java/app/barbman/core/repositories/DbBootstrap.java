@@ -141,7 +141,9 @@ public class DbBootstrap {
                             date TEXT NOT NULL CHECK (date = date(date)),
                             subtotal REAL NOT NULL DEFAULT 0,
                             FOREIGN KEY (user_id) REFERENCES users(id),
+                            -- SERVICE_HEADER
                             FOREIGN KEY (sale_id) REFERENCES sales(id)
+                                ON DELETE CASCADE
                         );
                     """);
             // SERVICE ITEM
@@ -155,7 +157,8 @@ public class DbBootstrap {
                             quantity INTEGER NOT NULL DEFAULT 1 CHECK (quantity > 0),
                             unit_price REAL NOT NULL,               -- snapshot of the unitPrice at the time of serviceHeader
                             item_total REAL NOT NULL DEFAULT 0,
-                            FOREIGN KEY (service_header_id) REFERENCES service_header(id),
+                            FOREIGN KEY (service_header_id) REFERENCES service_header(id)
+                                ON DELETE CASCADE,
                             FOREIGN KEY (service_definition_id) REFERENCES service_definition(id)
                         );
                     """);
@@ -185,6 +188,7 @@ public class DbBootstrap {
                             sale_id INTEGER NOT NULL,                   -- links to sales table
                             subtotal REAL NOT NULL,
                             FOREIGN KEY (sale_id) REFERENCES sales(id)
+                                ON DELETE CASCADE
                         );
                     """);
 
@@ -199,7 +203,8 @@ public class DbBootstrap {
                             quantity INTEGER NOT NULL CHECK (quantity > 0),
                             unit_price REAL NOT NULL,
                             item_total REAL NOT NULL,
-                            FOREIGN KEY (product_header_id) REFERENCES product_sales(id),
+                            FOREIGN KEY (product_header_id) REFERENCES product_sales(id)
+                                ON DELETE CASCADE,
                             FOREIGN KEY (product_id) REFERENCES products(id)
                         );
                     """);
@@ -216,7 +221,8 @@ public class DbBootstrap {
                             date TEXT NOT NULL CHECK (date = date(date)),
                             total REAL NOT NULL,
                             FOREIGN KEY (user_id) REFERENCES users(id),
-                            FOREIGN KEY (client_id) REFERENCES clients(id),
+                            FOREIGN KEY (client_id) REFERENCES clients(id)
+                                ON DELETE SET NULL,
                             FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id)
                         );
                     """);
@@ -263,10 +269,11 @@ public class DbBootstrap {
                             pay_type_snapshot INTEGER NOT NULL,
                             pay_date TEXT,
                             payment_method_id INTEGER NOT NULL,
-                            expense_id INTEGER, -- links to expenses table for traceability
+                            expense_id INTEGER,
                             FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id),
                             FOREIGN KEY (user_id) REFERENCES users(id),
                             FOREIGN KEY (expense_id) REFERENCES expenses(id)
+                                ON DELETE CASCADE
                         );
                     """);
 
@@ -286,6 +293,7 @@ public class DbBootstrap {
                             FOREIGN KEY (user_id) REFERENCES users(id),
                             FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id),
                             FOREIGN KEY (expense_id) REFERENCES expenses(id)
+                                ON DELETE CASCADE
                         );
                     """);
 
@@ -347,8 +355,10 @@ public class DbBootstrap {
                           user_id INTEGER,
                           occurred_at TEXT NOT NULL,             -- fecha lógica del movimiento (no siempre now)
                           created_at TEXT NOT NULL DEFAULT (datetime('now')),
-                          FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id),
+                          FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id)
+                              ON DELETE RESTRICT,  -- No permitir borrar métdo si hay movimientos
                           FOREIGN KEY (user_id) REFERENCES users(id)
+                              ON DELETE SET NULL   -- Si se borra user, el movimiento queda huérfano pero visible
                       );
                     
                     """);
@@ -357,10 +367,10 @@ public class DbBootstrap {
             stmt.execute("""
                     CREATE TABLE IF NOT EXISTS clients (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        displayName TEXT NOT NULL,          -- requerido
-                        document TEXT,               -- RUC (opcional)
-                        phone TEXT NOT NULL,         -- requerido
-                        email TEXT,                  -- opcional
+                        displayName TEXT NOT NULL,          -- required
+                        document TEXT,               -- RUC or CI (opt)
+                        phone TEXT,
+                        email TEXT,
                         notes TEXT,
                         active INTEGER NOT NULL DEFAULT 1 CHECK (active IN (0,1))
                     );

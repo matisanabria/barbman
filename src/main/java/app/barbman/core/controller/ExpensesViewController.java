@@ -110,7 +110,7 @@ public class ExpensesViewController implements Initializable {
 
     private void loadExpenseTypes() {
         List<String> expenseTypes = List.of(
-                "supply", "service", "purchase", "tax", "other", "salary", "advance"
+                "supply", "service", "purchase", "tax", "other"
         );
 
         expenseTypeBox.setItems(FXCollections.observableArrayList(expenseTypes));
@@ -297,8 +297,6 @@ public class ExpensesViewController implements Initializable {
             case "purchase" -> "Compra";
             case "tax" -> "Impuesto";
             case "other" -> "Otro";
-            case "salary" -> "Sueldo";
-            case "advance" -> "Adelanto";
             default -> TextFormatterUtil.capitalizeFirstLetter(key);
         };
     }

@@ -1,0 +1,160 @@
+/* ==========================================================
+   SALES HISTORY
+   ========================================================== */
+
+/* ROOT */
+.history-root {
+    -fx-background-color: #1F1F1F;
+}
+
+/* HEADER */
+.history-header {
+    -fx-background-color: #2F2F2F;
+    -fx-border-color: #3A3A3A;
+    -fx-border-width: 0 0 1 0;
+}
+
+.history-title {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+/* FILTERS */
+.history-filter-label {
+    -fx-text-fill: #CCCCCC;
+    -fx-font-size: 14px;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.history-datepicker {
+    -fx-background-color: #232323;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 14px;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.history-datepicker .text-field {
+    -fx-background-color: #232323;
+    -fx-text-fill: #FFFFFF;
+    -fx-prompt-text-fill: #666666;
+}
+
+.history-btn-filter {
+    -fx-background-color: #F0C667;
+    -fx-background-radius: 8;
+    -fx-text-fill: #232323;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-padding: 10 20;
+    -fx-cursor: hand;
+}
+
+.history-btn-filter:hover {
+    -fx-background-color: #FFD97A;
+}
+
+.history-btn-delete {
+    -fx-background-color: #FF6B6B;
+    -fx-background-radius: 8;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-padding: 10 20;
+    -fx-cursor: hand;
+}
+
+.history-btn-delete:hover {
+    -fx-background-color: #FF8787;
+}
+
+.history-hint {
+    -fx-text-fill: #888888;
+    -fx-font-size: 12px;
+    -fx-font-style: italic;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+/* TABLE */
+.history-table {
+    -fx-background-color: #1F1F1F;
+    -fx-border-color: transparent;
+}
+.history-table .table-row-cell:empty {
+    -fx-background-color: #232323;
+}
+.history-table .table-row-cell:empty:hover {
+    -fx-background-color: #232323;
+    -fx-cursor: default;
+}
+
+/* Placeholder cuando no hay datos */
+.history-table .placeholder .label {
+    -fx-text-fill: #666666;
+    -fx-font-size: 14px;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+.history-table .column-header {
+    -fx-background-color: #232323;
+    -fx-text-fill: #F0C667;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-border-color: #3A3A3A;
+    -fx-border-width: 0 0 2 0;
+    -fx-padding: 12 8;
+}
+
+.history-table .column-header .label {
+    -fx-text-fill: #F0C667;
+    -fx-font-weight: bold;
+}
+
+/* TABLE ROWS - Alternating by DATE */
+.history-table .history-row-light {
+    -fx-background-color: #2A2A2A;
+    -fx-text-fill: #FFFFFF;
+}
+
+.history-table .history-row-dark {
+    -fx-background-color: #232323;
+    -fx-text-fill: #FFFFFF;
+}
+
+.history-table .history-row-light:hover,
+.history-table .history-row-dark:hover {
+    -fx-background-color: #504f4f;
+    -fx-cursor: hand;
+}
+
+.history-table .history-row-light:selected,
+.history-table .history-row-dark:selected {
+    -fx-background-color: #F0C667;
+    -fx-text-fill: #232323;
+}
+
+.history-table .table-cell {
+    -fx-text-fill: inherit;
+    -fx-font-size: 13px;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-padding: 12 8;
+    -fx-border-color: #3A3A3A;
+    -fx-border-width: 0 0 1 0;
+}
+
+/* Scrollbar */
+.history-table .scroll-bar:vertical {
+    -fx-background-color: #232323;
+}
+
+.history-table .scroll-bar:vertical .thumb {
+    -fx-background-color: #3A3A3A;
+    -fx-background-radius: 5;
+}
+
+.history-table .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #4A4A4A;
+}

@@ -236,7 +236,7 @@
 .salecart-row {
     -fx-background-color: #2A2A2A;
     -fx-background-radius: 10;
-    -fx-padding: 10 12;  /* antes 8 10 */
+    -fx-padding: 8 10;  /* antes 8 10 */
     -fx-alignment: CENTER_LEFT;
 }
 
@@ -259,8 +259,13 @@
 
 .salecart-row-qty {
     -fx-text-fill: #AAAAAA;
-    -fx-font-size: 15px;  /* antes 13px */
+    -fx-font-size: 15px;
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+
+    /* AGREGAR ESTAS 3 LÍNEAS: */
+    -fx-min-width: 60px;
+    -fx-pref-width: 60px;
+    -fx-alignment: center;
 }
 
 .salecart-row-remove {

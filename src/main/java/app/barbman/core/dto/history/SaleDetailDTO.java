@@ -1,6 +1,7 @@
 package app.barbman.core.dto.history;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -84,6 +85,25 @@ public class SaleDetailDTO {
 
     public void setProducts(List<ProductDetailDTO> products) {
         this.products = products;
+    }
+
+    private List<SaleItemDTO> serviceItems = new ArrayList<>();
+    private List<SaleItemDTO> productItems = new ArrayList<>();
+
+    public List<SaleItemDTO> getServiceItems() {
+        return serviceItems;
+    }
+
+    public void setServiceItems(List<SaleItemDTO> serviceItems) {
+        this.serviceItems = serviceItems;
+    }
+
+    public List<SaleItemDTO> getProductItems() {
+        return productItems;
+    }
+
+    public void setProductItems(List<SaleItemDTO> productItems) {
+        this.productItems = productItems;
     }
 
     @Override

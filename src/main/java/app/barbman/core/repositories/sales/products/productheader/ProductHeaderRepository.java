@@ -10,4 +10,9 @@ public interface ProductHeaderRepository extends GenericRepository<ProductHeader
     void save(ProductHeader sale, Connection conn) throws SQLException;
     void update(ProductHeader sale, Connection conn) throws SQLException;
     void delete(Integer id, Connection conn) throws SQLException;
+
+    /**
+     * Finds the product header for a given sale.
+     */
+    ProductHeader findBySaleId(int saleId);
 }

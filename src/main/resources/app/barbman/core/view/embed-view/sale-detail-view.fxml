@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17.0.12"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="app.barbman.core.controller.sales.SaleDetailController"
+            styleClass="sale-detail-root"
+            prefWidth="600"
+            prefHeight="700">
+
+    <!-- TOP - HEADER -->
+    <top>
+        <VBox alignment="CENTER"
+              spacing="8"
+              styleClass="sale-detail-header">
+            <padding>
+                <Insets top="20" bottom="20"/>
+            </padding>
+
+            <Label text="Comprobante de Venta"
+                   styleClass="sale-detail-title"/>
+
+            <HBox spacing="16" alignment="CENTER">
+                <Label text="N°"
+                       styleClass="sale-detail-subtitle"/>
+                <Label fx:id="saleNumberLabel"
+                       text="001"
+                       styleClass="sale-detail-number"/>
+                <Label text="•"
+                       styleClass="sale-detail-subtitle"/>
+                <Label fx:id="saleDateLabel"
+                       text="31/01/2026"
+                       styleClass="sale-detail-subtitle"/>
+            </HBox>
+        </VBox>
+    </top>
+
+    <!-- CENTER - DETAILS -->
+    <center>
+        <ScrollPane fitToWidth="true"
+                    styleClass="sale-detail-scroll">
+            <content>
+                <VBox spacing="24"
+                      fillWidth="true"
+                      styleClass="sale-detail-content">
+                    <padding>
+                        <Insets top="20" right="40" bottom="20" left="40"/>
+                    </padding>
+
+                    <!-- CLIENTE -->
+                    <VBox spacing="10"
+                          styleClass="sale-detail-section">
+                        <Label text="CLIENTE"
+                               styleClass="sale-detail-section-title"/>
+
+                        <GridPane hgap="16" vgap="8"
+                                  styleClass="sale-detail-grid">
+                            <Label text="Nombre:"
+                                   styleClass="sale-detail-label"
+                                   GridPane.rowIndex="0"
+                                   GridPane.columnIndex="0"/>
+
+                            <Label fx:id="clientNameLabel"
+                                   text="Cliente casual"
+                                   styleClass="sale-detail-value"
+                                   GridPane.rowIndex="0"
+                                   GridPane.columnIndex="1"/>
+
+                            <Label text="RUC / CI:"
+                                   styleClass="sale-detail-label"
+                                   GridPane.rowIndex="1"
+                                   GridPane.columnIndex="0"/>
+
+                            <Label fx:id="clientDocLabel"
+                                   text="-"
+                                   styleClass="sale-detail-value"
+                                   GridPane.rowIndex="1"
+                                   GridPane.columnIndex="1"/>
+                        </GridPane>
+                    </VBox>
+
+                    <!-- DETALLE -->
+                    <VBox spacing="12"
+                          styleClass="sale-detail-section">
+                        <Label text="DETALLE DE LA VENTA"
+                               styleClass="sale-detail-section-title"/>
+
+                        <!-- Table header -->
+                        <HBox spacing="12"
+                              styleClass="sale-detail-table-header"
+                              alignment="CENTER_LEFT">
+                            <Label text="Ítem"
+                                   styleClass="sale-detail-th"
+                                   maxWidth="Infinity"
+                                   HBox.hgrow="ALWAYS"/>
+                            <Label text="Cant."
+                                   styleClass="sale-detail-th"
+                                   prefWidth="60"
+                                   alignment="CENTER"/>
+                            <Label text="Precio"
+                                   styleClass="sale-detail-th"
+                                   prefWidth="100"
+                                   alignment="CENTER_RIGHT"/>
+                            <Label text="Subtotal"
+                                   styleClass="sale-detail-th"
+                                   prefWidth="100"
+                                   alignment="CENTER_RIGHT"/>
+                        </HBox>
+
+                        <!-- Items container -->
+                        <VBox fx:id="itemsContainer"
+                              spacing="6"
+                              styleClass="sale-detail-items"
+                              fillWidth="true"/>
+                    </VBox>
+
+                    <!-- TOTALES -->
+                    <VBox spacing="10"
+                          styleClass="sale-detail-section">
+                        <Separator styleClass="sale-detail-separator"/>
+
+                        <GridPane hgap="16" vgap="8"
+                                  styleClass="sale-detail-totals">
+
+                            <!-- Subtotal -->
+                            <Label text="Subtotal (gravado 10%):"
+                                   styleClass="sale-detail-label"
+                                   GridPane.rowIndex="0"
+                                   GridPane.columnIndex="0"/>
+                            <Label fx:id="subtotalLabel"
+                                   text="0 Gs"
+                                   styleClass="sale-detail-value"
+                                   GridPane.rowIndex="0"
+                                   GridPane.columnIndex="1"/>
+
+                            <!-- IVA -->
+                            <Label text="IVA (10%):"
+                                   styleClass="sale-detail-label"
+                                   GridPane.rowIndex="1"
+                                   GridPane.columnIndex="0"/>
+                            <Label fx:id="ivaLabel"
+                                   text="0 Gs"
+                                   styleClass="sale-detail-value"
+                                   GridPane.rowIndex="1"
+                                   GridPane.columnIndex="1"/>
+
+                            <!-- Total -->
+                            <Label text="TOTAL:"
+                                   styleClass="sale-detail-total-label"
+                                   GridPane.rowIndex="2"
+                                   GridPane.columnIndex="0"/>
+                            <Label fx:id="totalLabel"
+                                   text="0 Gs"
+                                   styleClass="sale-detail-total-value"
+                                   GridPane.rowIndex="2"
+                                   GridPane.columnIndex="1"/>
+                        </GridPane>
+
+                        <!-- Total en letras -->
+                        <Label fx:id="totalInWordsLabel"
+                               text="Cero guaraníes"
+                               styleClass="sale-detail-words"
+                               wrapText="true"/>
+                    </VBox>
+
+                    <!-- MÉTODO DE PAGO -->
+                    <VBox spacing="8"
+                          styleClass="sale-detail-section">
+                        <Label text="Método de pago:"
+                               styleClass="sale-detail-label"/>
+                        <Label fx:id="paymentMethodLabel"
+                               text="Efectivo"
+                               styleClass="sale-detail-payment"/>
+                    </VBox>
+
+                </VBox>
+            </content>
+        </ScrollPane>
+    </center>
+
+    <!-- BOTTOM - CLOSE BUTTON -->
+    <bottom>
+        <HBox alignment="CENTER"
+              styleClass="sale-detail-footer">
+            <padding>
+                <Insets top="16" right="16" bottom="16" left="16"/>
+            </padding>
+
+            <Button text="Cerrar"
+                    onAction="#onClose"
+                    maxWidth="Infinity"
+                    HBox.hgrow="ALWAYS"
+                    styleClass="sale-detail-btn-close"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>

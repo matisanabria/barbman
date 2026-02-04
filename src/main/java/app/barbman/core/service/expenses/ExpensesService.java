@@ -166,11 +166,28 @@ public class ExpensesService {
     }
     /**
      * Delete an expense by ID.
+     * Also deletes related cashbox movements and any salary/advance via CASCADE.
      */
     public void deleteExpense(int expenseId) {
         try {
+            logger.warn("{} Deleting expense ID={}", PREFIX, expenseId);
+
+            // 1. Borrar movimientos de caja relacionados
+            logger.debug("{} [Using CashboxMovementRepository] Deleting movements for expense {}", PREFIX, expenseId);
+            var movements = movementRepo.findByReference("EXPENSE", expenseId);
+
+            for (var movement : movements) {
+                movementRepo.delete(movement.getId());
+                logger.debug("{} Deleted movement ID={}", PREFIX, movement.getId());
+            }
+
+            logger.info("{} Deleted {} cashbox movements for expense {}", PREFIX, movements.size(), expenseId);
+
+            // 2. Borrar el egreso (CASCADE borrará salary/advance si tiene expense_id)
             expenseRepo.delete(expenseId);
-            logger.info("{} Expense deleted successfully -> ID={}", PREFIX, expenseId);
+
+            logger.info("{} Expense deleted (movements + expense + related salary/advance)", PREFIX);
+
         } catch (Exception e) {
             logger.error("{} Error deleting expense ID {}: {}", PREFIX, expenseId, e.getMessage());
             throw new RuntimeException("Error deleting expense ID " + expenseId, e);

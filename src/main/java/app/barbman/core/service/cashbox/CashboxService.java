@@ -69,6 +69,7 @@ public class CashboxService {
             Integer adminUserId,
             String notes
     ) {
+        autoCloseUnfinishedPeriods(adminUserId);
         LocalDate periodStart = getCurrentPeriodStart();
 
         if (openingRepo.existsForPeriod(periodStart)) {
@@ -200,6 +201,88 @@ public class CashboxService {
         LocalDate start = getCurrentPeriodStart();
         LocalDate end = getCurrentPeriodEnd();
 
+        double salesBank =
+                salesService.getTotalForPaymentMethodInPeriod(1, start, end)
+                        + salesService.getTotalForPaymentMethodInPeriod(2, start, end)
+                        + salesService.getTotalForPaymentMethodInPeriod(3, start, end);
+
+        double expensesBank =
+                expenseRepo.sumTotalByPaymentMethodAndPeriod(1, start, end)
+                        + expenseRepo.sumTotalByPaymentMethodAndPeriod(2, start, end)
+                        + expenseRepo.sumTotalByPaymentMethodAndPeriod(3, start, end);
+
+        return salesBank - expensesBank;
+    }
+
+    // ============================================================
+// AUTO-CLOSURE
+// ============================================================
+
+    /**
+     * Automatically closes any unfinished periods before opening a new one.
+     * This handles cases where admins forgot to close the cashbox.
+     */
+    private void autoCloseUnfinishedPeriods(Integer adminUserId) {
+        logger.info("{} Checking for unfinished periods...", PREFIX);
+
+        List<CashboxOpening> openings = openingRepo.findAll();
+        LocalDate currentPeriodStart = getCurrentPeriodStart();
+
+        for (CashboxOpening opening : openings) {
+            LocalDate periodStart = opening.getPeriodStartDate();
+
+            // Si no tiene cierre Y es de una semana anterior a la actual
+            if (!closureRepo.existsForPeriod(periodStart)
+                    && periodStart.isBefore(currentPeriodStart)) {
+
+                logger.warn("{} Auto-closing forgotten period: {}", PREFIX, periodStart);
+                autoClosePeriod(opening, adminUserId);
+            }
+        }
+    }
+
+    /**
+     * Performs automatic closure for a forgotten period.
+     */
+    private void autoClosePeriod(CashboxOpening opening, Integer adminUserId) {
+        LocalDate periodStart = opening.getPeriodStartDate();
+        LocalDate periodEnd = periodStart.plusDays(6); // Domingo
+
+        // Calcular montos esperados para ESE período específico
+        double expectedCash = calculateExpectedCashForPeriod(periodStart, periodEnd);
+        double expectedBank = calculateExpectedBankForPeriod(periodStart, periodEnd);
+        double expectedTotal = expectedCash + expectedBank;
+
+        CashboxClosure closure = new CashboxClosure(
+                periodStart,
+                periodEnd,
+                LocalDateTime.now(),
+                adminUserId,
+                expectedCash,
+                expectedBank,
+                expectedTotal,
+                "⚠️ Cierre automático - período olvidado"
+        );
+
+        closureRepo.save(closure);
+
+        logger.info("{} Auto-closed period {} with expected total: {}",
+                PREFIX, periodStart, expectedTotal);
+    }
+
+    /**
+     * Calculates expected cash for a specific period.
+     */
+    private double calculateExpectedCashForPeriod(LocalDate start, LocalDate end) {
+        double salesCash = salesService.getTotalForPaymentMethodInPeriod(0, start, end);
+        double expensesCash = expenseRepo.sumTotalByPaymentMethodAndPeriod(0, start, end);
+        return salesCash - expensesCash;
+    }
+
+    /**
+     * Calculates expected bank for a specific period.
+     */
+    private double calculateExpectedBankForPeriod(LocalDate start, LocalDate end) {
         double salesBank =
                 salesService.getTotalForPaymentMethodInPeriod(1, start, end)
                         + salesService.getTotalForPaymentMethodInPeriod(2, start, end)
