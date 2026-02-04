@@ -313,4 +313,39 @@ public class SaleRepositoryImpl implements SaleRepository {
         return null;
     }
 
+    @Override
+    public double sumTotalByPeriod(LocalDate start, LocalDate end) {
+
+        String sql = """
+    SELECT COALESCE(SUM(total), 0)
+    FROM sales
+    WHERE date BETWEEN ? AND ?
+    """;
+
+        try (Connection db = DbBootstrap.connect();
+             PreparedStatement ps = db.prepareStatement(sql)) {
+
+            ps.setString(1, start.toString());
+            ps.setString(2, end.toString());
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    double total = rs.getDouble(1);
+                    logger.debug(
+                            "{} SUM sales [{} -> {}] = {}",
+                            PREFIX, start, end, total
+                    );
+                    return total;
+                }
+            }
+
+        } catch (Exception e) {
+            logger.error(
+                    "{} Error summing sales between {} and {}: {}",
+                    PREFIX, start, end, e.getMessage()
+            );
+        }
+
+        return 0;
+    }
 }

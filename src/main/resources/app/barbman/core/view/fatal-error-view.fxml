@@ -1,71 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.Text?>
 
-<BorderPane xmlns="http://javafx.com/javafx/17.0.12"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="app.barbman.core.controller.FatalErrorController"
-            style="-fx-background-color: #1f1f1f;">
+<BorderPane prefHeight="500" prefWidth="700" styleClass="fatal-error-root" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.barbman.core.controller.FatalErrorController">
 
-    <!-- CENTRO -->
-    <center>
-        <VBox spacing="18" alignment="CENTER">
+    <top>
+        <VBox spacing="12" styleClass="fatal-error-header">
             <padding>
-                <Insets top="40" right="40" bottom="40" left="40"/>
+                <Insets bottom="24" left="24" right="24" top="24" />
             </padding>
 
-            <!-- Imagen de Don Barbman triste -->
-            <ImageView fx:id="errorImage"
-                       fitWidth="140"
-                       preserveRatio="true"
-                       opacity="0.9"
-                       style="-fx-effect: dropshadow(gaussian, #000000AA, 18, 0.2, 0, 3);" />
+            <!-- Error icon and title -->
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <Label styleClass="error-icon" />
+                <Label fx:id="errorTitleLabel" styleClass="error-title" text="Error crítico" />
+            </HBox>
 
-            <!-- Título -->
-            <Label text="A critical error has occurred"
-                   style="-fx-text-fill: #FFFFFF; -fx-font-size: 22px; -fx-font-weight: bold;" />
+            <!-- Error message -->
+            <Label styleClass="error-message" text="Ha ocurrido un error inesperado. Copie el error y envialo al desarrollador" wrapText="true" />
+         <Label fx:id="errorMessageLabel" layoutX="34.0" layoutY="63.0" styleClass="error-message" text="Ha ocurrido un error inesperado. Copie el error y envialo al desarrollador" wrapText="true" />
+        </VBox>
+    </top>
 
-            <!-- Mensaje -->
-            <Label fx:id="errorMessage"
-                  style="-fx-fill: #CCCCCC; -fx-font-size: 14px;"
-                  text="The application encountered an unexpected error and cannot continue." />
+    <center>
+        <VBox spacing="12" styleClass="fatal-error-content">
+            <padding>
+                <Insets bottom="12" left="24" right="24" top="12" />
+            </padding>
 
-            <!-- Línea separadora -->
-            <Separator prefWidth="300" style="-fx-background-color: #333333;"/>
+            <Label styleClass="section-label" text="Detalles técnicos:" />
 
-            <!-- Botones -->
-            <VBox spacing="10" alignment="CENTER">
-
-                <Button fx:id="contactButton"
-                        text="Contact Developer"
-                        style="-fx-background-radius: 10;
-                               -fx-background-color: #FFC94A;
-                               -fx-font-weight: bold;
-                               -fx-text-fill: #1F1F1F;
-                               -fx-padding: 8 20 8 20;" />
-
-                <Button fx:id="reportButton"
-                        text="Report Issue"
-                        style="-fx-background-radius: 10;
-                               -fx-background-color: #3A3A3A;
-                               -fx-text-fill: #EAEAEA;
-                               -fx-font-weight: bold;
-                               -fx-padding: 8 20 8 20;" />
-
-                <Button fx:id="exitButton"
-                        text="Exit"
-                        style="-fx-background-radius: 10;
-                               -fx-background-color: #2A2A2A;
-                               -fx-text-fill: #FFFFFF;
-                               -fx-padding: 8 20 8 20;" />
-
-            </VBox>
-
+            <TextArea fx:id="stackTraceArea" editable="false" styleClass="stack-trace-area" wrapText="false" VBox.vgrow="ALWAYS" />
         </VBox>
     </center>
+
+    <bottom>
+        <HBox alignment="CENTER_RIGHT" spacing="12" styleClass="fatal-error-footer">
+            <padding>
+                <Insets bottom="24" left="24" right="24" top="16" />
+            </padding>
+
+            <Button fx:id="copyButton" styleClass="copy-button" text="📋 Copiar error" />
+
+            <Button fx:id="closeButton" styleClass="close-button" text="Cerrar aplicación" />
+        </HBox>
+    </bottom>
 
 </BorderPane>

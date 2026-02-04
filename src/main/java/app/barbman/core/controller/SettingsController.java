@@ -17,10 +17,7 @@ import app.barbman.core.util.NumberFormatterUtil;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -70,13 +67,26 @@ public class SettingsController implements Initializable {
 
     @FXML private VBox servicesListContainer;
     @FXML private Label servicesEmptyLabel;
+    @FXML private VBox serviceFormContainer;
+    @FXML private Label serviceFormTitle;
+    @FXML private TextField serviceNameField;
+    @FXML private TextField servicePriceField;
+    @FXML private CheckBox serviceAvailableCheckbox;
 
+    private ServiceDefinition currentEditingService = null;
     // ============================================================
     // FXML - USUARIOS
     // ============================================================
 
     @FXML private VBox usersListContainer;
     @FXML private Label usersEmptyLabel;
+    @FXML private VBox userFormContainer;
+    @FXML private Label userFormTitle;
+    @FXML private TextField userNameField;
+    @FXML private TextField userPinField;
+    @FXML private ComboBox<String> userRoleCombo;
+
+    private User currentEditingUser = null;
 
     // ============================================================
     // FXML - CLIENTES
@@ -84,6 +94,16 @@ public class SettingsController implements Initializable {
 
     @FXML private VBox clientsListContainer;
     @FXML private Label clientsEmptyLabel;
+    @FXML private VBox clientFormContainer;
+    @FXML private Label clientFormTitle;
+    @FXML private TextField clientNameField;
+    @FXML private TextField clientPhoneField;
+    @FXML private TextField clientEmailField;
+    @FXML private TextField clientDocumentField;
+    @FXML private TextArea clientNotesField;
+    @FXML private CheckBox clientActiveCheckbox;
+
+    private Client currentEditingClient = null;
 
     // ============================================================
     // CONSTRUCTOR
@@ -104,12 +124,20 @@ public class SettingsController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         logger.info("{} Initializing settings view", PREFIX);
 
+        // Setup user role combo
+        setupUserRoleCombo();
+
         loadProducts();
         loadServices();
         loadUsers();
         loadClients();
 
         logger.info("{} Settings view initialized", PREFIX);
+    }
+
+    private void setupUserRoleCombo() {
+        userRoleCombo.getItems().addAll("admin", "user");
+        userRoleCombo.getSelectionModel().selectFirst();
     }
 
     // ============================================================
@@ -400,15 +428,107 @@ public class SettingsController implements Initializable {
 
         return item;
     }
-
     @FXML
     private void onAddService() {
-        logger.info("{} Add service clicked", PREFIX);
-        // TODO: Implementar en Fase 2
+        logger.info("{} Opening service form (CREATE mode)", PREFIX);
+
+        currentEditingService = null;
+        serviceFormTitle.setText("Agregar Servicio");
+
+        // Clear fields
+        serviceNameField.clear();
+        servicePriceField.clear();
+        serviceAvailableCheckbox.setSelected(true);
+
+        // Show form
+        serviceFormContainer.setVisible(true);
+        serviceFormContainer.setManaged(true);
     }
+
     private void editService(ServiceDefinition service) {
-        logger.info("{} Edit service: {}", PREFIX, service.getId());
-        // TODO: Implementar en Fase 2
+        logger.info("{} Opening service form (EDIT mode): {}", PREFIX, service.getId());
+
+        currentEditingService = service;
+        serviceFormTitle.setText("Editar Servicio");
+
+        // Load data
+        serviceNameField.setText(service.getName());
+        servicePriceField.setText(String.valueOf((int)service.getBasePrice()));
+        serviceAvailableCheckbox.setSelected(service.isAvailable());
+
+        // Show form
+        serviceFormContainer.setVisible(true);
+        serviceFormContainer.setManaged(true);
+    }
+
+    @FXML
+    private void onCancelServiceForm() {
+        logger.info("{} Service form cancelled", PREFIX);
+
+        serviceFormContainer.setVisible(false);
+        serviceFormContainer.setManaged(false);
+        currentEditingService = null;
+    }
+
+    @FXML
+    private void onSaveService() {
+        logger.info("{} Saving service...", PREFIX);
+
+        // Validate
+        String name = serviceNameField.getText();
+        if (name == null || name.isBlank()) {
+            AlertUtil.showWarning("Validacion", "El nombre es obligatorio.");
+            return;
+        }
+
+        String priceStr = servicePriceField.getText();
+        if (priceStr == null || priceStr.isBlank()) {
+            AlertUtil.showWarning("Validacion", "El precio es obligatorio.");
+            return;
+        }
+
+        double price;
+
+        try {
+            price = Double.parseDouble(priceStr);
+        } catch (NumberFormatException e) {
+            AlertUtil.showWarning("Validacion", "El precio debe ser un numero valido.");
+            return;
+        }
+
+        if (price <= 0) {
+            AlertUtil.showWarning("Validacion", "El precio debe ser mayor a 0.");
+            return;
+        }
+
+        boolean available = serviceAvailableCheckbox.isSelected();
+
+        try {
+            if (currentEditingService == null) {
+                // CREATE
+                ServiceDefinition newService = new ServiceDefinition(name, price, available);
+                serviceService.save(newService);
+
+                AlertUtil.showInfo("Exito", "Servicio creado exitosamente.");
+            } else {
+                // UPDATE
+                currentEditingService.setName(name);
+                currentEditingService.setBasePrice(price);
+                currentEditingService.setAvailable(available);
+
+                serviceService.update(currentEditingService);
+
+                AlertUtil.showInfo("Exito", "Servicio actualizado exitosamente.");
+            }
+
+            // Hide form and refresh
+            onCancelServiceForm();
+            loadServices();
+
+        } catch (Exception e) {
+            logger.error("{} Error saving service", PREFIX, e);
+            AlertUtil.showError("Error", "No se pudo guardar el servicio: " + e.getMessage());
+        }
     }
 
     private void deleteService(ServiceDefinition service) {
@@ -499,15 +619,106 @@ public class SettingsController implements Initializable {
 
         return item;
     }
+    // ============================================================
+// USER FORM ACTIONS
+// ============================================================
+
     @FXML
     private void onAddUser() {
-        logger.info("{} Add user clicked", PREFIX);
-        // TODO: Implementar en Fase 2
+        logger.info("{} Opening user form (CREATE mode)", PREFIX);
+
+        currentEditingUser = null;
+        userFormTitle.setText("Agregar Usuario");
+
+        // Clear fields
+        userNameField.clear();
+        userPinField.clear();
+        userRoleCombo.getSelectionModel().selectFirst();
+
+        // Show form
+        userFormContainer.setVisible(true);
+        userFormContainer.setManaged(true);
     }
 
     private void editUser(User user) {
-        logger.info("{} Edit user: {}", PREFIX, user.getId());
-        // TODO: Implementar en Fase 2
+        logger.info("{} Opening user form (EDIT mode): {}", PREFIX, user.getId());
+
+        currentEditingUser = user;
+        userFormTitle.setText("Editar Usuario");
+
+        // Load data
+        userNameField.setText(user.getName());
+        userPinField.setText(user.getPin());
+        userRoleCombo.getSelectionModel().select(user.getRole());
+
+        // Show form
+        userFormContainer.setVisible(true);
+        userFormContainer.setManaged(true);
+    }
+
+    @FXML
+    private void onCancelUserForm() {
+        logger.info("{} User form cancelled", PREFIX);
+
+        userFormContainer.setVisible(false);
+        userFormContainer.setManaged(false);
+        currentEditingUser = null;
+    }
+
+    @FXML
+    private void onSaveUser() {
+        logger.info("{} Saving user...", PREFIX);
+
+        // Validate
+        String name = userNameField.getText();
+        if (name == null || name.isBlank()) {
+            AlertUtil.showWarning("Validacion", "El nombre es obligatorio.");
+            return;
+        }
+
+        String pin = userPinField.getText();
+        if (pin == null || pin.isBlank()) {
+            AlertUtil.showWarning("Validacion", "El PIN es obligatorio.");
+            return;
+        }
+
+        if (!pin.matches("\\d{4}")) {
+            AlertUtil.showWarning("Validacion", "El PIN debe ser exactamente 4 digitos.");
+            return;
+        }
+
+        String role = userRoleCombo.getSelectionModel().getSelectedItem();
+        if (role == null) {
+            AlertUtil.showWarning("Validacion", "Debes seleccionar un rol.");
+            return;
+        }
+
+        try {
+            if (currentEditingUser == null) {
+                // CREATE
+                User newUser = new User(name, pin, role);
+                usersService.create(newUser);
+
+                AlertUtil.showInfo("Exito", "Usuario creado exitosamente.");
+            } else {
+                // UPDATE
+                currentEditingUser.setName(name);
+                currentEditingUser.setPin(pin);
+                currentEditingUser.setRole(role);
+
+                usersService.updateUser(currentEditingUser);
+
+                AlertUtil.showInfo("Exito", "Usuario actualizado exitosamente.");
+            }
+
+            // Hide form and refresh
+            onCancelUserForm();
+            loadUsers();
+
+        } catch (Exception e) {
+            logger.error("{} Error saving user", PREFIX, e);
+            AlertUtil.showError("Error", "No se pudo guardar el usuario: " + e.getMessage());
+        }
     }
 
     private void deleteUser(User user) {
@@ -564,6 +775,13 @@ public class SettingsController implements Initializable {
 
             loadUsers(); // Refresh list
 
+        } catch (IllegalStateException e) {
+            // Caso especial: último admin
+            logger.warn("{} Cannot delete last admin: {}", PREFIX, e.getMessage());
+            AlertUtil.showWarning(
+                    "No se puede eliminar",
+                    e.getMessage()
+            );
         } catch (Exception e) {
             logger.error("{} Error deleting user", PREFIX, e);
             AlertUtil.showError(
@@ -642,15 +860,101 @@ public class SettingsController implements Initializable {
 
         return item;
     }
+
     @FXML
     private void onAddClient() {
-        logger.info("{} Add client clicked", PREFIX);
-        // TODO: Implementar en Fase 2
+        logger.info("{} Opening client form (CREATE mode)", PREFIX);
+
+        currentEditingClient = null;
+        clientFormTitle.setText("Agregar Cliente");
+
+        // Clear fields
+        clientNameField.clear();
+        clientPhoneField.clear();
+        clientEmailField.clear();
+        clientDocumentField.clear();
+        clientNotesField.clear();
+        clientActiveCheckbox.setSelected(true);
+
+        // Show form
+        clientFormContainer.setVisible(true);
+        clientFormContainer.setManaged(true);
     }
 
     private void editClient(Client client) {
-        logger.info("{} Edit client: {}", PREFIX, client.getId());
-        // TODO: Implementar en Fase 2
+        logger.info("{} Opening client form (EDIT mode): {}", PREFIX, client.getId());
+
+        currentEditingClient = client;
+        clientFormTitle.setText("Editar Cliente");
+
+        // Load data
+        clientNameField.setText(client.getName());
+        clientPhoneField.setText(client.getPhone() != null ? client.getPhone() : "");
+        clientEmailField.setText(client.getEmail() != null ? client.getEmail() : "");
+        clientDocumentField.setText(client.getDocument() != null ? client.getDocument() : "");
+        clientNotesField.setText(client.getNotes() != null ? client.getNotes() : "");
+        clientActiveCheckbox.setSelected(client.isActive());
+
+        // Show form
+        clientFormContainer.setVisible(true);
+        clientFormContainer.setManaged(true);
+    }
+
+    @FXML
+    private void onCancelClientForm() {
+        logger.info("{} Client form cancelled", PREFIX);
+
+        clientFormContainer.setVisible(false);
+        clientFormContainer.setManaged(false);
+        currentEditingClient = null;
+    }
+
+    @FXML
+    private void onSaveClient() {
+        logger.info("{} Saving client...", PREFIX);
+
+        // Validate (only name is required)
+        String name = clientNameField.getText();
+        if (name == null || name.isBlank()) {
+            AlertUtil.showWarning("Validacion", "El nombre es obligatorio.");
+            return;
+        }
+
+        // Optional fields
+        String phone = clientPhoneField.getText();
+        String email = clientEmailField.getText();
+        String document = clientDocumentField.getText();
+        String notes = clientNotesField.getText();
+        boolean active = clientActiveCheckbox.isSelected();
+
+        try {
+            if (currentEditingClient == null) {
+                // CREATE
+                clientService.registerClient(name, document, phone, email, notes);
+
+                AlertUtil.showInfo("Exito", "Cliente creado exitosamente.");
+            } else {
+                // UPDATE
+                currentEditingClient.setName(name);
+                currentEditingClient.setPhone(phone);
+                currentEditingClient.setEmail(email);
+                currentEditingClient.setDocument(document);
+                currentEditingClient.setNotes(notes);
+                currentEditingClient.setActive(active);
+
+                clientService.update(currentEditingClient);
+
+                AlertUtil.showInfo("Exito", "Cliente actualizado exitosamente.");
+            }
+
+            // Hide form and refresh
+            onCancelClientForm();
+            loadClients();
+
+        } catch (Exception e) {
+            logger.error("{} Error saving client", PREFIX, e);
+            AlertUtil.showError("Error", "No se pudo guardar el cliente: " + e.getMessage());
+        }
     }
 
     private void deleteClient(Client client) {

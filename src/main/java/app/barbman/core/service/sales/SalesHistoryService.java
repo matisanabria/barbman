@@ -11,6 +11,7 @@ import app.barbman.core.repositories.sales.products.productsaleitem.ProductSaleI
 import app.barbman.core.repositories.sales.services.servicedefinition.ServiceDefinitionRepository;
 import app.barbman.core.repositories.sales.services.serviceheader.ServiceHeaderRepository;
 import app.barbman.core.repositories.sales.services.serviceitems.ServiceItemRepository;
+import app.barbman.core.util.legacy.LegacySaleRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -35,6 +36,7 @@ public class SalesHistoryService {
     private final ProductRepository productRepo;
 
     private final CashboxMovementRepository movementRepo;
+    private final LegacySaleRepository legacySaleRepository;
 
     public SalesHistoryService(
             SaleRepository saleRepo,
@@ -44,7 +46,8 @@ public class SalesHistoryService {
             ProductSaleItemRepository productSaleItemRepo,
             ServiceDefinitionRepository serviceDefRepo,
             ProductRepository productRepo,
-            CashboxMovementRepository movementRepo  // 👈 NUEVO
+            CashboxMovementRepository movementRepo,
+            LegacySaleRepository legacySaleRepository
     ) {
         this.saleRepo = saleRepo;
         this.serviceHeaderRepo = serviceHeaderRepo;
@@ -53,7 +56,8 @@ public class SalesHistoryService {
         this.productSaleItemRepo = productSaleItemRepo;
         this.serviceDefRepo = serviceDefRepo;
         this.productRepo = productRepo;
-        this.movementRepo = movementRepo;  // 👈 NUEVO
+        this.movementRepo = movementRepo;
+        this.legacySaleRepository = legacySaleRepository;
     }
 
     // ============================================================
@@ -61,15 +65,25 @@ public class SalesHistoryService {
     // ============================================================
 
     /**
-     * Returns all sales within a date range.
+     * Returns all sales within a date range, including legacy beta data.
      */
     public List<SaleHistoryDTO> getSalesHistory(LocalDate from, LocalDate to) {
-        logger.info("{} Fetching sales history from {} to {}", PREFIX, from, to);
+        logger.info("{} Fetching combined sales history from {} to {}", PREFIX, from, to);
 
-        List<SaleHistoryDTO> history = saleRepo.findSalesHistory(from, to);
+        // 1. Obtener datos Legacy (BETA)
+        // Van primero en la lista para que al hacer reverse en el controller queden al final (abajo)
+        List<SaleHistoryDTO> legacySales = legacySaleRepository.searchByDateRange(from, to);
+        logger.info("{} Retrieved {} legacy (beta) sales", PREFIX, legacySales.size());
 
-        logger.info("{} Retrieved {} sales", PREFIX, history.size());
-        return history;
+        // 2. Obtener datos actuales
+        List<SaleHistoryDTO> currentSales = saleRepo.findSalesHistory(from, to);
+        logger.info("{} Retrieved {} current sales", PREFIX, currentSales.size());
+
+        // 3. Mezclar en el orden solicitado
+        List<SaleHistoryDTO> combinedHistory = new ArrayList<>(legacySales);
+        combinedHistory.addAll(currentSales);
+
+        return combinedHistory;
     }
 
     // ============================================================

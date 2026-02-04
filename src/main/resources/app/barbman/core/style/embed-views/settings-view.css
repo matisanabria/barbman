@@ -315,3 +315,53 @@
 .settings-form-btn-save:hover {
     -fx-background-color: #FFD97A;
 }
+/* Checkbox */
+.settings-form-checkbox {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 14px;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.settings-form-checkbox .box {
+    -fx-background-color: #2F2F2F;
+    -fx-border-color: #3A3A3A;
+    -fx-border-radius: 4;
+}
+
+.settings-form-checkbox:selected .box {
+    -fx-background-color: #F0C667;
+}
+
+.settings-form-checkbox .mark {
+    -fx-background-color: #232323;
+}
+
+/* TextArea */
+.settings-form-field.text-area {
+    -fx-background-color: #2F2F2F;
+}
+
+.settings-form-field.text-area .content {
+    -fx-background-color: #2F2F2F;
+}
+
+.settings-form-field.text-area .text {
+    -fx-fill: #FFFFFF;
+}
+
+/* ComboBox */
+.settings-form-combo {
+    -fx-background-color: #2F2F2F;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 14px;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.settings-form-combo .list-cell {
+    -fx-background-color: #2F2F2F;
+    -fx-text-fill: #FFFFFF;
+}
+
+.settings-form-combo .list-cell:hover {
+    -fx-background-color: #3A3A3A;
+}

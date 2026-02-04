@@ -1,10 +1,13 @@
 package app.barbman.core.controller.sales;
 
+import app.barbman.core.controller.QuickAddClientModalController;
 import app.barbman.core.dto.salecart.SaleCartDTO;
 import app.barbman.core.dto.salecart.SaleCartItemDTO;
+import app.barbman.core.model.human.Client;
 import app.barbman.core.model.sales.Sale;
 import app.barbman.core.repositories.cashbox.movement.CashboxMovementRepository;
 import app.barbman.core.repositories.cashbox.movement.CashboxMovementRepositoryImpl;
+import app.barbman.core.repositories.client.ClientRepositoryImpl;
 import app.barbman.core.repositories.sales.SaleRepository;
 import app.barbman.core.repositories.sales.SaleRepositoryImpl;
 import app.barbman.core.repositories.sales.products.productheader.ProductHeaderRepository;
@@ -15,24 +18,34 @@ import app.barbman.core.repositories.sales.services.serviceheader.ServiceHeaderR
 import app.barbman.core.repositories.sales.services.serviceheader.ServiceHeaderRepositoryImpl;
 import app.barbman.core.repositories.sales.services.serviceitems.ServiceItemRepository;
 import app.barbman.core.repositories.sales.services.serviceitems.ServiceItemRepositoryImpl;
+import app.barbman.core.service.clients.ClientService;
 import app.barbman.core.service.sales.products.ProductHeaderService;
 import app.barbman.core.service.sales.products.ProductItemService;
 import app.barbman.core.service.sales.saleflow.SaleFlowService;
 import app.barbman.core.service.sales.services.ServiceHeaderService;
 import app.barbman.core.service.sales.services.ServiceItemService;
+import app.barbman.core.util.AlertUtil;
 import app.barbman.core.util.NumberFormatterUtil;
 import app.barbman.core.util.SessionManager;
 import app.barbman.core.util.window.EmbeddedViewLoader;
+import app.barbman.core.util.window.WindowManager;
+import app.barbman.core.util.window.WindowRequest;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 public class SalePaymentViewController implements Initializable {
@@ -40,12 +53,20 @@ public class SalePaymentViewController implements Initializable {
     private static final Logger logger =
             LogManager.getLogger(SalePaymentViewController.class);
 
-    // =========================
-    // FXML
-    // =========================
+    // ============================================================
+    // FXML COMPONENTS
+    // ============================================================
+
     @FXML private ComboBox<String> clientComboBox;
     @FXML private Button addClientButton;
     @FXML private TextArea noteArea;
+    @FXML private Label clientInfoLabel;
+
+    @FXML private VBox clientInfoContainer;
+    @FXML private Label clientNameLabel;
+    @FXML private Label clientDocumentLabel;
+    @FXML private Label clientPhoneLabel;
+    @FXML private Label clientEmailLabel;
 
     @FXML private VBox summaryContainer;
 
@@ -61,32 +82,27 @@ public class SalePaymentViewController implements Initializable {
     @FXML private Button cancelButton;
     @FXML private Button confirmButton;
 
-    private final SaleRepository saleRepository = new SaleRepositoryImpl();
-    private final ServiceHeaderRepository serviceHeaderRepository = new ServiceHeaderRepositoryImpl();
-    private final ServiceHeaderService serviceHeaderService = new ServiceHeaderService(serviceHeaderRepository);
-    private final ServiceItemRepository serviceItemRepository = new ServiceItemRepositoryImpl();
-    private final ServiceItemService serviceItemService = new ServiceItemService(serviceItemRepository);
-    private final ProductHeaderRepository productHeaderRepository = new ProductHeaderRepositoryImpl();
-    private final ProductHeaderService productHeaderService = new ProductHeaderService(productHeaderRepository);
-    private final ProductSaleItemRepository productSaleItemRepository = new ProductSaleItemRepositoryImpl();
-    private final ProductItemService productItemService = new ProductItemService(productSaleItemRepository);
+    // ============================================================
+    // SERVICES
+    // ============================================================
 
-    private final CashboxMovementRepository cashboxMovementRepository = new CashboxMovementRepositoryImpl();
+    private final ClientService clientService = new ClientService(new ClientRepositoryImpl());
+    private final SaleFlowService saleFlowService = new SaleFlowService(
+            new SaleRepositoryImpl(),
+            new ServiceHeaderService(new ServiceHeaderRepositoryImpl()),
+            new ServiceItemService(new ServiceItemRepositoryImpl()),
+            new ProductHeaderService(new ProductHeaderRepositoryImpl()),
+            new ProductItemService(new ProductSaleItemRepositoryImpl()),
+            new CashboxMovementRepositoryImpl()
+    );
 
-    private final SaleFlowService saleFlowService =
-            new SaleFlowService(
-            saleRepository,
-            serviceHeaderService,
-            serviceItemService,
-            productHeaderService,
-            productItemService,
-            cashboxMovementRepository
-            );
-
-    // =========================
+    // ============================================================
     // STATE
-    // =========================
+    // ============================================================
+
     private SaleCartDTO cart;
+    private Map<String, Integer> clientMap = new HashMap<>(); // nombre -> id
+
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -109,18 +125,130 @@ public class SalePaymentViewController implements Initializable {
     }
 
     // =========================
-    // CLIENT
-    // =========================
-    private void setupClientCombo() {
-        clientComboBox.getItems().clear();
-        clientComboBox.getItems().add("Ninguno");
-        clientComboBox.getSelectionModel().selectFirst();
+// CLIENT
+// =========================
 
+    private void setupClientCombo() {
+        loadClientsIntoCombo();
+
+        // Permitir busqueda por nombre
         clientComboBox.setEditable(true);
 
-        addClientButton.setOnAction(e ->
-                logger.info("[SALE-PAYMENT] Add client clicked (pending)")
+        // Listener para mostrar info del cliente
+        clientComboBox.getSelectionModel().selectedItemProperty().addListener((obs, old, newValue) -> {
+            updateClientInfo(newValue);
+        });
+
+        addClientButton.setOnAction(e -> openQuickAddClientModal());
+    }
+
+    private void loadClientsIntoCombo() {
+        clientComboBox.getItems().clear();
+        clientMap.clear();
+
+        clientComboBox.getItems().add("Ninguno");
+        clientMap.put("Ninguno", null);
+
+        // Cargar clientes activos
+        clientService.findAll().stream()
+                .filter(Client::isActive)
+                .forEach(client -> {
+                    clientComboBox.getItems().add(client.getName());
+                    clientMap.put(client.getName(), client.getId());
+                });
+
+        clientComboBox.getSelectionModel().selectFirst();
+    }
+
+    private void openQuickAddClientModal() {
+        try {
+            logger.info("[SALE-PAYMENT] Opening quick add client modal");
+
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/app/barbman/core/view/quick-add-client-modal.fxml")
+            );
+
+            VBox modalContent = loader.load();
+            QuickAddClientModalController controller = loader.getController();
+
+            // Set callback BEFORE opening modal
+            controller.setOnClientCreated(createdClient -> {
+                logger.info("[SALE-PAYMENT] Client created via callback: {}", createdClient.getName());
+
+                // Reload combo
+                loadClientsIntoCombo();
+
+                // Select the new client
+                clientComboBox.getSelectionModel().select(createdClient.getName());
+            });
+
+            // Open modal manually
+            Stage modalStage = new Stage();
+            modalStage.initModality(Modality.APPLICATION_MODAL);
+            modalStage.initOwner((Stage) clientComboBox.getScene().getWindow());
+            modalStage.setTitle("Agregar Cliente");
+            modalStage.setResizable(false);
+
+            Scene scene = new Scene(modalContent);
+            scene.getStylesheets().add(
+                    getClass().getResource("/app/barbman/core/style/quick-add-client.css").toExternalForm()
+            );
+
+            modalStage.setScene(scene);
+            modalStage.showAndWait();
+
+        } catch (Exception e) {
+            logger.error("[SALE-PAYMENT] Error opening modal", e);
+            AlertUtil.showError("Error", "No se pudo abrir el formulario de cliente.");
+        }
+    }
+
+    private void updateClientInfo(String selectedName) {
+        if (selectedName == null || "Ninguno".equals(selectedName)) {
+            // Hide info container
+            clientInfoContainer.setVisible(false);
+            clientInfoContainer.setManaged(false);
+            return;
+        }
+
+        Integer clientId = clientMap.get(selectedName);
+        if (clientId == null) {
+            clientInfoContainer.setVisible(false);
+            clientInfoContainer.setManaged(false);
+            return;
+        }
+
+        Client client = clientService.findById(clientId);
+        if (client == null) {
+            clientInfoContainer.setVisible(false);
+            clientInfoContainer.setManaged(false);
+            return;
+        }
+
+        // Update labels
+        clientNameLabel.setText(client.getName() != null ? client.getName() : "-");
+
+        clientDocumentLabel.setText(
+                (client.getDocument() != null && !client.getDocument().isBlank())
+                        ? client.getDocument()
+                        : "-"
         );
+
+        clientPhoneLabel.setText(
+                (client.getPhone() != null && !client.getPhone().isBlank())
+                        ? client.getPhone()
+                        : "-"
+        );
+
+        clientEmailLabel.setText(
+                (client.getEmail() != null && !client.getEmail().isBlank())
+                        ? client.getEmail()
+                        : "-"
+        );
+
+        // Show info container
+        clientInfoContainer.setVisible(true);
+        clientInfoContainer.setManaged(true);
     }
 
     // =========================
@@ -218,9 +346,12 @@ public class SalePaymentViewController implements Initializable {
         throw new IllegalStateException("No payment method selected");
     }
     private Integer getSelectedClientId() {
-        return null;
+        String selectedName = clientComboBox.getSelectionModel().getSelectedItem();
+        if (selectedName == null || "Ninguno".equals(selectedName)) {
+            return null;
+        }
+        return clientMap.get(selectedName);
     }
-
     private boolean isPaymentValid() {
 
         // 1. Método de pago seleccionado

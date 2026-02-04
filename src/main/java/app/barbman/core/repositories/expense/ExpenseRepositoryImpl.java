@@ -191,6 +191,41 @@ public class ExpenseRepositoryImpl implements ExpenseRepository {
 
         return 0;
     }
+    @Override
+    public double sumTotalByPeriod(LocalDate start, LocalDate end) {
+
+        String sql = """
+        SELECT COALESCE(SUM(amount), 0)
+        FROM expenses
+        WHERE date BETWEEN ? AND ?
+        """;
+
+        try (Connection db = DbBootstrap.connect();
+             PreparedStatement ps = db.prepareStatement(sql)) {
+
+            ps.setString(1, start.toString());
+            ps.setString(2, end.toString());
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    double total = rs.getDouble(1);
+                    logger.debug(
+                            "{} SUM expenses [{} -> {}] = {}",
+                            PREFIX, start, end, total
+                    );
+                    return total;
+                }
+            }
+
+        } catch (Exception e) {
+            logger.error(
+                    "{} Error summing expenses between {} and {}: {}",
+                    PREFIX, start, end, e.getMessage()
+            );
+        }
+
+        return 0;
+    }
 
     private Expense mapRow(ResultSet rs) throws SQLException {
         return new Expense(

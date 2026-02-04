@@ -115,7 +115,7 @@
 
 /* TABLE ROWS - Alternating by DATE */
 .history-table .history-row-light {
-    -fx-background-color: #2A2A2A;
+    -fx-background-color: #2e2e2e;
     -fx-text-fill: #FFFFFF;
 }
 
@@ -126,7 +126,7 @@
 
 .history-table .history-row-light:hover,
 .history-table .history-row-dark:hover {
-    -fx-background-color: #504f4f;
+    -fx-background-color: #434343;
     -fx-cursor: hand;
 }
 

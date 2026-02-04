@@ -50,31 +50,44 @@ public class NumberFormatterUtil {
 
         TextFormatter<String> formatter = new TextFormatter<>(change -> {
 
-            String newText = change.getControlNewText();
-
-            if (newText.isBlank()) {
-                return change;
-            }
-
-            String digits = newText.replaceAll("\\D", "");
-            if (digits.isEmpty()) {
-                change.setText("");
-                change.setRange(0, change.getControlText().length());
-                return change;
-            }
-
             try {
+                String newText = change.getControlNewText();
+
+                if (newText.isBlank()) {
+                    return change;
+                }
+
+                String digits = newText.replaceAll("\\D", "");
+                if (digits.isEmpty()) {
+                    change.setText("");
+                    change.setRange(0, change.getControlText().length());
+                    return change;
+                }
+
                 long value = Long.parseLong(digits);
                 String formatted = format(value);
 
                 change.setText(formatted);
                 change.setRange(0, change.getControlText().length());
-                change.setCaretPosition(formatted.length());
-                change.setAnchor(formatted.length());
+
+                // Asegurar que el caret no quede fuera de rango
+                int caretPos = Math.min(formatted.length(), formatted.length());
+                change.setCaretPosition(caretPos);
+                change.setAnchor(caretPos);
 
                 return change;
 
             } catch (NumberFormatException e) {
+                logger.debug("[NUMBER-FORMATTER] NumberFormatException caught, ignoring: {}", e.getMessage());
+                return null;
+            } catch (IllegalArgumentException e) {
+                // Este es el error "The start must be <= the end"
+                logger.warn("[NUMBER-FORMATTER] IllegalArgumentException caught (rapid delete?): {}", e.getMessage());
+                // Simplemente rechazar el cambio y mantener el estado anterior
+                return null;
+            } catch (Exception e) {
+                // Cualquier otro error inesperado
+                logger.error("[NUMBER-FORMATTER] Unexpected error in text formatter: {}", e.getMessage());
                 return null;
             }
         });

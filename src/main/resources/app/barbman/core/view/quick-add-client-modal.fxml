@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17.0.12"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="app.barbman.core.controller.QuickAddClientModalController"
+      spacing="16"
+      styleClass="modal-content"
+      prefWidth="400">
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <Label text="Agregar Cliente Rapido"
+           styleClass="modal-title"/>
+
+    <VBox spacing="8">
+        <Label text="Nombre y Apellidos: *" styleClass="modal-label"/>
+        <TextField fx:id="nameField"
+                   promptText="Ej: Juan Perez"
+                   styleClass="modal-field"/>
+    </VBox>
+
+    <VBox spacing="8">
+        <Label text="RUC/CI:" styleClass="modal-label"/>
+        <TextField fx:id="documentField"
+                   promptText="Ej: 12345678-9"
+                   styleClass="modal-field"/>
+    </VBox>
+
+    <VBox spacing="8">
+        <Label text="Telefono:" styleClass="modal-label"/>
+        <TextField fx:id="phoneField"
+                   promptText="Ej: 0981-123456"
+                   styleClass="modal-field"/>
+    </VBox>
+
+    <VBox spacing="8">
+        <Label text="Email:" styleClass="modal-label"/>
+        <TextField fx:id="emailField"
+                   promptText="Ej: cliente@example.com"
+                   styleClass="modal-field"/>
+    </VBox>
+
+    <HBox spacing="12" alignment="CENTER_RIGHT">
+        <Button text="Cancelar"
+                onAction="#onCancel"
+                styleClass="modal-btn-cancel"/>
+        <Button text="Guardar"
+                onAction="#onSave"
+                styleClass="modal-btn-save"/>
+    </HBox>
+
+</VBox>

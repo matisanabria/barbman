@@ -63,16 +63,13 @@ public class UsersService {
         return usersRepository.findById(id);
     }
 
-    /**
-     * Create or update a user.
-     */
-    public void saveUser(User user) {
+    public void updateUser(User user) {
         if (user == null) {
-            logger.warn("{} Attempted to save null user.", PREFIX);
+            logger.warn("{} Attempted to update null user.", PREFIX);
             throw new IllegalArgumentException("User cannot be null");
         }
-        usersRepository.save(user);
-        logger.info("{} User saved -> {}", PREFIX, user.getName());
+        usersRepository.update(user);
+        logger.info("{} User updated -> {}", PREFIX, user.getName());
     }
 
     /**
@@ -82,16 +79,40 @@ public class UsersService {
         usersRepository.delete(id);
         logger.info("{} User deleted -> ID {}", PREFIX, id);
     }
+
+
+
     /**
-     * Soft delete a user by setting their role to "deleted".
-     * This removes them from active operations while preserving data integrity.
+     * Count active admin users (excluding deleted).
+     */
+    private int countActiveAdmins() {
+        return (int) usersRepository.findAll().stream()
+                .filter(u -> !"deleted".equals(u.getRole()))
+                .filter(u -> "admin".equalsIgnoreCase(u.getRole()))
+                .count();
+    }
+
+    /**
+     * Soft delete a user by setting role to "deleted".
+     * Prevents deletion if user is the last admin.
      */
     public void softDelete(int id) {
         User user = usersRepository.findById(id);
-        if (user != null) {
-            user.setRole("deleted");
-            usersRepository.update(user);
-            logger.info("{} User soft deleted (role set to 'deleted') -> ID {}", PREFIX, id);
+        if (user == null) {
+            throw new IllegalArgumentException("User not found");
         }
+
+        // Check if user is admin
+        if ("admin".equalsIgnoreCase(user.getRole())) {
+            int activeAdmins = countActiveAdmins();
+
+            if (activeAdmins <= 1) {
+                throw new IllegalStateException("No se puede eliminar el ultimo administrador del sistema.");
+            }
+        }
+
+        user.setRole("deleted");
+        usersRepository.update(user);
+        logger.info("{} User soft deleted (role set to 'deleted') -> ID {}", PREFIX, id);
     }
 }

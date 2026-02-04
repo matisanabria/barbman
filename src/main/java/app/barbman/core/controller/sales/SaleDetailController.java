@@ -14,6 +14,7 @@ import app.barbman.core.service.sales.SalesHistoryService;
 import app.barbman.core.util.AlertUtil;
 import app.barbman.core.util.NumberFormatterUtil;
 import app.barbman.core.util.NumberToWordsUtil;
+import app.barbman.core.util.legacy.LegacySaleRepository;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
@@ -69,7 +70,8 @@ public class SaleDetailController {
                 new ProductSaleItemRepositoryImpl(),
                 new ServiceDefinitionRepositoryImpl(),
                 new ProductRepositoryImpl(),
-                new CashboxMovementRepositoryImpl()
+                new CashboxMovementRepositoryImpl(),
+                new LegacySaleRepository()
         );
     }
 
@@ -87,7 +89,9 @@ public class SaleDetailController {
             SaleDetailDTO detail = historyService.getSaleDetail(saleId);
 
             if (detail == null) {
-                AlertUtil.showError("Error", "No se encontró la venta #" + saleId);
+                AlertUtil.showInfo("Registro Histórico",
+                        "La venta #" + saleId + " corresponde al sistema anterior (Beta).\n" +
+                                "No hay detalles de productos o servicios disponibles para visualización.");
                 closeModal();
                 return;
             }
@@ -133,10 +137,9 @@ public class SaleDetailController {
 
         // Totals
         double total = detail.getTotal();
-        double subtotal = total / 1.1; // Assuming 10% IVA
-        double iva = total - subtotal;
+        double iva = total - (total / 1.1); // Assuming 10% IVA
 
-        subtotalLabel.setText(NumberFormatterUtil.format(subtotal) + " Gs");
+        subtotalLabel.setText(NumberFormatterUtil.format(total) + " Gs");
         ivaLabel.setText(NumberFormatterUtil.format(iva) + " Gs");
         totalLabel.setText(NumberFormatterUtil.format(total) + " Gs");
 

@@ -29,6 +29,7 @@
             </padding>
 
             <!-- Cliente -->
+            <!-- Cliente -->
             <VBox spacing="8">
                 <Label text="Cliente"
                        styleClass="sale-payment-section-title"/>
@@ -47,6 +48,35 @@
                             prefHeight="40"
                             styleClass="sale-payment-add-client"/>
                 </HBox>
+
+                <!-- INFO DEL CLIENTE SELECCIONADO -->
+                <VBox fx:id="clientInfoContainer"
+                      spacing="4"
+                      styleClass="client-info-container"
+                      visible="false"
+                      managed="false">
+
+                    <HBox spacing="8" alignment="CENTER_LEFT">
+                        <Label text="Nombre:" styleClass="client-info-label-key"/>
+                        <Label fx:id="clientNameLabel" styleClass="client-info-label-value"/>
+                    </HBox>
+
+                    <HBox spacing="8" alignment="CENTER_LEFT">
+                        <Label text="RUC/CI:" styleClass="client-info-label-key"/>
+                        <Label fx:id="clientDocumentLabel" styleClass="client-info-label-value"/>
+                    </HBox>
+
+                    <HBox spacing="8" alignment="CENTER_LEFT">
+                        <Label text="Telefono:" styleClass="client-info-label-key"/>
+                        <Label fx:id="clientPhoneLabel" styleClass="client-info-label-value"/>
+                    </HBox>
+
+                    <HBox spacing="8" alignment="CENTER_LEFT">
+                        <Label text="Email:" styleClass="client-info-label-key"/>
+                        <Label fx:id="clientEmailLabel" styleClass="client-info-label-value"/>
+                    </HBox>
+
+                </VBox>
             </VBox>
 
             <!-- Nota -->

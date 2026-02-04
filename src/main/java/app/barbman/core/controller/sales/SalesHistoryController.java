@@ -13,6 +13,7 @@ import app.barbman.core.service.sales.SalesHistoryService;
 import app.barbman.core.util.AlertUtil;
 import app.barbman.core.util.NumberFormatterUtil;
 import app.barbman.core.util.SessionManager;
+import app.barbman.core.util.legacy.LegacySaleRepository;
 import app.barbman.core.util.window.WindowManager;
 import app.barbman.core.util.window.WindowRequest;
 import javafx.beans.property.SimpleStringProperty;
@@ -78,7 +79,8 @@ public class SalesHistoryController implements Initializable {
                 new ProductSaleItemRepositoryImpl(),
                 new ServiceDefinitionRepositoryImpl(),
                 new ProductRepositoryImpl(),
-                new CashboxMovementRepositoryImpl()
+                new CashboxMovementRepositoryImpl(),
+                new LegacySaleRepository()
         );
     }
 
@@ -246,6 +248,7 @@ public class SalesHistoryController implements Initializable {
 
     private void openSaleDetail(int saleId) {
         logger.info("{} Opening detail for sale ID={}", PREFIX, saleId);
+
 
         try {
             SaleDetailController controller = (SaleDetailController) WindowManager.openModal(

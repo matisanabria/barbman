@@ -126,7 +126,7 @@
                                   styleClass="sale-detail-totals">
 
                             <!-- Subtotal -->
-                            <Label text="Subtotal (gravado 10%):"
+                            <Label text="Subtotal:"
                                    styleClass="sale-detail-label"
                                    GridPane.rowIndex="0"
                                    GridPane.columnIndex="0"/>

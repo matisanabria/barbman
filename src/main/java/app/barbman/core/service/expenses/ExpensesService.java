@@ -7,11 +7,14 @@ import app.barbman.core.repositories.cashbox.movement.CashboxMovementRepositoryI
 import app.barbman.core.repositories.expense.ExpenseRepository;
 import app.barbman.core.repositories.expense.ExpenseRepositoryImpl;
 import app.barbman.core.service.cashbox.CashboxService;
+import app.barbman.core.util.legacy.LegacyExpenseRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,11 +28,13 @@ public class ExpensesService {
 
     private final ExpenseRepository expenseRepo;
     private final CashboxMovementRepository movementRepo = new CashboxMovementRepositoryImpl();
+    private final LegacyExpenseRepository legacyExpenseRepo;
 
     public ExpensesService(
             ExpenseRepository expenseRepo
     ) {
         this.expenseRepo = expenseRepo;
+        this.legacyExpenseRepo = new LegacyExpenseRepository();
     }
 
 
@@ -156,9 +161,16 @@ public class ExpensesService {
      */
     public List<Expense> findAll() {
         try {
-            List<Expense> expenses = expenseRepo.findAll();
-            logger.debug("{} Retrieved {} total expenses from repository.", PREFIX, expenses.size());
-            return expenses;
+            // 1. Datos Beta (primero en la lista)
+            List<Expense> legacyExpenses = legacyExpenseRepo.findAll();
+            // 2. Datos nuevos
+            List<Expense> currentExpenses = expenseRepo.findAll();
+
+            // 3. Mezcla
+            List<Expense> combined = new ArrayList<>(legacyExpenses);
+            combined.addAll(currentExpenses);
+
+            return combined;
         } catch (Exception e) {
             logger.error("{} Error retrieving expenses: {}", PREFIX, e.getMessage());
             return List.of();
@@ -207,5 +219,47 @@ public class ExpensesService {
                 .sumTotalByPaymentMethodAndPeriod(
                         paymentMethodId, start, end
                 );
+    }
+    /**
+     * Get total expenses for today.
+     */
+    public double getTodayTotal() {
+        LocalDate today = LocalDate.now();
+        logger.info("{} Getting TODAY total for: {}", PREFIX, today);
+        double total = expenseRepo.sumTotalByPeriod(today, today);
+        logger.info("{} TODAY total = {}", PREFIX, total);
+        return total;
+    }
+
+    /**
+     * Get total expenses for current week (Monday to Sunday).
+     */
+    public double getWeekTotal() {
+        LocalDate today = LocalDate.now();
+        LocalDate startOfWeek = today.with(TemporalAdjusters.previousOrSame(
+                java.time.DayOfWeek.MONDAY
+        ));
+        LocalDate endOfWeek = today.with(TemporalAdjusters.nextOrSame(
+                java.time.DayOfWeek.SUNDAY
+        ));
+
+        logger.info("{} Getting WEEK total [{} -> {}]", PREFIX, startOfWeek, endOfWeek);
+        double total = expenseRepo.sumTotalByPeriod(startOfWeek, endOfWeek);
+        logger.info("{} WEEK total = {}", PREFIX, total);
+        return total;
+    }
+
+    /**
+     * Get total expenses for current month.
+     */
+    public double getMonthTotal() {
+        LocalDate today = LocalDate.now();
+        LocalDate startOfMonth = today.with(TemporalAdjusters.firstDayOfMonth());
+        LocalDate endOfMonth = today.with(TemporalAdjusters.lastDayOfMonth());
+
+        logger.info("{} Getting MONTH total [{} -> {}]", PREFIX, startOfMonth, endOfMonth);
+        double total = expenseRepo.sumTotalByPeriod(startOfMonth, endOfMonth);
+        logger.info("{} MONTH total = {}", PREFIX, total);
+        return total;
     }
 }

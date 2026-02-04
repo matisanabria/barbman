@@ -760,3 +760,35 @@
 .sale-confirm-btn:pressed {
     -fx-background-color: #D4AA4A;
 }
+.sale-payment-client-info {
+    -fx-text-fill: #AAAAAA;
+    -fx-font-size: 12px;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-padding: 4 0 0 0;
+}
+/* ==========================================================
+   CLIENT INFO DISPLAY
+   ========================================================== */
+
+.client-info-container {
+    -fx-background-color: #2A2A2A;
+    -fx-background-radius: 8;
+    -fx-padding: 12;
+    -fx-border-color: #3A3A3A;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+}
+
+.client-info-label-key {
+    -fx-text-fill: #AAAAAA;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-min-width: 80px;
+}
+
+.client-info-label-value {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 13px;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}

@@ -141,6 +141,48 @@
                                             onAction="#onAddService"/>
                                 </HBox>
 
+                                <!-- FORMULARIO DE SERVICIO -->
+                                <VBox fx:id="serviceFormContainer"
+                                      spacing="16"
+                                      styleClass="settings-form"
+                                      visible="false"
+                                      managed="false">
+
+                                    <Label fx:id="serviceFormTitle"
+                                           text="Agregar Servicio"
+                                           styleClass="settings-form-title"/>
+
+                                    <VBox spacing="8">
+                                        <Label text="Nombre:" styleClass="settings-form-label"/>
+                                        <TextField fx:id="serviceNameField"
+                                                   promptText="Ej: Corte de cabello"
+                                                   styleClass="settings-form-field"/>
+                                    </VBox>
+
+                                    <VBox spacing="8">
+                                        <Label text="Precio Base:" styleClass="settings-form-label"/>
+                                        <TextField fx:id="servicePriceField"
+                                                   promptText="Ej: 50000"
+                                                   styleClass="settings-form-field"/>
+                                    </VBox>
+
+                                    <HBox spacing="8" alignment="CENTER_LEFT">
+                                        <CheckBox fx:id="serviceAvailableCheckbox"
+                                                  text="Disponible"
+                                                  selected="true"
+                                                  styleClass="settings-form-checkbox"/>
+                                    </HBox>
+
+                                    <HBox spacing="12" alignment="CENTER_RIGHT">
+                                        <Button text="Cancelar"
+                                                onAction="#onCancelServiceForm"
+                                                styleClass="settings-form-btn-cancel"/>
+                                        <Button text="Guardar"
+                                                onAction="#onSaveService"
+                                                styleClass="settings-form-btn-save"/>
+                                    </HBox>
+                                </VBox>
+
                                 <!-- Lista de servicios -->
                                 <VBox fx:id="servicesListContainer"
                                       spacing="12"
@@ -185,6 +227,49 @@
                                             onAction="#onAddUser"/>
                                 </HBox>
 
+                                <!-- FORMULARIO DE USUARIO -->
+                                <VBox fx:id="userFormContainer"
+                                      spacing="16"
+                                      styleClass="settings-form"
+                                      visible="false"
+                                      managed="false">
+
+                                    <Label fx:id="userFormTitle"
+                                           text="Agregar Usuario"
+                                           styleClass="settings-form-title"/>
+
+                                    <VBox spacing="8">
+                                        <Label text="Nombre:" styleClass="settings-form-label"/>
+                                        <TextField fx:id="userNameField"
+                                                   promptText="Ej: Maria Lopez"
+                                                   styleClass="settings-form-field"/>
+                                    </VBox>
+
+                                    <VBox spacing="8">
+                                        <Label text="PIN (4 digitos):" styleClass="settings-form-label"/>
+                                        <TextField fx:id="userPinField"
+                                                   promptText="Ej: 1234"
+                                                   styleClass="settings-form-field"
+                                                   maxWidth="150"/>
+                                    </VBox>
+
+                                    <VBox spacing="8">
+                                        <Label text="Rol:" styleClass="settings-form-label"/>
+                                        <ComboBox fx:id="userRoleCombo"
+                                                  styleClass="settings-form-combo"
+                                                  prefWidth="200"/>
+                                    </VBox>
+
+                                    <HBox spacing="12" alignment="CENTER_RIGHT">
+                                        <Button text="Cancelar"
+                                                onAction="#onCancelUserForm"
+                                                styleClass="settings-form-btn-cancel"/>
+                                        <Button text="Guardar"
+                                                onAction="#onSaveUser"
+                                                styleClass="settings-form-btn-save"/>
+                                    </HBox>
+                                </VBox>
+
                                 <!-- Lista de usuarios -->
                                 <VBox fx:id="usersListContainer"
                                       spacing="12"
@@ -228,6 +313,69 @@
                                             styleClass="settings-btn-add"
                                             onAction="#onAddClient"/>
                                 </HBox>
+
+                                <!-- FORMULARIO DE CLIENTE -->
+                                <VBox fx:id="clientFormContainer"
+                                      spacing="16"
+                                      styleClass="settings-form"
+                                      visible="false"
+                                      managed="false">
+
+                                    <Label fx:id="clientFormTitle"
+                                           text="Agregar Cliente"
+                                           styleClass="settings-form-title"/>
+
+                                    <VBox spacing="8">
+                                        <Label text="Nombre: *" styleClass="settings-form-label"/>
+                                        <TextField fx:id="clientNameField"
+                                                   promptText="Ej: Juan Perez"
+                                                   styleClass="settings-form-field"/>
+                                    </VBox>
+
+                                    <VBox spacing="8">
+                                        <Label text="Telefono:" styleClass="settings-form-label"/>
+                                        <TextField fx:id="clientPhoneField"
+                                                   promptText="Ej: 0981-123456"
+                                                   styleClass="settings-form-field"/>
+                                    </VBox>
+
+                                    <VBox spacing="8">
+                                        <Label text="Email:" styleClass="settings-form-label"/>
+                                        <TextField fx:id="clientEmailField"
+                                                   promptText="Ej: cliente@example.com"
+                                                   styleClass="settings-form-field"/>
+                                    </VBox>
+
+                                    <VBox spacing="8">
+                                        <Label text="Documento/RUC:" styleClass="settings-form-label"/>
+                                        <TextField fx:id="clientDocumentField"
+                                                   promptText="Ej: 12345678-9"
+                                                   styleClass="settings-form-field"/>
+                                    </VBox>
+
+                                    <VBox spacing="8">
+                                        <Label text="Notas:" styleClass="settings-form-label"/>
+                                        <TextArea fx:id="clientNotesField"
+                                                  promptText="Observaciones adicionales"
+                                                  styleClass="settings-form-field"
+                                                  prefRowCount="3"/>
+                                    </VBox>
+                                    <HBox spacing="8" alignment="CENTER_LEFT">
+                                        <CheckBox fx:id="clientActiveCheckbox"
+                                                  text="Cliente activo"
+                                                  selected="true"
+                                                  styleClass="settings-form-checkbox"/>
+                                    </HBox>
+
+                                    <HBox spacing="12" alignment="CENTER_RIGHT">
+                                        <Button text="Cancelar"
+                                                onAction="#onCancelClientForm"
+                                                styleClass="settings-form-btn-cancel"/>
+                                        <Button text="Guardar"
+                                                onAction="#onSaveClient"
+                                                styleClass="settings-form-btn-save"/>
+                                    </HBox>
+                                </VBox>
 
                                 <!-- Lista de clientes -->
                                 <VBox fx:id="clientsListContainer"

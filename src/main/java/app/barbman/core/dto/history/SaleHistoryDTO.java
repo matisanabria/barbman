@@ -16,6 +16,7 @@ public class SaleHistoryDTO {
 
     private double total;
     private String paymentMethod;
+    private boolean beta;
 
     // opcional
     private boolean paid;
@@ -75,6 +76,10 @@ public class SaleHistoryDTO {
     public void setPaid(boolean paid) {
         this.paid = paid;
     }
+
+    public boolean isBeta() { return beta; }
+    public void setBeta(boolean beta) { this.beta = beta; }
+
 
     @Override
     public boolean equals(Object o) {

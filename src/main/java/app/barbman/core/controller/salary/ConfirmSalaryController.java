@@ -108,9 +108,7 @@ public class ConfirmSalaryController implements Initializable {
         // Setup payment method options
         paymentTypeChoiceBox.setItems(FXCollections.observableArrayList(
                 "Efectivo",
-                "Transferencia",
-                "Tarjeta",
-                "QR"
+                "Transferencia"
         ));
         paymentTypeChoiceBox.setValue("Efectivo");
 
@@ -320,8 +318,6 @@ public class ConfirmSalaryController implements Initializable {
         return switch (selected) {
             case "Efectivo" -> 1;
             case "Transferencia" -> 2;
-            case "Tarjeta" -> 3;
-            case "QR" -> 4;
             default -> 1; // Default to cash
         };
     }

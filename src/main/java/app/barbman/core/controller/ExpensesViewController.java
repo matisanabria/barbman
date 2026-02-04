@@ -47,6 +47,11 @@ public class ExpensesViewController implements Initializable {
     @FXML private ToggleButton cashToggle;
     @FXML private ToggleButton transferToggle;
 
+    @FXML private Label todayTotalLabel;
+    @FXML private Label weekTotalLabel;
+    @FXML private Label monthTotalLabel;
+    @FXML private Label totalExpensesLabel;
+
     private final ToggleGroup paymentGroup = new ToggleGroup();
     private final PaymentMethodsService paymentMethodsService = new PaymentMethodsService(new PaymentMethodRepositoryImpl());
     private final ExpenseRepository expenseRepo = new ExpenseRepositoryImpl();
@@ -60,6 +65,7 @@ public class ExpensesViewController implements Initializable {
         setupPaymentToggles();
         loadExpenseTypes();
         displayExpenses();
+        updateStats();
 
         saveButton.setOnAction(event -> saveExpense());
 
@@ -142,6 +148,27 @@ public class ExpensesViewController implements Initializable {
         logger.info("{} {} expenses loaded in table.", PREFIX, expenses.size());
     }
 
+    private void updateStats() {
+        try {
+            double todayTotal = expenseService.getTodayTotal();
+            double weekTotal = expenseService.getWeekTotal();
+            double monthTotal = expenseService.getMonthTotal();
+
+            todayTotalLabel.setText(NumberFormatterUtil.format(todayTotal) + " Gs");
+            weekTotalLabel.setText(NumberFormatterUtil.format(weekTotal) + " Gs");
+            monthTotalLabel.setText(NumberFormatterUtil.format(monthTotal) + " Gs");
+
+            logger.debug("{} Stats updated -> Today: {}, Week: {}, Month: {}",
+                    PREFIX, todayTotal, weekTotal, monthTotal);
+        } catch (Exception e) {
+            logger.error("{} Error loading expense statistics", e);
+            // Mantener los valores en 0 si hay error
+            todayTotalLabel.setText("0 Gs");
+            weekTotalLabel.setText("0 Gs");
+            monthTotalLabel.setText("0 Gs");
+        }
+    }
+
     private int getSelectedPaymentMethod() {
         Toggle selected = paymentGroup.getSelectedToggle();
 
@@ -198,6 +225,7 @@ public class ExpensesViewController implements Initializable {
                     PREFIX, type, amount, paymentMethodId, desc);
 
             displayExpenses();
+            updateStats(); // Actualizar stats después de guardar
             clearFields();
 
         } catch (NumberFormatException e) {
@@ -250,6 +278,7 @@ public class ExpensesViewController implements Initializable {
                     if (secondResponse == ButtonType.OK) {
                         expenseService.deleteExpense(expense.getId());
                         displayExpenses();
+                        updateStats(); // Actualizar stats después de eliminar
                         logger.info("{} Expense deleted -> ID: {}, Type: {}, Amount: {}, Date: {}",
                                 PREFIX, expense.getId(), expense.getType(), expense.getAmount(), expense.getDate());
                     } else {

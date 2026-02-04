@@ -5,9 +5,11 @@ import app.barbman.core.dto.salecart.SaleCartItemDTO;
 import app.barbman.core.model.human.User;
 import app.barbman.core.model.sales.products.Product;
 import app.barbman.core.model.sales.services.ServiceDefinition;
+import app.barbman.core.repositories.sales.SaleRepositoryImpl;
 import app.barbman.core.repositories.sales.products.product.ProductRepositoryImpl;
 import app.barbman.core.repositories.sales.services.servicedefinition.ServiceDefinitionRepositoryImpl;
 import app.barbman.core.repositories.users.UsersRepositoryImpl;
+import app.barbman.core.service.sales.SalesService;
 import app.barbman.core.service.sales.products.ProductService;
 import app.barbman.core.service.sales.services.ServiceDefinitionsService;
 import app.barbman.core.service.users.UsersService;
@@ -78,6 +80,9 @@ public class SaleCreateViewController implements Initializable {
     private final ProductService productService =
             new ProductService(new ProductRepositoryImpl());
 
+    private final SalesService salesService =
+            new SalesService(new SaleRepositoryImpl());
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         User user = SessionManager.getActiveUser();
@@ -91,7 +96,7 @@ public class SaleCreateViewController implements Initializable {
         loadServices();
         refreshCart();
         setupConfirmButton();
-        updateStats(); // NUEVO
+        updateStats();
 
         Tooltip.install(saleCreateTitle, new Tooltip("Easter egg"));
     }
@@ -127,7 +132,7 @@ public class SaleCreateViewController implements Initializable {
 
         // Filter: Only show available services
         services.stream()
-                .filter(ServiceDefinition::isAvailable)  // Solo disponibles
+                .filter(ServiceDefinition::isAvailable)
                 .forEach(def ->
                         servicesListContainer.getChildren()
                                 .add(buildServiceCard(def))
@@ -139,7 +144,7 @@ public class SaleCreateViewController implements Initializable {
 
         // Filter: Only show products with stock > 0
         products.stream()
-                .filter(p -> p.getStock() > 0)  // Solo con stock
+                .filter(p -> p.getStock() > 0)
                 .forEach(p ->
                         servicesListContainer.getChildren()
                                 .add(buildProductCard(p))
@@ -163,6 +168,7 @@ public class SaleCreateViewController implements Initializable {
                 .sum();
         cartItemsCount.setText(itemCount + " ítem" + (itemCount != 1 ? "s" : ""));
     }
+
     private void setupConfirmButton() {
         confirmButton.setOnAction(e -> {
             if (cart.getCartItems().isEmpty()) {
@@ -355,11 +361,26 @@ public class SaleCreateViewController implements Initializable {
         );
         return row;
     }
+
     private void updateStats() {
-        // TODO: Implementar stats reales
-        todayTotalLabel.setText("0 Gs");
-        weekTotalLabel.setText("0 Gs");
-        monthTotalLabel.setText("0 Gs");
+        try {
+            double todayTotal = salesService.getTodayTotal();
+            double weekTotal = salesService.getWeekTotal();
+            double monthTotal = salesService.getMonthTotal();
+
+            todayTotalLabel.setText(NumberFormatterUtil.format(todayTotal) + " Gs");
+            weekTotalLabel.setText(NumberFormatterUtil.format(weekTotal) + " Gs");
+            monthTotalLabel.setText(NumberFormatterUtil.format(monthTotal) + " Gs");
+
+            logger.debug("[STATS] Today: {}, Week: {}, Month: {}",
+                    todayTotal, weekTotal, monthTotal);
+        } catch (Exception e) {
+            logger.error("[STATS] Error loading sales statistics", e);
+            // Mantener los valores en 0 si hay error
+            todayTotalLabel.setText("0 Gs");
+            weekTotalLabel.setText("0 Gs");
+            monthTotalLabel.setText("0 Gs");
+        }
     }
 
 }
