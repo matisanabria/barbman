@@ -158,3 +158,19 @@
 .history-table .scroll-bar:vertical .thumb:hover {
     -fx-background-color: #4A4A4A;
 }
+/* Texto negro en todo el DatePicker */
+.date-picker-popup {
+    -fx-text-fill: #000000;
+}
+
+.date-picker-popup .label {
+    -fx-text-fill: #000000;
+}
+
+.date-picker-popup .button {
+    -fx-text-fill: #000000;
+}
+
+.date-picker-popup .cell {
+    -fx-text-fill: #000000;
+}

@@ -13,15 +13,18 @@ import java.util.List;
 
 public class LegacySaleRepository {
     private static final Logger logger = LogManager.getLogger(LegacySaleRepository.class);
+
     public List<SaleHistoryDTO> searchByDateRange(LocalDate start, LocalDate end) {
         List<SaleHistoryDTO> list = new ArrayList<>();
 
         // Usamos un INNER JOIN para traer el nombre del barbero desde su tabla
+        // IMPORTANTE: Agregar ORDER BY para que estén ordenados junto con las nuevas ventas
         String sql = """
         SELECT s.id, s.precio, s.fecha, s.forma_pago, s.observaciones, b.nombre as nombre_barbero
         FROM servicios_realizados s
         INNER JOIN barberos b ON s.barbero_id = b.id
         WHERE s.fecha BETWEEN ? AND ?
+        ORDER BY s.fecha DESC, s.id DESC
         """;
 
         logger.info("[LEGACY-REPO] Iniciando búsqueda con nombres de barberos entre {} y {}", start, end);

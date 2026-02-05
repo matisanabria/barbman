@@ -18,6 +18,8 @@ import org.apache.logging.log4j.Logger;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Service for retrieving sales history and detailed sale information.
@@ -65,25 +67,36 @@ public class SalesHistoryService {
     // ============================================================
 
     /**
-     * Returns all sales within a date range, including legacy beta data.
+     * Returns sales history for the main table (no details).
+     * Combines new and legacy sales, sorted by date DESC (most recent first).
      */
     public List<SaleHistoryDTO> getSalesHistory(LocalDate from, LocalDate to) {
-        logger.info("{} Fetching combined sales history from {} to {}", PREFIX, from, to);
 
-        // 1. Obtener datos Legacy (BETA)
-        // Van primero en la lista para que al hacer reverse en el controller queden al final (abajo)
+        logger.info("{} Fetching sales history from {} to {}", PREFIX, from, to);
+
+        // Get new sales (already sorted DESC in repository)
+        List<SaleHistoryDTO> newSales = saleRepo.findSalesHistory(from, to);
+
+        // Get legacy sales (NOT sorted in legacy repo)
         List<SaleHistoryDTO> legacySales = legacySaleRepository.searchByDateRange(from, to);
-        logger.info("{} Retrieved {} legacy (beta) sales", PREFIX, legacySales.size());
 
-        // 2. Obtener datos actuales
-        List<SaleHistoryDTO> currentSales = saleRepo.findSalesHistory(from, to);
-        logger.info("{} Retrieved {} current sales", PREFIX, currentSales.size());
+        // Merge and sort by date DESC, then by ID DESC
+        List<SaleHistoryDTO> list = Stream.concat(newSales.stream(), legacySales.stream())
+                .sorted((s1, s2) -> {
+                    // Compare dates in descending order (most recent first)
+                    int dateCompare = s2.getDate().compareTo(s1.getDate());
+                    if (dateCompare != 0) {
+                        return dateCompare;
+                    }
+                    // If same date, sort by ID descending
+                    return Integer.compare(s2.getSaleId(), s1.getSaleId());
+                })
+                .collect(Collectors.toList());
 
-        // 3. Mezclar en el orden solicitado
-        List<SaleHistoryDTO> combinedHistory = new ArrayList<>(legacySales);
-        combinedHistory.addAll(currentSales);
+        logger.info("{} {} sales loaded for history table (new: {}, legacy: {})",
+                PREFIX, list.size(), newSales.size(), legacySales.size());
 
-        return combinedHistory;
+        return list;
     }
 
     // ============================================================

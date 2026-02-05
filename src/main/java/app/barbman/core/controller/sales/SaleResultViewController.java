@@ -28,8 +28,6 @@ public class SaleResultViewController implements Initializable {
     private static final Logger logger =
             LogManager.getLogger(SaleResultViewController.class);
 
-    private static final double IVA_RATE = 0.10;
-
     @FXML private Label saleNumberLabel;
     @FXML private Label saleDateLabel;
     @FXML private Label clientNameLabel;
@@ -98,7 +96,7 @@ public class SaleResultViewController implements Initializable {
         paymentMethodLabel.setText(paymentDisplay);
 
         double total = dto.getTotal();
-        double iva = calculateIva(total);
+        double iva = total - (total / 11);
 
         subtotalLabel.setText(NumberFormatterUtil.format(total) + " Gs");
         ivaLabel.setText(NumberFormatterUtil.format(iva) + " Gs");
@@ -146,10 +144,6 @@ public class SaleResultViewController implements Initializable {
         row.setAlignment(Pos.CENTER_LEFT);
 
         return row;
-    }
-
-    private double calculateIva(double total) {
-        return total * IVA_RATE;
     }
 
     private String numberToWords(double amount) {

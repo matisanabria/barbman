@@ -30,7 +30,6 @@ import org.apache.logging.log4j.Logger;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -229,8 +228,6 @@ public class SalesHistoryController implements Initializable {
 
             List<SaleHistoryDTO> sales = historyService.getSalesHistory(from, to);
 
-            // Invertir para mostrar más recientes arriba
-            Collections.reverse(sales);
             salesData = FXCollections.observableArrayList(sales);
             salesTable.setItems(salesData);
 
