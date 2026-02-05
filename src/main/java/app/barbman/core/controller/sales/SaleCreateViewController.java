@@ -19,13 +19,16 @@ import app.barbman.core.util.SessionManager;
 import app.barbman.core.util.TextFormatterUtil;
 import app.barbman.core.util.window.EmbeddedViewLoader;
 import app.barbman.core.util.window.WindowManager;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.util.StringConverter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -56,6 +59,8 @@ public class SaleCreateViewController implements Initializable {
     private BorderPane rootPane;
     @FXML
     private Label saleCreateTitle;
+    @FXML
+    private ComboBox<User> userComboBox;
 
     @FXML private Label todayTotalLabel;
     @FXML private Label weekTotalLabel;
@@ -83,6 +88,9 @@ public class SaleCreateViewController implements Initializable {
     private final SalesService salesService =
             new SalesService(new SaleRepositoryImpl());
 
+    private final UsersService usersService =
+            new UsersService(new UsersRepositoryImpl());
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         User user = SessionManager.getActiveUser();
@@ -92,6 +100,7 @@ public class SaleCreateViewController implements Initializable {
 
         cart = new SaleCartDTO(user.getId());
 
+        setupUserSelector();
         setupToggle();
         loadServices();
         refreshCart();
@@ -99,6 +108,52 @@ public class SaleCreateViewController implements Initializable {
         updateStats();
 
         Tooltip.install(saleCreateTitle, new Tooltip("Easter egg"));
+    }
+
+    /**
+     * Carga el selector de usuarios desde el FXML.
+     * IMPORTANTE: El selectedUserId es el que se usa para toda la venta.
+     */
+    private void setupUserSelector() {
+        try {
+            List<User> users = usersService.getAllUsers();
+            userComboBox.setItems(FXCollections.observableArrayList(users));
+
+            // Converter para mostrar solo el nombre del usuario
+            userComboBox.setConverter(new StringConverter<User>() {
+                @Override
+                public String toString(User user) {
+                    return user != null ? user.getName() : "";
+                }
+
+                @Override
+                public User fromString(String string) {
+                    // No se usa en este caso
+                    return null;
+                }
+            });
+
+            // Seleccionar el usuario actual por defecto
+            User activeUser = SessionManager.getActiveUser();
+            userComboBox.setValue(activeUser);
+
+            // SET: Toda la venta será a nombre de este usuario
+            cart.setSelectedUserId(activeUser.getId());
+
+            // Listener: cuando cambia el usuario seleccionado
+            userComboBox.valueProperty().addListener((obs, old, selected) -> {
+                if (selected != null) {
+                    // IMPORTANTE: Todo (Sale + ServiceHeader) a nombre del usuario seleccionado
+                    cart.setSelectedUserId(selected.getId());
+                    logger.info("[SALE-CREATE] ✅ Venta registrada a: {} (ID: {})",
+                            selected.getName(), selected.getId());
+                }
+            });
+
+        } catch (Exception e) {
+            logger.error("[USER-SELECTOR] Error cargando usuarios", e);
+            AlertUtil.showError("Error", "No se pudieron cargar los usuarios disponibles");
+        }
     }
 
     private void setupToggle() {
@@ -185,7 +240,8 @@ public class SaleCreateViewController implements Initializable {
                     "/app/barbman/core/style/embed-views/sales-view.css"
             );
 
-            logger.info("[SALE] Navigating to payment screen");
+            logger.info("[SALE] Navegando a pantalla de pago con usuario seleccionado: {}",
+                    cart.getSelectedUserId());
         });
     }
 

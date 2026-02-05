@@ -8,7 +8,8 @@ import java.util.List;
 // It contains items (services/products) to be sold, user, client, date, payment method, and notes.
 public class SaleCartDTO {
 
-    private int userId; // The user performing the sale
+    private int userId;
+    private int selectedUserId;// The user performing the sale
     private Integer clientId; // The client for whom the sale is made (nullable)
     private LocalDate date;
     private int paymentMethod;
@@ -104,6 +105,15 @@ public class SaleCartDTO {
 
     public Integer getClientId() { return clientId; }
     public void setClientId(Integer clientId) { this.clientId = clientId; }
+
+
+    public int getSelectedUserId() {
+        return selectedUserId;
+    }
+
+    public void setSelectedUserId(int selectedUserId) {
+        this.selectedUserId = selectedUserId;
+    }
 
     public LocalDate getDate() { return date; }
     public void setDate(LocalDate date) { this.date = date; }

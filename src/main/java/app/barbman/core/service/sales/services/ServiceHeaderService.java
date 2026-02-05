@@ -42,7 +42,7 @@ public class ServiceHeaderService {
         }
 
         ServiceHeader header = new ServiceHeader(
-                cart.getUserId(),
+                cart.getSelectedUserId(),  // ← Uses selected user
                 saleId,
                 LocalDate.now(),
                 subtotal

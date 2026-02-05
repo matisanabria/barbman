@@ -14,13 +14,30 @@
          ===================== -->
     <top>
         <VBox styleClass="sale-header">
-            <!-- Title bar -->
-            <HBox alignment="CENTER"
+            <!-- Title bar with user selector -->
+            <HBox alignment="CENTER_LEFT"
+                  spacing="20"
                   prefHeight="56"
                   styleClass="sale-topbar">
+                <padding>
+                    <Insets left="20" right="20"/>
+                </padding>
+
                 <Label fx:id="saleCreateTitle"
                        text="💰 Ventas"
                        styleClass="sale-title"/>
+
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <!-- User selector -->
+                <Label text="Registrar a:"
+                       styleClass="user-selector-label"/>
+
+                <ComboBox fx:id="userComboBox"
+                          styleClass="user-selector-combo"
+                          prefWidth="200">
+                    <!-- Items serán cargados desde el controller -->
+                </ComboBox>
             </HBox>
 
             <!-- Stats bar -->

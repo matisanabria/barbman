@@ -103,20 +103,32 @@ public class SaleFlowService {
     // ==========
     // PERSISTENCE
     // ==========
+    /**
+     * Completa una venta con todos sus detalles.
+     *
+     * IMPORTANTE:
+     * - Sale.userId = cart.getSelectedUserId() (el barbero seleccionado)
+     * - ServiceHeader.userId = cart.getSelectedUserId() (el barbero seleccionado)
+     * - Todo a nombre del usuario seleccionado, no del usuario de sesión
+     */
     public Sale completeSale(SaleCartDTO cart) {
 
         try (Connection conn = DbBootstrap.connect()) {
             conn.setAutoCommit(false);
 
             // 1. Create Sale (root)
+            // IMPORTANTE: Usar selectedUserId (el barbero), no userId (admin)
             Sale sale = new Sale(
-                    cart.getUserId(),
+                    cart.getSelectedUserId(),  // ← El barbero seleccionado
                     cart.getClientId(),
                     cart.getPaymentMethod(),
                     cart.getDate(),
                     cart.getTotal()
             );
             saleRepository.save(sale, conn); // set Id
+
+            logger.info("{} Sale creada a nombre de usuario: {} (selectedUserId: {})",
+                    PREFIX, cart.getSelectedUserId(), cart.getSelectedUserId());
 
             // 2. Services
             ServiceHeader serviceHeader =
@@ -141,10 +153,11 @@ public class SaleFlowService {
 
             // 4. Commit
             conn.commit();
-            logger.info("{} Sale completed successfully (saleId={})",
-                    PREFIX, sale.getId());
+            logger.info("{} Sale completed successfully (saleId={}, userId={})",
+                    PREFIX, sale.getId(), cart.getSelectedUserId());
 
             // 5. Cashbox movement (LEDGER)
+            // El movimiento también se registra con el usuario seleccionado
             cashboxMovementRepository.save(new CashboxMovement(
                     "SALE",
                     "IN",
@@ -153,7 +166,7 @@ public class SaleFlowService {
                     "SALE",
                     sale.getId(),
                     "Sale registered",
-                    sale.getUserId(),
+                    cart.getSelectedUserId(),  // ← El barbero, no el admin
                     LocalDateTime.now()
             ));
 
