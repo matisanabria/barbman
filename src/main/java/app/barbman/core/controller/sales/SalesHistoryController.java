@@ -290,7 +290,7 @@ public class SalesHistoryController implements Initializable {
         }
 
         try {
-            historyService.deleteSale(selected.getSaleId());
+            historyService.deleteSaleComplete(selected.getSaleId());
 
             logger.info("{} Sale deleted: ID={}", PREFIX, selected.getSaleId());
 

@@ -14,4 +14,9 @@ public interface ServiceItemRepository extends GenericRepository<ServiceItem, In
     void save(ServiceItem item, Connection conn) throws SQLException;
     void update(ServiceItem item, Connection conn) throws SQLException;
     void delete(Integer id, Connection conn) throws SQLException;
+    /**
+     * Deletes all service items for a given service header.
+     * Used when deleting a complete sale.
+     */
+    void deleteByHeaderId(int serviceHeaderId, Connection conn) throws SQLException;
 }

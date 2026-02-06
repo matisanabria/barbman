@@ -177,6 +177,19 @@ public class ServiceItemRepositoryImpl implements ServiceItemRepository {
             logger.info("{} Deleted ServiceItem ID={} [shared]", PREFIX, id);
         }
     }
+    @Override
+    public void deleteByHeaderId(int serviceHeaderId, Connection conn) throws SQLException {
+
+        String sql = "DELETE FROM service_item WHERE service_header_id = ?";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, serviceHeaderId);
+            int deleted = ps.executeUpdate();
+
+            logger.info("{} Deleted {} ServiceItems for header ID={} [shared]",
+                    PREFIX, deleted, serviceHeaderId);
+        }
+    }
 
     private ServiceItem mapRow(ResultSet rs) throws SQLException {
         return new ServiceItem(

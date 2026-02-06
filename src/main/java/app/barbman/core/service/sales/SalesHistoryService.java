@@ -214,26 +214,112 @@ public class SalesHistoryService {
     // ============================================================
 
     /**
-     * Deletes a sale (admin only - validation should be done in controller).
-     * CASCADE will delete related service_header, product_sales, and their items.
+     * Deletes a sale completely with all related data (admin only).
+     * Manually deletes in correct order since CASCADE was removed.
+     *
+     * Deletion order:
+     * 1. Service items (by service_header_id)
+     * 2. Service headers (by sale_id)
+     * 3. Product sale items (by product_header_id)
+     * 4. Product sales (by sale_id)
+     * 5. Cashbox movements (by reference to sale)
+     * 6. Sale itself
      */
-    public void deleteSale(int saleId) {
-        logger.warn("{} Deleting sale ID={}", PREFIX, saleId);
+    public void deleteSaleComplete(int saleId) {
+        logger.warn("{} Starting complete deletion of sale ID={}", PREFIX, saleId);
 
-        // 1. Borrar movimientos de caja relacionados
-        logger.debug("{} [Using CashboxMovementRepository] Deleting movements for sale {}", PREFIX, saleId);
-        var movements = movementRepo.findByReference("SALE", saleId);
+        try {
+            // ==================================================
+            // 1. DELETE SERVICE SIDE
+            // ==================================================
+            logger.debug("{} [Using ServiceHeaderRepository] Finding service header for sale {}",
+                    PREFIX, saleId);
 
-        for (var movement : movements) {
-            movementRepo.delete(movement.getId());
-            logger.debug("{} Deleted movement ID={}", PREFIX, movement.getId());
+            var serviceHeader = serviceHeaderRepo.findBySaleId(saleId);
+
+            if (serviceHeader != null) {
+                logger.info("{} Found service header ID={} for sale {}",
+                        PREFIX, serviceHeader.getId(), saleId);
+
+                // 1.1 Delete service items first
+                logger.debug("{} [Using ServiceItemRepository] Deleting items for header {}",
+                        PREFIX, serviceHeader.getId());
+
+                var serviceItems = serviceItemRepo.findByServiceId(serviceHeader.getId());
+                logger.info("{} Found {} service items to delete", PREFIX, serviceItems.size());
+
+                for (var item : serviceItems) {
+                    serviceItemRepo.delete(item.getId());
+                    logger.debug("{} Deleted service item ID={}", PREFIX, item.getId());
+                }
+
+                // 1.2 Delete service header
+                serviceHeaderRepo.delete(serviceHeader.getId());
+                logger.info("{} Deleted service header ID={}", PREFIX, serviceHeader.getId());
+
+            } else {
+                logger.debug("{} No service header found for sale {}", PREFIX, saleId);
+            }
+
+            // ==================================================
+            // 2. DELETE PRODUCT SIDE
+            // ==================================================
+            logger.debug("{} [Using ProductHeaderRepository] Finding product sales for sale {}",
+                    PREFIX, saleId);
+
+            var productHeader = productHeaderRepo.findBySaleId(saleId);
+
+            if (productHeader != null) {
+                logger.info("{} Found product header ID={} for sale {}",
+                        PREFIX, productHeader.getId(), saleId);
+
+                // 2.1 Delete product sale items first
+                logger.debug("{} [Using ProductSaleItemRepository] Deleting items for header {}",
+                        PREFIX, productHeader.getId());
+
+                var productItems = productSaleItemRepo.findBySaleId(productHeader.getId());
+                logger.info("{} Found {} product items to delete", PREFIX, productItems.size());
+
+                for (var item : productItems) {
+                    productSaleItemRepo.delete(item.getId());
+                    logger.debug("{} Deleted product item ID={}", PREFIX, item.getId());
+                }
+
+                // 2.2 Delete product header
+                productHeaderRepo.delete(productHeader.getId());
+                logger.info("{} Deleted product header ID={}", PREFIX, productHeader.getId());
+
+            } else {
+                logger.debug("{} No product header found for sale {}", PREFIX, saleId);
+            }
+
+            // ==================================================
+            // 3. DELETE CASHBOX MOVEMENTS
+            // ==================================================
+            logger.debug("{} [Using CashboxMovementRepository] Deleting movements for sale {}",
+                    PREFIX, saleId);
+
+            var movements = movementRepo.findByReference("SALE", saleId);
+            logger.info("{} Found {} cashbox movements to delete", PREFIX, movements.size());
+
+            for (var movement : movements) {
+                movementRepo.delete(movement.getId());
+                logger.debug("{} Deleted cashbox movement ID={}", PREFIX, movement.getId());
+            }
+
+            // ==================================================
+            // 4. DELETE SALE
+            // ==================================================
+            logger.debug("{} [Using SaleRepository] Deleting sale {}", PREFIX, saleId);
+            saleRepo.delete(saleId);
+            logger.info("{} Deleted sale ID={}", PREFIX, saleId);
+
+            logger.info("{} ✓ Sale ID={} deleted successfully with all related data",
+                    PREFIX, saleId);
+
+        } catch (Exception e) {
+            logger.error("{} ✗ Failed to delete sale ID={}", PREFIX, saleId, e);
+            throw new RuntimeException("Error al eliminar la venta ID " + saleId + ": " + e.getMessage(), e);
         }
-
-        logger.info("{} Deleted {} cashbox movements for sale {}", PREFIX, movements.size(), saleId);
-
-        // 2. Borrar la venta (CASCADE borrará service_header, product_sales, items)
-        saleRepo.delete(saleId);
-
-        logger.info("{} Sale deleted (movements + sale + related records)", PREFIX);
     }
 }
