@@ -1,5 +1,6 @@
 package app.barbman.core.repositories;
 
+import app.barbman.core.repositories.migrations.RemoveCascadeMigration;
 import com.sun.jna.Pointer;
 import com.sun.jna.platform.win32.Ole32;
 import com.sun.jna.platform.win32.WinNT;
@@ -78,6 +79,7 @@ public class DbBootstrap {
 
         // Initialize avatars folder
         initializeAvatarsFolder();
+        runCascadeRemovalMigration();
     }
 
     /**
@@ -97,360 +99,279 @@ public class DbBootstrap {
     /**
      * Creates the necessary tables in the database
      */
+    /**
+     * Creates the necessary tables in the database
+     */
     private static void createTables() {
         try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
             logger.info("[DB] Creating database tables...");
 
             // USERS
-            // Contains user information including a 4-digit PIN with uniqueness constraint
             stmt.execute("""
-                        CREATE TABLE IF NOT EXISTS users (
-                            id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            displayName TEXT NOT NULL,
-                            role TEXT NOT NULL,
-                            pin TEXT NOT NULL UNIQUE CHECK(length(pin) = 4 AND pin GLOB '[0-9][0-9][0-9][0-9]'),
-                            payment_type INTEGER NOT NULL DEFAULT 0,
-                            pay_frequency TEXT NOT NULL DEFAULT 'WEEKLY'
-                                        CHECK (pay_frequency IN ('DAILY', 'WEEKLY', 'BIWEEKLY', 'MONTHLY')),
-                            param_1 REAL,
-                            param_2 REAL
-                        );
-                    """);
+                    CREATE TABLE IF NOT EXISTS users (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        displayName TEXT NOT NULL,
+                        role TEXT NOT NULL,
+                        pin TEXT NOT NULL UNIQUE CHECK(length(pin) = 4 AND pin GLOB '[0-9][0-9][0-9][0-9]'),
+                        payment_type INTEGER NOT NULL DEFAULT 0,
+                        pay_frequency TEXT NOT NULL DEFAULT 'WEEKLY'
+                                    CHECK (pay_frequency IN ('DAILY', 'WEEKLY', 'BIWEEKLY', 'MONTHLY')),
+                        param_1 REAL,
+                        param_2 REAL
+                    );
+                """);
 
             // SERVICE DEFINITION
-            // Defines types of legacy offered with base prices and availability status
             stmt.execute("""
-                        CREATE TABLE IF NOT EXISTS service_definition (
-                            id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            displayName TEXT NOT NULL UNIQUE,
-                            base_price REAL NOT NULL,
-                            available INTEGER NOT NULL DEFAULT 1 CHECK (available IN (0,1))
-                        );
-                    """);
+                    CREATE TABLE IF NOT EXISTS service_definition (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        displayName TEXT NOT NULL UNIQUE,
+                        base_price REAL NOT NULL,
+                        available INTEGER NOT NULL DEFAULT 1 CHECK (available IN (0,1))
+                    );
+                """);
 
-            // SERVICE HEADER
-            // Header for services performed by users on specific dates
-            // We use user_id as a snapshot of who performed the serviceheader, and
-            // date to track when it was done. Total is the sum of all serviceheader items.
-            // Those columns are kept for calculating production per user/date.
+            // SERVICE HEADER - SIN CASCADE
             stmt.execute("""
-                        CREATE TABLE IF NOT EXISTS service_header (
-                            id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            user_id INTEGER NOT NULL,
-                            sale_id INTEGER NOT NULL,                   -- links to sales table
-                            date TEXT NOT NULL CHECK (date = date(date)),
-                            subtotal REAL NOT NULL DEFAULT 0,
-                            FOREIGN KEY (user_id) REFERENCES users(id),
-                            -- SERVICE_HEADER
-                            FOREIGN KEY (sale_id) REFERENCES sales(id)
-                                ON DELETE CASCADE
-                        );
-                    """);
-            // SERVICE ITEM
-            // Links legacy to specific serviceheader definitions (items) with individual pricing
-            // This allows for multiple items per serviceheader record
+                    CREATE TABLE IF NOT EXISTS service_header (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        user_id INTEGER NOT NULL,
+                        sale_id INTEGER NOT NULL,
+                        date TEXT NOT NULL CHECK (date = date(date)),
+                        subtotal REAL NOT NULL DEFAULT 0,
+                        FOREIGN KEY (user_id) REFERENCES users(id),
+                        FOREIGN KEY (sale_id) REFERENCES sales(id)
+                    );
+                """);
+
+            // SERVICE ITEM - SIN CASCADE
             stmt.execute("""
-                        CREATE TABLE IF NOT EXISTS service_item (
-                            id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            service_header_id INTEGER NOT NULL,
-                            service_definition_id INTEGER NOT NULL,
-                            quantity INTEGER NOT NULL DEFAULT 1 CHECK (quantity > 0),
-                            unit_price REAL NOT NULL,               -- snapshot of the unitPrice at the time of serviceHeader
-                            item_total REAL NOT NULL DEFAULT 0,
-                            FOREIGN KEY (service_header_id) REFERENCES service_header(id)
-                                ON DELETE CASCADE,
-                            FOREIGN KEY (service_definition_id) REFERENCES service_definition(id)
-                        );
-                    """);
+                    CREATE TABLE IF NOT EXISTS service_item (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        service_header_id INTEGER NOT NULL,
+                        service_definition_id INTEGER NOT NULL,
+                        quantity INTEGER NOT NULL DEFAULT 1 CHECK (quantity > 0),
+                        unit_price REAL NOT NULL,
+                        item_total REAL NOT NULL DEFAULT 0,
+                        FOREIGN KEY (service_header_id) REFERENCES service_header(id),
+                        FOREIGN KEY (service_definition_id) REFERENCES service_definition(id)
+                    );
+                """);
 
             // PRODUCTS
-            // Inventory of products with pricing, stock, and optional categorization
             stmt.execute("""
-                        CREATE TABLE IF NOT EXISTS products (
-                            id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            displayName TEXT NOT NULL UNIQUE,
-                            cost_price REAL NOT NULL,      -- cost from supplier
-                            unit_price REAL NOT NULL,      -- selling unitPrice
-                            stock INTEGER NOT NULL DEFAULT 0,
-                            category TEXT,                 -- optional, can be NULL
-                            brand TEXT,                    -- optional, can be NULL
-                            image_path TEXT,               -- image file path of the product
-                            notes TEXT NOT NULL                -- optional
-                        );
-                    """);
+                    CREATE TABLE IF NOT EXISTS products (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        displayName TEXT NOT NULL UNIQUE,
+                        cost_price REAL NOT NULL,
+                        unit_price REAL NOT NULL,
+                        stock INTEGER NOT NULL DEFAULT 0,
+                        category TEXT,
+                        brand TEXT,
+                        image_path TEXT,
+                        notes TEXT NOT NULL
+                    );
+                """);
 
-            // PRODUCT HEADER
-            // Header for products sold
-            // Links to sales table for unified sales tracking
+            // PRODUCT SALES - SIN CASCADE
             stmt.execute("""
-                        CREATE TABLE IF NOT EXISTS product_sales (
-                            id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            sale_id INTEGER NOT NULL,                   -- links to sales table
-                            subtotal REAL NOT NULL,
-                            FOREIGN KEY (sale_id) REFERENCES sales(id)
-                                ON DELETE CASCADE
-                        );
-                    """);
+                    CREATE TABLE IF NOT EXISTS product_sales (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        sale_id INTEGER NOT NULL,
+                        subtotal REAL NOT NULL,
+                        FOREIGN KEY (sale_id) REFERENCES sales(id)
+                    );
+                """);
 
-            // PRODUCT SALE ITEMS
-            // Links individual products to product sales with quantity and pricing details
-            // Allows multiple products per salecart record
+            // PRODUCT SALE ITEMS - SIN CASCADE
             stmt.execute("""
-                        CREATE TABLE IF NOT EXISTS product_sale_items (
-                            id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            product_header_id INTEGER NOT NULL,
-                            product_id INTEGER NOT NULL,
-                            quantity INTEGER NOT NULL CHECK (quantity > 0),
-                            unit_price REAL NOT NULL,
-                            item_total REAL NOT NULL,
-                            FOREIGN KEY (product_header_id) REFERENCES product_sales(id)
-                                ON DELETE CASCADE,
-                            FOREIGN KEY (product_id) REFERENCES products(id)
-                        );
-                    """);
+                    CREATE TABLE IF NOT EXISTS product_sale_items (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        product_header_id INTEGER NOT NULL,
+                        product_id INTEGER NOT NULL,
+                        quantity INTEGER NOT NULL CHECK (quantity > 0),
+                        unit_price REAL NOT NULL,
+                        item_total REAL NOT NULL,
+                        FOREIGN KEY (product_header_id) REFERENCES product_sales(id),
+                        FOREIGN KEY (product_id) REFERENCES products(id)
+                    );
+                """);
+
             // SALES
-            // A header table for all sales transactions (services + products)
-            // Links to users, clients, payment methods, and records the total amount
-            stmt.execute(
-                    """
-                        CREATE TABLE IF NOT EXISTS sales (
-                            id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            user_id INTEGER NOT NULL,
-                            client_id INTEGER,                  -- can be NULL
-                            payment_method_id INTEGER NOT NULL,
-                            date TEXT NOT NULL CHECK (date = date(date)),
-                            total REAL NOT NULL,
-                            FOREIGN KEY (user_id) REFERENCES users(id),
-                            FOREIGN KEY (client_id) REFERENCES clients(id)
-                                ON DELETE SET NULL,
-                            FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id)
-                        );
-                    """);
+            stmt.execute("""
+                    CREATE TABLE IF NOT EXISTS sales (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        user_id INTEGER NOT NULL,
+                        client_id INTEGER,
+                        payment_method_id INTEGER NOT NULL,
+                        date TEXT NOT NULL CHECK (date = date(date)),
+                        total REAL NOT NULL,
+                        FOREIGN KEY (user_id) REFERENCES users(id),
+                        FOREIGN KEY (client_id) REFERENCES clients(id),
+                        FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id)
+                    );
+                """);
 
             // EXPENSES
-            // Records various types of expenses with descriptions, amounts, dates, and payment methods
-            // Expense types are constrained to a predefined set of categories
-            // Categories salary and advance are used for employee salaries and only registered by admins
             stmt.execute("""
-                        CREATE TABLE IF NOT EXISTS expenses (
-                            id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            description TEXT NOT NULL,
-                            amount REAL NOT NULL CHECK (amount > 0),
-                            date TEXT NOT NULL CHECK (date = date(date)),
-                            type TEXT NOT NULL CHECK (
-                                type IN (
-                                    'supply', 'service', 'purchase', 'tax', 'other', 'salary', 'advance'
+                    CREATE TABLE IF NOT EXISTS expenses (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        description TEXT NOT NULL,
+                        amount REAL NOT NULL CHECK (amount > 0),
+                        date TEXT NOT NULL CHECK (date = date(date)),
+                        type TEXT NOT NULL CHECK (
+                            type IN (
+                                'supply', 'service', 'purchase', 'tax', 'other', 'salary', 'advance'
+                            )
+                        ),
+                        payment_method_id INTEGER NOT NULL,
+                        FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id)
+                    );
+                """);
 
-                                    -- 'supply'    -> supplies and products (e.g., restocking inventory)
-                                    -- 'service'   -> cleaning, rent, electricity, etc.
-                                    -- 'purchase'  -> furniture, tools, decoration
-                                    -- 'tax'       -> taxes
-                                    -- 'other'     -> irregular expenses, delivery, miscellaneous
-                                    -- 'salary'    -> employees' wages
-                                    -- 'advance'   -> advances before the weekly close
-                                )
-                            ),
-                            payment_method_id INTEGER NOT NULL,
-                            FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id)
-                        );
-                    """);
-
-            // SALARIES
-            // Records salary salaries of users. Each salary entry links to an expense record for traceability.
-            // Includes production totals, payment amounts, payment methods, and pay date.
+            // SALARIES - SIN CASCADE
             stmt.execute("""
-                        CREATE TABLE IF NOT EXISTS salaries (
-                            id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            user_id INTEGER NOT NULL,
-                            start_date TEXT NOT NULL,
-                            end_date TEXT NOT NULL,
-                            total_production REAL NOT NULL,
-                            amount_paid REAL NOT NULL,
-                            pay_type_snapshot INTEGER NOT NULL,
-                            pay_date TEXT,
-                            payment_method_id INTEGER NOT NULL,
-                            expense_id INTEGER,
-                            FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id),
-                            FOREIGN KEY (user_id) REFERENCES users(id),
-                            FOREIGN KEY (expense_id) REFERENCES expenses(id)
-                                ON DELETE CASCADE
-                        );
-                    """);
+                    CREATE TABLE IF NOT EXISTS salaries (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        user_id INTEGER NOT NULL,
+                        start_date TEXT NOT NULL,
+                        end_date TEXT NOT NULL,
+                        total_production REAL NOT NULL,
+                        amount_paid REAL NOT NULL,
+                        pay_type_snapshot INTEGER NOT NULL,
+                        pay_date TEXT,
+                        payment_method_id INTEGER NOT NULL,
+                        expense_id INTEGER,
+                        FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id),
+                        FOREIGN KEY (user_id) REFERENCES users(id),
+                        FOREIGN KEY (expense_id) REFERENCES expenses(id)
+                    );
+                """);
 
-
-            // ADVANCES
-            // Keeps a detailed record of all cash advances given to users (barbers)
-            // Each advance is linked to an expense entry for unified accounting
+            // ADVANCES - SIN CASCADE
             stmt.execute("""
-                        CREATE TABLE IF NOT EXISTS advances (
-                            id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            user_id INTEGER NOT NULL,
-                            amount REAL NOT NULL CHECK (amount > 0),
-                            date TEXT NOT NULL CHECK (date = date(date)),
-                            payment_method_id INTEGER NOT NULL,
-                            expense_id INTEGER NOT NULL,
-                            description TEXT NOT NULL,
-                            FOREIGN KEY (user_id) REFERENCES users(id),
-                            FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id),
-                            FOREIGN KEY (expense_id) REFERENCES expenses(id)
-                                ON DELETE CASCADE
-                        );
-                    """);
+                    CREATE TABLE IF NOT EXISTS advances (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        user_id INTEGER NOT NULL,
+                        amount REAL NOT NULL CHECK (amount > 0),
+                        date TEXT NOT NULL CHECK (date = date(date)),
+                        payment_method_id INTEGER NOT NULL,
+                        expense_id INTEGER NOT NULL,
+                        description TEXT NOT NULL,
+                        FOREIGN KEY (user_id) REFERENCES users(id),
+                        FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id),
+                        FOREIGN KEY (expense_id) REFERENCES expenses(id)
+                    );
+                """);
 
             // PAYMENT METHODS
-            // Defines available payment methods for transactions
             stmt.execute("""
-                         CREATE TABLE IF NOT EXISTS payment_methods (
-                            id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            displayName TEXT NOT NULL UNIQUE   -- ej: cash, transfer, qr, card
-                         );
-                     """);
+                     CREATE TABLE IF NOT EXISTS payment_methods (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        displayName TEXT NOT NULL UNIQUE
+                     );
+                 """);
+
             // CASHBOX OPENINGS
-            // Initial declaration of money in the cashbox at the start of a period (week)
             stmt.execute("""
-                    CREATE TABLE IF NOT EXISTS cashbox_openings (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        period_start_date TEXT NOT NULL,-- lunes de la semana contable (YYYY-MM-DD)
-                        opened_at TEXT NOT NULL DEFAULT (datetime('now')), -- cuándo se hizo la apertura realmente
-                        opened_by_user_id INTEGER NOT NULL,
-                        cash_amount REAL NOT NULL CHECK (cash_amount >= 0),
-                        bank_amount REAL NOT NULL CHECK (bank_amount >= 0),  -- banco incluye transferencias + POS  
-                        notes TEXT,
-                        UNIQUE (period_start_date),             -- solo una apertura por semana
-                        FOREIGN KEY (opened_by_user_id) REFERENCES users(id)
-                    );
-                    """);
+                CREATE TABLE IF NOT EXISTS cashbox_openings (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    period_start_date TEXT NOT NULL,
+                    opened_at TEXT NOT NULL DEFAULT (datetime('now')),
+                    opened_by_user_id INTEGER NOT NULL,
+                    cash_amount REAL NOT NULL CHECK (cash_amount >= 0),
+                    bank_amount REAL NOT NULL CHECK (bank_amount >= 0),
+                    notes TEXT,
+                    UNIQUE (period_start_date),
+                    FOREIGN KEY (opened_by_user_id) REFERENCES users(id)
+                );
+                """);
+
             // CASHBOX CLOSURES
-            // Final declaration of money in the cashbox at the end of a period (week)
             stmt.execute("""
-                    CREATE TABLE IF NOT EXISTS cashbox_closures (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        period_start_date TEXT NOT NULL,
-                        period_end_date TEXT NOT NULL,                   -- normalmente domingo
-                        closed_at TEXT NOT NULL DEFAULT (datetime('now')),
-                        closed_by_user_id INTEGER NOT NULL,
-                        expected_cash REAL NOT NULL,
-                        expected_bank REAL NOT NULL,
-                        expected_total REAL NOT NULL,
-                        notes TEXT,
-                        UNIQUE (period_start_date),
-                        FOREIGN KEY (closed_by_user_id) REFERENCES users(id)
-                    );
-                    
-                    """);
+                CREATE TABLE IF NOT EXISTS cashbox_closures (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    period_start_date TEXT NOT NULL,
+                    period_end_date TEXT NOT NULL,
+                    closed_at TEXT NOT NULL DEFAULT (datetime('now')),
+                    closed_by_user_id INTEGER NOT NULL,
+                    expected_cash REAL NOT NULL,
+                    expected_bank REAL NOT NULL,
+                    expected_total REAL NOT NULL,
+                    notes TEXT,
+                    UNIQUE (period_start_date),
+                    FOREIGN KEY (closed_by_user_id) REFERENCES users(id)
+                );
+                """);
 
             // CASHBOX MOVEMENTS
-            // Records individual cashbox movements (income/expense) linked to a specific day
-            // Each movement records type, direction, amount, payment method, reference, user, and timestamps
             stmt.execute("""
-                    CREATE TABLE IF NOT EXISTS cashbox_movements (
-                          id INTEGER PRIMARY KEY AUTOINCREMENT,
-                          movement_type TEXT NOT NULL,           -- 'SALE', 'EXPENSE', 'OPENING', 'CLOSURE', 'ADJUSTMENT'
-                          direction TEXT NOT NULL,               -- 'IN' o 'OUT' (entra o sale dinero)
-                          amount REAL NOT NULL CHECK (amount > 0),
-                          payment_method_id INTEGER,             -- efectivo / transferencia / card / qr
-                          reference_type TEXT,                   -- 'SALE', 'EXPENSE', 'CASHBOX_OPENING', etc.
-                          reference_id INTEGER,                  -- id de la venta, egreso, apertura, etc.
-                          description TEXT,
-                          user_id INTEGER,
-                          occurred_at TEXT NOT NULL,             -- fecha lógica del movimiento (no siempre now)
-                          created_at TEXT NOT NULL DEFAULT (datetime('now')),
-                          FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id)
-                              ON DELETE RESTRICT,  -- No permitir borrar métdo si hay movimientos
-                          FOREIGN KEY (user_id) REFERENCES users(id)
-                              ON DELETE SET NULL   -- Si se borra user, el movimiento queda huérfano pero visible
-                      );
-                    
-                    """);
+                CREATE TABLE IF NOT EXISTS cashbox_movements (
+                      id INTEGER PRIMARY KEY AUTOINCREMENT,
+                      movement_type TEXT NOT NULL,
+                      direction TEXT NOT NULL,
+                      amount REAL NOT NULL CHECK (amount > 0),
+                      payment_method_id INTEGER,
+                      reference_type TEXT,
+                      reference_id INTEGER,
+                      description TEXT,
+                      user_id INTEGER,
+                      occurred_at TEXT NOT NULL,
+                      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+                      FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id),
+                      FOREIGN KEY (user_id) REFERENCES users(id)
+                  );
+                """);
+
             // CLIENTS
-            // Stores client information for appointments and marketing purposes
             stmt.execute("""
-                    CREATE TABLE IF NOT EXISTS clients (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        displayName TEXT NOT NULL,          -- required
-                        document TEXT,               -- RUC or CI (opt)
-                        phone TEXT,
-                        email TEXT,
-                        notes TEXT,
-                        active INTEGER NOT NULL DEFAULT 1 CHECK (active IN (0,1))
-                    );
-                    """);
+                CREATE TABLE IF NOT EXISTS clients (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    displayName TEXT NOT NULL,
+                    document TEXT,
+                    phone TEXT,
+                    email TEXT,
+                    notes TEXT,
+                    active INTEGER NOT NULL DEFAULT 1 CHECK (active IN (0,1))
+                );
+                """);
 
             // BUDGETS
             stmt.execute("""
-                    CREATE TABLE IF NOT EXISTS budgets (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        
-                        -- Inicio del período presupuestario (ej: 2025-01-01)
-                        start_date TEXT NOT NULL,
-                        
-                        -- Fin del período presupuestario (ej: 2025-01-31)
-                        end_date TEXT NOT NULL,
-                        
-                        -- Estado del presupuesto
-                        -- draft: en edición
-                        -- active: en uso
-                        -- closed: cerrado (solo lectura)
-                        status TEXT NOT NULL CHECK (status IN ('draft', 'active', 'closed')),
-                        
-                        -- Fecha de creación del presupuesto
-                        created_at TEXT NOT NULL DEFAULT (datetime('now'))
-                    );
-                    """);
+                CREATE TABLE IF NOT EXISTS budgets (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    start_date TEXT NOT NULL,
+                    end_date TEXT NOT NULL,
+                    status TEXT NOT NULL CHECK (status IN ('draft', 'active', 'closed')),
+                    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+                );
+                """);
 
             // BUDGET ITEMS
             stmt.execute("""
-                    CREATE TABLE IF NOT EXISTS budget_items (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        
-                        -- Presupuesto al que pertenece este item
-                        budget_id INTEGER NOT NULL,
-                        
-                        -- Nombre del gasto esperado (ej: Luz, Insumos, Alquiler)
-                        displayName TEXT NOT NULL,
-                        
-                        -- Monto estimado para este gasto
-                        estimated_amount INTEGER NOT NULL CHECK (estimated_amount >= 0),
-                        
-                        -- Tipo de gasto
-                        -- fixed: gasto fijo
-                        -- variable: gasto variable
-                        type TEXT NOT NULL CHECK (type IN ('fixed', 'variable')),
-                        
-                        -- Categoría lógica del gasto (ej: utilities, supplies, rent)
-                        category TEXT NOT NULL,
-                        
-                        FOREIGN KEY (budget_id) REFERENCES budgets(id)
-                            ON DELETE CASCADE
-                    );
-                    """);
+                CREATE TABLE IF NOT EXISTS budget_items (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    budget_id INTEGER NOT NULL,
+                    displayName TEXT NOT NULL,
+                    estimated_amount INTEGER NOT NULL CHECK (estimated_amount >= 0),
+                    type TEXT NOT NULL CHECK (type IN ('fixed', 'variable')),
+                    category TEXT NOT NULL,
+                    FOREIGN KEY (budget_id) REFERENCES budgets(id)
+                );
+                """);
 
-            // BUDGET EXPENSE MATCHES
+            // BUDGET EXPENSE MATCHES - SIN CASCADE
             stmt.execute("""
-                    CREATE TABLE IF NOT EXISTS budget_expense_matches (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        
-                        -- Item del presupuesto afectado
-                        budget_item_id INTEGER NOT NULL,
-                        
-                        -- Egreso real aplicado
-                        expense_id INTEGER NOT NULL,
-                        
-                        -- Monto del egreso que se aplica a este item
-                        -- Permite cuotas y pagos parciales
-                        amount_applied INTEGER NOT NULL CHECK (amount_applied > 0),
-                        
-                        FOREIGN KEY (budget_item_id) REFERENCES budget_items(id)
-                            ON DELETE CASCADE,
-                            
-                        FOREIGN KEY (expense_id) REFERENCES expenses(id)
-                            ON DELETE CASCADE,
-                            
-                        -- Evita duplicar el mismo expense aplicado dos veces al mismo item
-                        UNIQUE (budget_item_id, expense_id)
-                    );
-                    """);
-
+                CREATE TABLE IF NOT EXISTS budget_expense_matches (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    budget_item_id INTEGER NOT NULL,
+                    expense_id INTEGER NOT NULL,
+                    amount_applied INTEGER NOT NULL CHECK (amount_applied > 0),
+                    FOREIGN KEY (budget_item_id) REFERENCES budget_items(id),
+                    FOREIGN KEY (expense_id) REFERENCES expenses(id),
+                    UNIQUE (budget_item_id, expense_id)
+                );
+                """);
 
             logger.info("[DB] Database tables created successfully.");
         } catch (SQLException e) {
@@ -645,6 +566,60 @@ public class DbBootstrap {
 
         } catch (IOException e) {
             logger.error("[DB] Error initializing avatars folder: {}", e.getMessage());
+        }
+    }
+    private static void runCascadeRemovalMigration() {
+        try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
+
+            // Check if migrations already ran by looking for a marker
+            var rs = stmt.executeQuery(
+                    "SELECT name FROM sqlite_master WHERE type='table' AND name='migration_log'"
+            );
+
+            boolean migrationTableExists = rs.next();
+            rs.close();
+
+            if (!migrationTableExists) {
+                // Create migrations log table
+                stmt.execute("""
+                CREATE TABLE migration_log (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    migration_name TEXT NOT NULL UNIQUE,
+                    applied_at TEXT NOT NULL DEFAULT (datetime('now'))
+                );
+            """);
+            }
+
+            // Check if this specific migrations already ran
+            rs = stmt.executeQuery(
+                    "SELECT 1 FROM migration_log WHERE migration_name = 'remove_cascade_v1'"
+            );
+
+            boolean alreadyRan = rs.next();
+            rs.close();
+
+            if (alreadyRan) {
+                logger.debug("[DB] CASCADE removal migrations already applied, skipping");
+                return;
+            }
+
+            // Run the migrations
+            logger.info("[DB] Running CASCADE removal migrations...");
+            RemoveCascadeMigration.migrate(conn);
+
+            // Mark as completed
+            var ps = conn.prepareStatement(
+                    "INSERT INTO migration_log (migration_name) VALUES (?)"
+            );
+            ps.setString(1, "remove_cascade_v1");
+            ps.executeUpdate();
+            ps.close();
+
+            logger.info("[DB] CASCADE removal migrations completed successfully");
+
+        } catch (Exception e) {
+            logger.error("[DB] Error running CASCADE removal migrations: {}", e.getMessage());
+            throw new RuntimeException("Failed to run migrations", e);
         }
     }
 }
