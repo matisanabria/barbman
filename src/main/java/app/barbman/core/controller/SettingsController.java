@@ -313,7 +313,7 @@ public class SettingsController implements Initializable {
         try {
             if (currentEditingProduct == null) {
                 // CREATE
-                Product newProduct = new Product(name, costPrice, unitPrice, stock);  // ACTUALIZADO
+                Product newProduct = new Product(name, costPrice, unitPrice, stock, name);  // ACTUALIZADO
                 productService.save(newProduct);
 
                 AlertUtil.showInfo("Exito", "Producto creado exitosamente.");

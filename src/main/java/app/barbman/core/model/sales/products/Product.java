@@ -19,11 +19,12 @@ public class Product {
     private String notes;
 
     // For creating new products
-    public Product(String name, double costPrice, double unitPrice, int stock) {
+    public Product(String name, double costPrice, double unitPrice, int stock, String notes) {
         this.name = name;
         this.costPrice = costPrice;
         this.unitPrice = unitPrice;
         this.stock = stock;
+        this.notes = notes;
     }
     // For creating new products
     public Product(String name, double costPrice, double unitPrice, int stock,
