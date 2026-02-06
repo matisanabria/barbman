@@ -96,7 +96,7 @@ public class SaleResultViewController implements Initializable {
         paymentMethodLabel.setText(paymentDisplay);
 
         double total = dto.getTotal();
-        double iva = total - (total / 11);
+        double iva = total / 11;
 
         subtotalLabel.setText(NumberFormatterUtil.format(total) + " Gs");
         ivaLabel.setText(NumberFormatterUtil.format(iva) + " Gs");

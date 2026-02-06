@@ -137,7 +137,7 @@ public class SaleDetailController {
 
         // Totals
         double total = detail.getTotal();
-        double iva = total - (total / 11);
+        double iva = total / 11;
 
         subtotalLabel.setText(NumberFormatterUtil.format(total) + " Gs");
         ivaLabel.setText(NumberFormatterUtil.format(iva) + " Gs");
