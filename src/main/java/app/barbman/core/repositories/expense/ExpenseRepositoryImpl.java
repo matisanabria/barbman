@@ -1,245 +1,65 @@
 package app.barbman.core.repositories.expense;
 
+import app.barbman.core.infrastructure.HibernateUtil;
 import app.barbman.core.model.Expense;
-import app.barbman.core.repositories.DbBootstrap;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import app.barbman.core.repositories.AbstractHibernateRepository;
+import jakarta.persistence.EntityManager;
 
-import java.sql.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
-public class ExpenseRepositoryImpl implements ExpenseRepository {
+public class ExpenseRepositoryImpl extends AbstractHibernateRepository<Expense, Integer>
+        implements ExpenseRepository {
 
-    private static final Logger logger = LogManager.getLogger(ExpenseRepositoryImpl.class);
-    private static final String PREFIX = "[EXPENSE-REPO]";
-
-    private static final String SELECT_BASE = """
-        SELECT id, description, amount, date, type, payment_method_id
-        FROM expenses
-        """;
+    public ExpenseRepositoryImpl() {
+        super(Expense.class);
+    }
 
     @Override
-    public List<Expense> findAll() {
-        List<Expense> list = new ArrayList<>();
-        try (Connection db = DbBootstrap.connect();
-             PreparedStatement ps = db.prepareStatement(SELECT_BASE);
-             ResultSet rs = ps.executeQuery()) {
-
-            while (rs.next()) list.add(mapRow(rs));
-            logger.debug("{} Retrieved {} expenses.", PREFIX, list.size());
-            return list;
-
+    public List<Expense> searchByDateRange(LocalDate startDate, LocalDate endDate) {
+        try (EntityManager em = HibernateUtil.createEntityManager()) {
+            return em.createQuery(
+                    "FROM Expense WHERE date BETWEEN :start AND :end ORDER BY date, id",
+                    Expense.class)
+                    .setParameter("start", startDate)
+                    .setParameter("end", endDate)
+                    .getResultList();
         } catch (Exception e) {
-            logger.warn("{} Error fetching all expenses: {}", PREFIX, e.getMessage());
+            logger.warn("[ExpenseRepositoryImpl] Error searching expenses by date range: {}", e.getMessage());
             return List.of();
         }
     }
 
     @Override
-    public Expense findById(Integer id) {
-        String sql = SELECT_BASE + " WHERE id = ?";
-        try (Connection db = DbBootstrap.connect();
-             PreparedStatement ps = db.prepareStatement(sql)) {
-
-            ps.setInt(1, id);
-
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    logger.debug("{} Expense found with ID={}", PREFIX, id);
-                    return mapRow(rs);
-                }
-            }
+    public double sumTotalByPaymentMethodAndPeriod(int paymentMethodId, LocalDate start, LocalDate end) {
+        try (EntityManager em = HibernateUtil.createEntityManager()) {
+            Double result = em.createQuery(
+                    "SELECT SUM(e.amount) FROM Expense e WHERE e.paymentMethodId = :pm AND e.date BETWEEN :start AND :end",
+                    Double.class)
+                    .setParameter("pm", paymentMethodId)
+                    .setParameter("start", start)
+                    .setParameter("end", end)
+                    .getSingleResult();
+            return result != null ? result : 0.0;
         } catch (Exception e) {
-            logger.warn("{} Error fetching expense by ID {}: {}", PREFIX, id, e.getMessage());
-        }
-        return null;
-    }
-
-    @Override
-    public void save(Expense expense) {
-        String sql = """
-            INSERT INTO expenses (description, amount, date, type, payment_method_id)
-            VALUES (?, ?, ?, ?, ?)
-            """;
-        try (Connection db = DbBootstrap.connect();
-             PreparedStatement ps = db.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-
-            ps.setString(1, expense.getDescription());
-            ps.setDouble(2, expense.getAmount());
-            ps.setString(3, expense.getDate().toString());
-            ps.setString(4, expense.getType());
-            ps.setInt(5, expense.getPaymentMethodId());
-
-            ps.executeUpdate();
-
-            try (ResultSet keys = ps.getGeneratedKeys()) {
-                if (keys.next()) expense.setId(keys.getInt(1));
-            }
-
-            logger.info("{} Expense saved successfully (ID={})", PREFIX, expense.getId());
-
-        } catch (Exception e) {
-            logger.error("{} Failed to save expense: {}", PREFIX, e.getMessage());
+            logger.error("[ExpenseRepositoryImpl] Error summing expenses by payment method: {}", e.getMessage());
+            return 0.0;
         }
     }
 
-    @Override
-    public void update(Expense expense) {
-        String sql = """
-            UPDATE expenses
-            SET description=?, amount=?, date=?, type=?, payment_method_id=?
-            WHERE id=?
-            """;
-        try (Connection db = DbBootstrap.connect();
-             PreparedStatement ps = db.prepareStatement(sql)) {
-
-            ps.setString(1, expense.getDescription());
-            ps.setDouble(2, expense.getAmount());
-            ps.setString(3, expense.getDate().toString());
-            ps.setString(4, expense.getType());
-            ps.setInt(5, expense.getPaymentMethodId());
-            ps.setInt(6, expense.getId());
-
-            ps.executeUpdate();
-            logger.info("{} Expense updated successfully (ID={})", PREFIX, expense.getId());
-
-        } catch (Exception e) {
-            logger.error("{} Error updating expense ID {}: {}", PREFIX, expense.getId(), e.getMessage());
-        }
-    }
-
-    @Override
-    public void delete(Integer id) {
-        String sql = "DELETE FROM expenses WHERE id = ?";
-        try (Connection db = DbBootstrap.connect();
-             PreparedStatement ps = db.prepareStatement(sql)) {
-
-            ps.setInt(1, id);
-            ps.executeUpdate();
-
-            logger.info("{} Expense deleted successfully (ID={})", PREFIX, id);
-
-        } catch (Exception e) {
-            logger.error("{} Error deleting expense ID {}: {}", PREFIX, id, e.getMessage());
-        }
-    }
-
-    @Override
-    public List<Expense> searchByDateRange(LocalDate startDate, LocalDate endDate) {
-        String sql = SELECT_BASE + " WHERE date BETWEEN ? AND ? ORDER BY date, id";
-        List<Expense> list = new ArrayList<>();
-
-        try (Connection db = DbBootstrap.connect();
-             PreparedStatement ps = db.prepareStatement(sql)) {
-
-            ps.setString(1, startDate.toString());
-            ps.setString(2, endDate.toString());
-
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) list.add(mapRow(rs));
-            }
-
-            logger.debug("{} Retrieved {} expenses between {} and {}", PREFIX, list.size(), startDate, endDate);
-
-        } catch (Exception e) {
-            logger.warn("{} Error searching expenses between {} and {}: {}", PREFIX, startDate, endDate, e.getMessage());
-        }
-
-        return list;
-    }
-
-    @Override
-    public double sumTotalByPaymentMethodAndPeriod(
-            int paymentMethodId,
-            LocalDate start,
-            LocalDate end
-    ) {
-
-        String sql = """
-        SELECT COALESCE(SUM(amount), 0)
-        FROM expenses
-        WHERE payment_method_id = ?
-          AND date BETWEEN ? AND ?
-        """;
-
-        try (Connection db = DbBootstrap.connect();
-             PreparedStatement ps = db.prepareStatement(sql)) {
-
-            ps.setInt(1, paymentMethodId);
-            ps.setString(2, start.toString());
-            ps.setString(3, end.toString());
-
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    double total = rs.getDouble(1);
-                    logger.debug(
-                            "{} SUM expenses [pm={}, {} -> {}] = {}",
-                            PREFIX, paymentMethodId, start, end, total
-                    );
-                    return total;
-                }
-            }
-
-        } catch (Exception e) {
-            logger.error(
-                    "{} Error summing expenses for pm={} between {} and {}: {}",
-                    PREFIX, paymentMethodId, start, end, e.getMessage()
-            );
-        }
-
-        return 0;
-    }
     @Override
     public double sumTotalByPeriod(LocalDate start, LocalDate end) {
-
-        String sql = """
-        SELECT COALESCE(SUM(amount), 0)
-        FROM expenses
-        WHERE date BETWEEN ? AND ?
-        """;
-
-        try (Connection db = DbBootstrap.connect();
-             PreparedStatement ps = db.prepareStatement(sql)) {
-
-            ps.setString(1, start.toString());
-            ps.setString(2, end.toString());
-
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    double total = rs.getDouble(1);
-                    logger.debug(
-                            "{} SUM expenses [{} -> {}] = {}",
-                            PREFIX, start, end, total
-                    );
-                    return total;
-                }
-            }
-
+        try (EntityManager em = HibernateUtil.createEntityManager()) {
+            Double result = em.createQuery(
+                    "SELECT SUM(e.amount) FROM Expense e WHERE e.date BETWEEN :start AND :end",
+                    Double.class)
+                    .setParameter("start", start)
+                    .setParameter("end", end)
+                    .getSingleResult();
+            return result != null ? result : 0.0;
         } catch (Exception e) {
-            logger.error(
-                    "{} Error summing expenses between {} and {}: {}",
-                    PREFIX, start, end, e.getMessage()
-            );
+            logger.error("[ExpenseRepositoryImpl] Error summing expenses by period: {}", e.getMessage());
+            return 0.0;
         }
-
-        return 0;
-    }
-
-    private Expense mapRow(ResultSet rs) throws SQLException {
-        return new Expense(
-                rs.getInt("id"),
-                rs.getString("description"),
-                rs.getDouble("amount"),
-                LocalDate.parse(rs.getString("date")),
-                rs.getString("type"),
-                rs.getInt("payment_method_id")
-        );
-    }
-
-    // TODO: Add repository health check (DB connection + table integrity)
-    public void debugRepositoryStatus() {
-        logger.debug("{} Repository health check executed successfully.", PREFIX);
     }
 }

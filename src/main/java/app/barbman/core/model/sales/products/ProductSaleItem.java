@@ -1,61 +1,40 @@
 package app.barbman.core.model.sales.products;
 
+import jakarta.persistence.*;
+import lombok.*;
+
 /**
- * Represents a single line item inside a product salecart.
- *
- * Each ProductSaleItem links a specific product to a salecart, storing
- * the quantity sold and the final unit price applied at the moment
- * of checkout. This allows historical pricing and supports sales with
- * multiple products or variable product pricing.
+ * A single line item within a product sale.
+ * Stores the price at the time of sale to preserve historical accuracy.
  */
+@Entity
+@Table(name = "product_sale_items")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString
 public class ProductSaleItem {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private int id;
+
+    @Column(name = "product_header_id", nullable = false)
     private int productHeaderId;
+
+    @Column(name = "product_id", nullable = false)
     private int productId;
+
+    @Column(nullable = false)
     private int quantity;
+
+    @Column(name = "unit_price", nullable = false)
     private double unitPrice;
+
+    @Column(name = "item_total", nullable = false)
     private double itemTotal;
-
-    // For creating new records
-    public ProductSaleItem(int productHeaderId, int productId, int quantity, double unitPrice, double itemTotal) {
-        this.productHeaderId = productHeaderId;
-        this.productId = productId;
-        this.quantity = quantity;
-        this.unitPrice = unitPrice;
-        this.itemTotal = itemTotal;
-    }
-
-    // For reading from DB
-    public ProductSaleItem(int id, int productHeaderId, int productId,
-                           int quantity, double unitPrice, double itemTotal) {
-        this(productHeaderId, productId, quantity, unitPrice, itemTotal);
-        this.id = id;
-    }
-
-    // Getters / Setters
-    public int getId() { return id; }
-    public int getProductHeaderId() { return productHeaderId; }
-    public int getProductId() { return productId; }
-    public int getQuantity() { return quantity; }
-    public double getUnitPrice() { return unitPrice; }
-    public double getItemTotal() { return itemTotal; }
-
-    public void setId(int id) { this.id = id; }
-    public void setProductHeaderId(int productHeaderId) { this.productHeaderId = productHeaderId; }
-    public void setProductId(int productId) { this.productId = productId; }
-    public void setQuantity(int quantity) { this.quantity = quantity; }
-    public void setUnitPrice(double unitPrice) { this.unitPrice = unitPrice; }
-    public void setItemTotal(double itemTotal) { this.itemTotal = itemTotal; }
-
-    @Override
-    public String toString() {
-        return "ProductSaleItem{" +
-                "id=" + id +
-                ", productHeaderId=" + productHeaderId +
-                ", productId=" + productId +
-                ", quantity=" + quantity +
-                ", itemTotal=" + itemTotal +
-                '}';
-    }
 }

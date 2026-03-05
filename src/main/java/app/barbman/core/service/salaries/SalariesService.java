@@ -124,17 +124,14 @@ public class SalariesService {
             advancesService.saveAdvance(user.getId(), debt, 0, description);
         }
 
-        return new Salary(
-                user.getId(),
-                range.getStart(),
-                range.getEnd(),
-                production,
-                finalAmount,
-                user.getPaymentType(),
-                null,
-                0,
-                0
-        );
+        return Salary.builder()
+                .userId(user.getId())
+                .startDate(range.getStart())
+                .endDate(range.getEnd())
+                .totalProduction(production)
+                .amountPaid(finalAmount)
+                .payTypeSnapshot(user.getPaymentType())
+                .build();
     }
 
     /**

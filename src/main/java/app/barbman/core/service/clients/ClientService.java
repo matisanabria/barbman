@@ -31,7 +31,14 @@ public class ClientService {
             throw new IllegalArgumentException("Client name is required.");
         }
 
-        Client c = new Client(name, document, phone, email, notes, true);
+        Client c = Client.builder()
+                .name(name)
+                .document(document)
+                .phone(phone)
+                .email(email)
+                .notes(notes)
+                .active(true)
+                .build();
         repo.save(c);
 
         logger.info("{} Client registered -> {} (ID {})", PREFIX, name, c.getId());

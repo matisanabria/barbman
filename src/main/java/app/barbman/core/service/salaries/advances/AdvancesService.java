@@ -43,7 +43,14 @@ public class AdvancesService {
         Expense expense = expenseService.registerAdvanceExpense(userId, amount, paymentMethodId);
 
         // Link advance to the expense
-        Advance advance = new Advance(userId, amount, date, paymentMethodId, expense.getId(), description);
+        Advance advance = Advance.builder()
+                .userId(userId)
+                .amount(amount)
+                .date(date)
+                .paymentMethodId(paymentMethodId)
+                .expenseId(expense.getId())
+                .description(description)
+                .build();
         advanceRepo.save(advance);
 
         logger.info("{} Advance registered -> user={}, amount={}, method={}, expenseID={}",

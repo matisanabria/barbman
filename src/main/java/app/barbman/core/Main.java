@@ -1,5 +1,6 @@
 package app.barbman.core;
 
+import app.barbman.core.infrastructure.HibernateUtil;
 import app.barbman.core.repositories.DbBootstrap;
 import app.barbman.core.util.window.WindowManager;
 import app.barbman.core.util.window.WindowRequest;
@@ -30,7 +31,7 @@ public class Main extends Application {
 
     @Override
     public void stop() {
-        // Esto lo hago para evitar errores, no es estrictamente necesario
+        HibernateUtil.shutdown();
         logger.info("[BARBMAN] App closed.");
         LogManager.shutdown();
     }

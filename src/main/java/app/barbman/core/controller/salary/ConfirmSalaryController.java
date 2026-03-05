@@ -329,17 +329,14 @@ public class ConfirmSalaryController implements Initializable {
         var range = new app.barbman.core.service.salaries.period.SalaryPeriodResolver()
                 .resolve(user, currentPeriodReference);
 
-        return new Salary(
-                user.getId(),
-                range.getStart(),
-                range.getEnd(),
-                salaryDTO.getProduction(),
-                amount,
-                user.getPaymentType(),
-                null,
-                0,
-                0
-        );
+        return Salary.builder()
+                .userId(user.getId())
+                .startDate(range.getStart())
+                .endDate(range.getEnd())
+                .totalProduction(salaryDTO.getProduction())
+                .amountPaid(amount)
+                .payTypeSnapshot(user.getPaymentType())
+                .build();
     }
 
     /**

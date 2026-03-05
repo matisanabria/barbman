@@ -1,171 +1,28 @@
 package app.barbman.core.repositories.users;
 
+import app.barbman.core.infrastructure.HibernateUtil;
 import app.barbman.core.model.human.User;
-import app.barbman.core.repositories.DbBootstrap;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import app.barbman.core.repositories.AbstractHibernateRepository;
+import jakarta.persistence.EntityManager;
 
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
+public class UsersRepositoryImpl extends AbstractHibernateRepository<User, Integer>
+        implements UsersRepository {
 
-public class UsersRepositoryImpl implements UsersRepository {
-    List<User> listaUsers = new ArrayList<>();
-    private static final Logger logger = LogManager.getLogger(UsersRepositoryImpl.class);
-
-    private static final String SELECT_BASE = """
-        SELECT id, displayName, role, pin,
-               payment_type, pay_frequency,
-               param_1, param_2, avatar_path
-        FROM users
-        """;
-
-    public static final String PREFIX = "[USERS-REPO]";
-
-    @Override
-    public User findById(Integer id) {
-        String sql = SELECT_BASE + " WHERE id = ?";
-        try (Connection db = DbBootstrap.connect();
-             PreparedStatement ps = db.prepareStatement(sql)) {
-            ps.setInt(1, id);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return mapRow(rs);
-                }
-            }
-        } catch (Exception e) {
-            logger.warn("{} Can't find user by id {}: {}", PREFIX, id, e.getMessage());
-        }
-        return null;
+    public UsersRepositoryImpl() {
+        super(User.class);
     }
 
-    @Override
-    public List<User> findAll() {
-        List<User> lista = new ArrayList<>();
-        try (Connection db = DbBootstrap.connect();
-             PreparedStatement ps = db.prepareStatement(SELECT_BASE);
-             ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                lista.add(mapRow(rs));
-            }
-            return lista;
-        } catch (Exception e) {
-            logger.warn("{} Error creating user list: {}", PREFIX, e.getMessage());
-        }
-        return List.of();
-    }
-
-    @Override
-    public void save(User user) {
-        String sql = """
-            INSERT INTO users (
-                displayName, role, pin,
-                payment_type, pay_frequency,
-                param_1, param_2, avatar_path
-            )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            """;
-
-        try (Connection db = DbBootstrap.connect();
-             PreparedStatement ps = db.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-
-            ps.setString(1, user.getName());
-            ps.setString(2, user.getRole());
-            ps.setString(3, user.getPin());
-            ps.setInt(4, user.getPaymentType());
-            ps.setString(5, user.getPayFrequency().name());
-            ps.setDouble(6, user.getParam1());
-            ps.setDouble(7, user.getParam2());
-            ps.setString(8, user.getAvatarPath()); // NUEVO
-            ps.executeUpdate();
-
-            try (ResultSet keys = ps.getGeneratedKeys()) {
-                if (keys.next()) {
-                    user.setId(keys.getInt(1));
-                }
-            }
-        } catch (Exception e) {
-            logger.warn("{} Error saving new user {}: {}", PREFIX, user.getName(), e.getMessage());
-        }
-    }
-
-    @Override
-    public void update(User user){
-        String sql = """
-            UPDATE users
-            SET displayName = ?, role = ?, pin = ?,
-                payment_type = ?, pay_frequency = ?,
-                param_1 = ?, param_2 = ?, avatar_path = ?
-            WHERE id = ?
-            """;
-        try (Connection db = DbBootstrap.connect();
-             PreparedStatement ps = db.prepareStatement(sql)) {
-
-            ps.setString(1, user.getName());
-            ps.setString(2, user.getRole());
-            ps.setString(3, user.getPin());
-            ps.setInt(4, user.getPaymentType());
-            ps.setString(5, user.getPayFrequency().name());
-            ps.setDouble(6, user.getParam1());
-            ps.setDouble(7, user.getParam2());
-            ps.setString(8, user.getAvatarPath()); // NUEVO
-            ps.setInt(9, user.getId());
-
-            ps.executeUpdate();
-        } catch (Exception e) {
-            logger.warn("{} Error while updating user id {}: {}", PREFIX, user.getId(), e.getMessage());
-        }
-    }
-
-    @Override
-    public void delete(Integer id) {
-        String sql = "DELETE FROM users WHERE id = ?";
-        try (Connection db = DbBootstrap.connect();
-             PreparedStatement ps = db.prepareStatement(sql)) {
-
-            ps.setInt(1, id);
-            ps.executeUpdate();
-        } catch (Exception e) {
-            logger.warn("{} Error while deleting user id {}: {}", PREFIX, id, e.getMessage());
-        }
-    }
-
-    /**
-     * Search for a barber by their PIN.
-     *
-     * @param pin PIN.
-     * @return Barber object if found, null otherwise.
-     */
     @Override
     public User findByPin(String pin) {
-        String sql = SELECT_BASE + " WHERE pin = ?";
-        try (Connection db = DbBootstrap.connect();
-             PreparedStatement ps = db.prepareStatement(sql)) {
-
-            ps.setString(1, pin);
-
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return mapRow(rs);
-                }
-            }
+        try (EntityManager em = HibernateUtil.createEntityManager()) {
+            return em.createQuery("FROM User WHERE pin = :pin", User.class)
+                    .setParameter("pin", pin)
+                    .getResultStream()
+                    .findFirst()
+                    .orElse(null);
         } catch (Exception e) {
-            logger.warn("{} Can't find user by pin: {}", PREFIX, e.getMessage());
+            logger.warn("[UsersRepositoryImpl] Error finding user by PIN: {}", e.getMessage());
+            return null;
         }
-        return null;
-    }
-
-    private User mapRow(ResultSet rs) throws SQLException {
-        return new User(
-                rs.getInt("id"),
-                rs.getString("displayName"),
-                rs.getString("role"),
-                rs.getString("pin"),
-                rs.getInt("payment_type"),
-                User.PayFrequency.valueOf(rs.getString("pay_frequency")),
-                rs.getDouble("param_1"),
-                rs.getDouble("param_2"),
-                rs.getString("avatar_path") // NUEVO
-        );
     }
 }

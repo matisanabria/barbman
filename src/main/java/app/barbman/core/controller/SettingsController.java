@@ -313,7 +313,12 @@ public class SettingsController implements Initializable {
         try {
             if (currentEditingProduct == null) {
                 // CREATE
-                Product newProduct = new Product(name, costPrice, unitPrice, stock, name);  // ACTUALIZADO
+                Product newProduct = Product.builder()
+                        .name(name)
+                        .costPrice(costPrice)
+                        .unitPrice(unitPrice)
+                        .stock(stock)
+                        .build();
                 productService.save(newProduct);
 
                 AlertUtil.showInfo("Exito", "Producto creado exitosamente.");
@@ -506,7 +511,11 @@ public class SettingsController implements Initializable {
         try {
             if (currentEditingService == null) {
                 // CREATE
-                ServiceDefinition newService = new ServiceDefinition(name, price, available);
+                ServiceDefinition newService = ServiceDefinition.builder()
+                        .name(name)
+                        .basePrice(price)
+                        .available(available)
+                        .build();
                 serviceService.save(newService);
 
                 AlertUtil.showInfo("Exito", "Servicio creado exitosamente.");
@@ -696,7 +705,10 @@ public class SettingsController implements Initializable {
         try {
             if (currentEditingUser == null) {
                 // CREATE
-                User newUser = new User(name, pin, role);
+                User newUser = new User();
+                newUser.setName(name);
+                newUser.setPin(pin);
+                newUser.setRole(role);
                 usersService.create(newUser);
 
                 AlertUtil.showInfo("Exito", "Usuario creado exitosamente.");

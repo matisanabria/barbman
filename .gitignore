@@ -51,3 +51,7 @@ barbman.log
 /data/
 /logs/
 /backups/
+
+# Claude Code
+CLAUDE.md
+memory/

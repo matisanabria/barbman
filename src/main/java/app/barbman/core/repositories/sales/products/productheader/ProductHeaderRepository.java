@@ -2,17 +2,12 @@ package app.barbman.core.repositories.sales.products.productheader;
 
 import app.barbman.core.model.sales.products.ProductHeader;
 import app.barbman.core.repositories.GenericRepository;
-
-import java.sql.Connection;
-import java.sql.SQLException;
+import jakarta.persistence.EntityManager;
 
 public interface ProductHeaderRepository extends GenericRepository<ProductHeader, Integer> {
-    void save(ProductHeader sale, Connection conn) throws SQLException;
-    void update(ProductHeader sale, Connection conn) throws SQLException;
-    void delete(Integer id, Connection conn) throws SQLException;
+    void save(ProductHeader header, EntityManager em);
+    void update(ProductHeader header, EntityManager em);
+    void delete(Integer id, EntityManager em);
 
-    /**
-     * Finds the product header for a given sale.
-     */
     ProductHeader findBySaleId(int saleId);
 }

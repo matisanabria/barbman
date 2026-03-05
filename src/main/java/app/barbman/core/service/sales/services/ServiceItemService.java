@@ -5,13 +5,12 @@ import app.barbman.core.dto.salecart.SaleCartItemDTO;
 import app.barbman.core.model.sales.services.ServiceHeader;
 import app.barbman.core.model.sales.services.ServiceItem;
 import app.barbman.core.repositories.sales.services.serviceitems.ServiceItemRepository;
+import jakarta.persistence.EntityManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-
 public class ServiceItemService {
+
     private static final Logger logger = LogManager.getLogger(ServiceItemService.class);
     private static final String PREFIX = "[SERVICE-ITEM-SERVICE]";
 
@@ -21,37 +20,26 @@ public class ServiceItemService {
         this.serviceItemRepository = serviceItemRepository;
     }
 
-    /**
-     * Creates and persists ServiceItems for a given ServiceHeader,
-     * based on SERVICE items in the cart.
-     */
-    public void createItemsFromCart(
-            ServiceHeader header,
-            SaleCartDTO cart,
-            Connection conn
-    ) throws SQLException {
-
+    public void createItemsFromCart(ServiceHeader header, SaleCartDTO cart, EntityManager em) {
         if (header == null) {
             logger.debug("{} No ServiceHeader provided. Skipping ServiceItems.", PREFIX);
             return;
         }
 
         for (SaleCartItemDTO item : cart.getCartItems()) {
-
             if (item.getType() != SaleCartItemDTO.ItemType.SERVICE) continue;
 
-            ServiceItem serviceItem = new ServiceItem(
-                    header.getId(),
-                    item.getReferenceId(),          // service_definition_id
-                    item.getQuantity(),
-                    item.getUnitPrice(),
-                    item.getItemTotal()
-            );
+            ServiceItem serviceItem = ServiceItem.builder()
+                    .serviceHeaderId(header.getId())
+                    .serviceDefinitionId(item.getReferenceId())
+                    .quantity(item.getQuantity())
+                    .unitPrice(item.getUnitPrice())
+                    .itemTotal(item.getItemTotal())
+                    .build();
 
-            serviceItemRepository.save(serviceItem, conn);
+            serviceItemRepository.save(serviceItem, em);
         }
 
-        logger.info("{} ServiceItems created for ServiceHeader ID={}",
-                PREFIX, header.getId());
+        logger.info("{} ServiceItems created for ServiceHeader ID={}", PREFIX, header.getId());
     }
 }

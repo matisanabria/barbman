@@ -12,6 +12,69 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
     <dependencies>
+
+        <!-- ===== HIBERNATE / JPA ===== -->
+        <!-- Hibernate ORM: implementación de JPA. Mapea entidades Java a tablas SQL
+             y genera queries automáticamente. Reemplaza todo el JDBC manual. -->
+        <dependency>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>6.6.2.Final</version>
+        </dependency>
+        <!-- Dialecto SQLite para Hibernate. El soporte oficial de SQLite no viene
+             en hibernate-core, este artefacto lo agrega. -->
+        <dependency>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-community-dialects</artifactId>
+            <version>6.6.2.Final</version>
+        </dependency>
+
+        <!-- ===== FLYWAY ===== -->
+        <!-- Gestión de migraciones de base de datos con versionado.
+             Lee archivos SQL de db/migration/ y los aplica en orden al arrancar.
+             Reemplaza el sistema casero de migration_log y DbBootstrap.createTables(). -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+            <version>9.22.3</version>
+        </dependency>
+
+        <!-- ===== GUICE (DI) ===== -->
+        <!-- Inyección de dependencias de Google. Elimina los 'new XRepositoryImpl()'
+             hardcodeados en controllers y el SessionManager estático global.
+             Cada clase declara sus dependencias con @Inject y Guice las provee. -->
+        <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+            <version>7.0.0</version>
+        </dependency>
+
+        <!-- ===== TESTING ===== -->
+        <!-- JUnit 5: framework de testing moderno para unit tests. -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.11.4</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- Mockito: crea "mocks" (dobles) de dependencias para testear en aislamiento. -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>5.15.2</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- ===== LOMBOK ===== -->
+        <!-- Procesador de anotaciones: genera getters/setters/constructores/builders
+             en tiempo de compilación. No está en el JAR final (scope provided). -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.36</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- ControlsFX -->
         <dependency>
             <groupId>org.controlsfx</groupId>
@@ -50,11 +113,6 @@
             <groupId>org.kordamp.ikonli</groupId>
             <artifactId>ikonli-javafx</artifactId>
             <version>12.3.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.kordamp.bootstrapfx</groupId>
-            <artifactId>bootstrapfx-core</artifactId>
-            <version>0.4.0</version>
         </dependency>
         <!-- Ikonli core -->
         <dependency>
@@ -111,6 +169,13 @@
     <build>
         <!-- Compilador -->
         <plugins>
+            <!-- Surefire: runner de tests para Maven. La versión default no soporta JUnit 5. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.5.2</version>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -118,6 +183,13 @@
                 <configuration>
                     <source>17</source>
                     <target>17</target>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>1.18.36</version>
+                        </path>
+                    </annotationProcessorPaths>
                 </configuration>
             </plugin>
 

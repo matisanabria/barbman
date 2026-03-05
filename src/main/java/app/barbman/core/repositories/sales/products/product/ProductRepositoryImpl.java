@@ -1,220 +1,53 @@
 package app.barbman.core.repositories.sales.products.product;
 
+import app.barbman.core.infrastructure.HibernateUtil;
 import app.barbman.core.model.sales.products.Product;
-import app.barbman.core.repositories.DbBootstrap;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import app.barbman.core.repositories.AbstractHibernateRepository;
+import jakarta.persistence.EntityManager;
 
-import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Repository implementation for the `products` table.
- * Provides CRUD operations plus additional queries for lookup and stock filtering.
- */
-public class ProductRepositoryImpl implements ProductRepository {
+public class ProductRepositoryImpl extends AbstractHibernateRepository<Product, Integer>
+        implements ProductRepository {
 
-    private static final Logger logger = LogManager.getLogger(ProductRepositoryImpl.class);
-    private static final String PREFIX = "[PRODUCT-REPO]";
-
-    private static final String SELECT_BASE = """
-        SELECT id, displayName, cost_price, unit_price, stock, category, brand, image_path, notes
-        FROM products
-        """;
-
-    @Override
-    public Product findById(Integer id) {
-        String sql = SELECT_BASE + " WHERE id = ?";
-
-        try (Connection db = DbBootstrap.connect();
-             PreparedStatement ps = db.prepareStatement(sql)) {
-
-            ps.setInt(1, id);
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) return mapRow(rs);
-
-        } catch (Exception e) {
-            logger.error("{} Failed to fetch Product ID {}: {}", PREFIX, id, e.getMessage());
-        }
-
-        return null;
+    public ProductRepositoryImpl() {
+        super(Product.class);
     }
 
     @Override
     public Product findByName(String displayName) {
-        String sql = SELECT_BASE + " WHERE displayName = ?";
-
-        try (Connection db = DbBootstrap.connect();
-             PreparedStatement ps = db.prepareStatement(sql)) {
-
-            ps.setString(1, displayName);
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) return mapRow(rs);
-
+        try (EntityManager em = HibernateUtil.createEntityManager()) {
+            return em.createQuery("FROM Product WHERE name = :name", Product.class)
+                    .setParameter("name", displayName)
+                    .getResultStream()
+                    .findFirst()
+                    .orElse(null);
         } catch (Exception e) {
-            logger.error("{} Failed to fetch product '{}': {}", PREFIX, displayName, e.getMessage());
+            logger.error("[ProductRepositoryImpl] Error fetching product by name '{}': {}",
+                    displayName, e.getMessage());
+            return null;
         }
-
-        return null;
-    }
-
-    @Override
-    public List<Product> findAll() {
-        List<Product> list = new ArrayList<>();
-
-        try (Connection db = DbBootstrap.connect();
-             PreparedStatement ps = db.prepareStatement(SELECT_BASE);
-             ResultSet rs = ps.executeQuery()) {
-
-            while (rs.next()) list.add(mapRow(rs));
-
-            logger.debug("{} Loaded {} products.", PREFIX, list.size());
-
-        } catch (Exception e) {
-            logger.error("{} Failed to load products: {}", PREFIX, e.getMessage());
-        }
-
-        return list;
     }
 
     @Override
     public List<Product> findAllInStock() {
-        List<Product> list = new ArrayList<>();
-        String sql = SELECT_BASE + " WHERE stock > 0";
-
-        try (Connection db = DbBootstrap.connect();
-             PreparedStatement ps = db.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-
-            while (rs.next()) list.add(mapRow(rs));
-
-            logger.debug("{} Loaded {} products with stock > 0.", PREFIX, list.size());
-
+        try (EntityManager em = HibernateUtil.createEntityManager()) {
+            return em.createQuery("FROM Product WHERE stock > 0", Product.class).getResultList();
         } catch (Exception e) {
-            logger.error("{} Failed to load in-stock products: {}", PREFIX, e.getMessage());
-        }
-
-        return list;
-    }
-
-    @Override
-    public void save(Product p) {
-        String sql = """
-            INSERT INTO products
-            (displayName, cost_price, unit_price, stock, category, brand, image_path, notes)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            """;
-
-        try (Connection db = DbBootstrap.connect();
-             PreparedStatement ps = db.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-
-            ps.setString(1, p.getName());
-            ps.setDouble(2, p.getCostPrice());
-            ps.setDouble(3, p.getUnitPrice());
-            ps.setInt(4, p.getStock());
-            ps.setString(5, p.getCategory());
-            ps.setString(6, p.getBrand());
-            ps.setString(7, p.getImagePath());
-            ps.setString(8, p.getNotes());
-
-            ps.executeUpdate();
-
-            ResultSet keys = ps.getGeneratedKeys();
-            if (keys.next()) p.setId(keys.getInt(1));
-
-            logger.info("{} Inserted Product ID={} ('{}')", PREFIX, p.getId(), p.getName());
-
-        } catch (Exception e) {
-            logger.error("{} Failed to insert product '{}': {}", PREFIX, p.getName(), e.getMessage());
+            logger.error("[ProductRepositoryImpl] Error fetching in-stock products: {}", e.getMessage());
+            return List.of();
         }
     }
 
     @Override
-    public void update(Product p) {
-        String sql = """
-            UPDATE products
-            SET displayName = ?, cost_price = ?, unit_price = ?, stock = ?,
-                category = ?, brand = ?, image_path = ?, notes = ?
-            WHERE id = ?
-            """;
-
-        try (Connection db = DbBootstrap.connect();
-             PreparedStatement ps = db.prepareStatement(sql)) {
-
-            ps.setString(1, p.getName());
-            ps.setDouble(2, p.getCostPrice());
-            ps.setDouble(3, p.getUnitPrice());
-            ps.setInt(4, p.getStock());
-            ps.setString(5, p.getCategory());
-            ps.setString(6, p.getBrand());
-            ps.setString(7, p.getImagePath());
-            ps.setString(8, p.getNotes());
-            ps.setInt(9, p.getId());
-
-            ps.executeUpdate();
-
-            logger.info("{} Updated Product ID={} ('{}')", PREFIX, p.getId(), p.getName());
-
-        } catch (Exception e) {
-            logger.error("{} Failed to update product ID {}: {}", PREFIX, p.getId(), e.getMessage());
+    public void decreaseStock(int productId, int quantity, EntityManager em) {
+        int affected = em.createQuery(
+                "UPDATE Product SET stock = stock - :qty WHERE id = :id AND stock >= :qty")
+                .setParameter("qty", quantity)
+                .setParameter("id", productId)
+                .executeUpdate();
+        if (affected == 0) {
+            throw new RuntimeException("Insufficient stock for product ID " + productId);
         }
-    }
-
-    @Override
-    public void delete(Integer id) {
-        String sql = "DELETE FROM products WHERE id = ?";
-
-        try (Connection db = DbBootstrap.connect();
-             PreparedStatement ps = db.prepareStatement(sql)) {
-
-            ps.setInt(1, id);
-            ps.executeUpdate();
-
-            logger.info("{} Deleted Product ID={}", PREFIX, id);
-
-        } catch (Exception e) {
-            logger.error("{} Failed to delete Product ID {}: {}", PREFIX, id, e.getMessage());
-        }
-    }
-
-    @Override
-    public void decreaseStock(int productId, int quantity, Connection conn) throws SQLException {
-
-        String sql = """
-        UPDATE products
-        SET stock = stock - ?
-        WHERE id = ? AND stock >= ?
-    """;
-
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, quantity);
-            ps.setInt(2, productId);
-            ps.setInt(3, quantity);
-
-            int affected = ps.executeUpdate();
-
-            if (affected == 0) {
-                throw new SQLException(
-                        "Insufficient stock for product ID " + productId
-                );
-            }
-        }
-    }
-
-    private Product mapRow(ResultSet rs) throws SQLException {
-        return new Product(
-                rs.getInt("id"),
-                rs.getString("displayName"),
-                rs.getDouble("cost_price"),
-                rs.getDouble("unit_price"),
-                rs.getInt("stock"),
-                rs.getString("category"),
-                rs.getString("brand"),
-                rs.getString("image_path"),
-                rs.getString("notes")
-        );
     }
 }

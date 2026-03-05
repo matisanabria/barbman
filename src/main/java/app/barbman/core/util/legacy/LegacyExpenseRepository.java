@@ -27,14 +27,14 @@ public class LegacyExpenseRepository {
 
                 while (rs.next()) {
                     // Mapeamos al modelo nuevo 'Expense'
-                    Expense expense = new Expense(
-                            rs.getString("descripcion"),
-                            rs.getDouble("monto"),
-                            LocalDate.parse(rs.getString("fecha")),
-                            mapLegacyType(rs.getString("tipo")),
-                            mapLegacyPayment(rs.getString("forma_pago"))
-                    );
-                    expense.setId(rs.getInt("id"));
+                    Expense expense = Expense.builder()
+                            .id(rs.getInt("id"))
+                            .description(rs.getString("descripcion"))
+                            .amount(rs.getDouble("monto"))
+                            .date(LocalDate.parse(rs.getString("fecha")))
+                            .type(mapLegacyType(rs.getString("tipo")))
+                            .paymentMethodId(mapLegacyPayment(rs.getString("forma_pago")))
+                            .build();
                     // Marcamos como beta si tu modelo Expense tiene ese flag,
                     // si no, lo dejamos así para que solo sea lectura.
                     list.add(expense);
