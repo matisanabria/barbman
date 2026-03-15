@@ -2,7 +2,7 @@
 
 Desktop application for small barbershop management. Built with Java and JavaFX, runs fully offline using an embedded SQLite database.
 
-> Currently in beta. A major refactor with UI redesign and multi-language support is in progress.
+> Currently in beta. A major refactor multi-language support and better code is coming.
 
 ## Requirements
 
