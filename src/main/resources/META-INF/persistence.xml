@@ -31,6 +31,10 @@
         <class>app.barbman.core.model.salaries.Advance</class>
         <class>app.barbman.core.model.salaries.Salary</class>
 
+        <!-- JPA converters for SQLite TEXT date columns -->
+        <class>app.barbman.core.infrastructure.LocalDateConverter</class>
+        <class>app.barbman.core.infrastructure.LocalDateTimeConverter</class>
+
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
 
         <properties>

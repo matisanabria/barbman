@@ -43,6 +43,15 @@
                                 <HBox alignment="CENTER_LEFT" spacing="16">
                                     <Label text="Gestion de Productos" styleClass="settings-section-title"/>
                                     <Region HBox.hgrow="ALWAYS"/>
+
+                                    <HBox alignment="CENTER_LEFT" spacing="6">
+                                        <Label text="Stock bajo:" styleClass="settings-form-label"/>
+                                        <TextField fx:id="lowStockThresholdField"
+                                                   text="2"
+                                                   prefWidth="50"
+                                                   styleClass="settings-form-field"/>
+                                    </HBox>
+
                                     <Button text="+ Agregar Producto"
                                             styleClass="settings-btn-add"
                                             onAction="#onAddProduct"/>

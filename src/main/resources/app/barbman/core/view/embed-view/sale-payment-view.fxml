@@ -36,11 +36,11 @@
 
                 <HBox spacing="8"
                       alignment="CENTER_LEFT">
-                    <ComboBox fx:id="clientComboBox"
-                              editable="true"
-                              prefWidth="400"
-                              styleClass="sale-payment-combo"
-                              HBox.hgrow="ALWAYS"/>
+                    <TextField fx:id="clientSearchField"
+                               prefWidth="400"
+                               promptText="Buscar cliente..."
+                               styleClass="sale-payment-combo"
+                               HBox.hgrow="ALWAYS"/>
 
                     <Button fx:id="addClientButton"
                             text="+"

@@ -58,6 +58,7 @@ public class SettingsController implements Initializable {
     @FXML private TextField productCostField;
     @FXML private TextField productPriceField;
     @FXML private TextField productStockField;
+    @FXML private TextField lowStockThresholdField;
 
     private Product currentEditingProduct = null;
 
@@ -127,12 +128,32 @@ public class SettingsController implements Initializable {
         // Setup user role combo
         setupUserRoleCombo();
 
+        setupLowStockField();
         loadProducts();
         loadServices();
         loadUsers();
         loadClients();
 
         logger.info("{} Settings view initialized", PREFIX);
+    }
+
+    private void setupLowStockField() {
+        // Solo permitir digitos
+        lowStockThresholdField.textProperty().addListener((obs, old, val) -> {
+            if (val != null && !val.matches("\\d*")) {
+                lowStockThresholdField.setText(old);
+                return;
+            }
+            loadProducts();
+        });
+    }
+
+    private int getLowStockThreshold() {
+        try {
+            return Integer.parseInt(lowStockThresholdField.getText());
+        } catch (NumberFormatException e) {
+            return 2;
+        }
     }
 
     private void setupUserRoleCombo() {
@@ -188,6 +209,9 @@ public class SettingsController implements Initializable {
         // Stock
         Label stockLabel = new Label("Stock: " + product.getStock());
         stockLabel.getStyleClass().add("settings-item-stock");
+        if (product.getStock() <= getLowStockThreshold()) {
+            stockLabel.getStyleClass().add("settings-item-stock-low");
+        }
 
         // Edit button
         Button editBtn = new Button("Editar");
@@ -349,7 +373,7 @@ public class SettingsController implements Initializable {
 
         boolean confirmed = AlertUtil.showConfirmation(
                 "Eliminar Producto",
-                String.format("¿Estas seguro de eliminar '%s'?\n\nEl stock se pondra en 0.", product.getName())
+                String.format("¿Estas seguro de eliminar '%s'?", product.getName())
         );
 
         if (!confirmed) {
@@ -357,7 +381,7 @@ public class SettingsController implements Initializable {
         }
 
         try {
-            productService.softDelete(product.getId());
+            productService.delete(product.getId());
 
             AlertUtil.showInfo(
                     "Producto eliminado",
@@ -545,7 +569,7 @@ public class SettingsController implements Initializable {
 
         boolean confirmed = AlertUtil.showConfirmation(
                 "Eliminar Servicio",
-                String.format("¿Estas seguro de eliminar '%s'?\n\nSe marcara como no disponible.", service.getName())
+                String.format("¿Estas seguro de eliminar '%s'?", service.getName())
         );
 
         if (!confirmed) {
@@ -553,7 +577,7 @@ public class SettingsController implements Initializable {
         }
 
         try {
-            serviceService.softDelete(service.getId());
+            serviceService.delete(service.getId());
 
             AlertUtil.showInfo(
                     "Servicio eliminado",
@@ -713,7 +737,21 @@ public class SettingsController implements Initializable {
 
                 AlertUtil.showInfo("Exito", "Usuario creado exitosamente.");
             } else {
-                // UPDATE
+                // UPDATE — verificar que no se quede sin admins
+                boolean wasAdmin = "admin".equals(currentEditingUser.getRole());
+                boolean changingToNonAdmin = wasAdmin && !"admin".equals(role);
+
+                if (changingToNonAdmin) {
+                    long adminCount = usersService.getAllUsers().stream()
+                            .filter(u -> "admin".equals(u.getRole()))
+                            .count();
+                    if (adminCount <= 1) {
+                        AlertUtil.showWarning("Operacion no permitida",
+                                "No se puede cambiar el rol. Debe haber al menos un administrador.");
+                        return;
+                    }
+                }
+
                 currentEditingUser.setName(name);
                 currentEditingUser.setPin(pin);
                 currentEditingUser.setRole(role);

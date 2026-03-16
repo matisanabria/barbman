@@ -109,18 +109,20 @@ public class SaleFlowService {
                     PREFIX, sale.getId(), cart.getSelectedUserId());
 
             // 4. Cashbox movement (outside main transaction — its own persist)
-            cashboxMovementRepository.save(CashboxMovement.builder()
-                    .movementType("SALE")
-                    .direction("IN")
-                    .amount(sale.getTotal())
-                    .paymentMethodId(sale.getPaymentMethodId())
-                    .referenceType("SALE")
-                    .referenceId(sale.getId())
-                    .description("Sale registered")
-                    .userId(cart.getSelectedUserId())
-                    .occurredAt(LocalDateTime.now())
-                    .createdAt(LocalDateTime.now())
-                    .build());
+            if (sale.getTotal() > 0) {
+                cashboxMovementRepository.save(CashboxMovement.builder()
+                        .movementType("SALE")
+                        .direction("IN")
+                        .amount(sale.getTotal())
+                        .paymentMethodId(sale.getPaymentMethodId())
+                        .referenceType("SALE")
+                        .referenceId(sale.getId())
+                        .description("Sale registered")
+                        .userId(cart.getSelectedUserId())
+                        .occurredAt(LocalDateTime.now())
+                        .createdAt(LocalDateTime.now())
+                        .build());
+            }
 
             cart.getCartItems().clear();
             return sale;

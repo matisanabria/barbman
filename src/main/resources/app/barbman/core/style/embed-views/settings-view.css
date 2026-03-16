@@ -202,6 +202,11 @@
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 }
 
+.settings-item-stock-low {
+    -fx-text-fill: #E74C3C;
+    -fx-font-weight: bold;
+}
+
 .settings-item-status {
     -fx-text-fill: #4ECB71;
     -fx-font-size: 13px;
