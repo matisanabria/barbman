@@ -2,11 +2,12 @@ package app.barbman.core.service.sales.saleflow;
 
 import app.barbman.core.dto.salecart.SaleCartDTO;
 import app.barbman.core.dto.salecart.SaleCartItemDTO;
+import app.barbman.core.infrastructure.HibernateUtil;
 import app.barbman.core.model.cashbox.CashboxMovement;
 import app.barbman.core.model.sales.Sale;
 import app.barbman.core.model.sales.products.ProductHeader;
 import app.barbman.core.model.sales.services.ServiceHeader;
-import app.barbman.core.repositories.DbBootstrap;
+import app.barbman.core.model.cashbox.CashboxOpening;
 import app.barbman.core.repositories.cashbox.movement.CashboxMovementRepository;
 import app.barbman.core.repositories.sales.SaleRepository;
 import app.barbman.core.service.cashbox.CashboxService;
@@ -15,20 +16,15 @@ import app.barbman.core.service.sales.products.ProductItemService;
 import app.barbman.core.service.sales.products.ProductStockService;
 import app.barbman.core.service.sales.services.ServiceHeaderService;
 import app.barbman.core.service.sales.services.ServiceItemService;
-
+import jakarta.persistence.EntityManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.sql.Connection;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
- * This service is a "Sales Flow Orchestrator".
- * <p>
- * It manages the entire sales process from start to finish,
- * Coordinates different services involved in a sale,
- * and connects frontend actions with backend operations.
+ * Orchestrates the entire sale flow in a single JPA transaction.
  */
 public class SaleFlowService {
 
@@ -40,9 +36,9 @@ public class SaleFlowService {
     private final ServiceItemService serviceItemService;
     private final ProductHeaderService productHeaderService;
     private final ProductItemService productItemService;
-    private final ProductStockService productStockService =
-            new ProductStockService();
+    private final ProductStockService productStockService = new ProductStockService();
     private final CashboxMovementRepository cashboxMovementRepository;
+    private final CashboxService cashboxService;
 
     public SaleFlowService(
             SaleRepository saleRepository,
@@ -50,7 +46,8 @@ public class SaleFlowService {
             ServiceItemService serviceItemService,
             ProductHeaderService productHeaderService,
             ProductItemService productItemService,
-            CashboxMovementRepository cashboxMovementRepository
+            CashboxMovementRepository cashboxMovementRepository,
+            CashboxService cashboxService
     ) {
         this.saleRepository = saleRepository;
         this.serviceHeaderService = serviceHeaderService;
@@ -58,40 +55,24 @@ public class SaleFlowService {
         this.productHeaderService = productHeaderService;
         this.productItemService = productItemService;
         this.cashboxMovementRepository = cashboxMovementRepository;
+        this.cashboxService = cashboxService;
     }
 
-    //
-    // CART OPERATIONS
-    //
-    public void addService(
-            SaleCartDTO cart,
-            int serviceDefinitionId,
-            String name,
-            double price
-    ) {
+    // ── Cart operations ──────────────────────────────────────────────────────
+
+    public void addService(SaleCartDTO cart, int serviceDefinitionId, String name, double price) {
         cart.addService(serviceDefinitionId, name, price);
     }
 
-    public void addProduct(
-            SaleCartDTO cart,
-            int productId,
-            String name,
-            double price
-    ) {
+    public void addProduct(SaleCartDTO cart, int productId, String name, double price) {
         cart.addProduct(productId, name, price);
     }
 
-    public void removeSingleUnit(
-            SaleCartDTO cart,
-            SaleCartItemDTO item
-    ) {
+    public void removeSingleUnit(SaleCartDTO cart, SaleCartItemDTO item) {
         cart.removeSingleUnit(item);
     }
 
-    public void removeItem(
-            SaleCartDTO cart,
-            SaleCartItemDTO item
-    ) {
+    public void removeItem(SaleCartDTO cart, SaleCartItemDTO item) {
         cart.removeItem(item);
     }
 
@@ -99,84 +80,67 @@ public class SaleFlowService {
         return cart.getTotal();
     }
 
+    // ── Persistence ──────────────────────────────────────────────────────────
 
-    // ==========
-    // PERSISTENCE
-    // ==========
-    /**
-     * Completa una venta con todos sus detalles.
-     *
-     * IMPORTANTE:
-     * - Sale.userId = cart.getSelectedUserId() (el barbero seleccionado)
-     * - ServiceHeader.userId = cart.getSelectedUserId() (el barbero seleccionado)
-     * - Todo a nombre del usuario seleccionado, no del usuario de sesión
-     */
     public Sale completeSale(SaleCartDTO cart) {
+        EntityManager em = HibernateUtil.createEntityManager();
+        try {
+            em.getTransaction().begin();
 
-        try (Connection conn = DbBootstrap.connect()) {
-            conn.setAutoCommit(false);
+            // 1. Sale (root)
+            Sale sale = Sale.builder()
+                    .userId(cart.getSelectedUserId())
+                    .clientId(cart.getClientId())
+                    .paymentMethodId(cart.getPaymentMethod())
+                    .date(cart.getDate())
+                    .total(cart.getTotal())
+                    .build();
+            saleRepository.save(sale, em);
 
-            // 1. Create Sale (root)
-            // IMPORTANTE: Usar selectedUserId (el barbero), no userId (admin)
-            Sale sale = new Sale(
-                    cart.getSelectedUserId(),  // ← El barbero seleccionado
-                    cart.getClientId(),
-                    cart.getPaymentMethod(),
-                    cart.getDate(),
-                    cart.getTotal()
-            );
-            saleRepository.save(sale, conn); // set Id
-
-            logger.info("{} Sale creada a nombre de usuario: {} (selectedUserId: {})",
-                    PREFIX, cart.getSelectedUserId(), cart.getSelectedUserId());
+            logger.info("{} Sale created for userId={}", PREFIX, cart.getSelectedUserId());
 
             // 2. Services
-            ServiceHeader serviceHeader =
-                    serviceHeaderService.createFromCart(cart, sale.getId(), conn);
-
-            serviceItemService.createItemsFromCart(
-                    serviceHeader,
-                    cart,
-                    conn
-            );
+            ServiceHeader serviceHeader = serviceHeaderService.createFromCart(cart, sale.getId(), em);
+            serviceItemService.createItemsFromCart(serviceHeader, cart, em);
 
             // 3. Products
-            ProductHeader productHeader =
-                    productHeaderService.createFromCart(cart, sale.getId(), conn);
+            ProductHeader productHeader = productHeaderService.createFromCart(cart, sale.getId(), em);
+            productItemService.createItemsFromCart(productHeader, cart, em);
+            productStockService.decreaseStockFromCart(cart, em);
 
-            productItemService.createItemsFromCart(
-                    productHeader,
-                    cart,
-                    conn
-            );
-            productStockService.decreaseStockFromCart(cart, conn);
-
-            // 4. Commit
-            conn.commit();
-            logger.info("{} Sale completed successfully (saleId={}, userId={})",
+            em.getTransaction().commit();
+            logger.info("{} Sale completed (saleId={}, userId={})",
                     PREFIX, sale.getId(), cart.getSelectedUserId());
 
-            // 5. Cashbox movement (LEDGER)
-            // El movimiento también se registra con el usuario seleccionado
-            cashboxMovementRepository.save(new CashboxMovement(
-                    "SALE",
-                    "IN",
-                    sale.getTotal(),
-                    sale.getPaymentMethodId(),
-                    "SALE",
-                    sale.getId(),
-                    "Sale registered",
-                    cart.getSelectedUserId(),  // ← El barbero, no el admin
-                    LocalDateTime.now()
-            ));
+            // 4. Cashbox movement (outside main transaction — its own persist)
+            if (sale.getTotal() > 0) {
+                CashboxOpening currentOpening = cashboxService.getCurrentOpening();
+                Integer openingId = currentOpening != null ? currentOpening.getId() : null;
 
-            // 6. Clear cart
+                cashboxMovementRepository.save(CashboxMovement.builder()
+                        .movementType("SALE")
+                        .direction("IN")
+                        .amount(sale.getTotal())
+                        .paymentMethodId(sale.getPaymentMethodId())
+                        .referenceType("SALE")
+                        .referenceId(sale.getId())
+                        .description("Sale registered")
+                        .userId(cart.getSelectedUserId())
+                        .occurredAt(LocalDateTime.now())
+                        .createdAt(LocalDateTime.now())
+                        .openingId(openingId)
+                        .build());
+            }
+
             cart.getCartItems().clear();
             return sale;
 
         } catch (Exception e) {
-            logger.error("{} Sale failed, rolling back: {}", PREFIX, e.getMessage(), e);
+            if (em.getTransaction().isActive()) em.getTransaction().rollback();
+            logger.error("{} Sale failed, rolled back: {}", PREFIX, e.getMessage(), e);
             throw new RuntimeException("Sale could not be completed", e);
+        } finally {
+            em.close();
         }
     }
 }

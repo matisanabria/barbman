@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="app.barbman.core.controller.appointments.AppointmentsViewController"
+            styleClass="appointments-root">
+
+    <!-- ==================== HEADER ==================== -->
+    <top>
+        <VBox spacing="14" styleClass="appointments-header">
+            <padding><Insets top="20" right="28" bottom="16" left="28"/></padding>
+
+            <!-- Title + barber selector -->
+            <HBox alignment="CENTER_LEFT" spacing="16">
+                <Label text="Reservas Online (BETA)" styleClass="appointments-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label text="Barbero:" styleClass="appointments-filter-label"/>
+                <ComboBox fx:id="barberCombo" styleClass="appointments-combo" promptText="Seleccionar barbero" prefWidth="200"/>
+            </HBox>
+
+            <!-- Week navigation -->
+            <HBox alignment="CENTER" spacing="12" styleClass="appointments-week-nav">
+                <Button fx:id="btnPrevWeek" styleClass="appointments-btn-nav" onAction="#handlePrevWeek">
+                    <graphic><FontIcon iconLiteral="fas-chevron-left" iconSize="14"/></graphic>
+                </Button>
+                <Button fx:id="btnToday" text="Hoy" styleClass="appointments-btn-today" onAction="#handleToday"/>
+                <Label fx:id="weekLabel" styleClass="appointments-week-label"/>
+                <Button fx:id="btnNextWeek" styleClass="appointments-btn-nav" onAction="#handleNextWeek">
+                    <graphic><FontIcon iconLiteral="fas-chevron-right" iconSize="14"/></graphic>
+                </Button>
+            </HBox>
+
+            <!-- Stats -->
+            <HBox spacing="14" alignment="CENTER_LEFT">
+                <HBox spacing="14" styleClass="appointments-stat-card" alignment="CENTER_LEFT">
+                    <padding><Insets top="10" right="16" bottom="10" left="16"/></padding>
+                    <VBox spacing="2">
+                        <Label text="TOTAL" styleClass="appointments-stat-label"/>
+                        <Label fx:id="statTotal" text="0" styleClass="appointments-stat-value"/>
+                    </VBox>
+                </HBox>
+                <HBox spacing="14" styleClass="appointments-stat-card" alignment="CENTER_LEFT">
+                    <padding><Insets top="10" right="16" bottom="10" left="16"/></padding>
+                    <VBox spacing="2">
+                        <Label text="PENDIENTES" styleClass="appointments-stat-label"/>
+                        <Label fx:id="statPending" text="0" styleClass="appointments-stat-value-accent"/>
+                    </VBox>
+                </HBox>
+                <HBox spacing="14" styleClass="appointments-stat-card" alignment="CENTER_LEFT">
+                    <padding><Insets top="10" right="16" bottom="10" left="16"/></padding>
+                    <VBox spacing="2">
+                        <Label text="CONFIRMADAS" styleClass="appointments-stat-label"/>
+                        <Label fx:id="statConfirmed" text="0" styleClass="appointments-stat-value-success"/>
+                    </VBox>
+                </HBox>
+            </HBox>
+        </VBox>
+    </top>
+
+    <!-- ==================== SCHEDULE GRID ==================== -->
+    <center>
+        <VBox styleClass="appointments-content">
+            <padding><Insets top="12" right="28" bottom="16" left="28"/></padding>
+
+            <!-- Status / loading label -->
+            <Label fx:id="statusLabel" styleClass="appointments-status-label" visible="false" managed="false"/>
+
+            <!-- Loading spinner -->
+            <VBox fx:id="loadingPane" alignment="CENTER" spacing="12" VBox.vgrow="ALWAYS"
+                  visible="false" managed="false">
+                <ProgressIndicator fx:id="loadingSpinner" styleClass="appointments-spinner" prefWidth="48" prefHeight="48"/>
+                <Label fx:id="loadingLabel" text="Cargando horarios..." styleClass="appointments-loading-text"/>
+            </VBox>
+
+            <ScrollPane fx:id="gridScroll" fitToWidth="true" hbarPolicy="NEVER" VBox.vgrow="ALWAYS"
+                        styleClass="appointments-scroll">
+                <GridPane fx:id="scheduleGrid" styleClass="schedule-grid" hgap="2" vgap="2"/>
+            </ScrollPane>
+        </VBox>
+    </center>
+</BorderPane>

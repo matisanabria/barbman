@@ -1,8 +1,14 @@
 package app.barbman.core.repositories.users;
 
 import app.barbman.core.model.human.User;
-import app.barbman.core.repositories.GenericRepository;
 
-public interface UsersRepository  extends GenericRepository<User, Integer> {
+import java.util.List;
+
+public interface UsersRepository {
     User findByPin(String pin);
+    List<User> findAll();
+    User findById(Integer id);
+    void save(User user);
+    void update(User user);
+    void delete(Integer id);
 }

@@ -1,19 +1,16 @@
 package app.barbman.core.repositories.sales.products.productsaleitem;
 
 import app.barbman.core.model.sales.products.ProductSaleItem;
-import app.barbman.core.repositories.GenericRepository;
+import jakarta.persistence.EntityManager;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 
-/**
- * Repository interface for `product_sale_items`.
- * Supports standard CRUD plus shared-connection operations for transactional sales.
- */
-public interface ProductSaleItemRepository extends GenericRepository<ProductSaleItem, Integer> {
-    List<ProductSaleItem> findBySaleId(int saleId);
+public interface ProductSaleItemRepository {
+    List<ProductSaleItem> findBySaleId(int productHeaderId);
 
-    void save(ProductSaleItem item, Connection conn) throws SQLException;
-    void deleteBySaleId(int saleId, Connection conn) throws SQLException;
+    void save(ProductSaleItem item, EntityManager em);
+    void deleteBySaleId(int productHeaderId, EntityManager em);
+
+    void delete(Integer id);
+    List<ProductSaleItem> findAll();
 }

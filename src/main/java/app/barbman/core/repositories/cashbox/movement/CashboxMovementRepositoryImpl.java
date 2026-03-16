@@ -1,91 +1,18 @@
 package app.barbman.core.repositories.cashbox.movement;
 
+import app.barbman.core.infrastructure.HibernateUtil;
 import app.barbman.core.model.cashbox.CashboxMovement;
-import app.barbman.core.repositories.DbBootstrap;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import app.barbman.core.repositories.AbstractHibernateRepository;
+import jakarta.persistence.EntityManager;
 
-import java.sql.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
-public class CashboxMovementRepositoryImpl implements CashboxMovementRepository {
+public class CashboxMovementRepositoryImpl extends AbstractHibernateRepository<CashboxMovement, Integer>
+        implements CashboxMovementRepository {
 
-    private static final Logger logger = LogManager.getLogger(CashboxMovementRepositoryImpl.class);
-    private static final String PREFIX = "[CASHBOX-MOVEMENT-REPO]";
-
-    private static final String SELECT_BASE = """
-        SELECT *
-        FROM cashbox_movements
-        """;
-
-    @Override
-    public CashboxMovement findById(Integer id) {
-        String sql = SELECT_BASE + " WHERE id = ?";
-        try (Connection db = DbBootstrap.connect();
-             PreparedStatement ps = db.prepareStatement(sql)) {
-
-            ps.setInt(1, id);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) return mapRow(rs);
-            }
-
-        } catch (Exception e) {
-            logger.warn("{} Error fetching movement by ID {}: {}", PREFIX, id, e.getMessage());
-        }
-        return null;
-    }
-
-    @Override
-    public List<CashboxMovement> findAll() {
-        List<CashboxMovement> list = new ArrayList<>();
-        try (Connection db = DbBootstrap.connect();
-             PreparedStatement ps = db.prepareStatement(SELECT_BASE);
-             ResultSet rs = ps.executeQuery()) {
-
-            while (rs.next()) list.add(mapRow(rs));
-            logger.debug("{} Retrieved {} movements.", PREFIX, list.size());
-
-        } catch (Exception e) {
-            logger.warn("{} Error fetching all movements: {}", PREFIX, e.getMessage());
-        }
-        return list;
-    }
-
-    @Override
-    public void save(CashboxMovement movement) {
-        String sql = """
-            INSERT INTO cashbox_movements
-            (movement_type, direction, amount, payment_method_id,
-             reference_type, reference_id, description, user_id, occurred_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """;
-
-        try (Connection db = DbBootstrap.connect();
-             PreparedStatement ps = db.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-
-            ps.setString(1, movement.getMovementType());
-            ps.setString(2, movement.getDirection());
-            ps.setDouble(3, movement.getAmount());
-            ps.setObject(4, movement.getPaymentMethodId());
-            ps.setString(5, movement.getReferenceType());
-            ps.setObject(6, movement.getReferenceId());
-            ps.setString(7, movement.getDescription());
-            ps.setObject(8, movement.getUserId());
-            ps.setString(9, movement.getOccurredAt().toString());
-
-            ps.executeUpdate();
-
-            try (ResultSet keys = ps.getGeneratedKeys()) {
-                if (keys.next()) movement.setId(keys.getInt(1));
-            }
-
-            logger.info("{} Movement saved successfully (ID={})", PREFIX, movement.getId());
-
-        } catch (Exception e) {
-            logger.error("{} Failed to save movement: {}", PREFIX, e.getMessage());
-        }
+    public CashboxMovementRepositoryImpl() {
+        super(CashboxMovement.class);
     }
 
     @Override
@@ -94,88 +21,74 @@ public class CashboxMovementRepositoryImpl implements CashboxMovementRepository 
     }
 
     @Override
-    public void delete(Integer id) {
-        String sql = "DELETE FROM cashbox_movements WHERE id = ?";
-
-        try (Connection db = DbBootstrap.connect();
-             PreparedStatement ps = db.prepareStatement(sql)) {
-
-            ps.setInt(1, id);
-            ps.executeUpdate();
-
-            logger.info("{} Movement deleted (ID={})", PREFIX, id);
-
-        } catch (Exception e) {
-            logger.error("{} Failed to delete movement ID {}: {}", PREFIX, id, e.getMessage());
-            throw new RuntimeException("Error deleting cashbox movement", e);
-        }
-    }
-
-    @Override
     public List<CashboxMovement> findByDateRange(LocalDateTime start, LocalDateTime end) {
-        String sql = SELECT_BASE + " WHERE occurred_at BETWEEN ? AND ? ORDER BY occurred_at";
-        List<CashboxMovement> list = new ArrayList<>();
-
-        try (Connection db = DbBootstrap.connect();
-             PreparedStatement ps = db.prepareStatement(sql)) {
-
-            ps.setString(1, start.toString());
-            ps.setString(2, end.toString());
-
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) list.add(mapRow(rs));
-            }
-
-            logger.debug("{} Retrieved {} movements between {} and {}", PREFIX, list.size(), start, end);
-
+        try (EntityManager em = HibernateUtil.createEntityManager()) {
+            return em.createQuery(
+                    "FROM CashboxMovement WHERE occurredAt BETWEEN :start AND :end ORDER BY occurredAt",
+                    CashboxMovement.class)
+                    .setParameter("start", start)
+                    .setParameter("end", end)
+                    .getResultList();
         } catch (Exception e) {
-            logger.warn("{} Error fetching movements by date range: {}", PREFIX, e.getMessage());
+            logger.warn("[CashboxMovementRepositoryImpl] Error fetching movements by date range: {}",
+                    e.getMessage());
+            return List.of();
         }
-        return list;
     }
 
     @Override
     public List<CashboxMovement> findByReference(String referenceType, Integer referenceId) {
-        String sql = SELECT_BASE + " WHERE reference_type = ? AND reference_id = ?";
-        List<CashboxMovement> list = new ArrayList<>();
-
-        try (Connection db = DbBootstrap.connect();
-             PreparedStatement ps = db.prepareStatement(sql)) {
-
-            ps.setString(1, referenceType);
-            ps.setInt(2, referenceId);
-
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) list.add(mapRow(rs));
-            }
-
+        try (EntityManager em = HibernateUtil.createEntityManager()) {
+            return em.createQuery(
+                    "FROM CashboxMovement WHERE referenceType = :type AND referenceId = :refId",
+                    CashboxMovement.class)
+                    .setParameter("type", referenceType)
+                    .setParameter("refId", referenceId)
+                    .getResultList();
         } catch (Exception e) {
-            logger.warn("{} Error fetching movements by reference {} {}: {}",
-                    PREFIX, referenceType, referenceId, e.getMessage());
+            logger.warn("[CashboxMovementRepositoryImpl] Error fetching movements by reference: {}",
+                    e.getMessage());
+            return List.of();
         }
-        return list;
     }
 
-    private CashboxMovement mapRow(ResultSet rs) throws SQLException {
-        return new CashboxMovement(
-                rs.getInt("id"),
-                rs.getString("movement_type"),
-                rs.getString("direction"),
-                rs.getDouble("amount"),
-                (Integer) rs.getObject("payment_method_id"),
-                rs.getString("reference_type"),
-                (Integer) rs.getObject("reference_id"),
-                rs.getString("description"),
-                (Integer) rs.getObject("user_id"),
-                parseDateTime(rs.getString("occurred_at")),  // ✅ ARREGLADO
-                parseDateTime(rs.getString("created_at"))     // ✅ ARREGLADO
-        );
+    @Override
+    public List<CashboxMovement> findByOpeningId(Integer openingId) {
+        try (EntityManager em = HibernateUtil.createEntityManager()) {
+            return em.createQuery(
+                    "FROM CashboxMovement WHERE openingId = :openingId ORDER BY occurredAt",
+                    CashboxMovement.class)
+                    .setParameter("openingId", openingId)
+                    .getResultList();
+        } catch (Exception e) {
+            logger.warn("[CashboxMovementRepositoryImpl] Error fetching movements by opening {}: {}",
+                    openingId, e.getMessage());
+            return List.of();
+        }
     }
 
-    // Agregar este método helper
-    private LocalDateTime parseDateTime(String datetime) {
-        // SQLite guarda con espacio: "2026-02-03 18:22:30"
-        // Java espera con T: "2026-02-03T18:22:30"
-        return LocalDateTime.parse(datetime.replace(" ", "T"));
+    @Override
+    public double sumByOpeningIdAndDirection(Integer openingId, String direction, boolean isCash) {
+        try (EntityManager em = HibernateUtil.createEntityManager()) {
+            String paymentFilter = isCash
+                    ? "AND m.paymentMethodId = 0"
+                    : "AND m.paymentMethodId IN (1, 2, 3)";
+
+            Double result = em.createQuery(
+                    "SELECT COALESCE(SUM(m.amount), 0) FROM CashboxMovement m " +
+                            "WHERE m.openingId = :openingId " +
+                            "AND m.direction = :direction " +
+                            "AND m.movementType <> 'OPENING' " +
+                            paymentFilter,
+                    Double.class)
+                    .setParameter("openingId", openingId)
+                    .setParameter("direction", direction)
+                    .getSingleResult();
+            return result != null ? result : 0.0;
+        } catch (Exception e) {
+            logger.warn("[CashboxMovementRepositoryImpl] Error summing movements for opening {}: {}",
+                    openingId, e.getMessage());
+            return 0.0;
+        }
     }
 }

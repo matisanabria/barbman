@@ -82,7 +82,12 @@ public class ConfirmSalaryController implements Initializable {
         var userRepo = new UsersRepositoryImpl();
 
         // Initialize services
-        var expensesService = new ExpensesService(expenseRepo);
+        var cashboxService = new app.barbman.core.service.cashbox.CashboxService(
+                new app.barbman.core.repositories.cashbox.opening.CashboxOpeningRepositoryImpl(),
+                new app.barbman.core.repositories.cashbox.closure.CashboxClosureRepositoryImpl(),
+                new app.barbman.core.repositories.cashbox.movement.CashboxMovementRepositoryImpl()
+        );
+        var expensesService = new ExpensesService(expenseRepo, cashboxService);
         var advancesService = new AdvancesService();
         var serviceHeaderService = new ServiceHeaderService(serviceHeaderRepo);
         var periodResolver = new SalaryPeriodResolver();
@@ -329,17 +334,14 @@ public class ConfirmSalaryController implements Initializable {
         var range = new app.barbman.core.service.salaries.period.SalaryPeriodResolver()
                 .resolve(user, currentPeriodReference);
 
-        return new Salary(
-                user.getId(),
-                range.getStart(),
-                range.getEnd(),
-                salaryDTO.getProduction(),
-                amount,
-                user.getPaymentType(),
-                null,
-                0,
-                0
-        );
+        return Salary.builder()
+                .userId(user.getId())
+                .startDate(range.getStart())
+                .endDate(range.getEnd())
+                .totalProduction(salaryDTO.getProduction())
+                .amountPaid(amount)
+                .payTypeSnapshot(user.getPaymentType())
+                .build();
     }
 
     /**

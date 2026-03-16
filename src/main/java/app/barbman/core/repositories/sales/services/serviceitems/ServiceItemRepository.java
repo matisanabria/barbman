@@ -1,22 +1,17 @@
 package app.barbman.core.repositories.sales.services.serviceitems;
 
 import app.barbman.core.model.sales.services.ServiceItem;
-import app.barbman.core.repositories.GenericRepository;
+import jakarta.persistence.EntityManager;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 
-public interface ServiceItemRepository extends GenericRepository<ServiceItem, Integer> {
-    List<ServiceItem> findByServiceId(int serviceId);
+public interface ServiceItemRepository {
+    List<ServiceItem> findByServiceId(int serviceHeaderId);
 
-    // transactional methods
-    void save(ServiceItem item, Connection conn) throws SQLException;
-    void update(ServiceItem item, Connection conn) throws SQLException;
-    void delete(Integer id, Connection conn) throws SQLException;
-    /**
-     * Deletes all service items for a given service header.
-     * Used when deleting a complete sale.
-     */
-    void deleteByHeaderId(int serviceHeaderId, Connection conn) throws SQLException;
+    void save(ServiceItem item, EntityManager em);
+    void update(ServiceItem item, EntityManager em);
+    void delete(Integer id, EntityManager em);
+    void deleteByHeaderId(int serviceHeaderId, EntityManager em);
+
+    void delete(Integer id);
 }

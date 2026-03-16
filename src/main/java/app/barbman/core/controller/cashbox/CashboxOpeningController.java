@@ -17,8 +17,7 @@ import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class CashboxOpeningController {
@@ -29,7 +28,6 @@ public class CashboxOpeningController {
     private final CashboxService cashboxService;
 
     public CashboxOpeningController() {
-        // hardcoded
         this.cashboxService = new CashboxService(
                 new app.barbman.core.repositories.cashbox.opening.CashboxOpeningRepositoryImpl(),
                 new app.barbman.core.repositories.cashbox.closure.CashboxClosureRepositoryImpl(),
@@ -63,29 +61,30 @@ public class CashboxOpeningController {
     public void initialize() {
         User admin = SessionManager.getActiveUser();
 
-        LocalDate periodStart = cashboxService.getCurrentPeriodStart();
-        String time = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"));
+        LocalDateTime now = LocalDateTime.now();
+        String dateTime = now.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
 
-        periodLabel.setText("Fecha de inicio de periodo: " + periodStart);
+        periodLabel.setText("Fecha: " + dateTime);
         openedByLabel.setText("Abierto por: " + admin.getName());
-        openedAtLabel.setText("Hora de apertura: " + time);
+        openedAtLabel.setText("Hora de apertura: " + now.format(DateTimeFormatter.ofPattern("HH:mm")));
 
         CashboxClosure last = cashboxService.getLastClosure();
 
         if (last != null) {
             previousCashLabel.setText(
-                    "Efectivo en último cierre: " + NumberFormatterUtil.format(last.getExpectedCash()) + " Gs"
+                    "Efectivo en ultimo cierre: " + NumberFormatterUtil.format(last.getActualCash()) + " Gs"
             );
             previousBankLabel.setText(
-                    "En el banco en último cierre: " + NumberFormatterUtil.format(last.getExpectedBank()) + " Gs"
+                    "En el banco en ultimo cierre: " + NumberFormatterUtil.format(last.getActualBank()) + " Gs"
             );
+            double total = last.getActualCash() + last.getActualBank();
             previousTotalLabel.setText(
-                    "Total último cierre: " + NumberFormatterUtil.format(last.getExpectedTotal()) + " Gs"
+                    "Total ultimo cierre: " + NumberFormatterUtil.format(total) + " Gs"
             );
         } else {
-            previousCashLabel.setText("Efectivo en último cierre: 0 Gs");
-            previousBankLabel.setText("En el banco en último cierre: 0 Gs");
-            previousTotalLabel.setText("Total último cierre: 0 Gs");
+            previousCashLabel.setText("Efectivo en ultimo cierre: 0 Gs");
+            previousBankLabel.setText("En el banco en ultimo cierre: 0 Gs");
+            previousTotalLabel.setText("Total ultimo cierre: 0 Gs");
         }
 
         // Listen to changes on fields to update total
@@ -128,8 +127,6 @@ public class CashboxOpeningController {
 
             logger.info("{} Cashbox opened successfully", PREFIX);
 
-
-            // volver al main como ventana exclusiva
             WindowManager.showExclusive(
                     WindowRequest.builder()
                             .fxml("/app/barbman/core/view/main-view.fxml")
@@ -137,41 +134,24 @@ public class CashboxOpeningController {
             );
 
         } catch (IllegalArgumentException e) {
-            // errores de parseo / validación
             logger.warn("{} Invalid input while opening cashbox", PREFIX, e);
-
-            AlertUtil.showWarning(
-                    "Invalid values",
-                    e.getMessage()
-            );
+            AlertUtil.showWarning("Invalid values", e.getMessage());
 
         } catch (IllegalStateException e) {
-            // errores de dominio (ya abierta, estado inválido)
             logger.warn("{} Cashbox state error", PREFIX, e);
-
-            AlertUtil.showWarning(
-                    "Cashbox error",
-                    e.getMessage()
-            );
+            AlertUtil.showWarning("Cashbox error", e.getMessage());
 
         } catch (Exception e) {
-            // error inesperado
             logger.error("{} Failed to open cashbox", PREFIX, e);
-
-            AlertUtil.showError(
-                    "Unexpected error",
-                    "An unexpected error occurred while opening the cashbox."
-            );
+            AlertUtil.showError("Unexpected error", "An unexpected error occurred while opening the cashbox.");
         }
     }
 
     @FXML
     private void onCancel() {
-        // cancelar = logout
         Stage stage = (Stage) cashField.getScene().getWindow();
         SessionManager.endSession();
 
-        // volver al login
         WindowManager.switchWindow(
                 stage,
                 WindowRequest.builder()
@@ -186,14 +166,12 @@ public class CashboxOpeningController {
         double bank = parseAmount(bankField.getText());
 
         double total = cash + bank;
-        totalOpeningLabel.setText(total!=0 ? NumberFormatterUtil.format(total) + " Gs": 0 + " Gs");
+        totalOpeningLabel.setText(total != 0 ? NumberFormatterUtil.format(total) + " Gs" : 0 + " Gs");
     }
 
 
     private double parseAmount(String value) {
         if (value == null || value.isBlank()) return 0;
-
-        // quitar separadores de miles
         String clean = value.replace(".", "");
         return Double.parseDouble(clean);
     }

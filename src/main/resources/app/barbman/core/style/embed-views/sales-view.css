@@ -2,298 +2,401 @@
    SALE CREATE VIEW
    ========================================================== */
 
-/* ==========================
-   ROOT
-   ========================== */
+/* ── ROOT ──────────────────────────────────────────────── */
+
 .sale-root {
-    -fx-background-color: #2F2F2F;
+    -fx-background-color: #1A1A1A;
 }
 
-/* ==========================
-   TOP BAR
-   ========================== */
+/* ── TOP BAR ───────────────────────────────────────────── */
+
+.sale-header {
+    -fx-background-color: #141414;
+}
+
 .sale-topbar {
-    -fx-background-color: #232323;
+    -fx-background-color: #141414;
+    -fx-border-color: #2A2A2A;
+    -fx-border-width: 0 0 1 0;
 }
 
 .sale-title {
     -fx-text-fill: #FFFFFF;
-    -fx-font-size: 26px;  /* antes 22px */
+    -fx-font-size: 22px;
     -fx-font-weight: bold;
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 }
 
-/* ==========================
-   CENTER AREA
-   ========================== */
-.sale-center {
-    -fx-background-color: transparent;
+.topbar-sep {
+    -fx-background-color: #333333;
 }
 
-/* ==========================
-   TOGGLE (PILL STYLE)
-   ========================== */
-.sale-toggle-group {
-    -fx-background-color: #1F1F1F;
-    -fx-background-radius: 999;
-    -fx-padding: 4;
-}
-
-.sale-toggle {
-    -fx-background-color: transparent;
-    -fx-background-radius: 999;
-    -fx-text-fill: #CCCCCC;
-    -fx-font-size: 16px;  /* antes 14px */
-    -fx-font-weight: 600;
-    -fx-padding: 8 22;  /* antes 6 20 */
-    -fx-cursor: hand;
-
-    -fx-focus-color: transparent;
-    -fx-faint-focus-color: transparent;
-    -fx-border-color: transparent;
-}
-
-.sale-toggle:hover {
-    -fx-text-fill: #FFFFFF;
-}
-
-.sale-toggle:selected {
-    -fx-background-color: #F0C667;
-    -fx-text-fill: #232323;
-}
-
-/* ==========================
-   SCROLL
-   ========================== */
-.sale-scroll {
-    -fx-background-color: transparent;
-}
-
-.sale-scroll .viewport {
-    -fx-background-color: transparent;
-}
-
-/* ==========================
-   CART (RIGHT PANEL)
-   ========================== */
-.sale-cart {
-    -fx-background-color: #232323;
-}
-
-/* Header */
-.sale-cart-header {
-    -fx-padding: 0 0 8 0;
-}
-
-.sale-cart-header-text {
-    -fx-text-fill: #CCCCCC;
-    -fx-font-size: 15px;  /* antes 13px */
-    -fx-font-weight: 600;
-}
-
-/* ==========================
-   CART ITEMS (rows injected dynamically)
-   ========================== */
-.sale-cart-row {
-    -fx-background-color: #2A2A2A;
-    -fx-background-radius: 10;
-    -fx-padding: 10 12;  /* antes 8 10 */
-}
-
-/* ==========================
-   TOTAL
-   ========================== */
-.sale-total-row {
-    -fx-padding: 10 0 0 0;
-}
-
-.sale-total-label {
-    -fx-text-fill: #CCCCCC;
-    -fx-font-size: 15px;  /* antes 13px */
-}
-
-.sale-total-value {
-    -fx-text-fill: #F0C667;
-    -fx-font-size: 24px;  /* antes 20px */
-    -fx-font-weight: bold;
-}
-
-/* ==========================
-   CONFIRM BUTTON
-   ========================== */
-.sale-confirm-btn {
-    -fx-background-color: #F0C667;
-    -fx-background-radius: 12;
-    -fx-text-fill: #232323;
-    -fx-font-size: 17px;  /* antes 15px */
-    -fx-font-weight: bold;
-    -fx-cursor: hand;
-}
-
-.sale-confirm-btn:hover {
-    -fx-opacity: 0.9;
-}
-
-/* ==========================================================
-   SERVICES / PRODUCTS LIST (CARDS)
-   ========================================================== */
-
-/* Container spacing (VBox that holds cards) */
-.sale-center > .scroll-pane .content > VBox {
-    -fx-spacing: 10;
-}
-
-/* ==========================================================
-   CARD BASE
-   ========================================================== */
-.svc-card {
-    -fx-background-color: #2A2A2A;
-    -fx-background-radius: 14;
-    -fx-padding: 12 16;  /* antes 10 14 */
-    -fx-alignment: CENTER_LEFT;
-
-    -fx-effect: dropshadow(
-            gaussian,
-            rgba(0, 0, 0, 0.35),
-            10,
-            0.2,
-            0,
-            2
-    );
-}
-
-.svc-card:hover {
-    -fx-background-color: #323232;
-}
-
-/* ==========================================================
-   CARD CONTENT
-   ========================================================== */
-
-.svc-card-name {
-    -fx-text-fill: #FFFFFF;
-    -fx-font-size: 16px;  /* antes 14px */
-    -fx-font-weight: 600;
-    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
-}
-
-.svc-card-price {
-    -fx-background-color: #232323;
-    -fx-background-radius: 10;
-    -fx-text-fill: #FFFFFF;
-    -fx-font-size: 16px;  /* antes 14px */
-    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
-    -fx-padding: 8 12;  /* antes 6 10 */
-}
-
-.svc-card-price-static {
-    -fx-background-color: transparent;
-    -fx-text-fill: #F0C667;
-    -fx-font-size: 16px;  /* antes 14px */
-    -fx-font-weight: 600;
-    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+/* Stats inline */
+.sale-stats-inline {
     -fx-padding: 0;
 }
 
-.svc-card-stock {
-    -fx-text-fill: #AAAAAA;
-    -fx-font-size: 14px;  /* antes 12px */
+.stat-label-sm {
+    -fx-text-fill: #666666;
+    -fx-font-size: 9px;
+    -fx-font-weight: bold;
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 }
 
-/* ==========================================================
-   ADD BUTTON
-   ========================================================== */
-.svc-card-add {
-    -fx-background-color: #F0C667;
-    -fx-background-radius: 10;
-    -fx-text-fill: #232323;
-    -fx-font-size: 16px;  /* antes 14px */
+.stat-value-sm {
+    -fx-text-fill: #F0C667;
+    -fx-font-size: 15px;
     -fx-font-weight: bold;
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
-    -fx-padding: 8 16;  /* antes 6 14 */
+}
+
+/* User selector */
+.user-selector-label {
+    -fx-text-fill: #888888;
+    -fx-font-size: 13px;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.user-selector-combo {
+    -fx-background-color: #222222;
+    -fx-background-radius: 8;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 14px;
+    -fx-pref-height: 36;
+    -fx-border-color: #333333;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-padding: 0 10;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.user-selector-combo:focused {
+    -fx-border-color: #F0C667;
+}
+
+.user-selector-combo .list-view {
+    -fx-background-color: #222222;
+    -fx-border-color: #333333;
+    -fx-border-width: 1;
+}
+
+.user-selector-combo .list-cell {
+    -fx-background-color: #222222;
+    -fx-text-fill: #FFFFFF;
+    -fx-padding: 8 12;
+    -fx-font-size: 14px;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.user-selector-combo .list-cell:hover {
+    -fx-background-color: #333333;
     -fx-cursor: hand;
 }
 
-.svc-card-add:hover {
-    -fx-opacity: 0.9;
-}
-
-.svc-card-add:pressed {
-    -fx-opacity: 0.8;
-}
-
-/* ==========================================================
-   DISABLED / NO STOCK STATE
-   ========================================================== */
-.svc-card-disabled {
-    -fx-opacity: 0.5;
-}
-
-/* ==========================================================
-   CART ROWS
-   ========================================================== */
-.salecart-row {
+.user-selector-combo .list-cell:selected {
     -fx-background-color: #2A2A2A;
+    -fx-text-fill: #F0C667;
+}
+
+/* ── CENTER PANEL ──────────────────────────────────────── */
+
+.center-panel {
+    -fx-background-color: #1A1A1A;
+}
+
+/* Search bar */
+.sale-search {
+    -fx-background-color: #222222;
     -fx-background-radius: 10;
-    -fx-padding: 8 10;  /* antes 8 10 */
-    -fx-alignment: CENTER_LEFT;
-}
-
-.salecart-row:hover {
-    -fx-background-color: #303030;
-}
-
-.salecart-row-name {
     -fx-text-fill: #FFFFFF;
-    -fx-font-size: 15px;  /* antes 13px */
-    -fx-font-weight: 600;
-    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
-}
-
-.salecart-row-price {
-    -fx-text-fill: #CCCCCC;
-    -fx-font-size: 15px;  /* antes 13px */
-    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
-}
-
-.salecart-row-qty {
-    -fx-text-fill: #AAAAAA;
     -fx-font-size: 15px;
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-padding: 10 16;
+    -fx-prompt-text-fill: #555555;
+    -fx-border-color: #333333;
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+}
 
-    /* AGREGAR ESTAS 3 LÍNEAS: */
-    -fx-min-width: 60px;
-    -fx-pref-width: 60px;
+.sale-search:focused {
+    -fx-border-color: #F0C667;
+    -fx-border-width: 1.5;
+}
+
+/* Toggle pills */
+.toggle-pill {
+    -fx-background-color: #222222;
+    -fx-background-radius: 10;
+    -fx-padding: 3;
+}
+
+.toggle-btn {
+    -fx-background-color: transparent;
+    -fx-background-radius: 8;
+    -fx-text-fill: #777777;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-padding: 8 20;
+    -fx-cursor: hand;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-border-color: transparent;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.toggle-btn:hover {
+    -fx-text-fill: #CCCCCC;
+}
+
+.toggle-btn:selected {
+    -fx-background-color: #F0C667;
+    -fx-text-fill: #141414;
+}
+
+/* Items scroll */
+.items-scroll {
+    -fx-background-color: transparent;
+}
+
+.items-scroll .viewport {
+    -fx-background-color: transparent;
+}
+
+.items-grid {
+    -fx-background-color: transparent;
+}
+
+/* ── ITEM CARDS ────────────────────────────────────────── */
+
+.item-card {
+    -fx-background-color: #222222;
+    -fx-background-radius: 12;
+    -fx-padding: 14 16;
+    -fx-border-color: #2E2E2E;
+    -fx-border-width: 1;
+    -fx-border-radius: 12;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 6, 0, 0, 2);
+}
+
+.item-card:hover {
+    -fx-background-color: #282828;
+    -fx-border-color: #444444;
+}
+
+.item-card-name {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.item-card-price-field {
+    -fx-background-color: #1A1A1A;
+    -fx-background-radius: 8;
+    -fx-text-fill: #F0C667;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-padding: 8 12;
+    -fx-border-color: #333333;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+}
+
+.item-card-price-field:focused {
+    -fx-border-color: #F0C667;
+}
+
+.item-card-price {
+    -fx-text-fill: #F0C667;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.item-card-stock {
+    -fx-text-fill: #666666;
+    -fx-font-size: 12px;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.item-card-add {
+    -fx-background-color: #F0C667;
+    -fx-background-radius: 8;
+    -fx-text-fill: #141414;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-padding: 8 0;
+    -fx-cursor: hand;
+}
+
+.item-card-add:hover {
+    -fx-background-color: #FFD97A;
+}
+
+.item-card-add:pressed {
+    -fx-background-color: #D4AA4A;
+}
+
+/* ── CART PANEL ────────────────────────────────────────── */
+
+.cart-panel {
+    -fx-background-color: #141414;
+    -fx-border-color: #2A2A2A;
+    -fx-border-width: 0 0 0 1;
+}
+
+.cart-header {
+    -fx-border-color: #2A2A2A;
+    -fx-border-width: 0 0 1 0;
+}
+
+.cart-title {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.cart-badge {
+    -fx-background-color: #F0C667;
+    -fx-background-radius: 12;
+    -fx-text-fill: #141414;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-padding: 2 10;
+    -fx-min-width: 24;
     -fx-alignment: center;
 }
 
-.salecart-row-remove {
+.cart-scroll {
     -fx-background-color: transparent;
-    -fx-text-fill: #F0C667;
-    -fx-font-size: 16px;  /* antes 14px */
-    -fx-font-weight: bold;
-    -fx-cursor: hand;
 }
 
-.salecart-row-remove:hover {
-    -fx-background-color: rgba(255, 225, 107, 0.15);
-    -fx-text-fill: #FFD97A;
+.cart-scroll .viewport {
+    -fx-background-color: transparent;
 }
 
-.salecart-row-remove-all {
+.cart-items {
     -fx-background-color: transparent;
-    -fx-text-fill: #FF6B6B;
-    -fx-font-size: 16px;  /* antes 14px */
+    -fx-padding: 8 0;
+}
+
+.cart-empty {
+    -fx-text-fill: #444444;
+    -fx-font-size: 14px;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-padding: 32 0;
+    -fx-alignment: center;
+}
+
+/* Cart rows */
+.cart-row {
+    -fx-background-color: #1E1E1E;
+    -fx-background-radius: 10;
+    -fx-padding: 10 12;
+}
+
+.cart-row:hover {
+    -fx-background-color: #242424;
+}
+
+.cart-row-name {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 13px;
     -fx-font-weight: bold;
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
-    -fx-padding: 2 8;
+}
+
+.cart-row-sub {
+    -fx-text-fill: #666666;
+    -fx-font-size: 11px;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+/* Qty controls */
+.cart-qty-box {
+    -fx-background-color: #2A2A2A;
+    -fx-background-radius: 8;
+    -fx-padding: 0;
+}
+
+.cart-qty-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #F0C667;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 4 10;
+    -fx-cursor: hand;
+    -fx-background-radius: 8;
+}
+
+.cart-qty-btn:hover {
+    -fx-background-color: rgba(240, 198, 103, 0.1);
+}
+
+.cart-qty-label {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.cart-remove-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #555555;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-padding: 4 8;
     -fx-cursor: hand;
 }
 
-.salecart-row-remove-all:hover {
-    -fx-background-color: rgba(255, 107, 107, 0.15);
-    -fx-background-radius: 8;
+.cart-remove-btn:hover {
+    -fx-text-fill: #FF6B6B;
+}
+
+/* Cart footer */
+.cart-footer {
+    -fx-background-color: #141414;
+}
+
+.cart-sep {
+    -fx-background-color: #2A2A2A;
+}
+
+.cart-total-label {
+    -fx-text-fill: #888888;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.cart-total-value {
+    -fx-text-fill: #F0C667;
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+/* Confirm button */
+.sale-confirm-btn {
+    -fx-background-color: #F0C667;
+    -fx-background-radius: 10;
+    -fx-text-fill: #141414;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-cursor: hand;
+    -fx-pref-height: 48;
+}
+
+.sale-confirm-btn:hover {
+    -fx-background-color: #FFD97A;
+}
+
+.sale-confirm-btn:pressed {
+    -fx-background-color: #D4AA4A;
 }
 
 /* ==========================================================
@@ -302,7 +405,7 @@
 
 .sale-payment-section-title {
     -fx-text-fill: #FFFFFF;
-    -fx-font-size: 18px;  /* antes 16px */
+    -fx-font-size: 18px;
     -fx-font-weight: bold;
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 }
@@ -311,8 +414,8 @@
     -fx-background-color: #2A2A2A;
     -fx-background-radius: 10;
     -fx-text-fill: #FFFFFF;
-    -fx-font-size: 17px;  /* antes 15px */
-    -fx-pref-height: 42;  /* antes 40 */
+    -fx-font-size: 17px;
+    -fx-pref-height: 42;
     -fx-prompt-text-fill: #888888;
 }
 
@@ -330,7 +433,7 @@
     -fx-background-radius: 12;
     -fx-text-fill: #FFFFFF;
     -fx-font-weight: bold;
-    -fx-font-size: 20px;  /* antes 18px */
+    -fx-font-size: 20px;
     -fx-cursor: hand;
 }
 
@@ -342,7 +445,7 @@
     -fx-background-color: #2A2A2A;
     -fx-background-radius: 10;
     -fx-text-fill: #FFFFFF;
-    -fx-font-size: 16px;  /* antes 14px */
+    -fx-font-size: 16px;
     -fx-prompt-text-fill: #666666;
 }
 
@@ -352,13 +455,13 @@
 
 .sale-payment-label {
     -fx-text-fill: #CCCCCC;
-    -fx-font-size: 15px;  /* antes 13px */
+    -fx-font-size: 15px;
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 }
 
 .sale-payment-amount {
     -fx-text-fill: #F0C667;
-    -fx-font-size: 24px;  /* antes 20px */
+    -fx-font-size: 24px;
     -fx-font-weight: bold;
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 }
@@ -372,10 +475,10 @@
     -fx-background-radius: 12;
     -fx-text-fill: #CCCCCC;
     -fx-font-weight: bold;
-    -fx-font-size: 16px;  /* antes 14px */
+    -fx-font-size: 16px;
     -fx-cursor: hand;
     -fx-min-width: 160;
-    -fx-pref-height: 44;  /* antes 40 */
+    -fx-pref-height: 44;
 }
 
 .sale-payment-toggle:hover {
@@ -391,7 +494,7 @@
     -fx-background-color: #2A2A2A;
     -fx-background-radius: 10;
     -fx-text-fill: #FFFFFF;
-    -fx-font-size: 16px;  /* antes 14px */
+    -fx-font-size: 16px;
     -fx-prompt-text-fill: #888888;
     -fx-border-color: #F0C667;
     -fx-border-width: 2;
@@ -409,7 +512,7 @@
     -fx-background-color: #3A3A3A;
     -fx-background-radius: 12;
     -fx-text-fill: #FFFFFF;
-    -fx-font-size: 16px;  /* antes 14px */
+    -fx-font-size: 16px;
     -fx-font-weight: 600;
     -fx-cursor: hand;
 }
@@ -425,7 +528,7 @@
 .sale-payment-summary-ticket {
     -fx-background-color: #1A1A1A;
     -fx-background-radius: 12;
-    -fx-padding: 18;  /* antes 16 */
+    -fx-padding: 18;
     -fx-border-color: #3A3A3A;
     -fx-border-width: 1;
     -fx-border-radius: 12;
@@ -433,37 +536,33 @@
 
 .sale-payment-summary-row {
     -fx-background-color: transparent;
-    -fx-padding: 10 0;  /* antes 8 0 */
+    -fx-padding: 10 0;
     -fx-border-color: #2A2A2A;
     -fx-border-width: 0 0 1 0;
 }
 
-.sale-payment-summary-row:last-child {
-    -fx-border-width: 0;
-}
-
 .sale-payment-ticket-name {
     -fx-text-fill: #FFFFFF;
-    -fx-font-size: 15px;  /* antes 13px */
+    -fx-font-size: 15px;
     -fx-font-weight: 600;
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 }
 
 .sale-payment-ticket-qty {
     -fx-text-fill: #AAAAAA;
-    -fx-font-size: 15px;  /* antes 13px */
+    -fx-font-size: 15px;
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 }
 
 .sale-payment-ticket-price {
     -fx-text-fill: #F0C667;
-    -fx-font-size: 15px;  /* antes 13px */
+    -fx-font-size: 15px;
     -fx-font-weight: bold;
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 }
 
 /* ==========================================================
-   SALE RESULT VIEW - COMPROBANTE MODERNO
+   SALE RESULT VIEW
    ========================================================== */
 
 .sale-result-header {
@@ -474,20 +573,20 @@
 
 .sale-result-title {
     -fx-text-fill: #F0C667;
-    -fx-font-size: 28px;  /* antes 24px */
+    -fx-font-size: 28px;
     -fx-font-weight: bold;
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 }
 
 .sale-result-subtitle {
     -fx-text-fill: #AAAAAA;
-    -fx-font-size: 15px;  /* antes 13px */
+    -fx-font-size: 15px;
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 }
 
 .sale-result-number {
     -fx-text-fill: #F0C667;
-    -fx-font-size: 16px;  /* antes 14px */
+    -fx-font-size: 16px;
     -fx-font-weight: bold;
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 }
@@ -499,7 +598,7 @@
 .sale-result-section {
     -fx-background-color: #1A1A1A;
     -fx-background-radius: 12;
-    -fx-padding: 20;  /* antes 16 */
+    -fx-padding: 20;
     -fx-border-color: #2A2A2A;
     -fx-border-width: 1;
     -fx-border-radius: 12;
@@ -507,10 +606,9 @@
 
 .sale-result-section-title {
     -fx-text-fill: #FFFFFF;
-    -fx-font-size: 16px;  /* antes 14px */
+    -fx-font-size: 16px;
     -fx-font-weight: bold;
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
-    -fx-letter-spacing: 0.5px;
 }
 
 .sale-result-grid {
@@ -519,13 +617,13 @@
 
 .sale-result-label {
     -fx-text-fill: #AAAAAA;
-    -fx-font-size: 15px;  /* antes 13px */
+    -fx-font-size: 15px;
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 }
 
 .sale-result-value {
     -fx-text-fill: #FFFFFF;
-    -fx-font-size: 15px;  /* antes 13px */
+    -fx-font-size: 15px;
     -fx-font-weight: 600;
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 }
@@ -533,12 +631,12 @@
 .sale-result-table-header {
     -fx-background-color: #2A2A2A;
     -fx-background-radius: 8;
-    -fx-padding: 10 12;  /* antes 8 12 */
+    -fx-padding: 10 12;
 }
 
 .sale-result-th {
     -fx-text-fill: #CCCCCC;
-    -fx-font-size: 14px;  /* antes 12px */
+    -fx-font-size: 14px;
     -fx-font-weight: bold;
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 }
@@ -549,37 +647,33 @@
 
 .sale-result-item-row {
     -fx-background-color: transparent;
-    -fx-padding: 10 12;  /* antes 8 12 */
+    -fx-padding: 10 12;
     -fx-border-color: #2A2A2A;
     -fx-border-width: 0 0 1 0;
 }
 
-.sale-result-item-row:last-child {
-    -fx-border-width: 0;
-}
-
 .sale-result-item-name {
     -fx-text-fill: #FFFFFF;
-    -fx-font-size: 15px;  /* antes 13px */
+    -fx-font-size: 15px;
     -fx-font-weight: 600;
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 }
 
 .sale-result-item-qty {
     -fx-text-fill: #AAAAAA;
-    -fx-font-size: 15px;  /* antes 13px */
+    -fx-font-size: 15px;
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 }
 
 .sale-result-item-price {
     -fx-text-fill: #CCCCCC;
-    -fx-font-size: 15px;  /* antes 13px */
+    -fx-font-size: 15px;
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 }
 
 .sale-result-item-subtotal {
     -fx-text-fill: #F0C667;
-    -fx-font-size: 15px;  /* antes 13px */
+    -fx-font-size: 15px;
     -fx-font-weight: bold;
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 }
@@ -594,35 +688,34 @@
 
 .sale-result-total-label {
     -fx-text-fill: #FFFFFF;
-    -fx-font-size: 17px;  /* antes 15px */
+    -fx-font-size: 17px;
     -fx-font-weight: bold;
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 }
 
 .sale-result-total-value {
     -fx-text-fill: #F0C667;
-    -fx-font-size: 26px;  /* antes 22px */
+    -fx-font-size: 26px;
     -fx-font-weight: bold;
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 }
 
 .sale-result-words {
     -fx-text-fill: #AAAAAA;
-    -fx-font-size: 15px;  /* antes 13px */
+    -fx-font-size: 15px;
     -fx-font-weight: bold;
-    -fx-font-style: normal;
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
     -fx-padding: 8 0 0 0;
 }
 
 .sale-result-payment {
     -fx-text-fill: #F0C667;
-    -fx-font-size: 16px;  /* antes 14px */
+    -fx-font-size: 16px;
     -fx-font-weight: bold;
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
     -fx-background-color: #2A2A2A;
     -fx-background-radius: 8;
-    -fx-padding: 10 14;  /* antes 8 12 */
+    -fx-padding: 10 14;
 }
 
 .sale-result-footer {
@@ -631,141 +724,6 @@
     -fx-border-width: 2 0 0 0;
 }
 
-/* ==========================================================
-   SALES DASHBOARD - HORIZONTAL LAYOUT
-   ========================================================== */
-
-/* Header */
-.sale-header {
-    -fx-background-color: linear-gradient(to bottom, #232323, #2F2F2F);
-}
-
-/* Stats bar */
-.sale-stats {
-    -fx-background-color: #232323;
-    -fx-border-color: #3A3A3A;
-    -fx-border-width: 1 0 1 0;
-}
-
-.stat-card {
-    -fx-spacing: 4;
-}
-
-.stat-label {
-    -fx-text-fill: #888888;
-    -fx-font-size: 11px;
-    -fx-font-weight: bold;
-    -fx-letter-spacing: 1px;
-}
-
-.stat-value {
-    -fx-text-fill: #F0C667;
-    -fx-font-size: 20px;
-    -fx-font-weight: bold;
-}
-
-/* ==========================
-   RIGHT CART PANEL
-   ========================== */
-.sale-cart-panel {
-    -fx-background-color: #232323;
-    -fx-border-color: #3A3A3A;
-    -fx-border-width: 0 0 0 1;
-}
-
-.cart-title {
-    -fx-text-fill: #FFFFFF;
-    -fx-font-size: 18px;
-    -fx-font-weight: bold;
-    -fx-letter-spacing: 0.5px;
-}
-
-.cart-count {
-    -fx-text-fill: #888888;
-    -fx-font-size: 13px;
-    -fx-font-weight: 600;
-}
-
-.cart-scroll {
-    -fx-background-color: transparent;
-}
-
-.cart-scroll .viewport {
-    -fx-background-color: transparent;
-}
-
-.cart-items-container {
-    -fx-background-color: transparent;
-}
-
-.cart-separator {
-    -fx-background-color: #3A3A3A;
-}
-
-.cart-total-label {
-    -fx-text-fill: #AAAAAA;
-    -fx-font-size: 15px;
-    -fx-font-weight: bold;
-}
-
-.cart-total-value {
-    -fx-text-fill: #F0C667;
-    -fx-font-size: 28px;
-    -fx-font-weight: bold;
-}
-
-/* ==========================
-   CENTER ITEMS PANEL
-   ========================== */
-.sale-center-panel {
-    -fx-background-color: #2F2F2F;
-}
-
-.center-title {
-    -fx-text-fill: #FFFFFF;
-    -fx-font-size: 18px;
-    -fx-font-weight: bold;
-    -fx-letter-spacing: 0.5px;
-}
-
-.items-scroll {
-    -fx-background-color: transparent;
-}
-
-.items-scroll .viewport {
-    -fx-background-color: transparent;
-}
-
-.items-container {
-    -fx-background-color: transparent;
-}
-
-/* ==========================
-   CONFIRM BUTTON (actualizado)
-   ========================== */
-.sale-confirm-btn {
-    -fx-background-color: #F0C667;
-    -fx-background-radius: 12;
-    -fx-text-fill: #232323;
-    -fx-font-size: 18px;
-    -fx-font-weight: bold;
-    -fx-cursor: hand;
-    -fx-pref-height: 56;
-}
-
-.sale-confirm-btn:hover {
-    -fx-background-color: #FFD97A;
-}
-
-.sale-confirm-btn:pressed {
-    -fx-background-color: #D4AA4A;
-}
-.sale-payment-client-info {
-    -fx-text-fill: #AAAAAA;
-    -fx-font-size: 12px;
-    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
-    -fx-padding: 4 0 0 0;
-}
 /* ==========================================================
    CLIENT INFO DISPLAY
    ========================================================== */
@@ -792,72 +750,20 @@
     -fx-font-size: 13px;
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 }
-/* ========================================================
-   USER SELECTOR COMBOBOX - TOPBAR
-   ======================================================== */
 
-/* Label "Registrar a:" */
-.user-selector-label {
-    -fx-text-fill: #CCCCCC;
-    -fx-font-size: 14px;
-    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
-    -fx-font-weight: bold;
+/* Payment view reuses sale-root */
+.sale-center {
+    -fx-background-color: transparent;
 }
 
-/* ComboBox principal */
-.user-selector-combo {
-    -fx-background-color: #2A2A2A;
-    -fx-background-radius: 10;
-    -fx-text-fill: #FFFFFF;
-    -fx-font-size: 16px;
-    -fx-pref-height: 44;
-    -fx-border-color: #3A3A3A;
-    -fx-border-width: 1;
-    -fx-border-radius: 10;
-    -fx-min-width: 200;
-    -fx-pref-width: 200;
-    -fx-padding: 0 14;
-    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+.sale-cart {
+    -fx-background-color: #232323;
 }
 
-/* Focus - Borde amarillo */
-.user-selector-combo:focused {
-    -fx-border-color: #F0C667;
-    -fx-border-width: 2;
+.sale-scroll {
+    -fx-background-color: transparent;
 }
 
-/* Hover - Borde un poco más claro */
-.user-selector-combo:hover {
-    -fx-border-color: #4A4A4A;
-}
-
-/* ========== POPUP / DROPDOWN ========== */
-
-/* ListView del popup */
-.user-selector-combo .list-view {
-    -fx-background-color: #2A2A2A;
-    -fx-border-color: #3A3A3A;
-    -fx-border-width: 1;
-}
-
-/* Cada item en el dropdown */
-.user-selector-combo .list-cell {
-    -fx-background-color: #2A2A2A;
-    -fx-text-fill: #FFFFFF;
-    -fx-padding: 10 14;
-    -fx-font-size: 16px;
-    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
-}
-
-/* Hover sobre un item */
-.user-selector-combo .list-cell:hover {
-    -fx-background-color: #3A3A3A;
-    -fx-cursor: hand;
-}
-
-/* Item seleccionado */
-.user-selector-combo .list-cell:selected {
-    -fx-background-color: #2A2A2A;
-    -fx-text-fill: #FFFFFF;
-    -fx-font-weight: bold;
+.sale-scroll .viewport {
+    -fx-background-color: transparent;
 }

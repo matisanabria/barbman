@@ -1,23 +1,20 @@
-    package app.barbman.core.repositories.sales.services.serviceheader;
+package app.barbman.core.repositories.sales.services.serviceheader;
 
-    import app.barbman.core.model.sales.services.ServiceHeader;
-    import app.barbman.core.repositories.GenericRepository;
+import app.barbman.core.model.sales.services.ServiceHeader;
+import jakarta.persistence.EntityManager;
 
+import java.time.LocalDate;
+import java.util.List;
 
-    import java.sql.Connection;
-    import java.sql.SQLException;
-    import java.time.LocalDate;
+public interface ServiceHeaderRepository {
+    double sumServiceTotalsByUserAndDateRange(int barberId, LocalDate from, LocalDate to);
 
-    public interface ServiceHeaderRepository extends GenericRepository<ServiceHeader, Integer> {
-        double sumServiceTotalsByUserAndDateRange(int barberoId, LocalDate desde, LocalDate hasta);
+    void save(ServiceHeader s, EntityManager em);
+    void update(ServiceHeader s, EntityManager em);
+    void delete(Integer id, EntityManager em);
 
-        // Extended methods with shared connection
-        void save(ServiceHeader s, Connection conn) throws SQLException;
-        void update(ServiceHeader s, Connection conn) throws SQLException;
-        void delete(Integer id, Connection conn) throws SQLException;
+    ServiceHeader findBySaleId(int saleId);
 
-        /**
-         * Finds the service header for a given sale.
-         */
-        ServiceHeader findBySaleId(int saleId);
-    }
+    void delete(Integer id);
+    List<ServiceHeader> findAll();
+}

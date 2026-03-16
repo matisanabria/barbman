@@ -18,16 +18,13 @@ import app.barbman.core.util.NumberFormatterUtil;
 import app.barbman.core.util.SessionManager;
 import app.barbman.core.util.TextFormatterUtil;
 import app.barbman.core.util.window.EmbeddedViewLoader;
-import app.barbman.core.util.window.WindowManager;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.util.StringConverter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -40,54 +37,36 @@ public class SaleCreateViewController implements Initializable {
     private static final Logger logger =
             LogManager.getLogger(SaleCreateViewController.class);
 
-    // =========================
     // FXML
-    // =========================
-    @FXML
-    private VBox servicesListContainer;
-    @FXML
-    private VBox cartContainer;
-    @FXML
-    private Label totalLabel;
-    @FXML
-    private Button confirmButton;
-    @FXML
-    private ToggleButton servicesToggle;
-    @FXML
-    private ToggleButton productsToggle;
-    @FXML
-    private BorderPane rootPane;
-    @FXML
-    private Label saleCreateTitle;
-    @FXML
-    private ComboBox<User> userComboBox;
-
+    @FXML private FlowPane itemsGrid;
+    @FXML private VBox cartContainer;
+    @FXML private Label totalLabel;
+    @FXML private Button confirmButton;
+    @FXML private ToggleButton servicesToggle;
+    @FXML private ToggleButton productsToggle;
+    @FXML private Label saleCreateTitle;
+    @FXML private ComboBox<User> userComboBox;
+    @FXML private TextField searchField;
     @FXML private Label todayTotalLabel;
     @FXML private Label weekTotalLabel;
     @FXML private Label monthTotalLabel;
     @FXML private Label cartItemsCount;
 
-
-    // =========================
     // STATE
-    // =========================
     private SaleCartDTO cart;
     private Mode currentMode = Mode.SERVICES;
+    private List<ServiceDefinition> cachedServices = new ArrayList<>();
+    private List<Product> cachedProducts = new ArrayList<>();
 
-    private enum Mode {
-        SERVICES,
-        PRODUCTS
-    }
+    private enum Mode { SERVICES, PRODUCTS }
 
+    // SERVICES
     private final ServiceDefinitionsService serviceDefinitionsService =
             new ServiceDefinitionsService(new ServiceDefinitionRepositoryImpl());
-
     private final ProductService productService =
             new ProductService(new ProductRepositoryImpl());
-
     private final SalesService salesService =
             new SalesService(new SaleRepositoryImpl());
-
     private final UsersService usersService =
             new UsersService(new UsersRepositoryImpl());
 
@@ -102,132 +81,123 @@ public class SaleCreateViewController implements Initializable {
 
         setupUserSelector();
         setupToggle();
-        loadServices();
+        setupSearch();
+        cacheData();
+        loadCurrentMode();
         refreshCart();
         setupConfirmButton();
         updateStats();
-
-        Tooltip.install(saleCreateTitle, new Tooltip("Easter egg"));
     }
 
-    /**
-     * Carga el selector de usuarios desde el FXML.
-     * IMPORTANTE: El selectedUserId es el que se usa para toda la venta.
-     */
+    // ── User selector ──────────────────────────────────────────
+
     private void setupUserSelector() {
         try {
             List<User> users = usersService.getAllUsers();
             userComboBox.setItems(FXCollections.observableArrayList(users));
 
-            // Converter para mostrar solo el nombre del usuario
-            userComboBox.setConverter(new StringConverter<User>() {
+            userComboBox.setConverter(new StringConverter<>() {
                 @Override
-                public String toString(User user) {
-                    return user != null ? user.getName() : "";
-                }
-
+                public String toString(User u) { return u != null ? u.getName() : ""; }
                 @Override
-                public User fromString(String string) {
-                    // No se usa en este caso
-                    return null;
-                }
+                public User fromString(String s) { return null; }
             });
 
-            // Seleccionar el usuario actual por defecto
             User activeUser = SessionManager.getActiveUser();
             userComboBox.setValue(activeUser);
-
-            // SET: Toda la venta será a nombre de este usuario
             cart.setSelectedUserId(activeUser.getId());
 
-            // Listener: cuando cambia el usuario seleccionado
             userComboBox.valueProperty().addListener((obs, old, selected) -> {
                 if (selected != null) {
-                    // IMPORTANTE: Todo (Sale + ServiceHeader) a nombre del usuario seleccionado
                     cart.setSelectedUserId(selected.getId());
-                    logger.info("[SALE-CREATE] ✅ Venta registrada a: {} (ID: {})",
+                    logger.info("[SALE-CREATE] Registrar a: {} (ID: {})",
                             selected.getName(), selected.getId());
                 }
             });
-
         } catch (Exception e) {
             logger.error("[USER-SELECTOR] Error cargando usuarios", e);
             AlertUtil.showError("Error", "No se pudieron cargar los usuarios disponibles");
         }
     }
 
+    // ── Toggle & Search ────────────────────────────────────────
+
     private void setupToggle() {
         ToggleGroup group = new ToggleGroup();
         servicesToggle.setToggleGroup(group);
         productsToggle.setToggleGroup(group);
-
         servicesToggle.setSelected(true);
 
         group.selectedToggleProperty().addListener((obs, old, selected) -> {
-            if (selected == servicesToggle) {
-                currentMode = Mode.SERVICES;
-            } else if (selected == productsToggle) {
-                currentMode = Mode.PRODUCTS;
-            }
+            if (selected == servicesToggle) currentMode = Mode.SERVICES;
+            else if (selected == productsToggle) currentMode = Mode.PRODUCTS;
+            searchField.clear();
             loadCurrentMode();
+            searchField.requestFocus();
         });
     }
 
+    private void setupSearch() {
+        searchField.textProperty().addListener((obs, old, text) -> loadCurrentMode());
+    }
+
+    private void cacheData() {
+        cachedServices = serviceDefinitionsService.getAll().stream()
+                .filter(ServiceDefinition::isAvailable)
+                .toList();
+        cachedProducts = productService.getAll().stream()
+                .filter(p -> p.getStock() > 0)
+                .toList();
+    }
+
+    // ── Load items ─────────────────────────────────────────────
+
     private void loadCurrentMode() {
-        servicesListContainer.getChildren().clear();
+        itemsGrid.getChildren().clear();
+        String filter = searchField.getText();
 
         switch (currentMode) {
-            case SERVICES -> loadServices();
-            case PRODUCTS -> loadProducts();
+            case SERVICES -> cachedServices.stream()
+                    .filter(def -> matches(def.getName(), filter))
+                    .forEach(def -> itemsGrid.getChildren().add(buildServiceCard(def)));
+            case PRODUCTS -> cachedProducts.stream()
+                    .filter(p -> matches(p.getName(), filter))
+                    .forEach(p -> itemsGrid.getChildren().add(buildProductCard(p)));
         }
     }
 
-    private void loadServices() {
-        var services = serviceDefinitionsService.getAll();
-
-        // Filter: Only show available services
-        services.stream()
-                .filter(ServiceDefinition::isAvailable)
-                .forEach(def ->
-                        servicesListContainer.getChildren()
-                                .add(buildServiceCard(def))
-                );
+    private boolean matches(String name, String filter) {
+        return filter == null || filter.isBlank()
+                || name.toLowerCase().contains(filter.toLowerCase());
     }
 
-    private void loadProducts() {
-        var products = productService.getAll();
-
-        // Filter: Only show products with stock > 0
-        products.stream()
-                .filter(p -> p.getStock() > 0)
-                .forEach(p ->
-                        servicesListContainer.getChildren()
-                                .add(buildProductCard(p))
-                );
-    }
+    // ── Cart ───────────────────────────────────────────────────
 
     private void refreshCart() {
         cartContainer.getChildren().clear();
 
-        for (SaleCartItemDTO item : cart.getCartItems()) {
-            cartContainer.getChildren().add(buildCartRow(item));
+        if (cart.getCartItems().isEmpty()) {
+            Label empty = new Label("Carrito vacio");
+            empty.getStyleClass().add("cart-empty");
+            cartContainer.getChildren().add(empty);
+        } else {
+            for (SaleCartItemDTO item : cart.getCartItems()) {
+                cartContainer.getChildren().add(buildCartRow(item));
+            }
         }
 
-        totalLabel.setText(
-                NumberFormatterUtil.format(cart.getTotal()) + " Gs"
-        );
+        totalLabel.setText(NumberFormatterUtil.format(cart.getTotal()) + " Gs");
 
-        // Actualizar contador de ítems
-        int itemCount = cart.getCartItems().stream()
-                .mapToInt(SaleCartItemDTO::getQuantity)
-                .sum();
-        cartItemsCount.setText(itemCount + " ítem" + (itemCount != 1 ? "s" : ""));
+        int count = cart.getCartItems().stream()
+                .mapToInt(SaleCartItemDTO::getQuantity).sum();
+        cartItemsCount.setText(String.valueOf(count));
     }
 
     private void setupConfirmButton() {
         confirmButton.setOnAction(e -> {
             if (cart.getCartItems().isEmpty()) {
-                AlertUtil.showError("Carrito Vacío", "Agrega al menos un ítem al carrito antes de continuar.");
+                AlertUtil.showError("Carrito Vacio",
+                        "Agrega al menos un item al carrito antes de continuar.");
                 return;
             }
 
@@ -240,203 +210,160 @@ public class SaleCreateViewController implements Initializable {
                     "/app/barbman/core/style/embed-views/sales-view.css"
             );
 
-            logger.info("[SALE] Navegando a pantalla de pago con usuario seleccionado: {}",
-                    cart.getSelectedUserId());
+            logger.info("[SALE] Navegando a pago, usuario: {}", cart.getSelectedUserId());
         });
     }
 
-    // BUILD CARDS
-    private HBox buildServiceCard(ServiceDefinition def) {
+    // ── Build service card ─────────────────────────────────────
 
-        HBox card = new HBox(12);
-        card.setPadding(new Insets(8, 12, 8, 12));
-        card.getStyleClass().add("svc-card");
+    private VBox buildServiceCard(ServiceDefinition def) {
+        VBox card = new VBox(8);
+        card.getStyleClass().add("item-card");
+        card.setPrefWidth(220);
 
-        // Nombre
-        Label name = new Label(
-                TextFormatterUtil.capitalizeFirstLetter(def.getName())
-        );
-        name.getStyleClass().add("svc-card-name");
-        name.setPrefWidth(160);
+        Label name = new Label(TextFormatterUtil.capitalizeFirstLetter(def.getName()));
+        name.getStyleClass().add("item-card-name");
+        name.setWrapText(true);
 
-        // Precio editable
-        TextField priceField =
-                new TextField(NumberFormatterUtil.format(def.getBasePrice()));
-        priceField.getStyleClass().add("svc-card-price");
-        priceField.setPrefWidth(90);
+        TextField priceField = new TextField(NumberFormatterUtil.format(def.getBasePrice()));
+        priceField.getStyleClass().add("item-card-price-field");
 
-        // Formateo en vivo
         priceField.textProperty().addListener((obs, old, val) -> {
             if (val == null || val.isBlank()) return;
-
             String clean = val.replace(".", "").trim();
             if (!clean.matches("\\d+")) {
                 priceField.setText(old);
                 return;
             }
-
-            String formatted =
-                    NumberFormatterUtil.format(Double.parseDouble(clean));
+            String formatted = NumberFormatterUtil.format(Double.parseDouble(clean));
             priceField.setText(formatted);
             priceField.positionCaret(formatted.length());
         });
 
-        // Botón agregar
-        Button add = new Button("+");
-        add.getStyleClass().add("svc-card-add");
+        Button add = new Button("Agregar");
+        add.getStyleClass().add("item-card-add");
+        add.setMaxWidth(Double.MAX_VALUE);
 
         add.setOnAction(e -> {
             String clean = priceField.getText().replace(".", "").trim();
             if (!clean.matches("\\d+")) return;
-
             double price = Double.parseDouble(clean);
-
-            cart.addService(
-                    def.getId(),
-                    def.getName(),
-                    price
-            );
-
+            cart.addService(def.getId(), def.getName(), price);
             refreshCart();
         });
-        Tooltip.install(
-                add,
-                new Tooltip("Agregar ítem al carrito")
-        );
 
         card.getChildren().addAll(name, priceField, add);
         return card;
     }
 
-    private HBox buildProductCard(Product p) {
+    // ── Build product card ─────────────────────────────────────
 
-        HBox card = new HBox(12);
-        card.setPadding(new Insets(8, 12, 8, 12));
-        card.getStyleClass().add("svc-card");
+    private VBox buildProductCard(Product p) {
+        VBox card = new VBox(8);
+        card.getStyleClass().add("item-card");
+        card.setPrefWidth(220);
 
-        // Nombre
-        Label name = new Label(
-                TextFormatterUtil.capitalizeFirstLetter(p.getName())
-        );
-        name.getStyleClass().add("svc-card-name");
-        name.setPrefWidth(160);
+        Label name = new Label(TextFormatterUtil.capitalizeFirstLetter(p.getName()));
+        name.getStyleClass().add("item-card-name");
+        name.setWrapText(true);
 
-        // Precio fijo
-        Label price = new Label(
-                NumberFormatterUtil.format(p.getUnitPrice())
-        );
-        price.getStyleClass().add("svc-card-price-static");
-        price.setPrefWidth(80);
+        HBox meta = new HBox(8);
+        meta.setAlignment(Pos.CENTER_LEFT);
 
-        // Stock
+        Label price = new Label(NumberFormatterUtil.format(p.getUnitPrice()) + " Gs");
+        price.getStyleClass().add("item-card-price");
+
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
         Label stock = new Label("Stock: " + p.getStock());
-        stock.getStyleClass().add("svc-card-stock");
-        stock.setPrefWidth(80);
+        stock.getStyleClass().add("item-card-stock");
 
-        // Botón agregar
-        Button add = new Button("+");
-        add.getStyleClass().add("svc-card-add");
+        meta.getChildren().addAll(price, spacer, stock);
+
+        Button add = new Button("Agregar");
+        add.getStyleClass().add("item-card-add");
+        add.setMaxWidth(Double.MAX_VALUE);
 
         add.setOnAction(e -> {
             if (p.getStock() <= 0) {
-                new Alert(
-                        Alert.AlertType.ERROR,
-                        "No hay stock disponible"
-                ).show();
+                AlertUtil.showError("Sin stock", "No hay stock disponible");
                 return;
             }
-
-            cart.addProduct(
-                    p.getId(),
-                    p.getName(),
-                    p.getUnitPrice()
-            );
-
+            cart.addProduct(p.getId(), p.getName(), p.getUnitPrice());
             refreshCart();
         });
-        Tooltip.install(
-                add,
-                new Tooltip("Agregar ítem al carrito")
-        );
 
-        card.getChildren().addAll(name, price, stock, add);
+        card.getChildren().addAll(name, meta, add);
         return card;
     }
 
+    // ── Build cart row ─────────────────────────────────────────
+
     private HBox buildCartRow(SaleCartItemDTO item) {
+        HBox row = new HBox(0);
+        row.getStyleClass().add("cart-row");
+        row.setAlignment(Pos.CENTER_LEFT);
 
-        HBox row = new HBox(20);
-        row.setPadding(new Insets(8, 12, 8, 12));
-        row.getStyleClass().add("salecart-row");
+        VBox info = new VBox(2);
+        HBox.setHgrow(info, Priority.ALWAYS);
 
-        // Nombre
-        Label name = new Label(
-                TextFormatterUtil.capitalizeFirstLetter(item.getDisplayName())
+        Label name = new Label(TextFormatterUtil.capitalizeFirstLetter(item.getDisplayName()));
+        name.getStyleClass().add("cart-row-name");
+
+        Label sub = new Label(
+                NumberFormatterUtil.format(item.getUnitPrice()) + " x" + item.getQuantity()
+                        + "  =  " + NumberFormatterUtil.format(item.getItemTotal()) + " Gs"
         );
-        name.setPrefWidth(160);
-        name.getStyleClass().add("salecart-row-name");
+        sub.getStyleClass().add("cart-row-sub");
 
-        // Precio unitario
-        Label price = new Label(
-                NumberFormatterUtil.format(item.getUnitPrice())
-        );
-        price.setPrefWidth(80);
-        price.getStyleClass().add("salecart-row-price");
+        info.getChildren().addAll(name, sub);
 
-        // Cantidad
-        Label qty = new Label("x" + item.getQuantity());
-        qty.setPrefWidth(40);
-        qty.getStyleClass().add("salecart-row-qty");
+        // Quantity controls
+        Button minus = new Button("-");
+        minus.getStyleClass().add("cart-qty-btn");
+        minus.setOnAction(e -> { cart.removeSingleUnit(item); refreshCart(); });
 
-        // Quitar uno
-        Button removeOne = new Button("-");
-        removeOne.getStyleClass().add("salecart-row-remove");
-        removeOne.setOnAction(e -> {
-            cart.removeSingleUnit(item);
+        Label qty = new Label(String.valueOf(item.getQuantity()));
+        qty.getStyleClass().add("cart-qty-label");
+        qty.setMinWidth(28);
+        qty.setAlignment(Pos.CENTER);
+
+        Button plus = new Button("+");
+        plus.getStyleClass().add("cart-qty-btn");
+        plus.setOnAction(e -> {
+            if (item.getType() == SaleCartItemDTO.ItemType.PRODUCT) {
+                cart.addProduct(item.getReferenceId(), item.getDisplayName(), item.getUnitPrice());
+            } else {
+                cart.addService(item.getReferenceId(), item.getDisplayName(), item.getUnitPrice());
+            }
             refreshCart();
         });
-        Tooltip.install(
-                removeOne,
-                new Tooltip("Quitar un ítem")
-        );
 
-        // Quitar todos
-        Button removeAll = new Button("X");
-        removeAll.getStyleClass().add("salecart-row-remove-all");
-        removeAll.setOnAction(e -> {
-            cart.removeItem(item);
-            refreshCart();
-        });
-        Tooltip.install(
-                removeAll,
-                new Tooltip("Quitar todos los ítems")
-        );
+        HBox qtyBox = new HBox(0, minus, qty, plus);
+        qtyBox.setAlignment(Pos.CENTER);
+        qtyBox.getStyleClass().add("cart-qty-box");
 
-        row.getChildren().addAll(
-                name, price, qty, removeOne, removeAll
-        );
+        Button remove = new Button("X");
+        remove.getStyleClass().add("cart-remove-btn");
+        remove.setOnAction(e -> { cart.removeItem(item); refreshCart(); });
+
+        row.getChildren().addAll(info, qtyBox, remove);
         return row;
     }
 
+    // ── Stats ──────────────────────────────────────────────────
+
     private void updateStats() {
         try {
-            double todayTotal = salesService.getTodayTotal();
-            double weekTotal = salesService.getWeekTotal();
-            double monthTotal = salesService.getMonthTotal();
-
-            todayTotalLabel.setText(NumberFormatterUtil.format(todayTotal) + " Gs");
-            weekTotalLabel.setText(NumberFormatterUtil.format(weekTotal) + " Gs");
-            monthTotalLabel.setText(NumberFormatterUtil.format(monthTotal) + " Gs");
-
-            logger.debug("[STATS] Today: {}, Week: {}, Month: {}",
-                    todayTotal, weekTotal, monthTotal);
+            todayTotalLabel.setText(NumberFormatterUtil.format(salesService.getTodayTotal()) + " Gs");
+            weekTotalLabel.setText(NumberFormatterUtil.format(salesService.getWeekTotal()) + " Gs");
+            monthTotalLabel.setText(NumberFormatterUtil.format(salesService.getMonthTotal()) + " Gs");
         } catch (Exception e) {
             logger.error("[STATS] Error loading sales statistics", e);
-            // Mantener los valores en 0 si hay error
             todayTotalLabel.setText("0 Gs");
             weekTotalLabel.setText("0 Gs");
             monthTotalLabel.setText("0 Gs");
         }
     }
-
 }

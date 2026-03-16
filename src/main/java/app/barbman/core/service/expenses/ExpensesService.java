@@ -2,6 +2,7 @@ package app.barbman.core.service.expenses;
 
 import app.barbman.core.model.Expense;
 import app.barbman.core.model.cashbox.CashboxMovement;
+import app.barbman.core.model.cashbox.CashboxOpening;
 import app.barbman.core.repositories.cashbox.movement.CashboxMovementRepository;
 import app.barbman.core.repositories.cashbox.movement.CashboxMovementRepositoryImpl;
 import app.barbman.core.repositories.expense.ExpenseRepository;
@@ -17,10 +18,6 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Handles creation, validation, and registration of expense records.
- * Provides specific methods for salary, advance, and generic expenses.
- */
 public class ExpensesService {
 
     private static final Logger logger = LogManager.getLogger(ExpensesService.class);
@@ -29,23 +26,14 @@ public class ExpensesService {
     private final ExpenseRepository expenseRepo;
     private final CashboxMovementRepository movementRepo = new CashboxMovementRepositoryImpl();
     private final LegacyExpenseRepository legacyExpenseRepo;
+    private final CashboxService cashboxService;
 
-    public ExpensesService(
-            ExpenseRepository expenseRepo
-    ) {
+    public ExpensesService(ExpenseRepository expenseRepo, CashboxService cashboxService) {
         this.expenseRepo = expenseRepo;
         this.legacyExpenseRepo = new LegacyExpenseRepository();
+        this.cashboxService = cashboxService;
     }
 
-
-    /**
-     * Registers a general expense record.
-     *
-     * @param type Expense type (e.g., supply, purchase, tax, service, other)
-     * @param amount Expense amount (must be greater than zero)
-     * @param description Optional description (max length: 500)
-     * @param paymentMethodId Payment method ID (cash, transfer, etc.)
-     */
     public void registerExpense(String type, double amount, String description, int paymentMethodId, int userId) {
         if (type == null || type.isBlank()) {
             throw new IllegalArgumentException("Expense type must not be empty.");
@@ -59,87 +47,60 @@ public class ExpensesService {
 
         LocalDate today = LocalDate.now();
 
-        Expense expense = new Expense(description, amount, today, type, paymentMethodId);
+        Expense expense = Expense.builder()
+                .description(description)
+                .amount(amount)
+                .date(today)
+                .type(type)
+                .paymentMethodId(paymentMethodId)
+                .build();
         expenseRepo.save(expense);
 
-        movementRepo.save(new CashboxMovement(
-                "EXPENSE",
-                "OUT",
-                amount,
-                paymentMethodId,
-                "EXPENSE",
-                expense.getId(),
-                "Expense registered",
-                userId,
-                LocalDateTime.now()
-        ));
+        movementRepo.save(buildMovement("EXPENSE", "OUT", amount, paymentMethodId,
+                "EXPENSE", expense.getId(), "Expense registered", userId));
 
         logger.info("{} Expense registered -> type={}, amount={}, method={}, date={}, expenseID={}",
                 PREFIX, type, amount, paymentMethodId, today, expense.getId());
     }
 
-    /**
-     * Registers an expense record for an advance payment.
-     *
-     * @param userId User receiving the advance
-     * @param amount Advance amount
-     * @param paymentMethodId Payment method (cash, transfer, etc.)
-     * @return The Expense created and saved in the database
-     */
     public Expense registerAdvanceExpense(int userId, double amount, int paymentMethodId) {
         LocalDate date = LocalDate.now();
         String description = String.format("Advance | user_id: %d | date %s", userId, date);
 
-        Expense expense = new Expense(description, amount, date, "advance", paymentMethodId);
+        Expense expense = Expense.builder()
+                .description(description)
+                .amount(amount)
+                .date(date)
+                .type("advance")
+                .paymentMethodId(paymentMethodId)
+                .build();
         expenseRepo.save(expense);
 
         logger.info("{} Advance expense created -> user={}, amount={}, method={}, expenseID={}",
                 PREFIX, userId, amount, paymentMethodId, expense.getId());
 
-        movementRepo.save(new CashboxMovement(
-                "EXPENSE",
-                "OUT",
-                amount,
-                paymentMethodId,
-                "EXPENSE",
-                expense.getId(),
-                "Advance registered",
-                userId,
-                LocalDateTime.now()
-        ));
+        movementRepo.save(buildMovement("EXPENSE", "OUT", amount, paymentMethodId,
+                "EXPENSE", expense.getId(), "Advance registered", userId));
 
         return expense;
     }
 
-    /**
-     * Registers an expense record for a salary payment.
-     *
-     * @param userId User receiving the salary
-     * @param amount Salary amount
-     * @param paymentMethodId Payment method (cash, transfer, etc.)
-     * @return The Expense created and saved in the database
-     */
     public Expense registerSalaryExpense(int userId, double amount, int paymentMethodId) {
         LocalDate date = LocalDate.now();
-        String description = String.format(
-                "Salary | user_id: %d | date %s | method %d",
-                userId, date, paymentMethodId
-        );
+        String description = String.format("Salary | user_id: %d | date %s | method %d",
+                userId, date, paymentMethodId);
 
-        Expense expense = new Expense(description, amount, date, "salary", paymentMethodId);
+        Expense expense = Expense.builder()
+                .description(description)
+                .amount(amount)
+                .date(date)
+                .type("salary")
+                .paymentMethodId(paymentMethodId)
+                .build();
         expenseRepo.save(expense);
 
-        movementRepo.save(new CashboxMovement(
-                "EXPENSE",
-                "OUT",
-                amount,
-                paymentMethodId,
-                "EXPENSE",
-                expense.getId(),
-                "Salary registered",
-                userId,
-                LocalDateTime.now()
-        ));
+        movementRepo.save(buildMovement("EXPENSE", "OUT", amount, paymentMethodId,
+                "EXPENSE", expense.getId(), "Salary registered", userId));
 
         logger.info("{} Salary expense created -> user={}, amount={}, method={}, expenseID={}",
                 PREFIX, userId, amount, paymentMethodId, expense.getId());
@@ -147,119 +108,80 @@ public class ExpensesService {
         return expense;
     }
 
-    /**
-     * Logs internal repository-level errors or debugging info when needed.
-     * Currently serves as a placeholder for future filtering methods.
-     * TODO: Implement real database check to verify table existence and accessibility.
-     */
-    public void debugRepositoryStatus() {
-        logger.debug("{} Repository health check executed successfully.", PREFIX);
-    }
-
-    /**
-     * Fetch all expenses from the repository.
-     */
-    public List<Expense> findAll() {
-        try {
-            // 1. Datos Beta (primero en la lista)
-            List<Expense> legacyExpenses = legacyExpenseRepo.findAll();
-            // 2. Datos nuevos
-            List<Expense> currentExpenses = expenseRepo.findAll();
-
-            // 3. Mezcla
-            List<Expense> combined = new ArrayList<>(legacyExpenses);
-            combined.addAll(currentExpenses);
-
-            return combined;
-        } catch (Exception e) {
-            logger.error("{} Error retrieving expenses: {}", PREFIX, e.getMessage());
-            return List.of();
-        }
-    }
-    /**
-     * Delete an expense by ID.
-     * Also deletes related cashbox movements and any salary/advance via CASCADE.
-     */
     public void deleteExpense(int expenseId) {
         try {
             logger.warn("{} Deleting expense ID={}", PREFIX, expenseId);
-
-            // 1. Borrar movimientos de caja relacionados
-            logger.debug("{} [Using CashboxMovementRepository] Deleting movements for expense {}", PREFIX, expenseId);
             var movements = movementRepo.findByReference("EXPENSE", expenseId);
-
             for (var movement : movements) {
                 movementRepo.delete(movement.getId());
                 logger.debug("{} Deleted movement ID={}", PREFIX, movement.getId());
             }
-
             logger.info("{} Deleted {} cashbox movements for expense {}", PREFIX, movements.size(), expenseId);
-
-            // 2. Borrar el egreso (CASCADE borrará salary/advance si tiene expense_id)
             expenseRepo.delete(expenseId);
-
             logger.info("{} Expense deleted (movements + expense + related salary/advance)", PREFIX);
-
         } catch (Exception e) {
             logger.error("{} Error deleting expense ID {}: {}", PREFIX, expenseId, e.getMessage());
             throw new RuntimeException("Error deleting expense ID " + expenseId, e);
         }
     }
 
-    /**
-     * Returns total expenses amount for a specific payment method
-     * within a given date range.
-     */
-    public double getTotalForPaymentMethodInPeriod(
-            int paymentMethodId,
-            LocalDate start,
-            LocalDate end
-    ) {
-        return expenseRepo
-                .sumTotalByPaymentMethodAndPeriod(
-                        paymentMethodId, start, end
-                );
+    public List<Expense> findAll() {
+        try {
+            List<Expense> combined = new ArrayList<>(legacyExpenseRepo.findAll());
+            combined.addAll(expenseRepo.findAll());
+            return combined;
+        } catch (Exception e) {
+            logger.error("{} Error retrieving expenses: {}", PREFIX, e.getMessage());
+            return List.of();
+        }
     }
-    /**
-     * Get total expenses for today.
-     */
+
+    public double getTotalForPaymentMethodInPeriod(int paymentMethodId, LocalDate start, LocalDate end) {
+        return expenseRepo.sumTotalByPaymentMethodAndPeriod(paymentMethodId, start, end);
+    }
+
     public double getTodayTotal() {
         LocalDate today = LocalDate.now();
-        logger.info("{} Getting TODAY total for: {}", PREFIX, today);
-        double total = expenseRepo.sumTotalByPeriod(today, today);
-        logger.info("{} TODAY total = {}", PREFIX, total);
-        return total;
+        return expenseRepo.sumTotalByPeriod(today, today);
     }
 
-    /**
-     * Get total expenses for current week (Monday to Sunday).
-     */
     public double getWeekTotal() {
         LocalDate today = LocalDate.now();
-        LocalDate startOfWeek = today.with(TemporalAdjusters.previousOrSame(
-                java.time.DayOfWeek.MONDAY
-        ));
-        LocalDate endOfWeek = today.with(TemporalAdjusters.nextOrSame(
-                java.time.DayOfWeek.SUNDAY
-        ));
-
-        logger.info("{} Getting WEEK total [{} -> {}]", PREFIX, startOfWeek, endOfWeek);
-        double total = expenseRepo.sumTotalByPeriod(startOfWeek, endOfWeek);
-        logger.info("{} WEEK total = {}", PREFIX, total);
-        return total;
+        LocalDate startOfWeek = today.with(TemporalAdjusters.previousOrSame(java.time.DayOfWeek.MONDAY));
+        LocalDate endOfWeek = today.with(TemporalAdjusters.nextOrSame(java.time.DayOfWeek.SUNDAY));
+        return expenseRepo.sumTotalByPeriod(startOfWeek, endOfWeek);
     }
 
-    /**
-     * Get total expenses for current month.
-     */
     public double getMonthTotal() {
         LocalDate today = LocalDate.now();
         LocalDate startOfMonth = today.with(TemporalAdjusters.firstDayOfMonth());
         LocalDate endOfMonth = today.with(TemporalAdjusters.lastDayOfMonth());
+        return expenseRepo.sumTotalByPeriod(startOfMonth, endOfMonth);
+    }
 
-        logger.info("{} Getting MONTH total [{} -> {}]", PREFIX, startOfMonth, endOfMonth);
-        double total = expenseRepo.sumTotalByPeriod(startOfMonth, endOfMonth);
-        logger.info("{} MONTH total = {}", PREFIX, total);
-        return total;
+    public void debugRepositoryStatus() {
+        logger.debug("{} Repository health check executed successfully.", PREFIX);
+    }
+
+    private CashboxMovement buildMovement(String movementType, String direction, double amount,
+                                          Integer paymentMethodId, String refType, Integer refId,
+                                          String description, Integer userId) {
+        LocalDateTime now = LocalDateTime.now();
+        CashboxOpening currentOpening = cashboxService.getCurrentOpening();
+        Integer openingId = currentOpening != null ? currentOpening.getId() : null;
+
+        return CashboxMovement.builder()
+                .movementType(movementType)
+                .direction(direction)
+                .amount(amount)
+                .paymentMethodId(paymentMethodId)
+                .referenceType(refType)
+                .referenceId(refId)
+                .description(description)
+                .userId(userId)
+                .occurredAt(now)
+                .createdAt(now)
+                .openingId(openingId)
+                .build();
     }
 }

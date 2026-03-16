@@ -4,17 +4,11 @@ import app.barbman.core.model.cashbox.*;
 import app.barbman.core.repositories.cashbox.closure.CashboxClosureRepository;
 import app.barbman.core.repositories.cashbox.movement.CashboxMovementRepository;
 import app.barbman.core.repositories.cashbox.opening.CashboxOpeningRepository;
-import app.barbman.core.repositories.expense.ExpenseRepository;
-import app.barbman.core.repositories.expense.ExpenseRepositoryImpl;
-import app.barbman.core.repositories.sales.SaleRepository;
-import app.barbman.core.repositories.sales.SaleRepositoryImpl;
-import app.barbman.core.service.expenses.ExpensesService;
-import app.barbman.core.service.sales.SalesService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.time.*;
-import java.util.List;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class CashboxService {
 
@@ -25,99 +19,26 @@ public class CashboxService {
     private final CashboxClosureRepository closureRepo;
     private final CashboxMovementRepository movementRepo;
 
-    private final SaleRepository saleRepository = new SaleRepositoryImpl();
-    private final SalesService salesService = new SalesService(saleRepository);
-    private final ExpenseRepository expenseRepo = new ExpenseRepositoryImpl();
-
     public CashboxService(
             CashboxOpeningRepository openingRepo,
             CashboxClosureRepository closureRepo,
             CashboxMovementRepository movementRepo
-
     ) {
         this.openingRepo = openingRepo;
         this.closureRepo = closureRepo;
         this.movementRepo = movementRepo;
     }
 
-
-
     // ============================================================
-    // PERIOD HELPERS
+    // QUERY
     // ============================================================
 
-    public LocalDate getCurrentPeriodStart() {
-        LocalDate today = LocalDate.now();
-        return today.with(DayOfWeek.MONDAY);
+    public boolean isCashboxOpen() {
+        return openingRepo.hasOpenCashbox();
     }
 
-    public LocalDate getCurrentPeriodEnd() {
-        return getCurrentPeriodStart().plusDays(6);
-    }
-
-    // ============================================================
-    // OPENING
-    // ============================================================
-
-    public boolean isCurrentPeriodOpened() {
-        return openingRepo.existsForPeriod(getCurrentPeriodStart());
-    }
-
-    public void openCashbox(
-            double cashAmount,
-            double bankAmount,
-            Integer adminUserId,
-            String notes
-    ) {
-        autoCloseUnfinishedPeriods(adminUserId);
-        LocalDate periodStart = getCurrentPeriodStart();
-
-        if (openingRepo.existsForPeriod(periodStart)) {
-            throw new IllegalStateException("Cashbox is already opened for current period.");
-        }
-
-        CashboxOpening opening = new CashboxOpening(
-                periodStart,
-                LocalDateTime.now(),
-                adminUserId,
-                cashAmount,
-                bankAmount,
-                notes
-        );
-
-        openingRepo.save(opening);
-
-        // Log movements
-        if (cashAmount > 0) {
-            movementRepo.save(new CashboxMovement(
-                    "OPENING",
-                    "IN",
-                    cashAmount,
-                    null,
-                    "CASHBOX_OPENING",
-                    opening.getId(),
-                    "Initial cash opening",
-                    adminUserId,
-                    LocalDateTime.now()
-            ));
-        }
-
-        if (bankAmount > 0) {
-            movementRepo.save(new CashboxMovement(
-                    "OPENING",
-                    "IN",
-                    bankAmount,
-                    null,
-                    "CASHBOX_OPENING",
-                    opening.getId(),
-                    "Initial bank opening",
-                    adminUserId,
-                    LocalDateTime.now()
-            ));
-        }
-
-        logger.info("{} Cashbox opened for period {} (cash={}, bank={})",
-                PREFIX, periodStart, cashAmount, bankAmount);
+    public CashboxOpening getCurrentOpening() {
+        return openingRepo.findCurrentOpen();
     }
 
     // ============================================================
@@ -125,7 +46,7 @@ public class CashboxService {
     // ============================================================
 
     public void assertCashboxOpened() {
-        if (!isCurrentPeriodOpened()) {
+        if (!isCashboxOpen()) {
             throw new IllegalStateException(
                     "Cashbox is not opened for the current period."
             );
@@ -133,44 +54,90 @@ public class CashboxService {
     }
 
     // ============================================================
-    // CLOSURE
+    // OPENING
     // ============================================================
 
-    public CashboxClosure closeCurrentPeriod(
+    public void openCashbox(
+            double cashAmount,
+            double bankAmount,
             Integer adminUserId,
             String notes
     ) {
-        LocalDate periodStart = getCurrentPeriodStart();
-        LocalDate periodEnd = getCurrentPeriodEnd();
-
-        if (!openingRepo.existsForPeriod(periodStart)) {
-            throw new IllegalStateException("Cannot close cashbox without opening.");
+        if (isCashboxOpen()) {
+            throw new IllegalStateException("Cashbox is already open.");
         }
 
-        if (closureRepo.existsForPeriod(periodStart)) {
-            throw new IllegalStateException("Cashbox already closed for this period.");
+        LocalDateTime now = LocalDateTime.now();
+
+        CashboxOpening opening = CashboxOpening.builder()
+                .periodStartDate(now.toLocalDate())
+                .openedAt(now)
+                .openedByUserId(adminUserId)
+                .cashAmount(cashAmount)
+                .bankAmount(bankAmount)
+                .notes(notes)
+                .closed(false)
+                .build();
+
+        openingRepo.save(opening);
+
+        // Log opening movements with correct payment method IDs
+        if (cashAmount > 0) {
+            movementRepo.save(buildMovement("OPENING", "IN", cashAmount, 0,
+                    "CASHBOX_OPENING", opening.getId(), "Initial cash opening", adminUserId, opening.getId()));
         }
 
-        double expectedCash = calculateExpectedCash();
-        double expectedBank = calculateExpectedBank();
-        double expectedTotal = expectedCash + expectedBank;
+        if (bankAmount > 0) {
+            movementRepo.save(buildMovement("OPENING", "IN", bankAmount, 1,
+                    "CASHBOX_OPENING", opening.getId(), "Initial bank opening", adminUserId, opening.getId()));
+        }
 
+        logger.info("{} Cashbox opened (id={}, cash={}, bank={})",
+                PREFIX, opening.getId(), cashAmount, bankAmount);
+    }
 
-        CashboxClosure closure = new CashboxClosure(
-                periodStart,
-                periodEnd,
-                LocalDateTime.now(),
-                adminUserId,
-                expectedCash,
-                expectedBank,
-                expectedTotal,
-                notes
-        );
+    // ============================================================
+    // CLOSURE
+    // ============================================================
+
+    public CashboxClosure closeCashbox(
+            double actualCash,
+            double actualBank,
+            Integer adminUserId,
+            String notes
+    ) {
+        CashboxOpening opening = getCurrentOpening();
+        if (opening == null) {
+            throw new IllegalStateException("Cannot close cashbox: no open cashbox found.");
+        }
+
+        double expectedCash = getExpectedCash(opening.getId());
+        double expectedBank = getExpectedBank(opening.getId());
+
+        double cashDiscrepancy = actualCash - expectedCash;
+        double bankDiscrepancy = actualBank - expectedBank;
+
+        CashboxClosure closure = CashboxClosure.builder()
+                .openingId(opening.getId())
+                .closedAt(LocalDateTime.now())
+                .closedByUserId(adminUserId)
+                .expectedCash(expectedCash)
+                .expectedBank(expectedBank)
+                .actualCash(actualCash)
+                .actualBank(actualBank)
+                .cashDiscrepancy(cashDiscrepancy)
+                .bankDiscrepancy(bankDiscrepancy)
+                .notes(notes)
+                .build();
 
         closureRepo.save(closure);
 
-        logger.info("{} Cashbox closed for period {} (expected={})",
-                PREFIX, periodStart, expectedTotal);
+        // Mark opening as closed
+        opening.setClosed(true);
+        openingRepo.update(opening);
+
+        logger.info("{} Cashbox closed (openingId={}, expectedCash={}, expectedBank={}, actualCash={}, actualBank={})",
+                PREFIX, opening.getId(), expectedCash, expectedBank, actualCash, actualBank);
 
         return closure;
     }
@@ -180,119 +147,49 @@ public class CashboxService {
     }
 
     // ============================================================
-    // CALCULATIONS
+    // BALANCE CALCULATIONS (movement-based ledger)
     // ============================================================
 
-    private double calculateExpectedCash() {
-        LocalDate start = getCurrentPeriodStart();
-        LocalDate end = getCurrentPeriodEnd();
+    public double getExpectedCash(Integer openingId) {
+        CashboxOpening opening = openingRepo.findById(openingId);
+        if (opening == null) return 0;
 
-        double salesCash =
-                salesService.getTotalForPaymentMethodInPeriod(0, start, end);
+        double cashIn = movementRepo.sumByOpeningIdAndDirection(openingId, "IN", true);
+        double cashOut = movementRepo.sumByOpeningIdAndDirection(openingId, "OUT", true);
 
-        double expensesCash = expenseRepo.sumTotalByPaymentMethodAndPeriod(
-                        0, start, end
-                );
-
-        return salesCash - expensesCash;
+        return opening.getCashAmount() + cashIn - cashOut;
     }
 
-    private double calculateExpectedBank() {
-        LocalDate start = getCurrentPeriodStart();
-        LocalDate end = getCurrentPeriodEnd();
+    public double getExpectedBank(Integer openingId) {
+        CashboxOpening opening = openingRepo.findById(openingId);
+        if (opening == null) return 0;
 
-        double salesBank =
-                salesService.getTotalForPaymentMethodInPeriod(1, start, end)
-                        + salesService.getTotalForPaymentMethodInPeriod(2, start, end)
-                        + salesService.getTotalForPaymentMethodInPeriod(3, start, end);
+        double bankIn = movementRepo.sumByOpeningIdAndDirection(openingId, "IN", false);
+        double bankOut = movementRepo.sumByOpeningIdAndDirection(openingId, "OUT", false);
 
-        double expensesBank =
-                expenseRepo.sumTotalByPaymentMethodAndPeriod(1, start, end)
-                        + expenseRepo.sumTotalByPaymentMethodAndPeriod(2, start, end)
-                        + expenseRepo.sumTotalByPaymentMethodAndPeriod(3, start, end);
-
-        return salesBank - expensesBank;
+        return opening.getBankAmount() + bankIn - bankOut;
     }
 
     // ============================================================
-// AUTO-CLOSURE
-// ============================================================
+    // HELPERS
+    // ============================================================
 
-    /**
-     * Automatically closes any unfinished periods before opening a new one.
-     * This handles cases where admins forgot to close the cashbox.
-     */
-    private void autoCloseUnfinishedPeriods(Integer adminUserId) {
-        logger.info("{} Checking for unfinished periods...", PREFIX);
-
-        List<CashboxOpening> openings = openingRepo.findAll();
-        LocalDate currentPeriodStart = getCurrentPeriodStart();
-
-        for (CashboxOpening opening : openings) {
-            LocalDate periodStart = opening.getPeriodStartDate();
-
-            // Si no tiene cierre Y es de una semana anterior a la actual
-            if (!closureRepo.existsForPeriod(periodStart)
-                    && periodStart.isBefore(currentPeriodStart)) {
-
-                logger.warn("{} Auto-closing forgotten period: {}", PREFIX, periodStart);
-                autoClosePeriod(opening, adminUserId);
-            }
-        }
-    }
-
-    /**
-     * Performs automatic closure for a forgotten period.
-     */
-    private void autoClosePeriod(CashboxOpening opening, Integer adminUserId) {
-        LocalDate periodStart = opening.getPeriodStartDate();
-        LocalDate periodEnd = periodStart.plusDays(6); // Domingo
-
-        // Calcular montos esperados para ESE período específico
-        double expectedCash = calculateExpectedCashForPeriod(periodStart, periodEnd);
-        double expectedBank = calculateExpectedBankForPeriod(periodStart, periodEnd);
-        double expectedTotal = expectedCash + expectedBank;
-
-        CashboxClosure closure = new CashboxClosure(
-                periodStart,
-                periodEnd,
-                LocalDateTime.now(),
-                adminUserId,
-                expectedCash,
-                expectedBank,
-                expectedTotal,
-                "⚠️ Cierre automático - período olvidado"
-        );
-
-        closureRepo.save(closure);
-
-        logger.info("{} Auto-closed period {} with expected total: {}",
-                PREFIX, periodStart, expectedTotal);
-    }
-
-    /**
-     * Calculates expected cash for a specific period.
-     */
-    private double calculateExpectedCashForPeriod(LocalDate start, LocalDate end) {
-        double salesCash = salesService.getTotalForPaymentMethodInPeriod(0, start, end);
-        double expensesCash = expenseRepo.sumTotalByPaymentMethodAndPeriod(0, start, end);
-        return salesCash - expensesCash;
-    }
-
-    /**
-     * Calculates expected bank for a specific period.
-     */
-    private double calculateExpectedBankForPeriod(LocalDate start, LocalDate end) {
-        double salesBank =
-                salesService.getTotalForPaymentMethodInPeriod(1, start, end)
-                        + salesService.getTotalForPaymentMethodInPeriod(2, start, end)
-                        + salesService.getTotalForPaymentMethodInPeriod(3, start, end);
-
-        double expensesBank =
-                expenseRepo.sumTotalByPaymentMethodAndPeriod(1, start, end)
-                        + expenseRepo.sumTotalByPaymentMethodAndPeriod(2, start, end)
-                        + expenseRepo.sumTotalByPaymentMethodAndPeriod(3, start, end);
-
-        return salesBank - expensesBank;
+    private CashboxMovement buildMovement(String movementType, String direction, double amount,
+                                          Integer paymentMethodId, String refType, Integer refId,
+                                          String description, Integer userId, Integer openingId) {
+        LocalDateTime now = LocalDateTime.now();
+        return CashboxMovement.builder()
+                .movementType(movementType)
+                .direction(direction)
+                .amount(amount)
+                .paymentMethodId(paymentMethodId)
+                .referenceType(refType)
+                .referenceId(refId)
+                .description(description)
+                .userId(userId)
+                .occurredAt(now)
+                .createdAt(now)
+                .openingId(openingId)
+                .build();
     }
 }

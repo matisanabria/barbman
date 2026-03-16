@@ -5,19 +5,16 @@ import app.barbman.core.dto.salecart.SaleCartDTO;
 import app.barbman.core.dto.salecart.SaleCartItemDTO;
 import app.barbman.core.model.human.Client;
 import app.barbman.core.model.sales.Sale;
-import app.barbman.core.repositories.cashbox.movement.CashboxMovementRepository;
+import app.barbman.core.repositories.cashbox.closure.CashboxClosureRepositoryImpl;
 import app.barbman.core.repositories.cashbox.movement.CashboxMovementRepositoryImpl;
+import app.barbman.core.repositories.cashbox.opening.CashboxOpeningRepositoryImpl;
 import app.barbman.core.repositories.client.ClientRepositoryImpl;
-import app.barbman.core.repositories.sales.SaleRepository;
 import app.barbman.core.repositories.sales.SaleRepositoryImpl;
-import app.barbman.core.repositories.sales.products.productheader.ProductHeaderRepository;
 import app.barbman.core.repositories.sales.products.productheader.ProductHeaderRepositoryImpl;
-import app.barbman.core.repositories.sales.products.productsaleitem.ProductSaleItemRepository;
 import app.barbman.core.repositories.sales.products.productsaleitem.ProductSaleItemRepositoryImpl;
-import app.barbman.core.repositories.sales.services.serviceheader.ServiceHeaderRepository;
 import app.barbman.core.repositories.sales.services.serviceheader.ServiceHeaderRepositoryImpl;
-import app.barbman.core.repositories.sales.services.serviceitems.ServiceItemRepository;
 import app.barbman.core.repositories.sales.services.serviceitems.ServiceItemRepositoryImpl;
+import app.barbman.core.service.cashbox.CashboxService;
 import app.barbman.core.service.clients.ClientService;
 import app.barbman.core.service.sales.products.ProductHeaderService;
 import app.barbman.core.service.sales.products.ProductItemService;
@@ -28,23 +25,26 @@ import app.barbman.core.util.AlertUtil;
 import app.barbman.core.util.NumberFormatterUtil;
 import app.barbman.core.util.SessionManager;
 import app.barbman.core.util.window.EmbeddedViewLoader;
-import app.barbman.core.util.window.WindowManager;
-import app.barbman.core.util.window.WindowRequest;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Bounds;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
+import javafx.stage.Popup;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
@@ -57,7 +57,7 @@ public class SalePaymentViewController implements Initializable {
     // FXML COMPONENTS
     // ============================================================
 
-    @FXML private ComboBox<String> clientComboBox;
+    @FXML private TextField clientSearchField;
     @FXML private Button addClientButton;
     @FXML private TextArea noteArea;
     @FXML private Label clientInfoLabel;
@@ -93,7 +93,12 @@ public class SalePaymentViewController implements Initializable {
             new ServiceItemService(new ServiceItemRepositoryImpl()),
             new ProductHeaderService(new ProductHeaderRepositoryImpl()),
             new ProductItemService(new ProductSaleItemRepositoryImpl()),
-            new CashboxMovementRepositoryImpl()
+            new CashboxMovementRepositoryImpl(),
+            new CashboxService(
+                    new CashboxOpeningRepositoryImpl(),
+                    new CashboxClosureRepositoryImpl(),
+                    new CashboxMovementRepositoryImpl()
+            )
     );
 
     // ============================================================
@@ -101,7 +106,12 @@ public class SalePaymentViewController implements Initializable {
     // ============================================================
 
     private SaleCartDTO cart;
-    private Map<String, Integer> clientMap = new HashMap<>(); // nombre -> id
+    private Map<String, Integer> clientMap = new HashMap<>();
+    private List<String> allClientNames = new ArrayList<>();
+    private String selectedClientName = null;
+
+    private Popup clientPopup;
+    private ListView<String> clientListView;
 
 
     @Override
@@ -129,35 +139,151 @@ public class SalePaymentViewController implements Initializable {
 // =========================
 
     private void setupClientCombo() {
-        loadClientsIntoCombo();
+        loadClients();
+        buildClientPopup();
 
-        // Permitir busqueda por nombre
-        clientComboBox.setEditable(true);
+        // Filtrar al escribir
+        clientSearchField.textProperty().addListener((obs, old, text) -> {
+            if (text == null || text.isEmpty()) {
+                selectedClientName = null;
+                updateClientInfo(null);
+                clientListView.getItems().setAll(allClientNames);
+                showPopup();
+                return;
+            }
 
-        // Listener para mostrar info del cliente
-        clientComboBox.getSelectionModel().selectedItemProperty().addListener((obs, old, newValue) -> {
-            updateClientInfo(newValue);
+            // Si el texto coincide exactamente con el seleccionado, no re-filtrar
+            if (text.equals(selectedClientName)) {
+                return;
+            }
+
+            // Se está escribiendo → limpiar selección previa
+            selectedClientName = null;
+
+            String filter = text.toLowerCase();
+            List<String> filtered = allClientNames.stream()
+                    .filter(name -> name.toLowerCase().contains(filter))
+                    .toList();
+
+            clientListView.getItems().setAll(filtered);
+
+            if (!filtered.isEmpty()) {
+                showPopup();
+            } else {
+                clientPopup.hide();
+            }
+        });
+
+        // Enter selecciona el item resaltado en la lista
+        clientSearchField.setOnKeyPressed(e -> {
+            if (e.getCode() == javafx.scene.input.KeyCode.ENTER && clientPopup.isShowing()) {
+                String selected = clientListView.getSelectionModel().getSelectedItem();
+                if (selected == null && !clientListView.getItems().isEmpty()) {
+                    selected = clientListView.getItems().get(0);
+                }
+                if (selected != null) {
+                    selectedClientName = selected;
+                    clientSearchField.setText(selected);
+                    clientPopup.hide();
+                    updateClientInfo(selected);
+                }
+                e.consume();
+            } else if (e.getCode() == javafx.scene.input.KeyCode.DOWN && clientPopup.isShowing()) {
+                clientListView.requestFocus();
+                if (clientListView.getSelectionModel().getSelectedIndex() < 0) {
+                    clientListView.getSelectionModel().selectFirst();
+                }
+                e.consume();
+            } else if (e.getCode() == javafx.scene.input.KeyCode.ESCAPE) {
+                clientPopup.hide();
+                e.consume();
+            }
+        });
+
+        // Enter/Escape en la lista
+        clientListView.setOnKeyPressed(e -> {
+            if (e.getCode() == javafx.scene.input.KeyCode.ENTER) {
+                String selected = clientListView.getSelectionModel().getSelectedItem();
+                if (selected != null) {
+                    selectedClientName = selected;
+                    clientSearchField.setText(selected);
+                    clientPopup.hide();
+                    updateClientInfo(selected);
+                }
+                e.consume();
+            } else if (e.getCode() == javafx.scene.input.KeyCode.ESCAPE) {
+                clientPopup.hide();
+                clientSearchField.requestFocus();
+                e.consume();
+            }
+        });
+
+        // Mostrar popup al enfocar
+        clientSearchField.focusedProperty().addListener((obs, wasFocused, isFocused) -> {
+            if (isFocused) {
+                if (clientListView.getItems().isEmpty()) {
+                    clientListView.getItems().setAll(allClientNames);
+                }
+                showPopup();
+            } else {
+                clientPopup.hide();
+            }
         });
 
         addClientButton.setOnAction(e -> openQuickAddClientModal());
     }
 
-    private void loadClientsIntoCombo() {
-        clientComboBox.getItems().clear();
-        clientMap.clear();
+    private void buildClientPopup() {
+        clientListView = new ListView<>();
+        clientListView.setPrefWidth(400);
+        clientListView.setPrefHeight(200);
+        clientListView.getStyleClass().add("sale-payment-combo-list");
 
-        clientComboBox.getItems().add("Ninguno");
+        clientListView.setOnMouseClicked(e -> {
+            String selected = clientListView.getSelectionModel().getSelectedItem();
+            if (selected != null) {
+                selectedClientName = selected;
+                clientSearchField.setText(selected);
+                clientPopup.hide();
+                updateClientInfo(selected);
+            }
+        });
+
+        clientPopup = new Popup();
+        clientPopup.setAutoHide(true);
+        clientPopup.getContent().add(clientListView);
+    }
+
+    private void showPopup() {
+        if (!clientSearchField.isVisible() || clientSearchField.getScene() == null) {
+            return;
+        }
+        Bounds bounds = clientSearchField.localToScreen(clientSearchField.getBoundsInLocal());
+        if (bounds == null) return;
+        clientPopup.show(
+                clientSearchField,
+                bounds.getMinX(),
+                bounds.getMaxY()
+        );
+    }
+
+    private void loadClients() {
+        clientMap.clear();
+        allClientNames.clear();
+
+        allClientNames.add("Ninguno");
         clientMap.put("Ninguno", null);
 
-        // Cargar clientes activos
         clientService.findAll().stream()
                 .filter(Client::isActive)
+                .sorted(Comparator.comparing(Client::getName, String.CASE_INSENSITIVE_ORDER))
                 .forEach(client -> {
-                    clientComboBox.getItems().add(client.getName());
+                    allClientNames.add(client.getName());
                     clientMap.put(client.getName(), client.getId());
                 });
 
-        clientComboBox.getSelectionModel().selectFirst();
+        selectedClientName = null;
+        clientSearchField.clear();
     }
 
     private void openQuickAddClientModal() {
@@ -175,17 +301,19 @@ public class SalePaymentViewController implements Initializable {
             controller.setOnClientCreated(createdClient -> {
                 logger.info("[SALE-PAYMENT] Client created via callback: {}", createdClient.getName());
 
-                // Reload combo
-                loadClientsIntoCombo();
+                // Reload clients
+                loadClients();
 
                 // Select the new client
-                clientComboBox.getSelectionModel().select(createdClient.getName());
+                selectedClientName = createdClient.getName();
+                clientSearchField.setText(createdClient.getName());
+                updateClientInfo(createdClient.getName());
             });
 
             // Open modal manually
             Stage modalStage = new Stage();
             modalStage.initModality(Modality.APPLICATION_MODAL);
-            modalStage.initOwner((Stage) clientComboBox.getScene().getWindow());
+            modalStage.initOwner((Stage) clientSearchField.getScene().getWindow());
             modalStage.setTitle("Agregar Cliente");
             modalStage.setResizable(false);
 
@@ -346,11 +474,10 @@ public class SalePaymentViewController implements Initializable {
         throw new IllegalStateException("No payment method selected");
     }
     private Integer getSelectedClientId() {
-        String selectedName = clientComboBox.getSelectionModel().getSelectedItem();
-        if (selectedName == null || "Ninguno".equals(selectedName)) {
+        if (selectedClientName == null || "Ninguno".equals(selectedClientName)) {
             return null;
         }
-        return clientMap.get(selectedName);
+        return clientMap.get(selectedClientName);
     }
     private boolean isPaymentValid() {
 
@@ -412,7 +539,7 @@ public class SalePaymentViewController implements Initializable {
         confirmButton.setOnAction(e -> {
             logger.info("[SALE-PAYMENT] Confirm payment pressed");
             logger.info("Payment method selected");
-            logger.info("Client: {}", clientComboBox.getValue());
+            logger.info("Client: {}", selectedClientName);
             logger.info("Note: {}", noteArea.getText());
 
             if (!isPaymentValid()) return;

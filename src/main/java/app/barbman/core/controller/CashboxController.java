@@ -2,11 +2,15 @@ package app.barbman.core.controller;
 
 import app.barbman.core.controller.cashbox.CashboxClosureController;
 import app.barbman.core.dto.CashboxReportDTO;
+import app.barbman.core.model.cashbox.CashboxOpening;
+import app.barbman.core.repositories.cashbox.closure.CashboxClosureRepositoryImpl;
 import app.barbman.core.repositories.cashbox.movement.CashboxMovementRepositoryImpl;
 import app.barbman.core.repositories.cashbox.opening.CashboxOpeningRepositoryImpl;
+import app.barbman.core.repositories.sales.products.productheader.ProductHeaderRepositoryImpl;
 import app.barbman.core.repositories.sales.services.serviceheader.ServiceHeaderRepositoryImpl;
 import app.barbman.core.repositories.users.UsersRepositoryImpl;
 import app.barbman.core.service.cashbox.CashboxReportService;
+import app.barbman.core.service.cashbox.CashboxService;
 import app.barbman.core.util.NumberFormatterUtil;
 import app.barbman.core.util.window.WindowManager;
 import app.barbman.core.util.window.WindowRequest;
@@ -30,7 +34,7 @@ import java.util.stream.Collectors;
 
 /**
  * Controller for the cashbox dashboard.
- * Displays daily, weekly, and monthly reports.
+ * Displays live balances for current period + daily, weekly, and monthly reports.
  */
 public class CashboxController implements Initializable {
 
@@ -44,6 +48,16 @@ public class CashboxController implements Initializable {
     // ============================================================
 
     private final CashboxReportService reportService;
+    private final CashboxService cashboxService;
+
+    // ============================================================
+    // FXML - LIVE BALANCE
+    // ============================================================
+
+    @FXML private Label lblLiveOpenedSince;
+    @FXML private Label lblLiveCash;
+    @FXML private Label lblLiveBank;
+    @FXML private Label lblLiveTotal;
 
     // ============================================================
     // FXML - DIARIO
@@ -95,11 +109,17 @@ public class CashboxController implements Initializable {
     // ============================================================
 
     public CashboxController() {
+        var openingRepo = new CashboxOpeningRepositoryImpl();
+        var closureRepo = new CashboxClosureRepositoryImpl();
+        var movementRepo = new CashboxMovementRepositoryImpl();
+
+        this.cashboxService = new CashboxService(openingRepo, closureRepo, movementRepo);
         this.reportService = new CashboxReportService(
-                new CashboxMovementRepositoryImpl(),
+                movementRepo,
                 new ServiceHeaderRepositoryImpl(),
+                new ProductHeaderRepositoryImpl(),
                 new UsersRepositoryImpl(),
-                new CashboxOpeningRepositoryImpl()  // 👈 NUEVO
+                openingRepo
         );
     }
 
@@ -111,16 +131,38 @@ public class CashboxController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         logger.info("{} Initializing cashbox dashboard", PREFIX);
 
-        // Setup daily
+        refreshLiveBalance();
         setupDailyReport();
-
-        // Setup weekly
         setupWeeklyReport();
-
-        // Setup monthly
         setupMonthlyReport();
 
         logger.info("{} Dashboard initialized", PREFIX);
+    }
+
+    // ============================================================
+    // LIVE BALANCE
+    // ============================================================
+
+    private void refreshLiveBalance() {
+        CashboxOpening opening = cashboxService.getCurrentOpening();
+        if (opening == null) {
+            lblLiveOpenedSince.setText("Sin caja abierta");
+            lblLiveCash.setText("0 Gs");
+            lblLiveBank.setText("0 Gs");
+            lblLiveTotal.setText("0 Gs");
+            return;
+        }
+
+        lblLiveOpenedSince.setText("Abierta desde: " +
+                opening.getOpenedAt().format(DateTimeFormatter.ofPattern("dd/MM HH:mm")));
+
+        double cash = cashboxService.getExpectedCash(opening.getId());
+        double bank = cashboxService.getExpectedBank(opening.getId());
+        double total = cash + bank;
+
+        lblLiveCash.setText(NumberFormatterUtil.format(cash) + " Gs");
+        lblLiveBank.setText(NumberFormatterUtil.format(bank) + " Gs");
+        lblLiveTotal.setText(NumberFormatterUtil.format(total) + " Gs");
     }
 
     // ============================================================
@@ -128,7 +170,6 @@ public class CashboxController implements Initializable {
     // ============================================================
 
     private void setupDailyReport() {
-        // Load available dates
         List<LocalDate> dates = getAvailableDates();
 
         if (dates.isEmpty()) {
@@ -142,7 +183,6 @@ public class CashboxController implements Initializable {
 
         choiceFechas.setItems(FXCollections.observableArrayList(dateStrings));
 
-        // Listener
         choiceFechas.getSelectionModel().selectedItemProperty().addListener((obs, old, newVal) -> {
             if (newVal != null) {
                 LocalDate date = LocalDate.parse(newVal, DATE_FORMATTER);
@@ -150,7 +190,6 @@ public class CashboxController implements Initializable {
             }
         });
 
-        // Select today or latest
         LocalDate today = LocalDate.now();
         String todayStr = today.format(DATE_FORMATTER);
 
@@ -165,7 +204,7 @@ public class CashboxController implements Initializable {
         try {
             CashboxReportDTO report = reportService.getDailyReport(date);
 
-            lblFechaDiaria.setText("📅 " + date.format(DATE_FORMATTER));
+            lblFechaDiaria.setText(date.format(DATE_FORMATTER));
 
             lblCashInDiaria.setText("+ " + NumberFormatterUtil.format(report.getCashIn()) + " Gs");
             lblCashOutDiaria.setText("- " + NumberFormatterUtil.format(report.getCashOut()) + " Gs");
@@ -177,10 +216,7 @@ public class CashboxController implements Initializable {
 
             lblTotalBalanceDiaria.setText(NumberFormatterUtil.format(report.getTotalBalance()) + " Gs");
 
-            // Production
             showProduction(boxProduccionDiaria, report);
-
-            logger.info("{} Daily report shown for {}", PREFIX, date);
 
         } catch (Exception e) {
             logger.error("{} Error showing daily report", PREFIX, e);
@@ -188,7 +224,7 @@ public class CashboxController implements Initializable {
     }
 
     private void showNoDailyData() {
-        lblFechaDiaria.setText("⚠ No hay registros");
+        lblFechaDiaria.setText("No hay registros");
         choiceFechas.setDisable(true);
     }
 
@@ -207,24 +243,22 @@ public class CashboxController implements Initializable {
         List<String> weekStrings = weekStarts.stream()
                 .map(start -> {
                     LocalDate end = start.plusDays(6);
-                    return start.format(DATE_FORMATTER) + " → " + end.format(DATE_FORMATTER);
+                    return start.format(DATE_FORMATTER) + " -> " + end.format(DATE_FORMATTER);
                 })
                 .collect(Collectors.toList());
 
         choiceSemanas.setItems(FXCollections.observableArrayList(weekStrings));
 
-        // Listener
         choiceSemanas.getSelectionModel().selectedItemProperty().addListener((obs, old, newVal) -> {
             if (newVal != null) {
-                String[] parts = newVal.split(" → ");
+                String[] parts = newVal.split(" -> ");
                 LocalDate start = LocalDate.parse(parts[0].trim(), DATE_FORMATTER);
                 showWeeklyReport(start);
             }
         });
 
-        // Select current week or latest
         LocalDate currentWeekStart = LocalDate.now().with(DayOfWeek.MONDAY);
-        String currentWeekStr = currentWeekStart.format(DATE_FORMATTER) + " → " +
+        String currentWeekStr = currentWeekStart.format(DATE_FORMATTER) + " -> " +
                 currentWeekStart.plusDays(6).format(DATE_FORMATTER);
 
         if (weekStrings.contains(currentWeekStr)) {
@@ -239,7 +273,7 @@ public class CashboxController implements Initializable {
             CashboxReportDTO report = reportService.getWeeklyReport(weekStart);
 
             LocalDate weekEnd = weekStart.plusDays(6);
-            lblSemana.setText("📊 " + weekStart.format(DATE_FORMATTER) + " → " + weekEnd.format(DATE_FORMATTER));
+            lblSemana.setText(weekStart.format(DATE_FORMATTER) + " -> " + weekEnd.format(DATE_FORMATTER));
 
             lblCashInSemanal.setText("+ " + NumberFormatterUtil.format(report.getCashIn()) + " Gs");
             lblCashOutSemanal.setText("- " + NumberFormatterUtil.format(report.getCashOut()) + " Gs");
@@ -251,10 +285,7 @@ public class CashboxController implements Initializable {
 
             lblTotalBalanceSemanal.setText(NumberFormatterUtil.format(report.getTotalBalance()) + " Gs");
 
-            // Production
             showProduction(boxProduccionSemanal, report);
-
-            logger.info("{} Weekly report shown for {}", PREFIX, weekStart);
 
         } catch (Exception e) {
             logger.error("{} Error showing weekly report", PREFIX, e);
@@ -262,7 +293,7 @@ public class CashboxController implements Initializable {
     }
 
     private void showNoWeeklyData() {
-        lblSemana.setText("⚠ No hay registros");
+        lblSemana.setText("No hay registros");
         choiceSemanas.setDisable(true);
     }
 
@@ -284,7 +315,6 @@ public class CashboxController implements Initializable {
 
         choiceMeses.setItems(FXCollections.observableArrayList(monthStrings));
 
-        // Listener
         choiceMeses.getSelectionModel().selectedItemProperty().addListener((obs, old, newVal) -> {
             if (newVal != null) {
                 YearMonth month = YearMonth.parse(newVal, MONTH_FORMATTER);
@@ -292,7 +322,6 @@ public class CashboxController implements Initializable {
             }
         });
 
-        // Select current month or latest
         YearMonth currentMonth = YearMonth.now();
         String currentMonthStr = currentMonth.format(MONTH_FORMATTER);
 
@@ -307,7 +336,7 @@ public class CashboxController implements Initializable {
         try {
             CashboxReportDTO report = reportService.getMonthlyReport(month);
 
-            lblMes.setText("📈 " + month.format(MONTH_FORMATTER));
+            lblMes.setText(month.format(MONTH_FORMATTER));
 
             lblCashInMensual.setText("+ " + NumberFormatterUtil.format(report.getCashIn()) + " Gs");
             lblCashOutMensual.setText("- " + NumberFormatterUtil.format(report.getCashOut()) + " Gs");
@@ -319,10 +348,7 @@ public class CashboxController implements Initializable {
 
             lblTotalBalanceMensual.setText(NumberFormatterUtil.format(report.getTotalBalance()) + " Gs");
 
-            // Production
             showProduction(boxProduccionMensual, report);
-
-            logger.info("{} Monthly report shown for {}", PREFIX, month);
 
         } catch (Exception e) {
             logger.error("{} Error showing monthly report", PREFIX, e);
@@ -330,7 +356,7 @@ public class CashboxController implements Initializable {
     }
 
     private void showNoMonthlyData() {
-        lblMes.setText("⚠ No hay registros");
+        lblMes.setText("No hay registros");
         choiceMeses.setDisable(true);
     }
 
@@ -342,13 +368,12 @@ public class CashboxController implements Initializable {
         container.getChildren().clear();
 
         if (report.getProductionByUser().isEmpty()) {
-            Label lbl = new Label("No hay producción registrada");
+            Label lbl = new Label("No hay produccion registrada");
             lbl.getStyleClass().add("caja-production-item");
             container.getChildren().add(lbl);
             return;
         }
 
-        // Sort by production (descending)
         report.getProductionByUser().entrySet().stream()
                 .sorted((a, b) -> Double.compare(b.getValue(), a.getValue()))
                 .forEach(entry -> {
@@ -356,7 +381,7 @@ public class CashboxController implements Initializable {
                     double production = entry.getValue();
                     String userName = report.getUserNames().getOrDefault(userId, "Usuario " + userId);
 
-                    Label lbl = new Label("• " + userName + ": " + NumberFormatterUtil.format(production) + " Gs");
+                    Label lbl = new Label(userName + ": " + NumberFormatterUtil.format(production) + " Gs");
                     lbl.getStyleClass().add("caja-production-item");
                     container.getChildren().add(lbl);
                 });
@@ -367,7 +392,6 @@ public class CashboxController implements Initializable {
     // ============================================================
 
     private List<LocalDate> getAvailableDates() {
-        // Get all unique dates from movements
         var movementRepo = new CashboxMovementRepositoryImpl();
         var movements = movementRepo.findAll();
 
@@ -436,7 +460,10 @@ public class CashboxController implements Initializable {
             );
 
             if (controller != null) {
-                controller.setOnClosureSuccess(this::refreshAllReports);
+                controller.setOnClosureSuccess(() -> {
+                    refreshLiveBalance();
+                    refreshAllReports();
+                });
             }
 
         } catch (Exception e) {
@@ -447,14 +474,13 @@ public class CashboxController implements Initializable {
     private void refreshAllReports() {
         logger.info("{} Refreshing all reports after closure", PREFIX);
 
-        // Refresh selected reports
         if (choiceFechas.getValue() != null) {
             LocalDate date = LocalDate.parse(choiceFechas.getValue(), DATE_FORMATTER);
             showDailyReport(date);
         }
 
         if (choiceSemanas.getValue() != null) {
-            String[] parts = choiceSemanas.getValue().split(" → ");
+            String[] parts = choiceSemanas.getValue().split(" -> ");
             LocalDate start = LocalDate.parse(parts[0].trim(), DATE_FORMATTER);
             showWeeklyReport(start);
         }

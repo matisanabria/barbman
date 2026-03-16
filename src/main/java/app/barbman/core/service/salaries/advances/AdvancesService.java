@@ -26,7 +26,12 @@ public class AdvancesService {
     private final AdvanceRepository advanceRepo = new AdvanceRepositoryImpl();
     private final ExpenseRepository expenseRepository = new ExpenseRepositoryImpl();
 
-    private final ExpensesService expenseService = new ExpensesService(expenseRepository);
+    private final ExpensesService expenseService = new ExpensesService(expenseRepository,
+            new app.barbman.core.service.cashbox.CashboxService(
+                    new app.barbman.core.repositories.cashbox.opening.CashboxOpeningRepositoryImpl(),
+                    new app.barbman.core.repositories.cashbox.closure.CashboxClosureRepositoryImpl(),
+                    new app.barbman.core.repositories.cashbox.movement.CashboxMovementRepositoryImpl()
+            ));
 
     /**
      * Registers a new advance for a specific user and automatically creates
@@ -43,7 +48,14 @@ public class AdvancesService {
         Expense expense = expenseService.registerAdvanceExpense(userId, amount, paymentMethodId);
 
         // Link advance to the expense
-        Advance advance = new Advance(userId, amount, date, paymentMethodId, expense.getId(), description);
+        Advance advance = Advance.builder()
+                .userId(userId)
+                .amount(amount)
+                .date(date)
+                .paymentMethodId(paymentMethodId)
+                .expenseId(expense.getId())
+                .description(description)
+                .build();
         advanceRepo.save(advance);
 
         logger.info("{} Advance registered -> user={}, amount={}, method={}, expenseID={}",

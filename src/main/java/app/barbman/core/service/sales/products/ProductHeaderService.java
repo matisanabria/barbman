@@ -4,11 +4,9 @@ import app.barbman.core.dto.salecart.SaleCartDTO;
 import app.barbman.core.dto.salecart.SaleCartItemDTO;
 import app.barbman.core.model.sales.products.ProductHeader;
 import app.barbman.core.repositories.sales.products.productheader.ProductHeaderRepository;
+import jakarta.persistence.EntityManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.sql.Connection;
-import java.sql.SQLException;
 
 public class ProductHeaderService {
 
@@ -21,40 +19,24 @@ public class ProductHeaderService {
         this.productHeaderRepository = productHeaderRepository;
     }
 
-    /**
-     * Creates and persists a ProductHeader based on the current cart.
-     * Only PRODUCT items are considered.
-     */
-    public ProductHeader createFromCart(
-            SaleCartDTO cart,
-            int saleId,
-            Connection conn
-    ) throws SQLException {
-
+    public ProductHeader createFromCart(SaleCartDTO cart, int saleId, EntityManager em) {
         double subtotal = calculateProductsSubtotal(cart);
 
-        // No products in cart → skip header
         if (subtotal <= 0) {
             logger.debug("{} No product items found. Skipping ProductHeader.", PREFIX);
             return null;
         }
 
-        ProductHeader header = new ProductHeader(
-                saleId,
-                subtotal
-        );
+        ProductHeader header = ProductHeader.builder()
+                .saleId(saleId)
+                .subtotal(subtotal)
+                .build();
+        productHeaderRepository.save(header, em);
 
-        productHeaderRepository.save(header, conn);
-
-        logger.info("{} ProductHeader created (ID={}, subtotal={})",
-                PREFIX, header.getId(), subtotal);
-
+        logger.info("{} ProductHeader created (ID={}, subtotal={})", PREFIX, header.getId(), subtotal);
         return header;
     }
 
-    /**
-     * Calculates subtotal of PRODUCT items only.
-     */
     private double calculateProductsSubtotal(SaleCartDTO cart) {
         return cart.getCartItems().stream()
                 .filter(item -> item.getType() == SaleCartItemDTO.ItemType.PRODUCT)

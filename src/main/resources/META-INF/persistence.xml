@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="https://jakarta.ee/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence
+                 https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd"
+             version="3.0">
+
+    <!--
+        Persistence unit for Barbman.
+        Connection properties (JDBC URL, dialect) are set programmatically
+        in HibernateUtil.init() so the DB path can be resolved at runtime
+        via JNA (Windows Documents folder).
+    -->
+    <persistence-unit name="barbman" transaction-type="RESOURCE_LOCAL">
+
+        <!-- Entity classes -->
+        <class>app.barbman.core.model.human.User</class>
+        <class>app.barbman.core.model.human.Client</class>
+        <class>app.barbman.core.model.PaymentMethod</class>
+        <class>app.barbman.core.model.Expense</class>
+        <class>app.barbman.core.model.sales.Sale</class>
+        <class>app.barbman.core.model.sales.products.Product</class>
+        <class>app.barbman.core.model.sales.products.ProductHeader</class>
+        <class>app.barbman.core.model.sales.products.ProductSaleItem</class>
+        <class>app.barbman.core.model.sales.services.ServiceDefinition</class>
+        <class>app.barbman.core.model.sales.services.ServiceHeader</class>
+        <class>app.barbman.core.model.sales.services.ServiceItem</class>
+        <class>app.barbman.core.model.cashbox.CashboxOpening</class>
+        <class>app.barbman.core.model.cashbox.CashboxClosure</class>
+        <class>app.barbman.core.model.cashbox.CashboxMovement</class>
+        <class>app.barbman.core.model.salaries.Advance</class>
+        <class>app.barbman.core.model.salaries.Salary</class>
+
+        <!-- JPA converters for SQLite TEXT date columns -->
+        <class>app.barbman.core.infrastructure.LocalDateConverter</class>
+        <class>app.barbman.core.infrastructure.LocalDateTimeConverter</class>
+
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+
+        <properties>
+            <!-- Base properties — overridden at runtime by HibernateUtil -->
+            <property name="hibernate.hbm2ddl.auto" value="none"/>
+        </properties>
+
+    </persistence-unit>
+
+</persistence>

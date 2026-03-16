@@ -1,9 +1,19 @@
 /* ==========================================================
-   CASHBOX CLOSURE MODAL
+   CASHBOX CLOSURE MODAL — RECONCILIATION
    ========================================================== */
 
 /* ROOT */
 .closure-root {
+    -fx-background-color: #2F2F2F;
+}
+
+/* SCROLL */
+.closure-scroll {
+    -fx-background-color: #2F2F2F;
+    -fx-background: #2F2F2F;
+}
+
+.closure-scroll .viewport {
     -fx-background-color: #2F2F2F;
 }
 
@@ -22,8 +32,8 @@
 }
 
 .closure-subtitle {
-    -fx-text-fill: #AAAAAA;
-    -fx-font-size: 13px;
+    -fx-text-fill: #F0C667;
+    -fx-font-size: 14px;
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
     -fx-padding: 4 0 0 0;
 }
@@ -33,16 +43,8 @@
     -fx-background-color: #2F2F2F;
 }
 
-/* PERÍODO */
-.closure-period {
-    -fx-text-fill: #F0C667;
-    -fx-font-size: 16px;
-    -fx-font-weight: 600;
-    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
-}
-
-/* AMOUNTS */
-.closure-amounts {
+/* COLUMNS (Cash / Bank) */
+.closure-column {
     -fx-background-color: #232323;
     -fx-background-radius: 10;
     -fx-padding: 16;
@@ -51,15 +53,84 @@
     -fx-border-radius: 10;
 }
 
-.closure-amount-label {
-    -fx-text-fill: #FFFFFF;
-    -fx-font-size: 15px;
+.closure-column-title {
+    -fx-text-fill: #F0C667;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 }
 
-.closure-total-label {
+.closure-field-label {
+    -fx-text-fill: #AAAAAA;
+    -fx-font-size: 12px;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.closure-expected-value {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.closure-amount-input {
+    -fx-background-color: #2A2A2A;
+    -fx-background-radius: 8;
     -fx-text-fill: #F0C667;
-    -fx-font-size: 17px;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-prompt-text-fill: #666666;
+    -fx-padding: 8 12;
+    -fx-border-color: #3A3A3A;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+}
+
+.closure-amount-input:focused {
+    -fx-border-color: #F0C667;
+    -fx-background-color: #333333;
+}
+
+.closure-discrepancy-value {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-text-fill: #AAAAAA;
+}
+
+/* Discrepancy color states */
+.discrepancy-zero {
+    -fx-text-fill: #4CAF50;
+}
+
+.discrepancy-positive {
+    -fx-text-fill: #F0C667;
+}
+
+.discrepancy-negative {
+    -fx-text-fill: #EF5350;
+}
+
+/* TOTALS */
+.closure-totals {
+    -fx-background-color: #232323;
+    -fx-background-radius: 10;
+    -fx-padding: 16;
+    -fx-border-color: #3A3A3A;
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+}
+
+.closure-total-header {
+    -fx-text-fill: #AAAAAA;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.closure-total-value {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 16px;
     -fx-font-weight: bold;
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 }

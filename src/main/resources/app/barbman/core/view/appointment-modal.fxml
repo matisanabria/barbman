@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="app.barbman.core.controller.appointments.AppointmentModalController"
+      styleClass="modal-content" spacing="16" prefWidth="440" prefHeight="420">
+    <padding><Insets top="24" right="28" bottom="24" left="28"/></padding>
+
+    <!-- Title -->
+    <Label fx:id="modalTitle" text="Reserva" styleClass="modal-title"/>
+
+    <!-- ============ VIEW MODE ============ -->
+    <VBox fx:id="viewPane" spacing="14" visible="false" managed="false">
+        <HBox spacing="8">
+            <Label text="Barbero:" styleClass="modal-label" minWidth="80"/>
+            <Label fx:id="viewBarber" styleClass="modal-value"/>
+        </HBox>
+        <HBox spacing="8">
+            <Label text="Fecha:" styleClass="modal-label" minWidth="80"/>
+            <Label fx:id="viewDate" styleClass="modal-value"/>
+        </HBox>
+        <HBox spacing="8">
+            <Label text="Hora:" styleClass="modal-label" minWidth="80"/>
+            <Label fx:id="viewTime" styleClass="modal-value"/>
+        </HBox>
+        <HBox spacing="8">
+            <Label text="Cliente:" styleClass="modal-label" minWidth="80"/>
+            <Label fx:id="viewClient" styleClass="modal-value"/>
+        </HBox>
+        <HBox spacing="8">
+            <Label text="Teléfono:" styleClass="modal-label" minWidth="80"/>
+            <Label fx:id="viewPhone" styleClass="modal-value"/>
+        </HBox>
+        <HBox spacing="8">
+            <Label text="Estado:" styleClass="modal-label" minWidth="80"/>
+            <Label fx:id="viewStatus" styleClass="modal-value"/>
+        </HBox>
+
+        <!-- Action buttons (visibility toggled by controller) -->
+        <HBox fx:id="viewActions" spacing="10" alignment="CENTER_RIGHT">
+            <padding><Insets top="8"/></padding>
+            <Button fx:id="btnConfirm" text="Confirmar" styleClass="modal-btn-confirm" onAction="#handleConfirm"/>
+            <Button fx:id="btnComplete" text="Completar" styleClass="modal-btn-complete" onAction="#handleComplete"/>
+            <Button fx:id="btnCancel" text="Cancelar Reserva" styleClass="modal-btn-danger" onAction="#handleCancelAppointment"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="Cerrar" styleClass="modal-btn-close" onAction="#handleClose"/>
+        </HBox>
+    </VBox>
+
+    <!-- ============ CREATE MODE ============ -->
+    <VBox fx:id="createPane" spacing="14" visible="false" managed="false">
+        <VBox spacing="4">
+            <Label text="Barbero" styleClass="modal-label"/>
+            <ComboBox fx:id="barberCombo" styleClass="modal-field" maxWidth="Infinity" promptText="Seleccionar barbero"/>
+        </VBox>
+        <HBox spacing="12">
+            <VBox spacing="4" HBox.hgrow="ALWAYS">
+                <Label text="Fecha" styleClass="modal-label"/>
+                <DatePicker fx:id="datePicker" styleClass="modal-field" maxWidth="Infinity" promptText="Seleccionar fecha"/>
+            </VBox>
+            <VBox spacing="4" HBox.hgrow="ALWAYS">
+                <Label text="Hora" styleClass="modal-label"/>
+                <ComboBox fx:id="timeCombo" styleClass="modal-field" maxWidth="Infinity" promptText="Seleccionar hora"/>
+            </VBox>
+        </HBox>
+        <Button fx:id="btnLoadSlots" text="Buscar horarios disponibles" styleClass="modal-btn-load-slots"
+                onAction="#handleLoadSlots" maxWidth="Infinity"/>
+        <VBox spacing="4">
+            <Label text="Nombre del cliente" styleClass="modal-label"/>
+            <TextField fx:id="clientNameField" styleClass="modal-field" promptText="Nombre y Apellido"/>
+        </VBox>
+        <VBox spacing="4">
+            <Label text="Teléfono del cliente" styleClass="modal-label"/>
+            <TextField fx:id="clientPhoneField" styleClass="modal-field" promptText="0981-123-456"/>
+        </VBox>
+
+        <HBox spacing="10" alignment="CENTER_RIGHT">
+            <padding><Insets top="8"/></padding>
+            <Button text="Cancelar" styleClass="modal-btn-close" onAction="#handleClose"/>
+            <Button fx:id="btnCreate" text="Crear Reserva" styleClass="modal-btn-save" onAction="#handleCreate"/>
+        </HBox>
+    </VBox>
+</VBox>

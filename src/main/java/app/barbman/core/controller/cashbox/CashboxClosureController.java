@@ -1,6 +1,7 @@
 package app.barbman.core.controller.cashbox;
 
 import app.barbman.core.model.cashbox.CashboxClosure;
+import app.barbman.core.model.cashbox.CashboxOpening;
 import app.barbman.core.repositories.cashbox.closure.CashboxClosureRepositoryImpl;
 import app.barbman.core.repositories.cashbox.movement.CashboxMovementRepositoryImpl;
 import app.barbman.core.repositories.cashbox.opening.CashboxOpeningRepositoryImpl;
@@ -11,6 +12,7 @@ import app.barbman.core.util.SessionManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,7 +20,7 @@ import org.apache.logging.log4j.Logger;
 import java.time.format.DateTimeFormatter;
 
 /**
- * Controller for cashbox closure confirmation modal.
+ * Controller for cashbox closure with reconciliation.
  */
 public class CashboxClosureController {
 
@@ -28,14 +30,23 @@ public class CashboxClosureController {
     private final CashboxService cashboxService;
     private Runnable onClosureSuccess;
 
+    private double expectedCash;
+    private double expectedBank;
+
     // ============================================================
     // FXML
     // ============================================================
 
     @FXML private Label periodLabel;
-    @FXML private Label cashLabel;
-    @FXML private Label bankLabel;
-    @FXML private Label totalLabel;
+    @FXML private Label expectedCashLabel;
+    @FXML private Label expectedBankLabel;
+    @FXML private TextField actualCashField;
+    @FXML private TextField actualBankField;
+    @FXML private Label cashDiscrepancyLabel;
+    @FXML private Label bankDiscrepancyLabel;
+    @FXML private Label expectedTotalLabel;
+    @FXML private Label actualTotalLabel;
+    @FXML private Label totalDiscrepancyLabel;
     @FXML private TextArea notesArea;
 
     // ============================================================
@@ -57,57 +68,85 @@ public class CashboxClosureController {
     @FXML
     public void initialize() {
         loadClosurePreview();
+        setupDiscrepancyListeners();
     }
 
-    /**
-     * Loads the closure preview with expected amounts.
-     */
     private void loadClosurePreview() {
         try {
-            var periodStart = cashboxService.getCurrentPeriodStart();
-            var periodEnd = cashboxService.getCurrentPeriodEnd();
-
-            // Check if already closed
-            var closureRepo = new CashboxClosureRepositoryImpl();
-            if (closureRepo.existsForPeriod(periodStart)) {
-                AlertUtil.showWarning(
-                        "Caja ya cerrada",
-                        "Este período ya fue cerrado."
-                );
+            CashboxOpening opening = cashboxService.getCurrentOpening();
+            if (opening == null) {
+                AlertUtil.showWarning("Caja no abierta", "No hay una caja abierta.");
                 closeDialog();
                 return;
             }
 
-            // Check if opened
-            if (!cashboxService.isCurrentPeriodOpened()) {
-                AlertUtil.showWarning(
-                        "Caja no abierta",
-                        "No hay una caja abierta para este período."
-                );
-                closeDialog();
-                return;
-            }
+            periodLabel.setText(String.format("Abierta desde: %s",
+                    opening.getOpenedAt().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))));
 
-            // Calculate expected amounts
-            double expectedCash = calculateExpectedCash();
-            double expectedBank = calculateExpectedBank();
+            expectedCash = cashboxService.getExpectedCash(opening.getId());
+            expectedBank = cashboxService.getExpectedBank(opening.getId());
+
+            expectedCashLabel.setText(NumberFormatterUtil.format(expectedCash) + " Gs");
+            expectedBankLabel.setText(NumberFormatterUtil.format(expectedBank) + " Gs");
+
             double expectedTotal = expectedCash + expectedBank;
+            expectedTotalLabel.setText(NumberFormatterUtil.format(expectedTotal) + " Gs");
 
-            // Display info
-            periodLabel.setText(String.format("Período: %s → %s",
-                    periodStart.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
-                    periodEnd.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))));
+            // Initialize actual total and discrepancy
+            actualTotalLabel.setText("0 Gs");
+            totalDiscrepancyLabel.setText(NumberFormatterUtil.format(-expectedTotal) + " Gs");
 
-            cashLabel.setText("💵 Efectivo esperado: " + NumberFormatterUtil.format(expectedCash) + " Gs");
-            bankLabel.setText("🏦 Banco esperado: " + NumberFormatterUtil.format(expectedBank) + " Gs");
-            totalLabel.setText("💰 Total esperado: " + NumberFormatterUtil.format(expectedTotal) + " Gs");
+            NumberFormatterUtil.applyToTextField(actualCashField);
+            NumberFormatterUtil.applyToTextField(actualBankField);
 
-            logger.info("{} Closure preview loaded for period {}", PREFIX, periodStart);
+            logger.info("{} Closure preview loaded for opening {}", PREFIX, opening.getId());
 
         } catch (Exception e) {
             logger.error("{} Error loading closure preview", PREFIX, e);
             AlertUtil.showError("Error", "No se pudo cargar la vista previa del cierre.");
             closeDialog();
+        }
+    }
+
+    private void setupDiscrepancyListeners() {
+        actualCashField.textProperty().addListener((obs, o, n) -> updateDiscrepancies());
+        actualBankField.textProperty().addListener((obs, o, n) -> updateDiscrepancies());
+    }
+
+    private void updateDiscrepancies() {
+        double actualCash = parseAmount(actualCashField.getText());
+        double actualBank = parseAmount(actualBankField.getText());
+
+        double cashDisc = actualCash - expectedCash;
+        double bankDisc = actualBank - expectedBank;
+        double totalDisc = cashDisc + bankDisc;
+
+        cashDiscrepancyLabel.setText(formatDiscrepancy(cashDisc));
+        bankDiscrepancyLabel.setText(formatDiscrepancy(bankDisc));
+
+        double actualTotal = actualCash + actualBank;
+        actualTotalLabel.setText(NumberFormatterUtil.format(actualTotal) + " Gs");
+        totalDiscrepancyLabel.setText(formatDiscrepancy(totalDisc));
+
+        // Color: green if 0, red if negative, yellow if positive
+        setDiscrepancyStyle(cashDiscrepancyLabel, cashDisc);
+        setDiscrepancyStyle(bankDiscrepancyLabel, bankDisc);
+        setDiscrepancyStyle(totalDiscrepancyLabel, totalDisc);
+    }
+
+    private String formatDiscrepancy(double value) {
+        String sign = value > 0 ? "+" : "";
+        return sign + NumberFormatterUtil.format(value) + " Gs";
+    }
+
+    private void setDiscrepancyStyle(Label label, double value) {
+        label.getStyleClass().removeAll("discrepancy-positive", "discrepancy-negative", "discrepancy-zero");
+        if (value == 0) {
+            label.getStyleClass().add("discrepancy-zero");
+        } else if (value > 0) {
+            label.getStyleClass().add("discrepancy-positive");
+        } else {
+            label.getStyleClass().add("discrepancy-negative");
         }
     }
 
@@ -124,27 +163,33 @@ public class CashboxClosureController {
                 return;
             }
 
+            double actualCash = parseAmount(actualCashField.getText());
+            double actualBank = parseAmount(actualBankField.getText());
+
             String notes = notesArea.getText();
             if (notes == null || notes.isBlank()) {
                 notes = "Cierre manual";
             }
 
-            // Close cashbox
-            CashboxClosure closure = cashboxService.closeCurrentPeriod(
+            CashboxClosure closure = cashboxService.closeCashbox(
+                    actualCash,
+                    actualBank,
                     admin.getId(),
                     notes
             );
 
-            logger.info("{} Cashbox closed successfully for period {}",
-                    PREFIX, closure.getPeriodStartDate());
+            logger.info("{} Cashbox closed successfully (openingId={})", PREFIX, closure.getOpeningId());
 
-            AlertUtil.showInfo(
-                    "Caja Cerrada",
-                    String.format("Cierre exitoso. Total esperado: %s Gs",
-                            NumberFormatterUtil.format(closure.getExpectedTotal()))
+            String message = String.format(
+                    "Cierre exitoso.\nEfectivo: %s Gs (dif: %s)\nBanco: %s Gs (dif: %s)",
+                    NumberFormatterUtil.format(closure.getActualCash()),
+                    formatDiscrepancy(closure.getCashDiscrepancy()),
+                    NumberFormatterUtil.format(closure.getActualBank()),
+                    formatDiscrepancy(closure.getBankDiscrepancy())
             );
 
-            // Notify parent and close
+            AlertUtil.showInfo("Caja Cerrada", message);
+
             if (onClosureSuccess != null) {
                 onClosureSuccess.run();
             }
@@ -153,7 +198,7 @@ public class CashboxClosureController {
 
         } catch (IllegalStateException e) {
             logger.warn("{} Closure validation error", PREFIX, e);
-            AlertUtil.showWarning("Validación", e.getMessage());
+            AlertUtil.showWarning("Validacion", e.getMessage());
 
         } catch (Exception e) {
             logger.error("{} Error closing cashbox", PREFIX, e);
@@ -171,41 +216,6 @@ public class CashboxClosureController {
     // HELPERS
     // ============================================================
 
-    private double calculateExpectedCash() {
-        var start = cashboxService.getCurrentPeriodStart();
-        var end = cashboxService.getCurrentPeriodEnd();
-
-        var saleRepo = new app.barbman.core.repositories.sales.SaleRepositoryImpl();
-        var salesService = new app.barbman.core.service.sales.SalesService(saleRepo);
-        var expenseRepo = new app.barbman.core.repositories.expense.ExpenseRepositoryImpl();
-
-        double salesCash = salesService.getTotalForPaymentMethodInPeriod(0, start, end);
-        double expensesCash = expenseRepo.sumTotalByPaymentMethodAndPeriod(0, start, end);
-
-        return salesCash - expensesCash;
-    }
-
-    private double calculateExpectedBank() {
-        var start = cashboxService.getCurrentPeriodStart();
-        var end = cashboxService.getCurrentPeriodEnd();
-
-        var saleRepo = new app.barbman.core.repositories.sales.SaleRepositoryImpl();
-        var salesService = new app.barbman.core.service.sales.SalesService(saleRepo);
-        var expenseRepo = new app.barbman.core.repositories.expense.ExpenseRepositoryImpl();
-
-        double salesBank =
-                salesService.getTotalForPaymentMethodInPeriod(1, start, end)
-                        + salesService.getTotalForPaymentMethodInPeriod(2, start, end)
-                        + salesService.getTotalForPaymentMethodInPeriod(3, start, end);
-
-        double expensesBank =
-                expenseRepo.sumTotalByPaymentMethodAndPeriod(1, start, end)
-                        + expenseRepo.sumTotalByPaymentMethodAndPeriod(2, start, end)
-                        + expenseRepo.sumTotalByPaymentMethodAndPeriod(3, start, end);
-
-        return salesBank - expensesBank;
-    }
-
     public void setOnClosureSuccess(Runnable callback) {
         this.onClosureSuccess = callback;
     }
@@ -213,5 +223,15 @@ public class CashboxClosureController {
     private void closeDialog() {
         Stage stage = (Stage) periodLabel.getScene().getWindow();
         stage.close();
+    }
+
+    private double parseAmount(String value) {
+        if (value == null || value.isBlank()) return 0;
+        String clean = value.replace(".", "");
+        try {
+            return Double.parseDouble(clean);
+        } catch (NumberFormatException e) {
+            return 0;
+        }
     }
 }

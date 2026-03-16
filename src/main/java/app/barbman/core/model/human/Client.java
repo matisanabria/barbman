@@ -1,68 +1,32 @@
 package app.barbman.core.model.human;
 
-import java.util.Objects;
+import jakarta.persistence.*;
+import lombok.*;
 
+@Entity
+@Table(name = "clients")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString
 public class Client {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private int id;
+
+    @Column(name = "displayName", nullable = false)
     private String name;
+
     private String document;
     private String phone;
     private String email;
     private String notes;
-    private boolean active;
 
-    // Constructor para insertar
-    public Client(String name, String document, String phone, String email, String notes, boolean active) {
-        this.name = name;
-        this.document = document;
-        this.phone = phone;
-        this.email = email;
-        this.notes = notes;
-        this.active = active;
-    }
-
-    // Constructor para leer
-    public Client(int id, String name, String document, String phone, String email, String notes, boolean active) {
-        this(name, document, phone, email, notes, active);
-        this.id = id;
-    }
-
-    public int getId() { return id; }
-    public String getName() { return name; }
-    public String getDocument() { return document; }
-    public String getPhone() { return phone; }
-    public String getEmail() { return email; }
-    public String getNotes() { return notes; }
-    public boolean isActive() { return active; }
-
-    public void setId(int id) { this.id = id; }
-    public void setName(String name) { this.name = name; }
-    public void setDocument(String document) { this.document = document; }
-    public void setPhone(String phone) { this.phone = phone; }
-    public void setEmail(String email) { this.email = email; }
-    public void setNotes(String notes) { this.notes = notes; }
-    public void setActive(boolean active) { this.active = active; }
-
-    @Override
-    public String toString() {
-        return name + (document != null ? " (" + document + ")" : "");
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Client c)) return false;
-        return id == c.id && active == c.active &&
-                Objects.equals(name, c.name) &&
-                Objects.equals(document, c.document) &&
-                Objects.equals(phone, c.phone) &&
-                Objects.equals(email, c.email) &&
-                Objects.equals(notes, c.notes);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, document, phone, email, notes, active);
-    }
+    @Column(nullable = false)
+    private boolean active = true;
 }
