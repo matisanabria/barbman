@@ -46,8 +46,31 @@ public class CashboxOpeningRepositoryImpl extends AbstractHibernateRepository<Ca
     }
 
     @Override
-    public void update(CashboxOpening opening) {
-        throw new UnsupportedOperationException("Cashbox openings must not be updated.");
+    public CashboxOpening findCurrentOpen() {
+        try (EntityManager em = HibernateUtil.createEntityManager()) {
+            return em.createQuery(
+                    "FROM CashboxOpening WHERE closed = false ORDER BY openedAt DESC", CashboxOpening.class)
+                    .setMaxResults(1)
+                    .getResultStream()
+                    .findFirst()
+                    .orElse(null);
+        } catch (Exception e) {
+            logger.warn("[CashboxOpeningRepositoryImpl] Error fetching current open cashbox: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    @Override
+    public boolean hasOpenCashbox() {
+        try (EntityManager em = HibernateUtil.createEntityManager()) {
+            Long count = em.createQuery(
+                    "SELECT COUNT(o) FROM CashboxOpening o WHERE o.closed = false", Long.class)
+                    .getSingleResult();
+            return count > 0;
+        } catch (Exception e) {
+            logger.warn("[CashboxOpeningRepositoryImpl] Error checking open cashbox: {}", e.getMessage());
+            return false;
+        }
     }
 
     @Override

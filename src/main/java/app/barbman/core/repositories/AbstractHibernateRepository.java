@@ -25,7 +25,7 @@ import java.util.List;
  *
  * Rollback on error is handled by the service layer; repos only throw RuntimeException.
  */
-public abstract class AbstractHibernateRepository<T, ID> implements GenericRepository<T, ID> {
+public abstract class AbstractHibernateRepository<T, ID> {
 
     private final Class<T> entityClass;
     protected final Logger logger;
@@ -36,10 +36,9 @@ public abstract class AbstractHibernateRepository<T, ID> implements GenericRepos
     }
 
     // ================================================================
-    // GenericRepository — standalone operations (own EntityManager)
+    // Standalone operations (own EntityManager)
     // ================================================================
 
-    @Override
     public T findById(ID id) {
         try (EntityManager em = HibernateUtil.createEntityManager()) {
             return em.find(entityClass, id);
@@ -49,7 +48,6 @@ public abstract class AbstractHibernateRepository<T, ID> implements GenericRepos
         }
     }
 
-    @Override
     public List<T> findAll() {
         try (EntityManager em = HibernateUtil.createEntityManager()) {
             return em.createQuery("FROM " + entityClass.getSimpleName(), entityClass).getResultList();
@@ -59,7 +57,6 @@ public abstract class AbstractHibernateRepository<T, ID> implements GenericRepos
         }
     }
 
-    @Override
     public void save(T entity) {
         try (EntityManager em = HibernateUtil.createEntityManager()) {
             em.getTransaction().begin();
@@ -71,7 +68,6 @@ public abstract class AbstractHibernateRepository<T, ID> implements GenericRepos
         }
     }
 
-    @Override
     public void update(T entity) {
         try (EntityManager em = HibernateUtil.createEntityManager()) {
             em.getTransaction().begin();
@@ -83,7 +79,6 @@ public abstract class AbstractHibernateRepository<T, ID> implements GenericRepos
         }
     }
 
-    @Override
     public void delete(ID id) {
         try (EntityManager em = HibernateUtil.createEntityManager()) {
             em.getTransaction().begin();

@@ -1,13 +1,11 @@
 package app.barbman.core.repositories.cashbox.movement;
 
 import app.barbman.core.model.cashbox.CashboxMovement;
-import app.barbman.core.repositories.GenericRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface CashboxMovementRepository
-        extends GenericRepository<CashboxMovement, Integer> {
+public interface CashboxMovementRepository {
 
     List<CashboxMovement> findByDateRange(
             LocalDateTime start,
@@ -18,4 +16,14 @@ public interface CashboxMovementRepository
             String referenceType,
             Integer referenceId
     );
+
+    List<CashboxMovement> findByOpeningId(Integer openingId);
+
+    double sumByOpeningIdAndDirection(Integer openingId, String direction, boolean isCash);
+
+    void save(CashboxMovement movement);
+
+    void delete(Integer id);
+
+    List<CashboxMovement> findAll();
 }

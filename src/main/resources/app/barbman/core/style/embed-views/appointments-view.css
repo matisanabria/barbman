@@ -1,0 +1,390 @@
+/* ==========================================================
+   APPOINTMENTS VIEW - WEEKLY SCHEDULE GRID
+   ========================================================== */
+
+/* ==========================
+   ROOT
+   ========================== */
+.appointments-root {
+    -fx-background-color: #2F2F2F;
+}
+
+/* ==========================
+   HEADER
+   ========================== */
+.appointments-header {
+    -fx-background-color: linear-gradient(to bottom, #232323, #2A2A2A);
+    -fx-border-color: #3A3A3A;
+    -fx-border-width: 0 0 1 0;
+}
+
+.appointments-title {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.appointments-filter-label {
+    -fx-text-fill: #AAAAAA;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+/* ==========================
+   BARBER COMBO
+   ========================== */
+.appointments-combo {
+    -fx-background-color: #1F1F1F;
+    -fx-background-radius: 8;
+    -fx-border-color: #3A3A3A;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-font-size: 14px;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.appointments-combo .list-cell {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 14px;
+    -fx-background-color: transparent;
+}
+
+.appointments-combo .list-view {
+    -fx-background-color: #232323;
+}
+
+.appointments-combo .list-view .list-cell {
+    -fx-background-color: #232323;
+    -fx-text-fill: #FFFFFF;
+    -fx-padding: 8 12;
+}
+
+.appointments-combo .list-view .list-cell:hover {
+    -fx-background-color: #2F2F2F;
+}
+
+.appointments-combo .list-view .list-cell:selected {
+    -fx-background-color: rgba(240, 198, 103, 0.2);
+    -fx-text-fill: #F0C667;
+}
+
+/* ==========================
+   WEEK NAVIGATION
+   ========================== */
+.appointments-week-nav {
+    -fx-alignment: center;
+}
+
+.appointments-week-label {
+    -fx-text-fill: #F0C667;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-background-color: #1F1F1F;
+    -fx-background-radius: 8;
+    -fx-padding: 8 18;
+    -fx-min-width: 320;
+    -fx-alignment: center;
+}
+
+.appointments-btn-nav {
+    -fx-background-color: #3A3A3A;
+    -fx-background-radius: 8;
+    -fx-text-fill: #FFFFFF;
+    -fx-padding: 8 14;
+    -fx-cursor: hand;
+}
+
+.appointments-btn-nav:hover {
+    -fx-background-color: #454545;
+}
+
+.appointments-btn-nav .ikonli-font-icon {
+    -fx-icon-color: #FFFFFF;
+}
+
+.appointments-btn-today {
+    -fx-background-color: #3A3A3A;
+    -fx-background-radius: 8;
+    -fx-text-fill: #F0C667;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-padding: 8 16;
+    -fx-cursor: hand;
+}
+
+.appointments-btn-today:hover {
+    -fx-background-color: #454545;
+}
+
+/* ==========================
+   STAT CARDS
+   ========================== */
+.appointments-stat-card {
+    -fx-background-color: #1F1F1F;
+    -fx-background-radius: 12;
+    -fx-border-color: #3A3A3A;
+    -fx-border-width: 1;
+    -fx-border-radius: 12;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 6, 0, 0, 2);
+}
+
+.appointments-stat-card:hover {
+    -fx-background-color: #252525;
+    -fx-border-color: #454545;
+}
+
+.appointments-stat-label {
+    -fx-text-fill: #888888;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.appointments-stat-value {
+    -fx-text-fill: #F0C667;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.appointments-stat-value-accent {
+    -fx-text-fill: #FFB84D;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.appointments-stat-value-success {
+    -fx-text-fill: #4ECB71;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+/* ==========================
+   CONTENT AREA
+   ========================== */
+.appointments-content {
+    -fx-background-color: #2F2F2F;
+}
+
+.appointments-status-label {
+    -fx-text-fill: #AAAAAA;
+    -fx-font-size: 14px;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-padding: 8 0;
+}
+
+/* ==========================
+   LOADING SPINNER
+   ========================== */
+.appointments-spinner {
+    -fx-progress-color: #F0C667;
+}
+
+.appointments-spinner .arc {
+    -fx-stroke: #F0C667;
+}
+
+.appointments-loading-text {
+    -fx-text-fill: #AAAAAA;
+    -fx-font-size: 15px;
+    -fx-font-weight: 600;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+/* ==========================
+   SCROLL PANE
+   ========================== */
+.appointments-scroll {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+    -fx-border-color: transparent;
+}
+
+.appointments-scroll .viewport {
+    -fx-background-color: transparent;
+}
+
+.appointments-scroll .scroll-bar:vertical {
+    -fx-background-color: #1F1F1F;
+}
+
+.appointments-scroll .scroll-bar:vertical .thumb {
+    -fx-background-color: #3A3A3A;
+    -fx-background-radius: 5;
+}
+
+.appointments-scroll .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #4A4A4A;
+}
+
+/* ==========================
+   SCHEDULE GRID
+   ========================== */
+.schedule-grid {
+    -fx-background-color: #1A1A1A;
+    -fx-padding: 1;
+}
+
+/* Day column headers */
+.schedule-day-header {
+    -fx-background-color: #1F1F1F;
+    -fx-padding: 6 4;
+}
+
+.schedule-day-today {
+    -fx-background-color: #2A2520;
+    -fx-border-color: #F0C667;
+    -fx-border-width: 0 0 2 0;
+}
+
+.schedule-day-name {
+    -fx-text-fill: #AAAAAA;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.schedule-day-num {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.schedule-day-today .schedule-day-num {
+    -fx-text-fill: #F0C667;
+}
+
+/* Time column header */
+.schedule-header-time {
+    -fx-background-color: #1F1F1F;
+    -fx-text-fill: #888888;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+/* Time labels (left column) */
+.schedule-time-label {
+    -fx-background-color: #1F1F1F;
+    -fx-text-fill: #F0C667;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+/* ==========================
+   GRID CELLS
+   ========================== */
+.schedule-cell {
+    -fx-padding: 6 8;
+}
+
+/* Available slot */
+.schedule-cell-available {
+    -fx-background-color: #1E2E1E;
+}
+
+.schedule-cell-available:hover {
+    -fx-background-color: #2A3F2A;
+    -fx-border-color: #4ECB71;
+    -fx-border-width: 1;
+    -fx-border-radius: 0;
+}
+
+.schedule-cell-available-text {
+    -fx-text-fill: #4ECB71;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-opacity: 0.7;
+}
+
+.schedule-cell-available:hover .schedule-cell-available-text {
+    -fx-opacity: 1.0;
+}
+
+/* Closed / no slot */
+.schedule-cell-closed {
+    -fx-background-color: #1A1A1A;
+}
+
+/* Pending appointment */
+.schedule-cell-pending {
+    -fx-background-color: rgba(255, 180, 77, 0.15);
+    -fx-border-color: #FFB84D;
+    -fx-border-width: 0 0 0 3;
+}
+
+.schedule-cell-pending:hover {
+    -fx-background-color: rgba(255, 180, 77, 0.25);
+}
+
+/* Confirmed appointment */
+.schedule-cell-confirmed {
+    -fx-background-color: rgba(78, 203, 113, 0.15);
+    -fx-border-color: #4ECB71;
+    -fx-border-width: 0 0 0 3;
+}
+
+.schedule-cell-confirmed:hover {
+    -fx-background-color: rgba(78, 203, 113, 0.25);
+}
+
+/* Cancelled appointment */
+.schedule-cell-cancelled {
+    -fx-background-color: rgba(255, 107, 107, 0.1);
+    -fx-border-color: #FF6B6B;
+    -fx-border-width: 0 0 0 3;
+}
+
+.schedule-cell-cancelled:hover {
+    -fx-background-color: rgba(255, 107, 107, 0.18);
+}
+
+/* Completed appointment */
+.schedule-cell-completed {
+    -fx-background-color: rgba(108, 156, 255, 0.12);
+    -fx-border-color: #6C9CFF;
+    -fx-border-width: 0 0 0 3;
+}
+
+.schedule-cell-completed:hover {
+    -fx-background-color: rgba(108, 156, 255, 0.2);
+}
+
+/* Cell text */
+.schedule-cell-client {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.schedule-cell-status {
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.schedule-cell-pending .schedule-cell-status {
+    -fx-text-fill: #FFB84D;
+}
+
+.schedule-cell-confirmed .schedule-cell-status {
+    -fx-text-fill: #4ECB71;
+}
+
+.schedule-cell-cancelled .schedule-cell-status {
+    -fx-text-fill: #FF6B6B;
+}
+
+.schedule-cell-completed .schedule-cell-status {
+    -fx-text-fill: #6C9CFF;
+}

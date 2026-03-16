@@ -5,13 +5,16 @@ import app.barbman.core.dto.salecart.SaleCartDTO;
 import app.barbman.core.dto.salecart.SaleCartItemDTO;
 import app.barbman.core.model.human.Client;
 import app.barbman.core.model.sales.Sale;
+import app.barbman.core.repositories.cashbox.closure.CashboxClosureRepositoryImpl;
 import app.barbman.core.repositories.cashbox.movement.CashboxMovementRepositoryImpl;
+import app.barbman.core.repositories.cashbox.opening.CashboxOpeningRepositoryImpl;
 import app.barbman.core.repositories.client.ClientRepositoryImpl;
 import app.barbman.core.repositories.sales.SaleRepositoryImpl;
 import app.barbman.core.repositories.sales.products.productheader.ProductHeaderRepositoryImpl;
 import app.barbman.core.repositories.sales.products.productsaleitem.ProductSaleItemRepositoryImpl;
 import app.barbman.core.repositories.sales.services.serviceheader.ServiceHeaderRepositoryImpl;
 import app.barbman.core.repositories.sales.services.serviceitems.ServiceItemRepositoryImpl;
+import app.barbman.core.service.cashbox.CashboxService;
 import app.barbman.core.service.clients.ClientService;
 import app.barbman.core.service.sales.products.ProductHeaderService;
 import app.barbman.core.service.sales.products.ProductItemService;
@@ -90,7 +93,12 @@ public class SalePaymentViewController implements Initializable {
             new ServiceItemService(new ServiceItemRepositoryImpl()),
             new ProductHeaderService(new ProductHeaderRepositoryImpl()),
             new ProductItemService(new ProductSaleItemRepositoryImpl()),
-            new CashboxMovementRepositoryImpl()
+            new CashboxMovementRepositoryImpl(),
+            new CashboxService(
+                    new CashboxOpeningRepositoryImpl(),
+                    new CashboxClosureRepositoryImpl(),
+                    new CashboxMovementRepositoryImpl()
+            )
     );
 
     // ============================================================

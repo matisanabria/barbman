@@ -3,7 +3,6 @@ package app.barbman.core.model.cashbox;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -22,11 +21,8 @@ public class CashboxClosure {
     @EqualsAndHashCode.Include
     private Integer id;
 
-    @Column(name = "period_start_date", nullable = false, unique = true)
-    private LocalDate periodStartDate;
-
-    @Column(name = "period_end_date", nullable = false)
-    private LocalDate periodEndDate;
+    @Column(name = "opening_id", nullable = false)
+    private Integer openingId;
 
     @Column(name = "closed_at", nullable = false)
     private LocalDateTime closedAt;
@@ -40,8 +36,17 @@ public class CashboxClosure {
     @Column(name = "expected_bank", nullable = false)
     private double expectedBank;
 
-    @Column(name = "expected_total", nullable = false)
-    private double expectedTotal;
+    @Column(name = "actual_cash", nullable = false)
+    private double actualCash;
+
+    @Column(name = "actual_bank", nullable = false)
+    private double actualBank;
+
+    @Column(name = "cash_discrepancy", nullable = false)
+    private double cashDiscrepancy;
+
+    @Column(name = "bank_discrepancy", nullable = false)
+    private double bankDiscrepancy;
 
     private String notes;
 }

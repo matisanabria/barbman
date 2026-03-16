@@ -28,7 +28,8 @@ public class FlywayMigrator {
     /** Ordered list of migration scripts — add new migrations here. */
     private static final String[] MIGRATION_FILES = {
             "V1__initial_schema.sql",
-            "V2__seed_payment_methods.sql"
+            "V2__seed_payment_methods.sql",
+            "V3__cashbox_redesign.sql"
     };
 
     private FlywayMigrator() {}

@@ -49,4 +49,7 @@ public class CashboxMovement {
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
+
+    @Column(name = "opening_id")
+    private Integer openingId;
 }

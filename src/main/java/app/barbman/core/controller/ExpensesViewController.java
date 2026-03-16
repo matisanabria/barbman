@@ -55,7 +55,12 @@ public class ExpensesViewController implements Initializable {
     private final ToggleGroup paymentGroup = new ToggleGroup();
     private final PaymentMethodsService paymentMethodsService = new PaymentMethodsService(new PaymentMethodRepositoryImpl());
     private final ExpenseRepository expenseRepo = new ExpenseRepositoryImpl();
-    private final ExpensesService expenseService = new ExpensesService(expenseRepo);
+    private final ExpensesService expenseService = new ExpensesService(expenseRepo,
+            new app.barbman.core.service.cashbox.CashboxService(
+                    new app.barbman.core.repositories.cashbox.opening.CashboxOpeningRepositoryImpl(),
+                    new app.barbman.core.repositories.cashbox.closure.CashboxClosureRepositoryImpl(),
+                    new app.barbman.core.repositories.cashbox.movement.CashboxMovementRepositoryImpl()
+            ));
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {

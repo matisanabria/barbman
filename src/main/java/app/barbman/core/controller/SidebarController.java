@@ -194,6 +194,14 @@ public class SidebarController {
         );
 
         addMenuButton(
+                "Reservas",
+                "fas-calendar-alt",
+                "/app/barbman/core/view/embed-view/appointments-view.fxml",
+                "/app/barbman/core/style/embed-views/appointments-view.css",
+                false
+        );
+
+        addMenuButton(
                 "Configuración",
                 "fas-cog",
                 "/app/barbman/core/view/embed-view/settings-view.fxml",
@@ -201,7 +209,7 @@ public class SidebarController {
                 false
         );
 
-        logger.info("{} Admin menu injected (6 buttons)", PREFIX); // 👈 Cambiar de 5 a 6
+        logger.info("{} Admin menu injected (7 buttons)", PREFIX);
     }
 
     private void injectUserMenu() {

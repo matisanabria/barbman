@@ -46,7 +46,12 @@ public class AdvancesController implements Initializable {
         var expenseRepo = new ExpenseRepositoryImpl();
         var userRepo = new UsersRepositoryImpl();
 
-        var expensesService = new ExpensesService(expenseRepo);
+        var cashboxService = new app.barbman.core.service.cashbox.CashboxService(
+                new app.barbman.core.repositories.cashbox.opening.CashboxOpeningRepositoryImpl(),
+                new app.barbman.core.repositories.cashbox.closure.CashboxClosureRepositoryImpl(),
+                new app.barbman.core.repositories.cashbox.movement.CashboxMovementRepositoryImpl()
+        );
+        var expensesService = new ExpensesService(expenseRepo, cashboxService);
         this.advancesService = new AdvancesService();
         this.usersService = new UsersService(userRepo);
     }

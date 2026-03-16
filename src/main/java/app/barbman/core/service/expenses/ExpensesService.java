@@ -2,10 +2,12 @@ package app.barbman.core.service.expenses;
 
 import app.barbman.core.model.Expense;
 import app.barbman.core.model.cashbox.CashboxMovement;
+import app.barbman.core.model.cashbox.CashboxOpening;
 import app.barbman.core.repositories.cashbox.movement.CashboxMovementRepository;
 import app.barbman.core.repositories.cashbox.movement.CashboxMovementRepositoryImpl;
 import app.barbman.core.repositories.expense.ExpenseRepository;
 import app.barbman.core.repositories.expense.ExpenseRepositoryImpl;
+import app.barbman.core.service.cashbox.CashboxService;
 import app.barbman.core.util.legacy.LegacyExpenseRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,10 +26,12 @@ public class ExpensesService {
     private final ExpenseRepository expenseRepo;
     private final CashboxMovementRepository movementRepo = new CashboxMovementRepositoryImpl();
     private final LegacyExpenseRepository legacyExpenseRepo;
+    private final CashboxService cashboxService;
 
-    public ExpensesService(ExpenseRepository expenseRepo) {
+    public ExpensesService(ExpenseRepository expenseRepo, CashboxService cashboxService) {
         this.expenseRepo = expenseRepo;
         this.legacyExpenseRepo = new LegacyExpenseRepository();
+        this.cashboxService = cashboxService;
     }
 
     public void registerExpense(String type, double amount, String description, int paymentMethodId, int userId) {
@@ -163,6 +167,9 @@ public class ExpensesService {
                                           Integer paymentMethodId, String refType, Integer refId,
                                           String description, Integer userId) {
         LocalDateTime now = LocalDateTime.now();
+        CashboxOpening currentOpening = cashboxService.getCurrentOpening();
+        Integer openingId = currentOpening != null ? currentOpening.getId() : null;
+
         return CashboxMovement.builder()
                 .movementType(movementType)
                 .direction(direction)
@@ -174,6 +181,7 @@ public class ExpensesService {
                 .userId(userId)
                 .occurredAt(now)
                 .createdAt(now)
+                .openingId(openingId)
                 .build();
     }
 }

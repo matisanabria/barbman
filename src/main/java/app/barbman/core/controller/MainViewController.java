@@ -46,7 +46,7 @@ public class MainViewController {
         loadSidebarForUser();
         SessionManager.setMainBorderPane(borderPane);
 
-        if (!cashboxService.isCurrentPeriodOpened()) {
+        if (!cashboxService.isCashboxOpen()) {
             Platform.runLater(() -> redirectToCashboxGate(user));
             return; // if cashbox is not opened, do not load default view
         }

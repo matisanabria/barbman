@@ -82,7 +82,12 @@ public class ConfirmSalaryController implements Initializable {
         var userRepo = new UsersRepositoryImpl();
 
         // Initialize services
-        var expensesService = new ExpensesService(expenseRepo);
+        var cashboxService = new app.barbman.core.service.cashbox.CashboxService(
+                new app.barbman.core.repositories.cashbox.opening.CashboxOpeningRepositoryImpl(),
+                new app.barbman.core.repositories.cashbox.closure.CashboxClosureRepositoryImpl(),
+                new app.barbman.core.repositories.cashbox.movement.CashboxMovementRepositoryImpl()
+        );
+        var expensesService = new ExpensesService(expenseRepo, cashboxService);
         var advancesService = new AdvancesService();
         var serviceHeaderService = new ServiceHeaderService(serviceHeaderRepo);
         var periodResolver = new SalaryPeriodResolver();

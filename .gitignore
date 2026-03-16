@@ -52,6 +52,9 @@ barbman.log
 /logs/
 /backups/
 
+# Environment
+.env
+
 # Claude Code
 CLAUDE.md
 memory/

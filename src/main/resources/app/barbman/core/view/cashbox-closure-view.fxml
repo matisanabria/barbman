@@ -8,8 +8,8 @@
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="app.barbman.core.controller.cashbox.CashboxClosureController"
             styleClass="closure-root"
-            prefWidth="500"
-            prefHeight="450">
+            prefWidth="600"
+            prefHeight="620">
 
     <!-- HEADER -->
     <top>
@@ -17,58 +17,114 @@
             <padding>
                 <Insets top="20" right="24" bottom="20" left="24"/>
             </padding>
-            <Label text="🔒 Confirmar Cierre de Caja" styleClass="closure-title"/>
-            <Label text="Revisa los montos esperados antes de confirmar"
+            <Label text="CIERRE DE CAJA" styleClass="closure-title"/>
+            <Label fx:id="periodLabel"
+                   text="Abierta desde: --/--/---- --:--"
                    styleClass="closure-subtitle"/>
         </VBox>
     </top>
 
     <!-- CONTENT -->
     <center>
-        <VBox spacing="20" styleClass="closure-content">
-            <padding>
-                <Insets top="24" right="24" bottom="24" left="24"/>
-            </padding>
+        <ScrollPane fitToWidth="true" styleClass="closure-scroll">
+            <VBox spacing="20" styleClass="closure-content">
+                <padding>
+                    <Insets top="24" right="24" bottom="24" left="24"/>
+                </padding>
 
-            <!-- PERÍODO -->
-            <VBox spacing="8">
-                <Label fx:id="periodLabel"
-                       text="Período: -- → --"
-                       styleClass="closure-period"/>
-            </VBox>
+                <!-- CASH + BANK COLUMNS -->
+                <HBox spacing="16" alignment="CENTER">
 
-            <Separator/>
+                    <!-- EFECTIVO COLUMN -->
+                    <VBox spacing="12" styleClass="closure-column" HBox.hgrow="ALWAYS">
+                        <Label text="EFECTIVO" styleClass="closure-column-title"/>
+                        <Separator/>
 
-            <!-- MONTOS ESPERADOS -->
-            <VBox spacing="12" styleClass="closure-amounts">
-                <Label fx:id="cashLabel"
-                       text="💵 Efectivo esperado: 0 Gs"
-                       styleClass="closure-amount-label"/>
+                        <VBox spacing="4">
+                            <Label text="Esperado:" styleClass="closure-field-label"/>
+                            <Label fx:id="expectedCashLabel"
+                                   text="0 Gs"
+                                   styleClass="closure-expected-value"/>
+                        </VBox>
 
-                <Label fx:id="bankLabel"
-                       text="🏦 Banco esperado: 0 Gs"
-                       styleClass="closure-amount-label"/>
+                        <VBox spacing="4">
+                            <Label text="Contado:" styleClass="closure-field-label"/>
+                            <TextField fx:id="actualCashField"
+                                       promptText="0"
+                                       alignment="CENTER"
+                                       styleClass="closure-amount-input"/>
+                        </VBox>
+
+                        <VBox spacing="4">
+                            <Label text="Diferencia:" styleClass="closure-field-label"/>
+                            <Label fx:id="cashDiscrepancyLabel"
+                                   text="0 Gs"
+                                   styleClass="closure-discrepancy-value"/>
+                        </VBox>
+                    </VBox>
+
+                    <!-- BANCO COLUMN -->
+                    <VBox spacing="12" styleClass="closure-column" HBox.hgrow="ALWAYS">
+                        <Label text="BANCO" styleClass="closure-column-title"/>
+                        <Separator/>
+
+                        <VBox spacing="4">
+                            <Label text="Esperado:" styleClass="closure-field-label"/>
+                            <Label fx:id="expectedBankLabel"
+                                   text="0 Gs"
+                                   styleClass="closure-expected-value"/>
+                        </VBox>
+
+                        <VBox spacing="4">
+                            <Label text="Contado:" styleClass="closure-field-label"/>
+                            <TextField fx:id="actualBankField"
+                                       promptText="0"
+                                       alignment="CENTER"
+                                       styleClass="closure-amount-input"/>
+                        </VBox>
+
+                        <VBox spacing="4">
+                            <Label text="Diferencia:" styleClass="closure-field-label"/>
+                            <Label fx:id="bankDiscrepancyLabel"
+                                   text="0 Gs"
+                                   styleClass="closure-discrepancy-value"/>
+                        </VBox>
+                    </VBox>
+
+                </HBox>
 
                 <Separator/>
 
-                <Label fx:id="totalLabel"
-                       text="💰 Total esperado: 0 Gs"
-                       styleClass="closure-total-label"/>
+                <!-- TOTALS -->
+                <HBox spacing="24" alignment="CENTER" styleClass="closure-totals">
+                    <VBox alignment="CENTER" spacing="4">
+                        <Label text="TOTAL ESPERADO" styleClass="closure-total-header"/>
+                        <Label fx:id="expectedTotalLabel" text="0 Gs" styleClass="closure-total-value"/>
+                    </VBox>
+                    <VBox alignment="CENTER" spacing="4">
+                        <Label text="TOTAL CONTADO" styleClass="closure-total-header"/>
+                        <Label fx:id="actualTotalLabel" text="0 Gs" styleClass="closure-total-value"/>
+                    </VBox>
+                    <VBox alignment="CENTER" spacing="4">
+                        <Label text="DIFERENCIA" styleClass="closure-total-header"/>
+                        <Label fx:id="totalDiscrepancyLabel" text="0 Gs" styleClass="closure-total-value"/>
+                    </VBox>
+                </HBox>
+
+                <Separator/>
+
+                <!-- NOTAS -->
+                <VBox spacing="8">
+                    <Label text="Notas (opcional)" styleClass="closure-label"/>
+                    <TextArea fx:id="notesArea"
+                              promptText="Agrega observaciones sobre este cierre..."
+                              prefRowCount="3"
+                              wrapText="true"
+                              styleClass="closure-textarea"/>
+                </VBox>
+
             </VBox>
-
-            <Separator/>
-
-            <!-- NOTAS -->
-            <VBox spacing="8">
-                <Label text="📝 Notas (opcional)" styleClass="closure-label"/>
-                <TextArea fx:id="notesArea"
-                          promptText="Agrega observaciones sobre este cierre..."
-                          prefRowCount="4"
-                          wrapText="true"
-                          styleClass="closure-textarea"/>
-            </VBox>
-
-        </VBox>
+        </ScrollPane>
     </center>
 
     <!-- FOOTER / BUTTONS -->
@@ -83,10 +139,10 @@
                     styleClass="closure-btn-cancel"
                     prefWidth="120"/>
 
-            <Button text="✓ Confirmar Cierre"
+            <Button text="Confirmar Cierre"
                     onAction="#onConfirmClosure"
                     styleClass="closure-btn-confirm"
-                    prefWidth="160"/>
+                    prefWidth="180"/>
         </HBox>
     </bottom>
 

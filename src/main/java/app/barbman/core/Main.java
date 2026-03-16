@@ -71,6 +71,9 @@ public class Main extends Application {
         // Inicializa la base de datos
         DbBootstrap.init();
 
+        // Carga el .env desde Barbman Data
+        app.barbman.core.infrastructure.EnvConfig.init();
+
         // Mensaje de inicio en el log
         String separador = "=".repeat(60);
         String horaInicio = java.time.LocalDateTime.now().toString();

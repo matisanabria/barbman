@@ -7,6 +7,7 @@ import app.barbman.core.model.cashbox.CashboxMovement;
 import app.barbman.core.model.sales.Sale;
 import app.barbman.core.model.sales.products.ProductHeader;
 import app.barbman.core.model.sales.services.ServiceHeader;
+import app.barbman.core.model.cashbox.CashboxOpening;
 import app.barbman.core.repositories.cashbox.movement.CashboxMovementRepository;
 import app.barbman.core.repositories.sales.SaleRepository;
 import app.barbman.core.service.cashbox.CashboxService;
@@ -37,6 +38,7 @@ public class SaleFlowService {
     private final ProductItemService productItemService;
     private final ProductStockService productStockService = new ProductStockService();
     private final CashboxMovementRepository cashboxMovementRepository;
+    private final CashboxService cashboxService;
 
     public SaleFlowService(
             SaleRepository saleRepository,
@@ -44,7 +46,8 @@ public class SaleFlowService {
             ServiceItemService serviceItemService,
             ProductHeaderService productHeaderService,
             ProductItemService productItemService,
-            CashboxMovementRepository cashboxMovementRepository
+            CashboxMovementRepository cashboxMovementRepository,
+            CashboxService cashboxService
     ) {
         this.saleRepository = saleRepository;
         this.serviceHeaderService = serviceHeaderService;
@@ -52,6 +55,7 @@ public class SaleFlowService {
         this.productHeaderService = productHeaderService;
         this.productItemService = productItemService;
         this.cashboxMovementRepository = cashboxMovementRepository;
+        this.cashboxService = cashboxService;
     }
 
     // ── Cart operations ──────────────────────────────────────────────────────
@@ -110,6 +114,9 @@ public class SaleFlowService {
 
             // 4. Cashbox movement (outside main transaction — its own persist)
             if (sale.getTotal() > 0) {
+                CashboxOpening currentOpening = cashboxService.getCurrentOpening();
+                Integer openingId = currentOpening != null ? currentOpening.getId() : null;
+
                 cashboxMovementRepository.save(CashboxMovement.builder()
                         .movementType("SALE")
                         .direction("IN")
@@ -121,6 +128,7 @@ public class SaleFlowService {
                         .userId(cart.getSelectedUserId())
                         .occurredAt(LocalDateTime.now())
                         .createdAt(LocalDateTime.now())
+                        .openingId(openingId)
                         .build());
             }
 

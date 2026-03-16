@@ -22,7 +22,7 @@ public class CashboxOpening {
     @EqualsAndHashCode.Include
     private Integer id;
 
-    @Column(name = "period_start_date", nullable = false, unique = true)
+    @Column(name = "period_start_date")
     private LocalDate periodStartDate;
 
     @Column(name = "opened_at", nullable = false)
@@ -38,4 +38,8 @@ public class CashboxOpening {
     private double bankAmount;
 
     private String notes;
+
+    @Column(name = "closed")
+    @Builder.Default
+    private boolean closed = false;
 }

@@ -5,8 +5,6 @@ import app.barbman.core.model.cashbox.CashboxClosure;
 import app.barbman.core.repositories.AbstractHibernateRepository;
 import jakarta.persistence.EntityManager;
 
-import java.time.LocalDate;
-
 public class CashboxClosureRepositoryImpl extends AbstractHibernateRepository<CashboxClosure, Integer>
         implements CashboxClosureRepository {
 
@@ -15,33 +13,18 @@ public class CashboxClosureRepositoryImpl extends AbstractHibernateRepository<Ca
     }
 
     @Override
-    public CashboxClosure findByPeriodStart(LocalDate periodStartDate) {
+    public CashboxClosure findByOpeningId(Integer openingId) {
         try (EntityManager em = HibernateUtil.createEntityManager()) {
             return em.createQuery(
-                    "FROM CashboxClosure WHERE periodStartDate = :date", CashboxClosure.class)
-                    .setParameter("date", periodStartDate)
+                    "FROM CashboxClosure WHERE openingId = :openingId", CashboxClosure.class)
+                    .setParameter("openingId", openingId)
                     .getResultStream()
                     .findFirst()
                     .orElse(null);
         } catch (Exception e) {
-            logger.warn("[CashboxClosureRepositoryImpl] Error fetching closure for period {}: {}",
-                    periodStartDate, e.getMessage());
+            logger.warn("[CashboxClosureRepositoryImpl] Error fetching closure for opening {}: {}",
+                    openingId, e.getMessage());
             return null;
-        }
-    }
-
-    @Override
-    public boolean existsForPeriod(LocalDate periodStartDate) {
-        try (EntityManager em = HibernateUtil.createEntityManager()) {
-            Long count = em.createQuery(
-                    "SELECT COUNT(c) FROM CashboxClosure c WHERE c.periodStartDate = :date", Long.class)
-                    .setParameter("date", periodStartDate)
-                    .getSingleResult();
-            return count > 0;
-        } catch (Exception e) {
-            logger.warn("[CashboxClosureRepositoryImpl] Error checking closure existence for {}: {}",
-                    periodStartDate, e.getMessage());
-            return false;
         }
     }
 

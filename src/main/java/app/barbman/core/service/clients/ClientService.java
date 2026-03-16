@@ -1,7 +1,7 @@
 package app.barbman.core.service.clients;
 
 import app.barbman.core.model.human.Client;
-import app.barbman.core.repositories.client.ClientRepository;
+import app.barbman.core.repositories.client.ClientRepositoryImpl;
 import app.barbman.core.util.RucValidator;
 import app.barbman.core.util.SessionManager;
 import org.apache.logging.log4j.LogManager;
@@ -14,9 +14,9 @@ public class ClientService {
     private static final Logger logger = LogManager.getLogger(ClientService.class);
     private static final String PREFIX = "[CLIENT-SERVICE]";
 
-    private final ClientRepository repo;
+    private final ClientRepositoryImpl repo;
 
-    public ClientService(ClientRepository repo) {
+    public ClientService(ClientRepositoryImpl repo) {
         this.repo = repo;
     }
 
