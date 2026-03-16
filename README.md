@@ -1,48 +1,53 @@
 # Barbman (BETA)
 
-Barbman* is a desktop application designed for **small business management**.  
-It is built in **Java** with **JavaFX** and uses an embedded database (`SQLite`), allowing it to run **offline** on any computer.
+Desktop application for small barbershop management. Built with Java and JavaFX, runs fully offline using an embedded SQLite database.
 
----
+> Currently in beta. A major refactor multi-language support and better code is coming.
 
-## Project Status
-Currently in **BETA phase**.  
-You can download the latest version from the [Releases](../../releases) section.
+## Requirements
 
-**Important Notes:**  
-- Default **database data** must be loaded manually using a tool like [DB Browser for SQLite](https://sqlitebrowser.org/) or similar.  
-  A **setup mode** will be included in future versions to simplify this step.  
-- It is recommended to **run the application as administrator** to ensure proper access to files and database.  
-- A **major update** is in progress: full code refactoring, migration to English on code, multiple language support, and complete UI redesign.
+- Java 17+
+- Maven 3.x (or use the included `mvnw` wrapper)
 
----
+## Setup
 
-## Main Features
+```bash
+./mvnw javafx:run
+```
 
-- **User management**: quick authentication and automatic salary calculations.  
-- **Record of completed services**: daily, weekly, and monthly production tracking.  
-- **Expense management**: control of business expenses.  
-- **Reports and statistics**: generation of cash and payment reports.  
-- **Advance payments support** in the salary module.  
-- **Embedded database** (`SQLite`) → folder `data/`, no installation required.  
-- **Logging system**: all logs are automatically saved in the `logs/` folder.
+On Windows:
 
----
+```bash
+mvnw.cmd javafx:run
+```
 
-## Technologies Used
+To build a fat JAR:
 
-- **Java 17+**
-- **JavaFX 17**
-- **SQLite**
-- **Log4j 2**
-- **Maven**
+```bash
+./mvnw package
+java -jar target/core-1.2.1.jar
+```
 
----
+**Note:** On first run, the database must be seeded manually using [DB Browser for SQLite](https://sqlitebrowser.org/). A setup wizard is planned for a future version. Run the app as administrator to ensure proper file access.
+
+## Features
+
+- User authentication and automatic salary calculation
+- Daily, weekly, and monthly production tracking
+- Expense management
+- Cash and payment reports
+- Advance payment support
+- Embedded SQLite database in `data/` — no installation required
+- Logs saved automatically to `logs/`
+
+## Stack
+
+- Java 17
+- JavaFX 17
+- SQLite (via xerial JDBC)
+- Log4j 2
+- Maven
 
 ## License
 
-This project is licensed under the [Apache License 2.0](./LICENSE).  
-You can use, modify, and distribute it freely, but please give credit to the creator.
-
----
-💼 *Barbman: Manage your small business quickly and easily.*
+[Apache License 2.0](./LICENSE)
