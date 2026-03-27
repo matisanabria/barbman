@@ -29,7 +29,8 @@ public class FlywayMigrator {
     private static final String[] MIGRATION_FILES = {
             "V1__initial_schema.sql",
             "V2__seed_payment_methods.sql",
-            "V3__cashbox_redesign.sql"
+            "V3__cashbox_redesign.sql",
+            "V4__seed_default_admin.sql"
     };
 
     private FlywayMigrator() {}
@@ -48,6 +49,7 @@ public class FlywayMigrator {
                     .baselineVersion("0")
                     .load();
 
+            flyway.repair();
             MigrateResult result = flyway.migrate();
             logger.info("[FLYWAY] Migrations complete. Applied: {}", result.migrationsExecuted);
 

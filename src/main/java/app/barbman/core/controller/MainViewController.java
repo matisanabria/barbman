@@ -1,10 +1,12 @@
 package app.barbman.core.controller;
 
+import app.barbman.core.model.cashbox.CashboxOpening;
 import app.barbman.core.model.human.User;
 import app.barbman.core.repositories.cashbox.closure.CashboxClosureRepositoryImpl;
 import app.barbman.core.repositories.cashbox.movement.CashboxMovementRepositoryImpl;
 import app.barbman.core.repositories.cashbox.opening.CashboxOpeningRepositoryImpl;
 import app.barbman.core.service.cashbox.CashboxService;
+import app.barbman.core.util.AlertUtil;
 import app.barbman.core.util.SessionManager;
 import app.barbman.core.util.window.EmbeddedViewLoader;
 import app.barbman.core.util.window.WindowManager;
@@ -18,6 +20,10 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class MainViewController {
 
@@ -51,6 +57,9 @@ public class MainViewController {
             return; // if cashbox is not opened, do not load default view
         }
 
+        // Warn if cashbox has been open since a previous week
+        Platform.runLater(this::checkStaleCashbox);
+
         // Cashbox is opened, load default view
         EmbeddedViewLoader.load(
                 borderPane,
@@ -74,8 +83,7 @@ public class MainViewController {
 
         try {
             FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource(sidebarPath),
-                    WindowManager.getBundle()
+                    getClass().getResource(sidebarPath)
             );
 
             Node sidebar = loader.load();
@@ -87,6 +95,31 @@ public class MainViewController {
 
         } catch (Exception e) {
             logger.error("{} Failed to load sidebar", PREFIX, e);
+        }
+    }
+
+    // ============================================================
+    // ===================== STALE CASHBOX ========================
+    // ============================================================
+
+    private void checkStaleCashbox() {
+        try {
+            CashboxOpening opening = cashboxService.getCurrentOpening();
+            if (opening == null) return;
+
+            LocalDate openedWeekStart = opening.getOpenedAt().toLocalDate().with(DayOfWeek.MONDAY);
+            LocalDate currentWeekStart = LocalDate.now().with(DayOfWeek.MONDAY);
+
+            if (openedWeekStart.isBefore(currentWeekStart)) {
+                String openedDate = opening.getOpenedAt().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+                AlertUtil.showWarning(
+                        "Caja abierta desde la semana pasada",
+                        "La caja fue abierta el " + openedDate + " y no se cerro.\n" +
+                        "Recorda cerrarla desde la seccion Caja."
+                );
+            }
+        } catch (Exception e) {
+            logger.error("{} Error checking stale cashbox", PREFIX, e);
         }
     }
 

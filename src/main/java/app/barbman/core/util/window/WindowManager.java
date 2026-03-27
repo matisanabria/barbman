@@ -15,7 +15,6 @@ import org.apache.logging.log4j.Logger;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ResourceBundle;
 
 /**
  * Centralized window navigation manager.
@@ -74,11 +73,9 @@ public class WindowManager {
     ) {
         try {
             loadFontsOnce();
-            ResourceBundle bundle = WindowManager.getBundle();
 
             FXMLLoader loader = new FXMLLoader(
-                    WindowManager.class.getResource(request.getFxmlPath()),
-                    bundle
+                    WindowManager.class.getResource(request.getFxmlPath())
             );
 
             Parent root = loader.load();
@@ -195,11 +192,6 @@ public class WindowManager {
                 stage.close();
             }
         }
-    }
-
-    /** Always provides the active ResourceBundle. */
-    public static ResourceBundle getBundle() {
-        return WindowLanguageHolder.getBundle();
     }
 
     // ======================= FONT LOGIC ==========================

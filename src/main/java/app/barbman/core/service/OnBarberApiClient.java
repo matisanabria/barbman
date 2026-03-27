@@ -62,7 +62,15 @@ public class OnBarberApiClient {
         JsonNode slotsNode = root.get("slots");
         if (slotsNode != null && slotsNode.isArray()) {
             for (JsonNode s : slotsNode) {
-                slots.add(s.asText());
+                if (s.isObject()) {
+                    boolean available = s.has("available") && s.get("available").asBoolean(false);
+                    if (available && s.has("time")) {
+                        slots.add(s.get("time").asText());
+                    }
+                } else {
+                    // Fallback: plain string format
+                    slots.add(s.asText());
+                }
             }
         }
         return slots;
@@ -107,6 +115,51 @@ public class OnBarberApiClient {
         return parseAppointment(result);
     }
 
+    /**
+     * POST /schedule-overrides — close (or modify) a specific day for a barber (protected)
+     */
+    public void closeDayForBarber(int barberId, LocalDate date) throws Exception {
+        ObjectNode body = mapper.createObjectNode();
+        body.put("barber_id", barberId);
+        body.put("date", date.toString());
+        body.put("is_open", false);
+
+        postProtected("/schedule-overrides", body);
+    }
+
+    /**
+     * POST /schedule-overrides — reopen a previously closed day (protected)
+     */
+    public void reopenDayForBarber(int barberId, LocalDate date) throws Exception {
+        // Fetch existing overrides to find the one for this date
+        JsonNode overrides = getProtected("/barbers/" + barberId + "/overrides");
+        for (JsonNode o : overrides) {
+            String overrideDate = o.get("date").asText();
+            // API returns "YYYY-MM-DDTHH:MM:SS.000000Z" or "YYYY-MM-DD"
+            if (overrideDate.startsWith(date.toString())) {
+                deleteProtected("/schedule-overrides/" + o.get("id").asInt());
+                return;
+            }
+        }
+    }
+
+    /**
+     * GET /barbers/{id}/overrides — list schedule overrides for a barber (protected)
+     */
+    public List<ClosedDayDTO> getClosedDays(int barberId) throws Exception {
+        JsonNode root = getProtected("/barbers/" + barberId + "/overrides");
+        List<ClosedDayDTO> days = new ArrayList<>();
+        for (JsonNode node : root) {
+            if (!node.get("is_open").asBoolean(true)) {
+                String dateStr = node.get("date").asText();
+                // Normalize: "2026-03-20T00:00:00.000000Z" → "2026-03-20"
+                if (dateStr.length() > 10) dateStr = dateStr.substring(0, 10);
+                days.add(new ClosedDayDTO(node.get("id").asInt(), barberId, dateStr));
+            }
+        }
+        return days;
+    }
+
     // ============================================================
     // HTTP METHODS
     // ============================================================
@@ -140,6 +193,31 @@ public class OnBarberApiClient {
                 .POST(HttpRequest.BodyPublishers.ofString(mapper.writeValueAsString(body)))
                 .header("Content-Type", "application/json")
                 .header("Accept", "application/json")
+                .timeout(Duration.ofSeconds(15))
+                .build();
+
+        return execute(request);
+    }
+
+    private JsonNode postProtected(String path, ObjectNode body) throws Exception {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(baseUrl + path))
+                .POST(HttpRequest.BodyPublishers.ofString(mapper.writeValueAsString(body)))
+                .header("Content-Type", "application/json")
+                .header("Accept", "application/json")
+                .header("Authorization", "Bearer " + token)
+                .timeout(Duration.ofSeconds(15))
+                .build();
+
+        return execute(request);
+    }
+
+    private JsonNode deleteProtected(String path) throws Exception {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(baseUrl + path))
+                .DELETE()
+                .header("Accept", "application/json")
+                .header("Authorization", "Bearer " + token)
                 .timeout(Duration.ofSeconds(15))
                 .build();
 
@@ -306,6 +384,29 @@ public class OnBarberApiClient {
                 case "completed" -> "Completada";
                 default -> status;
             };
+        }
+    }
+
+    public static class ClosedDayDTO {
+        private final int id;
+        private final int barberId;
+        private final String date;
+
+        public ClosedDayDTO(int id, int barberId, String date) {
+            this.id = id;
+            this.barberId = barberId;
+            this.date = date;
+        }
+
+        public int getId() { return id; }
+        public int getBarberId() { return barberId; }
+        public String getDate() { return date; }
+
+        public String getFormattedDate() {
+            if (date != null && date.length() == 10) {
+                return date.substring(8) + "/" + date.substring(5, 7) + "/" + date.substring(0, 4);
+            }
+            return date;
         }
     }
 

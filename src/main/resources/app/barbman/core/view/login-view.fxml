@@ -24,7 +24,7 @@
                         <ImageView fx:id="logoImageView" fitWidth="160.0" fitHeight="160.0"
                                    preserveRatio="true" opacity="0.0">
                             <image>
-                                <Image url="@../icons/ob.png"/>
+                                <Image url="@../icons/icon-for-javafx.png"/>
                             </image>
                         </ImageView>
                     </children>
@@ -49,13 +49,13 @@
             <children>
                 <VBox alignment="CENTER" spacing="18.0" layoutX="80.0" layoutY="100.0" prefWidth="200.0">
                     <children>
-                        <Label fx:id="loginTitle" text="%login_title_generic" styleClass="login-title" opacity="0.0"/>
+                        <Label fx:id="loginTitle" text="Hola" styleClass="login-title" opacity="0.0"/>
                         <Label fx:id="subtitleLabel" wrapText="true" maxWidth="200.0"
-                               text="%login_subtitle_phrase"
+                               text="Listo para cortar historia."
                                styleClass="login-subtitle" opacity="0.0"/>
-                        <PasswordField fx:id="pinField" styleClass="login-pin-field" promptText="%login_prompt_pin" prefWidth="180.0"/>
-                        <Label fx:id="loginLabel" text="%login_error_pin_invalid" visible="false" styleClass="login-error-label"/>
-                        <Button text="%login_button_enter" onAction="#loginController" styleClass="login-button" prefWidth="140.0"/>
+                        <PasswordField fx:id="pinField" styleClass="login-pin-field" promptText="Ingresar PIN" prefWidth="180.0"/>
+                        <Label fx:id="loginLabel" text="PIN invalido" visible="false" styleClass="login-error-label"/>
+                        <Button text="Ingresar" onAction="#loginController" styleClass="login-button" prefWidth="140.0"/>
                     </children>
                 </VBox>
             </children>

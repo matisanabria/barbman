@@ -4,6 +4,7 @@ import app.barbman.core.infrastructure.EnvConfig;
 import app.barbman.core.service.OnBarberApiClient;
 import app.barbman.core.service.OnBarberApiClient.AppointmentDTO;
 import app.barbman.core.service.OnBarberApiClient.BarberDTO;
+import app.barbman.core.service.OnBarberApiClient.ClosedDayDTO;
 import app.barbman.core.util.window.WindowManager;
 import app.barbman.core.util.window.WindowRequest;
 import javafx.application.Platform;
@@ -20,6 +21,8 @@ import org.apache.logging.log4j.Logger;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.TextStyle;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
@@ -198,8 +201,11 @@ public class AppointmentsViewController {
 
                 pool.shutdown();
 
+                // Auto-complete confirmed appointments that ended 1+ hour ago
+                List<AppointmentDTO> updatedAppointments = autoCompleteExpired(appointments);
+
                 Platform.runLater(() -> {
-                    allAppointments = appointments;
+                    allAppointments = updatedAppointments;
                     availableSlotsCache.putAll(slotsMap);
                     buildGrid();
                     hideLoading();
@@ -356,6 +362,12 @@ public class AppointmentsViewController {
         cell.setAlignment(Pos.CENTER);
         cell.getStyleClass().add("schedule-cell");
 
+        // Hide available slots that are already in the past
+        boolean slotPast = isSlotInPast(date, time);
+        if (slotPast && isAvailable && appointment == null) {
+            isAvailable = false;
+        }
+
         if (appointment != null) {
             String status = appointment.getStatus();
             cell.getStyleClass().add("schedule-cell-" + status);
@@ -470,6 +482,183 @@ public class AppointmentsViewController {
             }
         } catch (Exception e) {
             logger.error("{} Failed to open detail modal: {}", PREFIX, e.getMessage());
+        }
+    }
+
+    // ============================================================
+    // CLOSE / REOPEN DAY
+    // ============================================================
+
+    @FXML
+    private void handleCloseDay() {
+        BarberDTO barber = barberCombo.getValue();
+        if (barber == null) {
+            showStatus("Seleccionar un barbero primero.");
+            return;
+        }
+
+        DatePicker picker = new DatePicker(LocalDate.now());
+        picker.setDayCellFactory(dp -> new DateCell() {
+            @Override
+            public void updateItem(LocalDate item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item.isBefore(LocalDate.now())) {
+                    setDisable(true);
+                    setStyle("-fx-background-color: #333;");
+                }
+            }
+        });
+
+        Dialog<LocalDate> dialog = new Dialog<>();
+        dialog.setTitle("Cerrar día");
+        dialog.setHeaderText("Cerrar un día completo para " + barber.getName());
+        dialog.getDialogPane().setContent(new VBox(10, new Label("Seleccionar fecha:"), picker));
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+        dialog.setResultConverter(btn -> btn == ButtonType.OK ? picker.getValue() : null);
+
+        Optional<LocalDate> result = dialog.showAndWait();
+        result.ifPresent(date -> {
+            showLoading("Cerrando día...");
+            Thread thread = new Thread(() -> {
+                try {
+                    apiClient.closeDayForBarber(barber.getId(), date);
+                    Platform.runLater(() -> {
+                        hideLoading();
+                        loadWeekData();
+                    });
+                } catch (Exception e) {
+                    logger.error("{} Failed to close day: {}", PREFIX, e.getMessage());
+                    Platform.runLater(() -> {
+                        hideLoading();
+                        showStatus("Error al cerrar el día: " + e.getMessage());
+                    });
+                }
+            });
+            thread.setDaemon(true);
+            thread.start();
+        });
+    }
+
+    @FXML
+    private void handleReopenDay() {
+        BarberDTO barber = barberCombo.getValue();
+        if (barber == null) {
+            showStatus("Seleccionar un barbero primero.");
+            return;
+        }
+
+        showLoading("Cargando días cerrados...");
+        Thread thread = new Thread(() -> {
+            try {
+                List<ClosedDayDTO> closedDays = apiClient.getClosedDays(barber.getId());
+                Platform.runLater(() -> {
+                    hideLoading();
+                    if (closedDays.isEmpty()) {
+                        showStatus("No hay días cerrados para " + barber.getName() + ".");
+                        return;
+                    }
+
+                    ChoiceDialog<ClosedDayDTO> dialog = new ChoiceDialog<>(closedDays.get(0), closedDays);
+                    dialog.setTitle("Reabrir día");
+                    dialog.setHeaderText("Seleccionar día cerrado para reabrir para " + barber.getName());
+                    dialog.setContentText("Día:");
+
+                    // Show formatted dates in the combo
+                    ComboBox<ClosedDayDTO> combo = (ComboBox<ClosedDayDTO>) dialog.getDialogPane().lookup(".combo-box");
+                    if (combo != null) {
+                        combo.setConverter(new StringConverter<>() {
+                            @Override
+                            public String toString(ClosedDayDTO d) {
+                                return d != null ? d.getFormattedDate() + "  (" + d.getDate() + ")" : "";
+                            }
+                            @Override
+                            public ClosedDayDTO fromString(String s) { return null; }
+                        });
+                    }
+
+                    Optional<ClosedDayDTO> selected = dialog.showAndWait();
+                    selected.ifPresent(closedDay -> {
+                        showLoading("Reabriendo día...");
+                        Thread reopenThread = new Thread(() -> {
+                            try {
+                                apiClient.reopenDayForBarber(barber.getId(), LocalDate.parse(closedDay.getDate()));
+                                Platform.runLater(() -> {
+                                    hideLoading();
+                                    loadWeekData();
+                                });
+                            } catch (Exception e) {
+                                logger.error("{} Failed to reopen day: {}", PREFIX, e.getMessage());
+                                Platform.runLater(() -> {
+                                    hideLoading();
+                                    showStatus("Error al reabrir el día: " + e.getMessage());
+                                });
+                            }
+                        });
+                        reopenThread.setDaemon(true);
+                        reopenThread.start();
+                    });
+                });
+            } catch (Exception e) {
+                logger.error("{} Failed to load closed days: {}", PREFIX, e.getMessage());
+                Platform.runLater(() -> {
+                    hideLoading();
+                    showStatus("Error al cargar días cerrados: " + e.getMessage());
+                });
+            }
+        });
+        thread.setDaemon(true);
+        thread.start();
+    }
+
+    // ============================================================
+    // AUTO-COMPLETE EXPIRED
+    // ============================================================
+
+    /**
+     * Marks confirmed appointments as "completed" if the appointment time
+     * ended more than 1 hour ago. Calls the API for each and returns
+     * the updated list.
+     */
+    private List<AppointmentDTO> autoCompleteExpired(List<AppointmentDTO> appointments) {
+        LocalDateTime now = LocalDateTime.now();
+        List<AppointmentDTO> result = new ArrayList<>();
+
+        for (AppointmentDTO a : appointments) {
+            if ("confirmed".equals(a.getStatus())) {
+                try {
+                    LocalDate date = LocalDate.parse(a.getDateOnly());
+                    LocalTime time = LocalTime.parse(a.getFormattedTime());
+                    LocalDateTime appointmentEnd = LocalDateTime.of(date, time).plusHours(1);
+
+                    if (now.isAfter(appointmentEnd.plusHours(1))) {
+                        logger.info("{} Auto-completing expired appointment #{} ({} {})",
+                                PREFIX, a.getId(), a.getDateOnly(), a.getFormattedTime());
+                        try {
+                            AppointmentDTO updated = apiClient.updateAppointmentStatus(a.getId(), "completed");
+                            result.add(updated);
+                            continue;
+                        } catch (Exception e) {
+                            logger.warn("{} Failed to auto-complete #{}: {}", PREFIX, a.getId(), e.getMessage());
+                        }
+                    }
+                } catch (Exception e) {
+                    logger.debug("{} Could not parse date/time for #{}", PREFIX, a.getId());
+                }
+            }
+            result.add(a);
+        }
+        return result;
+    }
+
+    /**
+     * Returns true if the given date+time slot is in the past.
+     */
+    private boolean isSlotInPast(LocalDate date, String time) {
+        try {
+            LocalTime slotTime = LocalTime.parse(time);
+            return LocalDateTime.of(date, slotTime).isBefore(LocalDateTime.now());
+        } catch (Exception e) {
+            return false;
         }
     }
 

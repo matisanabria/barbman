@@ -17,6 +17,8 @@ import app.barbman.core.util.window.WindowRequest;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Side;
+import javafx.scene.chart.*;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
@@ -29,13 +31,10 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * Controller for the cashbox dashboard.
- * Displays live balances for current period + daily, weekly, and monthly reports.
- */
 public class CashboxController implements Initializable {
 
     private static final Logger logger = LogManager.getLogger(CashboxController.class);
@@ -58,6 +57,8 @@ public class CashboxController implements Initializable {
     @FXML private Label lblLiveCash;
     @FXML private Label lblLiveBank;
     @FXML private Label lblLiveTotal;
+    @FXML private Label lblLiveTotalIn;
+    @FXML private Label lblLiveTotalOut;
 
     // ============================================================
     // FXML - DIARIO
@@ -71,8 +72,11 @@ public class CashboxController implements Initializable {
     @FXML private Label lblBankInDiaria;
     @FXML private Label lblBankOutDiaria;
     @FXML private Label lblBankBalanceDiaria;
+    @FXML private Label lblTotalInDiaria;
+    @FXML private Label lblTotalOutDiaria;
     @FXML private Label lblTotalBalanceDiaria;
     @FXML private VBox boxProduccionDiaria;
+    @FXML private VBox chartContainerDiario;
 
     // ============================================================
     // FXML - SEMANAL
@@ -86,8 +90,11 @@ public class CashboxController implements Initializable {
     @FXML private Label lblBankInSemanal;
     @FXML private Label lblBankOutSemanal;
     @FXML private Label lblBankBalanceSemanal;
+    @FXML private Label lblTotalInSemanal;
+    @FXML private Label lblTotalOutSemanal;
     @FXML private Label lblTotalBalanceSemanal;
     @FXML private VBox boxProduccionSemanal;
+    @FXML private VBox chartContainerSemanal;
 
     // ============================================================
     // FXML - MENSUAL
@@ -101,8 +108,11 @@ public class CashboxController implements Initializable {
     @FXML private Label lblBankInMensual;
     @FXML private Label lblBankOutMensual;
     @FXML private Label lblBankBalanceMensual;
+    @FXML private Label lblTotalInMensual;
+    @FXML private Label lblTotalOutMensual;
     @FXML private Label lblTotalBalanceMensual;
     @FXML private VBox boxProduccionMensual;
+    @FXML private VBox chartContainerMensual;
 
     // ============================================================
     // CONSTRUCTOR
@@ -150,6 +160,8 @@ public class CashboxController implements Initializable {
             lblLiveCash.setText("0 Gs");
             lblLiveBank.setText("0 Gs");
             lblLiveTotal.setText("0 Gs");
+            lblLiveTotalIn.setText("0 Gs");
+            lblLiveTotalOut.setText("0 Gs");
             return;
         }
 
@@ -163,6 +175,16 @@ public class CashboxController implements Initializable {
         lblLiveCash.setText(NumberFormatterUtil.format(cash) + " Gs");
         lblLiveBank.setText(NumberFormatterUtil.format(bank) + " Gs");
         lblLiveTotal.setText(NumberFormatterUtil.format(total) + " Gs");
+
+        try {
+            CashboxReportDTO periodReport = reportService.getCurrentPeriodReport();
+            lblLiveTotalIn.setText("+ " + NumberFormatterUtil.format(periodReport.getTotalIn()) + " Gs");
+            lblLiveTotalOut.setText("- " + NumberFormatterUtil.format(periodReport.getTotalOut()) + " Gs");
+        } catch (Exception e) {
+            logger.error("{} Error loading live summary", PREFIX, e);
+            lblLiveTotalIn.setText("0 Gs");
+            lblLiveTotalOut.setText("0 Gs");
+        }
     }
 
     // ============================================================
@@ -208,15 +230,18 @@ public class CashboxController implements Initializable {
 
             lblCashInDiaria.setText("+ " + NumberFormatterUtil.format(report.getCashIn()) + " Gs");
             lblCashOutDiaria.setText("- " + NumberFormatterUtil.format(report.getCashOut()) + " Gs");
-            lblCashBalanceDiaria.setText("= " + NumberFormatterUtil.format(report.getCashBalance()) + " Gs");
+            lblCashBalanceDiaria.setText(NumberFormatterUtil.format(report.getCashBalance()) + " Gs");
 
             lblBankInDiaria.setText("+ " + NumberFormatterUtil.format(report.getBankIn()) + " Gs");
             lblBankOutDiaria.setText("- " + NumberFormatterUtil.format(report.getBankOut()) + " Gs");
-            lblBankBalanceDiaria.setText("= " + NumberFormatterUtil.format(report.getBankBalance()) + " Gs");
+            lblBankBalanceDiaria.setText(NumberFormatterUtil.format(report.getBankBalance()) + " Gs");
 
+            lblTotalInDiaria.setText("+ " + NumberFormatterUtil.format(report.getTotalIn()) + " Gs");
+            lblTotalOutDiaria.setText("- " + NumberFormatterUtil.format(report.getTotalOut()) + " Gs");
             lblTotalBalanceDiaria.setText(NumberFormatterUtil.format(report.getTotalBalance()) + " Gs");
 
             showProduction(boxProduccionDiaria, report);
+            buildDailyPieChart(report);
 
         } catch (Exception e) {
             logger.error("{} Error showing daily report", PREFIX, e);
@@ -273,19 +298,22 @@ public class CashboxController implements Initializable {
             CashboxReportDTO report = reportService.getWeeklyReport(weekStart);
 
             LocalDate weekEnd = weekStart.plusDays(6);
-            lblSemana.setText(weekStart.format(DATE_FORMATTER) + " -> " + weekEnd.format(DATE_FORMATTER));
+            lblSemana.setText(weekStart.format(DATE_FORMATTER) + " - " + weekEnd.format(DATE_FORMATTER));
 
             lblCashInSemanal.setText("+ " + NumberFormatterUtil.format(report.getCashIn()) + " Gs");
             lblCashOutSemanal.setText("- " + NumberFormatterUtil.format(report.getCashOut()) + " Gs");
-            lblCashBalanceSemanal.setText("= " + NumberFormatterUtil.format(report.getCashBalance()) + " Gs");
+            lblCashBalanceSemanal.setText(NumberFormatterUtil.format(report.getCashBalance()) + " Gs");
 
             lblBankInSemanal.setText("+ " + NumberFormatterUtil.format(report.getBankIn()) + " Gs");
             lblBankOutSemanal.setText("- " + NumberFormatterUtil.format(report.getBankOut()) + " Gs");
-            lblBankBalanceSemanal.setText("= " + NumberFormatterUtil.format(report.getBankBalance()) + " Gs");
+            lblBankBalanceSemanal.setText(NumberFormatterUtil.format(report.getBankBalance()) + " Gs");
 
+            lblTotalInSemanal.setText("+ " + NumberFormatterUtil.format(report.getTotalIn()) + " Gs");
+            lblTotalOutSemanal.setText("- " + NumberFormatterUtil.format(report.getTotalOut()) + " Gs");
             lblTotalBalanceSemanal.setText(NumberFormatterUtil.format(report.getTotalBalance()) + " Gs");
 
             showProduction(boxProduccionSemanal, report);
+            buildWeeklyBarChart(weekStart);
 
         } catch (Exception e) {
             logger.error("{} Error showing weekly report", PREFIX, e);
@@ -340,15 +368,18 @@ public class CashboxController implements Initializable {
 
             lblCashInMensual.setText("+ " + NumberFormatterUtil.format(report.getCashIn()) + " Gs");
             lblCashOutMensual.setText("- " + NumberFormatterUtil.format(report.getCashOut()) + " Gs");
-            lblCashBalanceMensual.setText("= " + NumberFormatterUtil.format(report.getCashBalance()) + " Gs");
+            lblCashBalanceMensual.setText(NumberFormatterUtil.format(report.getCashBalance()) + " Gs");
 
             lblBankInMensual.setText("+ " + NumberFormatterUtil.format(report.getBankIn()) + " Gs");
             lblBankOutMensual.setText("- " + NumberFormatterUtil.format(report.getBankOut()) + " Gs");
-            lblBankBalanceMensual.setText("= " + NumberFormatterUtil.format(report.getBankBalance()) + " Gs");
+            lblBankBalanceMensual.setText(NumberFormatterUtil.format(report.getBankBalance()) + " Gs");
 
+            lblTotalInMensual.setText("+ " + NumberFormatterUtil.format(report.getTotalIn()) + " Gs");
+            lblTotalOutMensual.setText("- " + NumberFormatterUtil.format(report.getTotalOut()) + " Gs");
             lblTotalBalanceMensual.setText(NumberFormatterUtil.format(report.getTotalBalance()) + " Gs");
 
             showProduction(boxProduccionMensual, report);
+            buildMonthlyBarChart(month);
 
         } catch (Exception e) {
             logger.error("{} Error showing monthly report", PREFIX, e);
@@ -385,6 +416,147 @@ public class CashboxController implements Initializable {
                     lbl.getStyleClass().add("caja-production-item");
                     container.getChildren().add(lbl);
                 });
+    }
+
+    // ============================================================
+    // CHARTS
+    // ============================================================
+
+    private void buildDailyPieChart(CashboxReportDTO report) {
+        chartContainerDiario.getChildren().clear();
+
+        double cashIn = report.getCashIn();
+        double bankIn = report.getBankIn();
+
+        if (cashIn == 0 && bankIn == 0) {
+            Label lbl = new Label("Sin ingresos para graficar");
+            lbl.getStyleClass().add("caja-no-chart-data");
+            chartContainerDiario.getChildren().add(lbl);
+            return;
+        }
+
+        PieChart chart = new PieChart();
+        if (cashIn > 0) {
+            chart.getData().add(new PieChart.Data(
+                    "Efectivo (" + NumberFormatterUtil.format(cashIn) + ")", cashIn));
+        }
+        if (bankIn > 0) {
+            chart.getData().add(new PieChart.Data(
+                    "Banco (" + NumberFormatterUtil.format(bankIn) + ")", bankIn));
+        }
+
+        chart.setTitle("Distribucion de Ingresos");
+        chart.setLabelsVisible(false);
+        chart.setLegendSide(Side.BOTTOM);
+        chart.setPrefHeight(280);
+        chart.setMaxHeight(280);
+        chart.setAnimated(false);
+        chart.getStyleClass().add("caja-chart");
+
+        chartContainerDiario.getChildren().add(chart);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void buildWeeklyBarChart(LocalDate weekStart) {
+        chartContainerSemanal.getChildren().clear();
+
+        CategoryAxis xAxis = new CategoryAxis();
+        NumberAxis yAxis = new NumberAxis();
+        yAxis.setLabel("Gs");
+
+        BarChart<String, Number> chart = new BarChart<>(xAxis, yAxis);
+        chart.setTitle("Ingresos vs Egresos por Dia");
+        chart.setPrefHeight(300);
+        chart.setMaxHeight(300);
+        chart.setAnimated(false);
+        chart.setCategoryGap(12);
+        chart.setBarGap(2);
+        chart.setLegendSide(Side.BOTTOM);
+        chart.getStyleClass().add("caja-chart");
+
+        XYChart.Series<String, Number> seriesIn = new XYChart.Series<>();
+        seriesIn.setName("Ingresos");
+        XYChart.Series<String, Number> seriesOut = new XYChart.Series<>();
+        seriesOut.setName("Egresos");
+
+        for (int i = 0; i < 7; i++) {
+            LocalDate day = weekStart.plusDays(i);
+            String dayLabel = day.getDayOfWeek()
+                    .getDisplayName(TextStyle.SHORT, new Locale("es"))
+                    + " " + day.getDayOfMonth();
+
+            try {
+                CashboxReportDTO dayReport = reportService.getDailyReport(day);
+                seriesIn.getData().add(new XYChart.Data<>(dayLabel, dayReport.getTotalIn()));
+                seriesOut.getData().add(new XYChart.Data<>(dayLabel, dayReport.getTotalOut()));
+            } catch (Exception e) {
+                seriesIn.getData().add(new XYChart.Data<>(dayLabel, 0));
+                seriesOut.getData().add(new XYChart.Data<>(dayLabel, 0));
+            }
+        }
+
+        chart.getData().addAll(seriesIn, seriesOut);
+        chartContainerSemanal.getChildren().add(chart);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void buildMonthlyBarChart(YearMonth month) {
+        chartContainerMensual.getChildren().clear();
+
+        CategoryAxis xAxis = new CategoryAxis();
+        NumberAxis yAxis = new NumberAxis();
+        yAxis.setLabel("Gs");
+
+        BarChart<String, Number> chart = new BarChart<>(xAxis, yAxis);
+        chart.setTitle("Ingresos vs Egresos por Semana");
+        chart.setPrefHeight(300);
+        chart.setMaxHeight(300);
+        chart.setAnimated(false);
+        chart.setCategoryGap(20);
+        chart.setBarGap(2);
+        chart.setLegendSide(Side.BOTTOM);
+        chart.getStyleClass().add("caja-chart");
+
+        XYChart.Series<String, Number> seriesIn = new XYChart.Series<>();
+        seriesIn.setName("Ingresos");
+        XYChart.Series<String, Number> seriesOut = new XYChart.Series<>();
+        seriesOut.setName("Egresos");
+
+        LocalDate monthStart = month.atDay(1);
+        LocalDate monthEnd = month.atEndOfMonth();
+
+        int weekNum = 1;
+        LocalDate chunkStart = monthStart;
+
+        while (!chunkStart.isAfter(monthEnd)) {
+            LocalDate chunkEnd = chunkStart.plusDays(6);
+            if (chunkEnd.isAfter(monthEnd)) chunkEnd = monthEnd;
+
+            String label = chunkStart.getDayOfMonth() + "-" + chunkEnd.getDayOfMonth() + "/" +
+                    chunkEnd.getMonthValue();
+
+            double totalIn = 0, totalOut = 0;
+            LocalDate day = chunkStart;
+            while (!day.isAfter(chunkEnd)) {
+                try {
+                    CashboxReportDTO dayReport = reportService.getDailyReport(day);
+                    totalIn += dayReport.getTotalIn();
+                    totalOut += dayReport.getTotalOut();
+                } catch (Exception e) {
+                    // skip
+                }
+                day = day.plusDays(1);
+            }
+
+            seriesIn.getData().add(new XYChart.Data<>(label, totalIn));
+            seriesOut.getData().add(new XYChart.Data<>(label, totalOut));
+
+            chunkStart = chunkEnd.plusDays(1);
+            weekNum++;
+        }
+
+        chart.getData().addAll(seriesIn, seriesOut);
+        chartContainerMensual.getChildren().add(chart);
     }
 
     // ============================================================

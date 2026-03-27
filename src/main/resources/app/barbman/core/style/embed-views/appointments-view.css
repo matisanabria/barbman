@@ -121,6 +121,53 @@
 }
 
 /* ==========================
+   ACTION BUTTONS
+   ========================== */
+.appointments-btn-close-day {
+    -fx-background-color: #3A2020;
+    -fx-background-radius: 8;
+    -fx-text-fill: #FF6B6B;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-padding: 8 16;
+    -fx-cursor: hand;
+    -fx-border-color: #FF6B6B;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+}
+
+.appointments-btn-close-day:hover {
+    -fx-background-color: #4A2525;
+}
+
+.appointments-btn-close-day .ikonli-font-icon {
+    -fx-icon-color: #FF6B6B;
+}
+
+.appointments-btn-reopen-day {
+    -fx-background-color: #1E2E1E;
+    -fx-background-radius: 8;
+    -fx-text-fill: #4ECB71;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-padding: 8 16;
+    -fx-cursor: hand;
+    -fx-border-color: #4ECB71;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+}
+
+.appointments-btn-reopen-day:hover {
+    -fx-background-color: #2A3F2A;
+}
+
+.appointments-btn-reopen-day .ikonli-font-icon {
+    -fx-icon-color: #4ECB71;
+}
+
+/* ==========================
    STAT CARDS
    ========================== */
 .appointments-stat-card {

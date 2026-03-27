@@ -48,10 +48,10 @@ public class User {
     private PayFrequency payFrequency = PayFrequency.WEEKLY;
 
     @Column(name = "param_1")
-    private double param1;
+    private Double param1;
 
     @Column(name = "param_2")
-    private double param2;
+    private Double param2;
 
     @Column(name = "avatar_path")
     private String avatarPath = "default.png";

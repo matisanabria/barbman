@@ -22,6 +22,7 @@ module app.barbman.core {
     requires org.flywaydb.core;
     opens db.migration to org.flywaydb.core;
 
+
     // DI
     requires com.google.guice;
     requires jakarta.inject;

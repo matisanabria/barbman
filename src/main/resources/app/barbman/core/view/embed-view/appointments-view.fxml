@@ -34,6 +34,16 @@
                 </Button>
             </HBox>
 
+            <!-- Actions -->
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Button fx:id="btnCloseDay" text="Cerrar un día" styleClass="appointments-btn-close-day" onAction="#handleCloseDay">
+                    <graphic><FontIcon iconLiteral="fas-calendar-times" iconSize="14"/></graphic>
+                </Button>
+                <Button fx:id="btnReopenDay" text="Reabrir día cerrado" styleClass="appointments-btn-reopen-day" onAction="#handleReopenDay">
+                    <graphic><FontIcon iconLiteral="fas-calendar-check" iconSize="14"/></graphic>
+                </Button>
+            </HBox>
+
             <!-- Stats -->
             <HBox spacing="14" alignment="CENTER_LEFT">
                 <HBox spacing="14" styleClass="appointments-stat-card" alignment="CENTER_LEFT">

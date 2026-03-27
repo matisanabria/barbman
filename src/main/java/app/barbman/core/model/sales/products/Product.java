@@ -37,6 +37,6 @@ public class Product {
     @Column(name = "image_path")
     private String imagePath;
 
-    @Column(nullable = false)
-    private String notes;
+    @Column
+    private String notes = "";
 }

@@ -49,8 +49,7 @@ public final class EmbeddedViewLoader {
     ) {
         try {
             FXMLLoader loader = new FXMLLoader(
-                    EmbeddedViewLoader.class.getResource(fxmlPath),
-                    WindowManager.getBundle()
+                    EmbeddedViewLoader.class.getResource(fxmlPath)
             );
 
             Parent view = loader.load();

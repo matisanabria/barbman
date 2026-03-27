@@ -158,6 +158,29 @@
     -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
 }
 
+/* SUMMARY CARDS (mini cards for Total In/Out) */
+.caja-summary-card {
+    -fx-background-color: #282828;
+    -fx-background-radius: 8;
+    -fx-padding: 12 16;
+    -fx-border-color: #333333;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+}
+
+.caja-summary-label {
+    -fx-text-fill: #999999;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-text-transform: uppercase;
+}
+
+.caja-summary-amount {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
 /* PRODUCTION */
 .caja-production {
     -fx-background-color: #232323;
@@ -182,6 +205,15 @@
     -fx-padding: 4 0;
 }
 
+/* NO CHART DATA PLACEHOLDER */
+.caja-no-chart-data {
+    -fx-text-fill: #777777;
+    -fx-font-size: 14px;
+    -fx-font-style: italic;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-padding: 40 0;
+}
+
 /* SEPARATOR */
 .caja-section .separator .line {
     -fx-border-color: #3A3A3A;
@@ -191,4 +223,129 @@
 .caja-card .separator .line {
     -fx-border-color: #3A3A3A;
     -fx-border-width: 0.5 0 0 0;
+}
+
+/* ============================================================
+   CHART STYLES
+   ============================================================ */
+
+/* Chart container */
+.caja-chart-container {
+    -fx-background-color: #232323;
+    -fx-background-radius: 10;
+    -fx-padding: 12;
+    -fx-border-color: #3A3A3A;
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+}
+
+/* Chart base */
+.caja-chart .chart-plot-background {
+    -fx-background-color: #2A2A2A;
+}
+
+.caja-chart .chart-content {
+    -fx-padding: 8;
+}
+
+.caja-chart .chart-title {
+    -fx-text-fill: #CCCCCC;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+/* Chart legend */
+.caja-chart .chart-legend {
+    -fx-background-color: transparent;
+    -fx-padding: 6 0 0 0;
+}
+
+.caja-chart .chart-legend-item {
+    -fx-text-fill: #CCCCCC;
+    -fx-font-size: 12px;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+/* Chart axes */
+.caja-chart .axis {
+    -fx-tick-label-fill: #AAAAAA;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+}
+
+.caja-chart .axis-label {
+    -fx-text-fill: #CCCCCC;
+    -fx-font-size: 12px;
+}
+
+.caja-chart .axis-tick-mark {
+    -fx-stroke: #444444;
+}
+
+.caja-chart .axis-minor-tick-mark {
+    -fx-stroke: #333333;
+}
+
+/* Chart grid lines */
+.caja-chart .chart-horizontal-grid-lines {
+    -fx-stroke: #333333;
+}
+
+.caja-chart .chart-vertical-grid-lines {
+    -fx-stroke: #333333;
+}
+
+.caja-chart .chart-alternative-row-fill {
+    -fx-fill: transparent;
+}
+
+.caja-chart .chart-alternative-column-fill {
+    -fx-fill: transparent;
+}
+
+/* Pie chart colors */
+.caja-chart .default-color0.chart-pie {
+    -fx-pie-color: #4ECB71;
+}
+
+.caja-chart .default-color1.chart-pie {
+    -fx-pie-color: #F0C667;
+}
+
+.caja-chart .chart-pie-label {
+    -fx-fill: #CCCCCC;
+    -fx-font-size: 11px;
+}
+
+.caja-chart .chart-pie-label-line {
+    -fx-stroke: #555555;
+}
+
+/* Pie legend symbols */
+.caja-chart .default-color0.chart-legend-item-symbol {
+    -fx-background-color: #4ECB71;
+}
+
+.caja-chart .default-color1.chart-legend-item-symbol {
+    -fx-background-color: #F0C667;
+}
+
+/* Bar chart colors: Series 0 = Ingresos (green), Series 1 = Egresos (red) */
+.caja-chart .default-color0.chart-bar {
+    -fx-bar-fill: #4ECB71;
+    -fx-background-radius: 3 3 0 0;
+}
+
+.caja-chart .default-color1.chart-bar {
+    -fx-bar-fill: #FF9B9B;
+    -fx-background-radius: 3 3 0 0;
+}
+
+/* Bar legend symbols */
+.caja-chart .default-color0.chart-legend-item-symbol.chart-bar {
+    -fx-background-color: #4ECB71;
+}
+
+.caja-chart .default-color1.chart-legend-item-symbol.chart-bar {
+    -fx-background-color: #FF9B9B;
 }
