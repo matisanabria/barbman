@@ -166,26 +166,6 @@
                 </GridPane>
             </VBox>
 
-            <!-- Monto recibido -->
-            <VBox spacing="6">
-                <Label text="Monto recibido"
-                       styleClass="sale-payment-label"/>
-
-                <TextField fx:id="receivedAmountField"
-                           disable="true"
-                           styleClass="sale-payment-field"/>
-            </VBox>
-
-            <!-- Vuelto -->
-            <VBox spacing="4">
-                <Label text="Vuelto:"
-                       styleClass="sale-payment-label"/>
-
-                <Label fx:id="changeLabel"
-                       text="0 Gs"
-                       styleClass="sale-payment-amount"/>
-            </VBox>
-
             <!-- Actions -->
             <HBox spacing="10">
                 <Button fx:id="cancelButton"

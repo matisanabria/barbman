@@ -71,8 +71,6 @@ public class SalePaymentViewController implements Initializable {
     @FXML private VBox summaryContainer;
 
     @FXML private Label totalLabel;
-    @FXML private Label changeLabel;
-    @FXML private TextField receivedAmountField;
 
     @FXML private ToggleButton cashToggle;
     @FXML private ToggleButton transferToggle;
@@ -390,35 +388,9 @@ public class SalePaymentViewController implements Initializable {
         cardToggle.setToggleGroup(group);
         qrToggle.setToggleGroup(group);
 
-        receivedAmountField.setDisable(true);
 
-        group.selectedToggleProperty().addListener((obs, old, selected) -> {
-            boolean isCash = selected == cashToggle;
 
-            receivedAmountField.setDisable(!isCash);
-            receivedAmountField.clear();
-            changeLabel.setText("0 Gs");
-        });
 
-        receivedAmountField.textProperty().addListener((obs, old, val) -> {
-            if (val == null || val.isBlank()) {
-                changeLabel.setText("0 Gs");
-                return;
-            }
-
-            String clean = val.replace(".", "").trim();
-            if (!clean.matches("\\d+")) {
-                receivedAmountField.setText(old);
-                return;
-            }
-
-            double received = Double.parseDouble(clean);
-            double change = received - cart.getTotal();
-
-            changeLabel.setText(
-                    NumberFormatterUtil.format(Math.max(change, 0)) + " Gs"
-            );
-        });
     }
 
     // =========================
@@ -490,31 +462,6 @@ public class SalePaymentViewController implements Initializable {
             new Alert(Alert.AlertType.ERROR,
                     "Seleccione un método de pago").show();
             return false;
-        }
-
-        // 2. Si es efectivo, validar monto recibido
-        if (cashToggle.isSelected()) {
-
-            String raw = receivedAmountField.getText();
-            if (raw == null || raw.isBlank()) {
-                new Alert(Alert.AlertType.ERROR,
-                        "Ingrese el monto recibido").show();
-                return false;
-            }
-
-            String clean = raw.replace(".", "").trim();
-            if (!clean.matches("\\d+")) {
-                new Alert(Alert.AlertType.ERROR,
-                        "Monto inválido").show();
-                return false;
-            }
-
-            double received = Double.parseDouble(clean);
-            if (received < cart.getTotal()) {
-                new Alert(Alert.AlertType.ERROR,
-                        "El monto recibido es menor al total").show();
-                return false;
-            }
         }
 
         return true;
