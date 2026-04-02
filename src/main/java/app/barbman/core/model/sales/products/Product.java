@@ -37,6 +37,7 @@ public class Product {
     @Column(name = "image_path")
     private String imagePath;
 
+    @Builder.Default
     @Column
     private String notes = "";
 }

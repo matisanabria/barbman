@@ -45,6 +45,10 @@
                             <Label fx:id="expectedCashLabel"
                                    text="0 Gs"
                                    styleClass="closure-expected-value"/>
+                            <Label fx:id="cashNegativeWarning"
+                                   text="⚠ Saldo negativo — revisar egresos"
+                                   styleClass="closure-negative-warning"
+                                   visible="false" managed="false"/>
                         </VBox>
 
                         <VBox spacing="4">
@@ -73,6 +77,10 @@
                             <Label fx:id="expectedBankLabel"
                                    text="0 Gs"
                                    styleClass="closure-expected-value"/>
+                            <Label fx:id="bankNegativeWarning"
+                                   text="⚠ Saldo negativo — revisar egresos"
+                                   styleClass="closure-negative-warning"
+                                   visible="false" managed="false"/>
                         </VBox>
 
                         <VBox spacing="4">

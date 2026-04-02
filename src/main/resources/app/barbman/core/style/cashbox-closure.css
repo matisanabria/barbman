@@ -111,6 +111,14 @@
     -fx-text-fill: #EF5350;
 }
 
+/* Negative expected warning */
+.closure-negative-warning {
+    -fx-text-fill: #EF5350;
+    -fx-font-size: 11px;
+    -fx-font-family: 'Inter 24pt Regular', Arial, sans-serif;
+    -fx-padding: 2 0 0 0;
+}
+
 /* TOTALS */
 .closure-totals {
     -fx-background-color: #232323;

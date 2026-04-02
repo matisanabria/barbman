@@ -31,6 +31,11 @@ public class LocalDateTimeConverter implements AttributeConverter<LocalDateTime,
                     .toLocalDateTime();
         }
 
+        // Handle ISO 8601 format stored by older versions (e.g. "2026-02-04T18:22:43.627487500")
+        if (dbValue.contains("T")) {
+            return LocalDateTime.parse(dbValue);
+        }
+
         return LocalDateTime.parse(dbValue, FMT);
     }
 }

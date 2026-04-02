@@ -42,6 +42,8 @@ public class CashboxClosureController {
     @FXML private Label expectedBankLabel;
     @FXML private TextField actualCashField;
     @FXML private TextField actualBankField;
+    @FXML private Label cashNegativeWarning;
+    @FXML private Label bankNegativeWarning;
     @FXML private Label cashDiscrepancyLabel;
     @FXML private Label bankDiscrepancyLabel;
     @FXML private Label expectedTotalLabel;
@@ -69,6 +71,7 @@ public class CashboxClosureController {
     public void initialize() {
         loadClosurePreview();
         setupDiscrepancyListeners();
+        updateDiscrepancies();
     }
 
     private void loadClosurePreview() {
@@ -98,6 +101,14 @@ public class CashboxClosureController {
 
             NumberFormatterUtil.applyToTextField(actualCashField);
             NumberFormatterUtil.applyToTextField(actualBankField);
+
+            actualCashField.setText(NumberFormatterUtil.format(Math.max(0, expectedCash)));
+            actualBankField.setText(NumberFormatterUtil.format(Math.max(0, expectedBank)));
+
+            cashNegativeWarning.setVisible(expectedCash < 0);
+            cashNegativeWarning.setManaged(expectedCash < 0);
+            bankNegativeWarning.setVisible(expectedBank < 0);
+            bankNegativeWarning.setManaged(expectedBank < 0);
 
             logger.info("{} Closure preview loaded for opening {}", PREFIX, opening.getId());
 

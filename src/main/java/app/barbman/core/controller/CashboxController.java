@@ -20,6 +20,8 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Side;
 import javafx.scene.chart.*;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.DateCell;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -64,14 +66,12 @@ public class CashboxController implements Initializable {
     // FXML - DIARIO
     // ============================================================
 
-    @FXML private ChoiceBox<String> choiceFechas;
+    @FXML private DatePicker dateFechas;
     @FXML private Label lblFechaDiaria;
     @FXML private Label lblCashInDiaria;
     @FXML private Label lblCashOutDiaria;
-    @FXML private Label lblCashBalanceDiaria;
     @FXML private Label lblBankInDiaria;
     @FXML private Label lblBankOutDiaria;
-    @FXML private Label lblBankBalanceDiaria;
     @FXML private Label lblTotalInDiaria;
     @FXML private Label lblTotalOutDiaria;
     @FXML private Label lblTotalBalanceDiaria;
@@ -86,10 +86,8 @@ public class CashboxController implements Initializable {
     @FXML private Label lblSemana;
     @FXML private Label lblCashInSemanal;
     @FXML private Label lblCashOutSemanal;
-    @FXML private Label lblCashBalanceSemanal;
     @FXML private Label lblBankInSemanal;
     @FXML private Label lblBankOutSemanal;
-    @FXML private Label lblBankBalanceSemanal;
     @FXML private Label lblTotalInSemanal;
     @FXML private Label lblTotalOutSemanal;
     @FXML private Label lblTotalBalanceSemanal;
@@ -104,10 +102,8 @@ public class CashboxController implements Initializable {
     @FXML private Label lblMes;
     @FXML private Label lblCashInMensual;
     @FXML private Label lblCashOutMensual;
-    @FXML private Label lblCashBalanceMensual;
     @FXML private Label lblBankInMensual;
     @FXML private Label lblBankOutMensual;
-    @FXML private Label lblBankBalanceMensual;
     @FXML private Label lblTotalInMensual;
     @FXML private Label lblTotalOutMensual;
     @FXML private Label lblTotalBalanceMensual;
@@ -199,27 +195,24 @@ public class CashboxController implements Initializable {
             return;
         }
 
-        List<String> dateStrings = dates.stream()
-                .map(d -> d.format(DATE_FORMATTER))
-                .collect(Collectors.toList());
+        Set<LocalDate> availableSet = new HashSet<>(dates);
 
-        choiceFechas.setItems(FXCollections.observableArrayList(dateStrings));
+        dateFechas.setDayCellFactory(picker -> new DateCell() {
+            @Override
+            public void updateItem(LocalDate date, boolean empty) {
+                super.updateItem(date, empty);
+                setDisable(empty || !availableSet.contains(date));
+            }
+        });
 
-        choiceFechas.getSelectionModel().selectedItemProperty().addListener((obs, old, newVal) -> {
-            if (newVal != null) {
-                LocalDate date = LocalDate.parse(newVal, DATE_FORMATTER);
-                showDailyReport(date);
+        dateFechas.valueProperty().addListener((obs, old, newVal) -> {
+            if (newVal != null && availableSet.contains(newVal)) {
+                showDailyReport(newVal);
             }
         });
 
         LocalDate today = LocalDate.now();
-        String todayStr = today.format(DATE_FORMATTER);
-
-        if (dateStrings.contains(todayStr)) {
-            choiceFechas.setValue(todayStr);
-        } else {
-            choiceFechas.setValue(dateStrings.get(0));
-        }
+        dateFechas.setValue(availableSet.contains(today) ? today : dates.get(0));
     }
 
     private void showDailyReport(LocalDate date) {
@@ -230,11 +223,9 @@ public class CashboxController implements Initializable {
 
             lblCashInDiaria.setText("+ " + NumberFormatterUtil.format(report.getCashIn()) + " Gs");
             lblCashOutDiaria.setText("- " + NumberFormatterUtil.format(report.getCashOut()) + " Gs");
-            lblCashBalanceDiaria.setText(NumberFormatterUtil.format(report.getCashBalance()) + " Gs");
 
             lblBankInDiaria.setText("+ " + NumberFormatterUtil.format(report.getBankIn()) + " Gs");
             lblBankOutDiaria.setText("- " + NumberFormatterUtil.format(report.getBankOut()) + " Gs");
-            lblBankBalanceDiaria.setText(NumberFormatterUtil.format(report.getBankBalance()) + " Gs");
 
             lblTotalInDiaria.setText("+ " + NumberFormatterUtil.format(report.getTotalIn()) + " Gs");
             lblTotalOutDiaria.setText("- " + NumberFormatterUtil.format(report.getTotalOut()) + " Gs");
@@ -250,7 +241,7 @@ public class CashboxController implements Initializable {
 
     private void showNoDailyData() {
         lblFechaDiaria.setText("No hay registros");
-        choiceFechas.setDisable(true);
+        dateFechas.setDisable(true);
     }
 
     // ============================================================
@@ -302,11 +293,9 @@ public class CashboxController implements Initializable {
 
             lblCashInSemanal.setText("+ " + NumberFormatterUtil.format(report.getCashIn()) + " Gs");
             lblCashOutSemanal.setText("- " + NumberFormatterUtil.format(report.getCashOut()) + " Gs");
-            lblCashBalanceSemanal.setText(NumberFormatterUtil.format(report.getCashBalance()) + " Gs");
 
             lblBankInSemanal.setText("+ " + NumberFormatterUtil.format(report.getBankIn()) + " Gs");
             lblBankOutSemanal.setText("- " + NumberFormatterUtil.format(report.getBankOut()) + " Gs");
-            lblBankBalanceSemanal.setText(NumberFormatterUtil.format(report.getBankBalance()) + " Gs");
 
             lblTotalInSemanal.setText("+ " + NumberFormatterUtil.format(report.getTotalIn()) + " Gs");
             lblTotalOutSemanal.setText("- " + NumberFormatterUtil.format(report.getTotalOut()) + " Gs");
@@ -368,11 +357,9 @@ public class CashboxController implements Initializable {
 
             lblCashInMensual.setText("+ " + NumberFormatterUtil.format(report.getCashIn()) + " Gs");
             lblCashOutMensual.setText("- " + NumberFormatterUtil.format(report.getCashOut()) + " Gs");
-            lblCashBalanceMensual.setText(NumberFormatterUtil.format(report.getCashBalance()) + " Gs");
 
             lblBankInMensual.setText("+ " + NumberFormatterUtil.format(report.getBankIn()) + " Gs");
             lblBankOutMensual.setText("- " + NumberFormatterUtil.format(report.getBankOut()) + " Gs");
-            lblBankBalanceMensual.setText(NumberFormatterUtil.format(report.getBankBalance()) + " Gs");
 
             lblTotalInMensual.setText("+ " + NumberFormatterUtil.format(report.getTotalIn()) + " Gs");
             lblTotalOutMensual.setText("- " + NumberFormatterUtil.format(report.getTotalOut()) + " Gs");
@@ -568,6 +555,7 @@ public class CashboxController implements Initializable {
         var movements = movementRepo.findAll();
 
         return movements.stream()
+                .filter(m -> !"OPENING".equals(m.getMovementType()))
                 .map(m -> m.getOccurredAt().toLocalDate())
                 .distinct()
                 .sorted(Comparator.reverseOrder())
@@ -624,7 +612,7 @@ public class CashboxController implements Initializable {
                             .fxml("/app/barbman/core/view/cashbox-closure-view.fxml")
                             .title("Cerrar Caja")
                             .css("/app/barbman/core/style/cashbox-closure.css")
-                            .owner((Stage) choiceFechas.getScene().getWindow())
+                            .owner((Stage) dateFechas.getScene().getWindow())
                             .modal(true)
                             .resizable(false)
                             .returnController(true)
@@ -646,9 +634,8 @@ public class CashboxController implements Initializable {
     private void refreshAllReports() {
         logger.info("{} Refreshing all reports after closure", PREFIX);
 
-        if (choiceFechas.getValue() != null) {
-            LocalDate date = LocalDate.parse(choiceFechas.getValue(), DATE_FORMATTER);
-            showDailyReport(date);
+        if (dateFechas.getValue() != null) {
+            showDailyReport(dateFechas.getValue());
         }
 
         if (choiceSemanas.getValue() != null) {

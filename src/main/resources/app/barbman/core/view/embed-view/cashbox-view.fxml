@@ -82,9 +82,9 @@
                 <HBox alignment="CENTER_LEFT" spacing="12">
                     <Label text="Resumen Diario" styleClass="caja-section-title"/>
                     <Region HBox.hgrow="ALWAYS"/>
-                    <ChoiceBox fx:id="choiceFechas"
-                               prefWidth="150"
-                               styleClass="caja-choice"/>
+                    <DatePicker fx:id="dateFechas"
+                                prefWidth="160"
+                                styleClass="caja-choice"/>
                 </HBox>
 
                 <Label fx:id="lblFechaDiaria"
@@ -98,8 +98,6 @@
                         <Separator/>
                         <Label fx:id="lblCashInDiaria" text="+ 0 Gs" styleClass="caja-amount-in"/>
                         <Label fx:id="lblCashOutDiaria" text="- 0 Gs" styleClass="caja-amount-out"/>
-                        <Separator/>
-                        <Label fx:id="lblCashBalanceDiaria" text="0 Gs" styleClass="caja-balance"/>
                     </VBox>
 
                     <VBox spacing="8" styleClass="caja-card" HBox.hgrow="ALWAYS">
@@ -107,8 +105,6 @@
                         <Separator/>
                         <Label fx:id="lblBankInDiaria" text="+ 0 Gs" styleClass="caja-amount-in"/>
                         <Label fx:id="lblBankOutDiaria" text="- 0 Gs" styleClass="caja-amount-out"/>
-                        <Separator/>
-                        <Label fx:id="lblBankBalanceDiaria" text="0 Gs" styleClass="caja-balance"/>
                     </VBox>
                 </HBox>
 
@@ -166,8 +162,6 @@
                         <Separator/>
                         <Label fx:id="lblCashInSemanal" text="+ 0 Gs" styleClass="caja-amount-in"/>
                         <Label fx:id="lblCashOutSemanal" text="- 0 Gs" styleClass="caja-amount-out"/>
-                        <Separator/>
-                        <Label fx:id="lblCashBalanceSemanal" text="0 Gs" styleClass="caja-balance"/>
                     </VBox>
 
                     <VBox spacing="8" styleClass="caja-card" HBox.hgrow="ALWAYS">
@@ -175,8 +169,6 @@
                         <Separator/>
                         <Label fx:id="lblBankInSemanal" text="+ 0 Gs" styleClass="caja-amount-in"/>
                         <Label fx:id="lblBankOutSemanal" text="- 0 Gs" styleClass="caja-amount-out"/>
-                        <Separator/>
-                        <Label fx:id="lblBankBalanceSemanal" text="0 Gs" styleClass="caja-balance"/>
                     </VBox>
                 </HBox>
 
@@ -234,8 +226,6 @@
                         <Separator/>
                         <Label fx:id="lblCashInMensual" text="+ 0 Gs" styleClass="caja-amount-in"/>
                         <Label fx:id="lblCashOutMensual" text="- 0 Gs" styleClass="caja-amount-out"/>
-                        <Separator/>
-                        <Label fx:id="lblCashBalanceMensual" text="0 Gs" styleClass="caja-balance"/>
                     </VBox>
 
                     <VBox spacing="8" styleClass="caja-card" HBox.hgrow="ALWAYS">
@@ -243,8 +233,6 @@
                         <Separator/>
                         <Label fx:id="lblBankInMensual" text="+ 0 Gs" styleClass="caja-amount-in"/>
                         <Label fx:id="lblBankOutMensual" text="- 0 Gs" styleClass="caja-amount-out"/>
-                        <Separator/>
-                        <Label fx:id="lblBankBalanceMensual" text="0 Gs" styleClass="caja-balance"/>
                     </VBox>
                 </HBox>
 

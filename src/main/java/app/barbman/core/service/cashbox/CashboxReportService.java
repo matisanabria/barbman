@@ -165,6 +165,7 @@ public class CashboxReportService {
         double cashIn = 0, cashOut = 0, bankIn = 0, bankOut = 0;
 
         for (CashboxMovement m : movements) {
+            if ("OPENING".equals(m.getMovementType())) continue;
             Integer paymentMethodId = m.getPaymentMethodId();
             if (paymentMethodId == null) continue;
 

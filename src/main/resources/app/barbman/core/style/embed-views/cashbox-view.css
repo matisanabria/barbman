@@ -108,6 +108,30 @@
     -fx-text-fill: #232323;
 }
 
+/* DATE PICKER - input field */
+.caja-choice .text-field {
+    -fx-background-color: #232323;
+    -fx-text-fill: #FFFFFF;
+    -fx-prompt-text-fill: #666666;
+}
+
+/* DATE PICKER POPUP */
+.date-picker-popup {
+    -fx-text-fill: #000000;
+}
+
+.date-picker-popup .label {
+    -fx-text-fill: #000000;
+}
+
+.date-picker-popup .button {
+    -fx-text-fill: #000000;
+}
+
+.date-picker-popup .cell {
+    -fx-text-fill: #000000;
+}
+
 /* CARDS */
 .caja-card {
     -fx-background-color: #232323;

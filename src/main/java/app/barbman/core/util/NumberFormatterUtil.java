@@ -29,7 +29,7 @@ public class NumberFormatterUtil {
         symbols = new DecimalFormatSymbols();
         symbols.setGroupingSeparator('.');   // separador de miles
         //symbols.setDecimalSeparator(',');    si en el futuro se usan decimales
-        formatter = new DecimalFormat("#,###", symbols);
+        formatter = new DecimalFormat("#,##0", symbols);
         formatter.setGroupingUsed(true);
         formatter.setMaximumFractionDigits(0); // sin decimales
     }
